@@ -37,7 +37,9 @@ resolver: lts-8.4
 # will not be run. This is useful for tweaking upstream packages.
 packages:
 - '.'
-- 'deps/hexpat-lens'
+- location:
+    git: https://github.com/tel/hexpat-lens
+    commit: c79a4273609711635ee01e7a39f7f8049fd9726a
 
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
