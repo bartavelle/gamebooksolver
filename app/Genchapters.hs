@@ -1,3 +1,7 @@
+-- | This module can be used to generate the LoneWolf.Book02 module.
+--
+-- In order to work, you must download the XML description from the Aon
+-- project.
 module Main where
 
 import LoneWolf.XML
