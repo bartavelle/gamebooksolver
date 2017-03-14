@@ -87,6 +87,7 @@ In details, the `Decision` types has the following constructors:
 >    | Conditional BoolCond Decision
 >    | Special SpecialChapter
 >    | NoDecision ChapterOutcome
+>    | EvadeFight Rounds ChapterId FightDetails ChapterOutcome
 >    deriving (Show, Eq, Typeable, Data)
 >
 > data SpecialChapter = Cartwheel
@@ -146,9 +147,8 @@ A `ChapterOutcome` describe what happens to the player once he has made a decisi
 
 > data ChapterOutcome
 >         = Fight FightDetails ChapterOutcome
->         | EvadeFight Rounds ChapterId FightDetails ChapterOutcome
->         | DamagePlayer Int ChapterOutcome
->         | HealPlayer Int ChapterOutcome
+>         | DamagePlayer Endurance ChapterOutcome
+>         | HealPlayer Endurance ChapterOutcome
 >         | FullHeal ChapterOutcome
 >         | HalfHeal ChapterOutcome
 >         | GainItem Item Int ChapterOutcome
@@ -158,11 +158,7 @@ A `ChapterOutcome` describe what happens to the player once he has made a decisi
 
 Most of the constructors are built like lists, in the sense that their last argument is a `ChapterOutcome`.
 
-I know I will have trouble with the `EvadeFight` element. It represents a fight that the player can evade after a certain number of rounds.
-It is really problematic, because such fights can have a lot of outcomes during each round, and will make the game unsolvable if implemented naïvely.
-This will certainly require some form of approximation, but I'll take my time to commit to one.
-
-Another constructor of interest is the `MustEat` constructor.
+A constructor of interest is the `MustEat` constructor.
 It represents chapters where the player loses some hit points if he doesn't have a meal in his backpack.
 In the Lone Wolf series, the `Hunting` discipline let the player ignore these events.
 But in this specific book, there are a couple of chapters where `Hunting` can't be used!
@@ -251,6 +247,7 @@ Lenses, plates and utilities
 
 > makePrisms ''ChapterOutcome
 > makePrisms ''Decision
+> makePrisms ''FightModifier
 > makeLenses ''FightDetails
 >
 > moneyCond :: Int -> ChapterOutcome -> Decision

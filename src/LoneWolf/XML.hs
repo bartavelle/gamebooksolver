@@ -12,6 +12,7 @@ import Data.List
 import Text.Megaparsec.String
 import Text.Megaparsec (parseMaybe, string, sepBy1, skipMany, anyChar)
 import Data.Char (isDigit)
+import Data.Data.Lens
 
 import LoneWolf.Chapter
 import LoneWolf.Character
@@ -46,7 +47,9 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                           o -> o
    evadeCombat :: Rounds -> Decision
    evadeCombat nrounds = case reverse choices of
-                             (Jmp _ winfight : Jmp _ evadefight : _) -> NoDecision $ foldr (EvadeFight nrounds evadefight) (Goto winfight) (extractFightDetails choices)
+                             (Jmp _ winfight : Jmp _ evadefight : _) -> case extractFightDetails choices of
+                                                                           [] -> error ("evadeCombat " ++ show choices)
+                                                                           (f:fs) -> EvadeFight nrounds evadefight f $ foldr Fight (Goto winfight) fs
                              _ -> error ("evadeCombat: " ++ show choices)
    threeCond c = computedDecision & _Decisions . ix 0 . _2 %~ Conditional c
                                   & _Decisions . ix 1 . _2 %~ Conditional (Not c)
@@ -127,7 +130,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           124 -> computedDecision & CanTake (Weapon Dagger) 1 & CanTake Gold 42 & CanTake (Weapon ShortSword) 1
           127 -> computedDecision & outcomePlate %~ MustEat Hunt
           128 -> computedDecision & outcomePlate . _Fight . _1 . fightMod %~ (Undead :)
-          131 -> evadeCombat 0 & outcomePlate %~ bareHanded
+          131 -> evadeCombat 0 & biplate . fightMod %~ (BareHanded :)
           132 -> CanTake (Weapon Spear) 1 computedDecision
           134 -> NoDecision (Conditionally [ (HasItem (Weapon MagicSpear) 1, Goto 38), (botherwise, Goto 304) ])
           136 -> computedDecision & _Decisions . ix 0 . _2 .~ moneyCond 20 (Goto 10)
@@ -240,7 +243,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           299 -> computedDecision & _Decisions . ix 0 . _2 . outcomePlate %~ LoseItem (Weapon MagicSpear) 1
                                   & _Decisions . ix 1 . _2 %~ Conditional (HasItem (Weapon MagicSpear) 1)
           296 -> evadeCombat 0
-          298 -> evadeCombat 0 & outcomePlate %~ bareHanded
+          298 -> evadeCombat 0 & biplate . fightMod %~ (BareHanded :)
           301 -> computedDecision & CanTake (Weapon ShortSword) 1
                                   & CanTake (Weapon Dagger) 1
                                   & CanTake Gold 3
@@ -265,7 +268,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           331 -> computedDecision & CanTake (Weapon Sword) 1
                                   & CanTake (Weapon Dagger) 1
                                   & CanTake Gold 3
-          332 -> evadeCombat 0 & outcomePlate . _EvadeFight . _3 . fightMod %~ (EnemyMindblast :)
+          332 -> evadeCombat 0 & _EvadeFight . _3 . fightMod %~ (EnemyMindblast :)
           334 -> threeCond (HasDiscipline Tracking)
           337 -> threeCond (HasDiscipline Hunting) & outcomePlate %~ LoseItemKind [BackpackSlot, WeaponSlot]
           338 -> computedDecision & outcomePlate %~ DamagePlayer 2
@@ -281,14 +284,6 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           347 -> computedDecision & outcomePlate %~ DamagePlayer 1
           348 -> evadeCombat 2
           _ -> computedDecision
-
-bareHanded :: ChapterOutcome -> ChapterOutcome
-bareHanded co = case co of
-                    Fight fd o -> Fight (bh fd) (bareHanded o)
-                    EvadeFight rnds cid fd o -> EvadeFight rnds cid (bh fd) (bareHanded o)
-                    x -> x
-  where
-    bh = fightMod %~ (BareHanded :)
 
 parseCondition :: String -> Maybe BoolCond
 parseCondition = parseMaybe pcond

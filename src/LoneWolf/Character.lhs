@@ -8,13 +8,18 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 > {-# LANGUAGE DeriveGeneric #-}
 > {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 > {-# LANGUAGE DeriveDataTypeable #-}
+> {-# LANGUAGE TemplateHaskell #-}
 >
 > module LoneWolf.Character where
 >
 > import GHC.Generics
-> import Data.HashMap.Strict (HashMap)
 > import Data.Hashable
 > import Data.Data
+> import Data.Word
+> import Control.Lens
+> import qualified Data.Discrimination.Grouping as D
+> import Data.Bits
+> import Data.List
 
 Character sheet
 ---------------
@@ -29,10 +34,12 @@ As a simplification, I have decided to ignore it.
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 
 > newtype CombatSkill = CombatSkill { getCombatSkill :: Int }
->                     deriving (Show, Eq, Read, Num, Typeable, Data)
+>                     deriving (Show, Eq, Read, Num, Typeable, Data, Ord)
 >
 > newtype Endurance = Endurance { getEndurance :: Int }
->                     deriving (Show, Eq, Read, Num, Typeable, Data)
+>                     deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
+>
+> instance D.Grouping Endurance
 >
 > data CharacterConstant = CharacterConstant
 >       { _maxendurance :: Endurance
@@ -44,8 +51,17 @@ The variable part holds the player inventory, and current health points.
 
 > data CharacterVariable = CharacterVariable
 >       { _curendurance :: Endurance
->       , _equipment    :: (HashMap Item Int)
+>       , _equipment    :: Inventory
 >       } deriving (Generic, Eq, Show, Read)
+>
+> instance D.Grouping CharacterVariable
+
+> data Inventory = Inventory { _singleItems :: Word32
+>                            , _gold        :: Word8
+>                            , _meals       :: Word8
+>                            } deriving (Generic, Eq, Show, Read)
+>
+> instance D.Grouping Inventory
 
 Five disciplines must be picked before the game starts. Most of them can turn out to be useful during the adventure, but the `WeaponSkill` deserves a special treatment.
 During the adventure, magic weapons can be found, in the form of a sword and a spear.
@@ -100,6 +116,39 @@ I decided to let go of all items that were not useful.
 >           | RedPassVol2
 >           deriving (Show, Eq, Generic, Ord, Read, Typeable, Data)
 
+> instance Enum Item where
+>   fromEnum x = case x of
+>     Backpack          -> 0
+>     Helmet            -> 1
+>     Shield            -> 2
+>     ChainMail         -> 3
+>     HealingPotion     -> 4
+>     PotentPotion      -> 5
+>     Laumspur          -> 6
+>     TicketVol2        -> 7
+>     PasswordVol2      -> 8
+>     DocumentsVol2     -> 9
+>     SealHammerdalVol2 -> 10
+>     WhitePassVol2     -> 11
+>     RedPassVol2       -> 12
+>     Weapon w          -> fromEnum w + 13
+>     _                 -> error "Should not happen"
+>   toEnum n = case n of
+>     0  -> Backpack
+>     1  -> Helmet
+>     2  -> Shield
+>     3  -> ChainMail
+>     4  -> HealingPotion
+>     5  -> PotentPotion
+>     6  -> Laumspur
+>     7  -> TicketVol2
+>     8  -> PasswordVol2
+>     9  -> DocumentsVol2
+>     10 -> SealHammerdalVol2
+>     11 -> WhitePassVol2
+>     12 -> RedPassVol2
+>     _  -> Weapon (toEnum (n - 13))
+
 > instance Hashable Item
 > instance Hashable Weapon
 
@@ -133,3 +182,41 @@ I decided to let go of all items that were not useful.
 > itemSlot SealHammerdalVol2 = SpecialSlot
 > itemSlot Shield            = SpecialSlot
 
+> makeLenses ''CharacterVariable
+> makeLenses ''CharacterConstant
+> makeLenses ''Character
+> makeLenses ''Inventory
+
+> hasItem :: Item -> Inventory -> Bool
+> hasItem i inv =
+>   case i of
+>      Gold -> inv ^. gold > 0
+>      Meal -> inv ^. meals > 0
+>      _ -> testBit (inv ^. singleItems) (fromEnum i)
+>
+> addItem :: Item -> Int -> Inventory -> Inventory
+> addItem i count inv
+>   | count < 0 = delItem i (negate count) inv
+>   | count == 0 = inv
+>   | otherwise = case i of
+>                   Gold -> inv & gold +~ fromIntegral count
+>                   Meal -> inv & meals +~ fromIntegral count
+>                   _    -> inv & singleItems %~ flip setBit (fromEnum i)
+>
+> delItem :: Item -> Int -> Inventory -> Inventory
+> delItem i count inv
+>   | count < 0 = addItem i (negate count) inv
+>   | count == 0 = inv
+>   | otherwise = case i of
+>                   Gold -> inv & gold -~ fromIntegral count
+>                   Meal -> inv & meals -~ fromIntegral count
+>                   _    -> inv & singleItems %~ flip clearBit (fromEnum i)
+
+> delItemSlot :: [Slot] -> Inventory -> Inventory
+> delItemSlot = flip (foldl' delSlot)
+>   where delSlot inv s = case s of
+>                               PouchSlot -> inv & gold .~ 0
+>                               SpecialSlot -> removeAll inv [Helmet, ChainMail, TicketVol2, PasswordVol2, DocumentsVol2, WhitePassVol2, RedPassVol2, SealHammerdalVol2, Shield]
+>                               WeaponSlot -> removeAll inv (map Weapon [minBound .. maxBound])
+>                               BackpackSlot -> removeAll (inv & meals .~ 0) [HealingPotion, Laumspur, PotentPotion]
+>         removeAll = foldl' (\inv itm -> delItem itm 1 inv)

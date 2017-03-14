@@ -30,6 +30,7 @@ library
                      , data-default
                      , bytestring
                      , megaparsec
+                     , discrimination
   default-language:    Haskell2010
 
 executable gamebooksolver-genchapters
