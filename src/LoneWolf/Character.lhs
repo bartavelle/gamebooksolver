@@ -1,9 +1,3 @@
----
-title: "Solving a game book : modelling the Lone Wolf character state"
-series: Game book solver
-date: 2017-03-11
----
-
 This module holds the base types for representing the game state, and specifically the player state. This is a literate Haskell file!
 
 Language extensions, imports
@@ -84,6 +78,9 @@ Given that these weapons are magic and more powerful than their mundane counterp
 >             | MagicSpear
 >             | Sommerswerd
 >             deriving (Show, Eq, Generic, Ord, Enum, Bounded, Read, Typeable, Data)
+
+Not all items that are referenced in the books are described here.
+I decided to let go of all items that were not useful.
 
 > data Item = Weapon !Weapon
 >           | Backpack
