@@ -106,7 +106,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           88 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (HasDiscipline Camouflage)
           90 -> evadeCombat 0
           91 -> Decisions $ nub $ do
-              let items = [ Backpack, Weapon Quarterstaff, Meal, Meal, Weapon Dagger, Rope ]
+              let items = [ Backpack, Weapon Quarterstaff, Meal, Meal, Weapon Dagger ]
               (item1, remaining) <- select items
               item2 <- remaining
               guard (item1 < item2 || (item1 == Meal && item2 == Meal))

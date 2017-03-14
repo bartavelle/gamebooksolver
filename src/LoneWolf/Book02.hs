@@ -892,8 +892,6 @@ chapters =
         (Decisions
            [ ( "Take Backpack and Meal"
              , CanTake Backpack 1 (CanTake Meal 1 (NoDecision (Goto 245))))
-           , ( "Take Backpack and Rope"
-             , CanTake Backpack 1 (CanTake Rope 1 (NoDecision (Goto 245))))
            , ( "Take Weapon Quarterstaff and Backpack"
              , CanTake
                  (Weapon Quarterstaff)
@@ -904,15 +902,8 @@ chapters =
                  (Weapon Quarterstaff)
                  1
                  (CanTake Meal 1 (NoDecision (Goto 245))))
-           , ( "Take Weapon Quarterstaff and Rope"
-             , CanTake
-                 (Weapon Quarterstaff)
-                 1
-                 (CanTake Rope 1 (NoDecision (Goto 245))))
            , ( "Take Meal and Meal"
              , CanTake Meal 1 (CanTake Meal 1 (NoDecision (Goto 245))))
-           , ( "Take Meal and Rope"
-             , CanTake Meal 1 (CanTake Rope 1 (NoDecision (Goto 245))))
            , ( "Take Weapon Dagger and Backpack"
              , CanTake
                  (Weapon Dagger)
@@ -928,11 +919,6 @@ chapters =
                  (Weapon Dagger)
                  1
                  (CanTake Meal 1 (NoDecision (Goto 245))))
-           , ( "Take Weapon Dagger and Rope"
-             , CanTake
-                 (Weapon Dagger)
-                 1
-                 (CanTake Rope 1 (NoDecision (Goto 245))))
            ]))
   , ( 92
     , Chapter

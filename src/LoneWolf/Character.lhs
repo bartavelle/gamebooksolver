@@ -94,15 +94,7 @@ Given that these weapons are magic and more powerful than their mundane counterp
 >           | HealingPotion
 >           | PotentPotion -- heals 5 after combat
 >           | Gold
->           | Torch
->           | Rope
->           | Laumspur -- works as meal, heals 3hp (chapter 113)
->           | StrengthPotion -- Combat skill +2 for a single combat
->           | Scroll193
->           | Message267
->           | PerfumedSoap315
->           | TinderBox347
->           | CrystalStar
+>           | Laumspur
 >           | TicketVol2
 >           | PasswordVol2
 >           | DocumentsVol2
@@ -134,17 +126,9 @@ Given that these weapons are magic and more powerful than their mundane counterp
 > itemSlot HealingPotion     = BackpackSlot
 > itemSlot Gold              = PouchSlot
 > itemSlot Laumspur          = BackpackSlot
-> itemSlot StrengthPotion    = BackpackSlot
-> itemSlot Torch             = BackpackSlot
-> itemSlot Scroll193         = BackpackSlot
-> itemSlot Message267        = BackpackSlot
-> itemSlot PerfumedSoap315   = BackpackSlot
-> itemSlot TinderBox347      = BackpackSlot
-> itemSlot CrystalStar       = SpecialSlot
 > itemSlot TicketVol2        = SpecialSlot
 > itemSlot Backpack          = SpecialSlot
 > itemSlot PotentPotion      = BackpackSlot
-> itemSlot Rope              = BackpackSlot
 > itemSlot PasswordVol2      = SpecialSlot
 > itemSlot DocumentsVol2     = SpecialSlot
 > itemSlot WhitePassVol2     = SpecialSlot
