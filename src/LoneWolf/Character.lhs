@@ -34,7 +34,7 @@ As a simplification, I have decided to ignore it.
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 
 > newtype CombatSkill = CombatSkill { getCombatSkill :: Int }
->                     deriving (Show, Eq, Read, Num, Typeable, Data, Ord)
+>                     deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
 >
 > newtype Endurance = Endurance { getEndurance :: Int }
 >                     deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
@@ -62,6 +62,9 @@ The variable part holds the player inventory, and current health points.
 >                            } deriving (Generic, Eq, Show, Read)
 >
 > instance D.Grouping Inventory
+>
+> emptyInventory :: Inventory
+> emptyInventory = Inventory 0 0 0
 
 Five disciplines must be picked before the game starts. Most of them can turn out to be useful during the adventure, but the `WeaponSkill` deserves a special treatment.
 During the adventure, magic weapons can be found, in the form of a sword and a spear.
@@ -116,6 +119,10 @@ I decided to let go of all items that were not useful.
 >           | RedPassVol2
 >           deriving (Show, Eq, Generic, Ord, Read, Typeable, Data)
 
+> instance Bounded Item where
+>   minBound = Backpack
+>   maxBound = Weapon maxBound
+
 > instance Enum Item where
 >   fromEnum x = case x of
 >     Backpack          -> 0
@@ -131,8 +138,10 @@ I decided to let go of all items that were not useful.
 >     SealHammerdalVol2 -> 10
 >     WhitePassVol2     -> 11
 >     RedPassVol2       -> 12
->     Weapon w          -> fromEnum w + 13
->     _                 -> error "Should not happen"
+>     Gold              -> 13
+>     Meal              -> 14
+>     Weapon w          -> fromEnum w + 15
+
 >   toEnum n = case n of
 >     0  -> Backpack
 >     1  -> Helmet
@@ -147,7 +156,9 @@ I decided to let go of all items that were not useful.
 >     10 -> SealHammerdalVol2
 >     11 -> WhitePassVol2
 >     12 -> RedPassVol2
->     _  -> Weapon (toEnum (n - 13))
+>     13 -> Gold
+>     14 -> Meal
+>     _  -> Weapon (toEnum (n - 15))
 
 > instance Hashable Item
 > instance Hashable Weapon
@@ -185,7 +196,19 @@ I decided to let go of all items that were not useful.
 > makeLenses ''CharacterVariable
 > makeLenses ''CharacterConstant
 > makeLenses ''Character
-> makeLenses ''Inventory
+> makePrisms ''Discipline
+
+> gold :: Lens' Inventory Int
+> gold f inventory = (\ng -> inventory { _gold = fromIntegral ng }) <$> f (fromIntegral (_gold inventory))
+> {-# INLINE gold #-}
+
+> meals :: Lens' Inventory Int
+> meals f inventory = (\ng -> inventory { _meals = fromIntegral ng }) <$> f (fromIntegral (_meals inventory))
+> {-# INLINE meals #-}
+
+> singleItems :: Lens' Inventory Word32
+> singleItems f inventory = (\ni -> inventory { _singleItems = ni }) <$> f (_singleItems inventory)
+> {-# INLINE singleItems #-}
 
 > hasItem :: Item -> Inventory -> Bool
 > hasItem i inv =
@@ -220,3 +243,13 @@ I decided to let go of all items that were not useful.
 >                               WeaponSlot -> removeAll inv (map Weapon [minBound .. maxBound])
 >                               BackpackSlot -> removeAll (inv & meals .~ 0) [HealingPotion, Laumspur, PotentPotion]
 >         removeAll = foldl' (\inv itm -> delItem itm 1 inv)
+
+> items :: Inventory -> [(Item, Int)]
+> items inventory@(Inventory _ gld mls) = filter ( (> 0) . snd )
+>       ( (Gold, fromIntegral gld) : (Meal, fromIntegral mls) :
+>         [ (item, if hasItem item inventory then 1 else 0) | item <- standardItems ] )
+>  where
+>    standardItems = filter (`notElem` [Gold, Meal]) [minBound .. maxBound]
+
+> getWeapons :: Inventory -> [Weapon]
+> getWeapons inventory = filter (\w -> hasItem (Weapon w) inventory) [minBound .. maxBound]

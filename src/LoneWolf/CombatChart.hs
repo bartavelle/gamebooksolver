@@ -1,14 +1,20 @@
+{-# LANGUAGE TemplateHaskell #-}
 module LoneWolf.CombatChart where
 
-data Hits = Kill| Damage Int deriving (Show, Eq)
+import LoneWolf.Character
+import Control.Lens
+
+data Hits = Kill | Damage Endurance deriving (Show, Eq)
+
+makePrisms ''Hits
 
 -- | (Opponent, LoneWolf)
-hits :: Int -> [(Hits,Hits)]
-hits quotient = hits' nquotient
+hits :: CombatSkill -> [(Hits,Hits)]
+hits ratio = hits' nratio
     where
-        nquotient | quotient < -10 = -6
-                  | quotient >  10 =  6
-                  | otherwise      = quotient `div` 2
+        nratio | ratio < -10 = -6
+               | ratio >  10 =  6
+               | otherwise   = ratio `div` 2
         hits' (-6) = [ ( Damage 0, Kill   ), (  Damage 0,  Kill   ), (  Damage 0,  Damage 8), ( Damage 0,  Damage 8), ( Damage 1,  Damage 7), ( Damage 2,  Damage 6), ( Damage 3,  Damage 5), ( Damage 4,  Damage 4), ( Damage 5,  Damage 3), ( Damage 6,  Damage 0) ]
         hits' (-5) = [ ( Damage 0, Kill   ), (  Damage 0,  Damage 8), ( Damage 0,  Damage 7), ( Damage 1,  Damage 7), ( Damage 2,  Damage 6), ( Damage 3,  Damage 6), ( Damage 4,  Damage 5), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 0) ]
         hits' (-4) = [ ( Damage 0, Damage 8), ( Damage 0,  Damage 7), ( Damage 1,  Damage 6), ( Damage 2,  Damage 6), ( Damage 3,  Damage 5), ( Damage 4,  Damage 5), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 2), ( Damage 8,  Damage 0) ]

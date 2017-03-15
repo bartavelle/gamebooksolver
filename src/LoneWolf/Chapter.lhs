@@ -28,14 +28,13 @@ Clearly not the best part :)
 > import Control.Lens
 > import Data.Data
 > import Data.Data.Lens
+> import Solver
 
 Basic types
 -----------
 
 The following types should get a newtype, but to be honest, it is much more handy that way right now, because of the vicious code generation that is happening later ...
 
-> -- represents a probability
-> type Proba = Rational
 > -- each chapter has an identifier, with a value ranging from 1 to 350
 > type ChapterId = Int
 > -- some combat effects are timed, for example some fights can be evaded after a certain number of rounds
@@ -230,6 +229,7 @@ Fights against consecutive opponents are handled by chaining the `Fight` and `Ev
 >                    | EnemyMindblast
 >                    | PlayerInvulnerable
 >                    | DoubleDamage -- chapter 306
+>                    | Evaded Rounds ChapterId
 >                    deriving (Show, Eq, Typeable, Data)
 
  * `Undead`: undead creatures take double damage from the `Sommerswerd`.

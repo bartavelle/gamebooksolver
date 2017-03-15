@@ -6,3 +6,9 @@ series: Game book solver
 
 > module Solver where
 
+> type Proba = Rational
+> type Probably a = [(a, Proba)]
+
+> certain :: a -> Probably a
+> certain a = [(a,1)]
+
