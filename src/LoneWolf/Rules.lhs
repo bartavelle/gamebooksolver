@@ -1,4 +1,5 @@
 > {-# LANGUAGE DeriveGeneric #-}
+> {-# LANGUAGE TemplateHaskell #-}
 > module LoneWolf.Rules where
 
 > import LoneWolf.Character
@@ -9,73 +10,92 @@
 > import qualified Data.Discrimination.Grouping as D
 > import Control.Lens
 > import Data.Maybe
+> import Data.List
 > import GHC.Generics
 
-> data NextStep = NewChapter ChapterId CharacterVariable
+> data HadCombat = Didn'tFight
+>                | DidFight
+>                deriving (Show, Eq, Generic)
+
+> instance D.Grouping HadCombat where
+
+> data NextStep = NewChapter ChapterId CharacterVariable HadCombat
 >               | HasLost
 >               | HasWon CharacterVariable
 >               deriving (Show, Eq, Generic)
 
 > instance D.Grouping NextStep where
 
+> makePrisms ''NextStep
+
 > check :: CharacterConstant -> CharacterVariable -> BoolCond -> Bool
-> check = undefined
+> check cconstant cvariable cond =
+>   case cond of
+>       Always b -> b
+>       HasDiscipline d -> d `elem` cconstant ^. discipline
+>       Not c -> not (check cconstant cvariable c)
+>       COr c1 c2 -> check cconstant cvariable c1 || check cconstant cvariable c2
+>       CAnd c1 c2 -> check cconstant cvariable c1 && check cconstant cvariable c2
+>       HasItem i n -> case i of
+>                           Gold -> cvariable ^. equipment . gold >= n
+>                           Meal -> cvariable ^. equipment . meals >= n
+>                           _    -> hasItem i (cvariable ^. equipment)
 
 > regroup :: D.Grouping a => Probably a -> Probably a
 > regroup = map (\( (a,s): as ) -> (a, s + sum (map snd as)) ) . D.groupWith fst
 
+> updateSimple :: CharacterConstant -> CharacterVariable -> SimpleOutcome -> CharacterVariable
+> updateSimple cconstant cvariable soutcome =
+>   case soutcome of
+>     DamagePlayer dmg -> cvariable & curendurance -~ dmg
+>     HealPlayer heal -> cvariable & curendurance %~ \hp -> max maxhp (hp + heal)
+>     FullHeal -> cvariable & curendurance .~ (cconstant ^. maxendurance)
+>     HalfHeal -> cvariable & curendurance %~ \hp -> (hp + maxhp) `div` 2
+>     GainItem item count -> cvariable & equipment %~ addItem item count
+>     LoseItem item lost -> cvariable & equipment %~ delItem item lost
+>     LoseItemKind slots -> cvariable & equipment %~ delItemSlot slots
+>     MustEat canhunt
+>       | canhunt == Hunt && Hunting `elem` _discipline cconstant
+>               -> cvariable
+>       | hasItem Laumspur eqp && (maxhp - curhp >= 3) -> laumspur
+>       | hasItem Meal eqp -> updates [LoseItem Meal 1]
+>       | hasItem Laumspur eqp -> laumspur
+>       | otherwise -> updates [DamagePlayer 3]
+>  where
+>    laumspur =  updates [HealPlayer 3, LoseItem Laumspur 1]
+>    curhp = cvariable ^. curendurance
+>    maxhp = getMaxHp cconstant cvariable
+>    eqp = cvariable ^. equipment
+>    updates lst = foldl' (updateSimple cconstant) cvariable lst
+
 > update :: CharacterConstant -> CharacterVariable -> ChapterOutcome -> Probably NextStep
 > update cconstant cvariable outcome =
 >   case outcome of
->     Goto cid -> certain (NewChapter cid cvariable)
+>     Goto cid -> certain (NewChapter cid cvariable Didn'tFight)
 >     GameLost -> certain HasLost
->     GameWon  -> certain (HasWon cvariable)
->     DamagePlayer dmg nxt ->
->       update cconstant (cvariable & curendurance -~ dmg) nxt
->     HealPlayer heal nxt ->
->       let newvariable = cvariable & curendurance %~ \hp -> max maxhp (hp + heal)
->       in  update cconstant newvariable nxt
->     FullHeal nxt ->
->       update cconstant (cvariable & curendurance .~ (cconstant ^. maxendurance)) nxt
->     HalfHeal nxt -> let newvariable = cvariable & curendurance %~ \hp -> (hp + maxhp) `div` 2
->                     in  update cconstant newvariable nxt
->     GainItem item count nxt ->
->       let newvariable = cvariable & equipment %~ addItem item count
->       in  update cconstant newvariable nxt
->     LoseItem item lost nxt ->
->       let newvariable = cvariable & equipment %~ delItem item lost
->       in  update cconstant newvariable nxt
->     LoseItemKind slots nxt ->
->       let newvariable = cvariable & equipment %~ delItemSlot slots
->       in  update cconstant newvariable nxt
->     MustEat canhunt nxt
->       | canhunt == Hunt && Hunting `elem` _discipline cconstant
->               -> update cconstant cvariable nxt
->       | hasItem Laumspur eqp && (maxhp - curhp >= 3) -> laumspur
->       | hasItem Meal eqp -> update cconstant cvariable (LoseItem Meal 1 nxt)
->       | hasItem Laumspur eqp -> laumspur
->       | otherwise -> update cconstant cvariable (DamagePlayer 3 nxt)
->       where laumspur = update cconstant cvariable (HealPlayer 3 (LoseItem Laumspur 1 nxt))
->             eqp = cvariable ^. equipment
+>     GameWon -> certain (HasWon cvariable)
+>     Simple effects nxt ->
+>       let nvariable = foldl' (updateSimple cconstant) cvariable effects
+>       in  if nvariable ^. curendurance <= 0
+>               then certain HasLost
+>               else update cconstant nvariable nxt
 >     Conditionally conditions -> uCheck conditions
 >     Randomly rands -> regroup $ do
 >       (p, o) <- rands
 >       fmap (*p) <$> update cconstant cvariable o
->     Fight fd nxt -> regroup $ do
+>     Fight fd nxt -> regroup $ (traverse . _1 . _NewChapter . _3 .~ DidFight)  $ do
 >       (charendurance, p) <- fight cconstant cvariable fd
 >       case fd ^? fightMod . traverse . _FakeFight of
 >          Nothing -> if charendurance <= 0
 >                       then [(HasLost, p)]
 >                       else fmap (*p) <$> update cconstant (cvariable & curendurance .~ charendurance) nxt
 >          Just cid -> if charendurance <= 0
->                        then [(NewChapter cid cvariable, p)]
+>                        then [(NewChapter cid cvariable Didn'tFight, p)]
 >                        else map (fmap (*p)) $ update cconstant cvariable $
 >                               case fd ^? fightMod . traverse . _Evaded . _2 of
 >                                   Just evasionDestination -> Goto evasionDestination
 >                                   Nothing -> nxt
 >  where
->    curhp = cvariable ^. curendurance
->    maxhp = getMaxHp cconstant cvariable
 >    uCheck conds = case conds of
 >                     [] -> error "Can't happen"
 >                     [(_, lst)] -> update cconstant cvariable lst

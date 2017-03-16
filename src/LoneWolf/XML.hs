@@ -54,6 +54,10 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
    threeCond c = computedDecision & _Decisions . ix 0 . _2 %~ Conditional c
                                   & _Decisions . ix 1 . _2 %~ Conditional (Not c)
                                   & _Decisions . ix 2 . _2 %~ Conditional (Not c)
+   addEffect :: SimpleOutcome -> Decision -> Decision
+   addEffect s = outcomePlate %~ \d -> case d of
+                                           Simple lst nxt -> Simple (s:lst) nxt
+                                           _ -> Simple [s] d
    gdec = case rcid of
           350 -> NoDecision GameWon
           10 -> CanTake TicketVol2 1 computedDecision
@@ -68,25 +72,25 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                     $ CanTake Meal 3
                     $ CanTake Gold 12
                     $ NoDecision (Goto 244)
-          17 -> computedDecision & outcomePlate %~ DamagePlayer 5
-          21 -> NoDecision (Randomly [ (1/10, GainItem Gold (n * 3 - 1) (Goto 314)) | n <- [1..10]])
-          27 -> NoDecision (HealPlayer 2 (Goto 312))
-          29 -> NoDecision (DamagePlayer 2 (Goto 222))
-          31 -> computedDecision & outcomePlate %~ HealPlayer 6
-          32 -> computedDecision & outcomePlate %~ MustEat Hunt
+          17 -> computedDecision & addEffect (DamagePlayer 5)
+          21 -> NoDecision (Randomly [ (1/10, Simple [GainItem Gold (n * 3 - 1)] (Goto 314)) | n <- [1..10]])
+          27 -> NoDecision (Simple [HealPlayer 2] (Goto 312))
+          29 -> NoDecision (Simple [DamagePlayer 2] (Goto 222))
+          31 -> computedDecision & addEffect (HealPlayer 6)
+          32 -> computedDecision & addEffect (MustEat Hunt)
           35 -> threeCond (HasDiscipline Tracking)
           36 -> NoDecision (Conditionally [ (HasItem Laumspur 1, Goto 145)
                                           , (HasDiscipline Healing, Goto 210)
                                           , (botherwise, Goto 275)
                                           ] )
-          37 -> computedDecision & outcomePlate %~ MustEat Hunt
+          37 -> computedDecision & addEffect (MustEat Hunt)
           39 -> NoDecision (Conditionally [ (HasItem TicketVol2 1, Goto 346), (botherwise, Goto 156) ])
-          40 -> computedDecision & outcomePlate %~ FullHeal . GainItem PotentPotion 1
-          41 -> computedDecision & _Decisions . ix 0 . _2 . _NoDecision %~ HealPlayer 1
+          40 -> computedDecision & addEffect FullHeal & addEffect (GainItem PotentPotion 1)
+          41 -> computedDecision & _Decisions . ix 0 . _2 . _NoDecision %~ Simple [HealPlayer 1]
           47 -> NoDecision (Conditionally [ (HasItem PasswordVol2 1, Goto 111), (botherwise, Goto 307) ])
           52 -> NoDecision (Conditionally [ (HasItem (Weapon MagicSpear) 1, Goto 338), (botherwise, Goto 234) ])
           55 -> Canbuy (Weapon BroadSword) 12 computedDecision
-          57 -> NoDecision (Randomly [ (1/10, LoseItem Gold n (Goto 282)) | n <- [1..10] ])
+          57 -> NoDecision (Randomly [ (1/10, Simple [LoseItem Gold n] (Goto 282)) | n <- [1..10] ])
           59 -> NoDecision (Conditionally [ (HasItem (Weapon MagicSpear) 1, Goto 332), (botherwise, Goto 311) ])
           60 -> computedDecision & outcomePlate . _Fight . _1 . fightMod %~ (Timed 2 PlayerInvulnerable :)
           62 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (HasItem SealHammerdalVol2 1)
@@ -96,58 +100,58 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           64 -> threeCond (HasDiscipline SixthSense)
           66 -> computedDecision & outcomePlate . _Fight . _1 . fightMod %~ ([MindblastImmune, Undead] ++)
           69 -> NoDecision (Conditionally [ (HasDiscipline MindShield, Goto 311)
-                                          , (botherwise, DamagePlayer 2 (Goto 311))
+                                          , (botherwise, Simple [DamagePlayer 2] (Goto 311))
                                           ] )
           70 -> NoDecision (Goto 44) -- no crystal star pendant
-          72 -> computedDecision & outcomePlate %~ HealPlayer 1
-          75 -> computedDecision & _Decisions . ix 0 . _2 .~ Conditional (HasItem Gold 10) (NoDecision (LoseItem Gold 10 (GainItem WhitePassVol2 1 (Goto 142))))
+          72 -> computedDecision & addEffect (HealPlayer 1)
+          75 -> computedDecision & _Decisions . ix 0 . _2 .~ Conditional (HasItem Gold 10) (NoDecision (Simple [LoseItem Gold 10, GainItem WhitePassVol2 1] (Goto 142)))
           76 -> computedDecision & CanTake Gold 2 & CanTake (Weapon Dagger) 1
-          78 -> computedDecision & outcomePlate %~ (DamagePlayer 1) . (LoseItem ChainMail 99)
+          78 -> computedDecision & outcomePlate %~ Simple [DamagePlayer 1, LoseItem ChainMail 99]
           79 -> computedDecision & CanTake (Weapon Sommerswerd) 1
           80 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (HasItem SealHammerdalVol2 1)
           86 -> computedDecision & CanTake Gold 3 & CanTake (Weapon Mace) 1
           88 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (HasDiscipline Camouflage)
           90 -> evadeCombat 0
           91 -> Decisions $ nub $ do
-              let items = [ Backpack, Weapon Quarterstaff, Meal, Meal, Weapon Dagger ]
-              (item1, remaining) <- select items
+              let titems = [ Backpack, Weapon Quarterstaff, Meal, Meal, Weapon Dagger ]
+              (item1, remaining) <- select titems
               item2 <- remaining
               guard (item1 < item2 || (item1 == Meal && item2 == Meal))
               return ("Take " ++ show item1 ++ " and " ++ show item2, CanTake item1 1 (CanTake item2 1 (NoDecision (Goto 245))))
           102 -> threeCond (HasDiscipline Tracking)
-          103 -> Decisions [ ("Consume now", NoDecision (HealPlayer 3 (Goto 249)))
+          103 -> Decisions [ ("Consume now", NoDecision (Simple [HealPlayer 3] (Goto 249)))
                            , ("Take Laumspur", CanTake Laumspur 1 (NoDecision (Goto 249)))
                            ]
           106 -> CanTake (Weapon MagicSpear) 1 (computedDecision & outcomePlate . _Fight . _1 . fightMod %~ (EnemyMindblast :))
-          108 -> computedDecision & outcomePlate %~ DamagePlayer 2
+          108 -> computedDecision & addEffect (DamagePlayer 2)
           110 -> evadeCombat 0
-          116 -> NoDecision (Randomly [ (1/10, GainItem Gold (n + 4) (Goto 314)) | n <- [1..10]])
+          116 -> NoDecision (Randomly [ (1/10, Simple [GainItem Gold (n + 4)] (Goto 314)) | n <- [1..10]])
           117 -> computedDecision & _Decisions . ix 0 . _2 .~ moneyCond 3 (Goto 37)
                                   & _Decisions . ix 1 . _2 .~ moneyCond 1 (Goto 148)
           118 -> threeCond (HasDiscipline AnimalKinship)
           122 -> NoDecision (Conditionally [ (HasDiscipline SixthSense, Goto 96), (botherwise, Randomly [(1/2, Goto 46), (1/2, Goto 112)]) ])
           123 -> computedDecision & CanTake (Weapon Sommerswerd) 1
           124 -> computedDecision & CanTake (Weapon Dagger) 1 & CanTake Gold 42 & CanTake (Weapon ShortSword) 1
-          127 -> computedDecision & outcomePlate %~ MustEat Hunt
+          127 -> computedDecision & addEffect (MustEat Hunt)
           128 -> computedDecision & outcomePlate . _Fight . _1 . fightMod %~ (Undead :)
           131 -> evadeCombat 0 & biplate . fightMod %~ (BareHanded :)
           132 -> CanTake (Weapon Spear) 1 computedDecision
           134 -> NoDecision (Conditionally [ (HasItem (Weapon MagicSpear) 1, Goto 38), (botherwise, Goto 304) ])
           136 -> computedDecision & _Decisions . ix 0 . _2 .~ moneyCond 20 (Goto 10)
           139 -> CanTake Meal 2 computedDecision
-          141 -> computedDecision & outcomePlate %~ DamagePlayer 2 . LoseItem ChainMail 99
+          141 -> computedDecision & outcomePlate %~ Simple [DamagePlayer 2, LoseItem ChainMail 99]
           142 -> CanTake WhitePassVol2 1 computedDecision
-          144 -> CanTake Meal 2 (computedDecision & outcomePlate %~ LoseItemKind [PouchSlot])
-          145 -> computedDecision & outcomePlate %~ DamagePlayer 5
-          148 -> computedDecision & outcomePlate %~ MustEat Hunt
-          150 -> computedDecision & outcomePlate %~ MustEat Hunt
-          154 -> computedDecision & outcomePlate %~ DamagePlayer 2
+          144 -> CanTake Meal 2 (computedDecision & addEffect (LoseItemKind [PouchSlot]))
+          145 -> computedDecision & addEffect (DamagePlayer 5)
+          148 -> computedDecision & addEffect (MustEat Hunt)
+          150 -> computedDecision & addEffect (MustEat Hunt)
+          154 -> computedDecision & addEffect (DamagePlayer 2)
           160 -> NoDecision (Goto 268) -- shunt annoying choices
           157 -> evadeCombat 0
           162 -> evadeCombat 0
           164 -> threeCond (HasDiscipline SixthSense)
-          165 -> computedDecision & outcomePlate %~ LoseItem SealHammerdalVol2 1
-          168 -> NoDecision (Conditionally [ (HasItem Gold 1, LoseItem Gold 1 (Goto 314))
+          165 -> computedDecision & addEffect (LoseItem SealHammerdalVol2 1)
+          168 -> NoDecision (Conditionally [ (HasItem Gold 1, Simple [LoseItem Gold 1] (Goto 314))
                                            , (botherwise, Goto 25)
                                            ] )
           176 -> threeCond (HasDiscipline SixthSense)
@@ -160,15 +164,15 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                                   & Canbuy Backpack 1
           185 -> evadeCombat 0
           187 -> computedDecision & CanTake (Weapon Spear) 2 & CanTake (Weapon Spear) 2 & CanTake Gold 6
-          189 -> computedDecision & outcomePlate %~ DamagePlayer 2
-          194 -> computedDecision & outcomePlate %~ LoseItemKind [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
-          195 -> NoDecision (Conditionally [ (HasItem Gold 1, LoseItem Gold 1 (Goto 249))
+          189 -> computedDecision & addEffect (DamagePlayer 2)
+          194 -> computedDecision & addEffect (LoseItemKind [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot])
+          195 -> NoDecision (Conditionally [ (HasItem Gold 1, Simple [LoseItem Gold 1] (Goto 249))
                                            , (botherwise, Goto 50)
                                            ] )
-          196 -> computedDecision & outcomePlate %~ LoseItem SealHammerdalVol2 1
-          198 -> computedDecision & outcomePlate %~ DamagePlayer 1
+          196 -> computedDecision & addEffect (LoseItem SealHammerdalVol2 1)
+          198 -> computedDecision & addEffect (DamagePlayer 1)
           217 -> computedDecision & _Decisions . ix 0 . _2 .~ moneyCond 1 (Goto 199)
-          219 -> computedDecision & outcomePlate %~ DamagePlayer 3
+          219 -> computedDecision & addEffect (DamagePlayer 3)
           220 -> CanTake Gold 23 computedDecision
           226 -> computedDecision & _Decisions . ix 0 . _2 .~ moneyCond 2 (Goto 56)
           231 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (HasDiscipline Tracking)
@@ -186,8 +190,8 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
 
           235 -> CanTake (Weapon ShortSword) 1 computedDecision
           238 -> CanTake Gold 1 (Special Cartwheel)
-          240 -> Decisions [ ("Has healing", Conditional (HasDiscipline Healing) (computedDecision & outcomePlate %~ FullHeal) )
-                           , ("Hasn't healing", Conditional (Not (HasDiscipline Healing)) (computedDecision & outcomePlate %~ HalfHeal) )
+          240 -> Decisions [ ("Has healing", Conditional (HasDiscipline Healing) (computedDecision & addEffect FullHeal ))
+                           , ("Hasn't healing", Conditional (Not (HasDiscipline Healing)) (computedDecision & addEffect HalfHeal ))
                            ]
           244 -> threeCond (HasDiscipline Tracking)
           246 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (HasItem WhitePassVol2 1)
@@ -238,9 +242,9 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                                   & Canbuy Meal 2
                                   & Canbuy Meal 2
                                   & Canbuy Backpack 1
-          284 -> computedDecision & outcomePlate %~ MustEat Hunt
-          289 -> computedDecision & _Decisions . ix 0 . _2 . outcomePlate %~ LoseItem SealHammerdalVol2 1 . GainItem Gold 40
-          299 -> computedDecision & _Decisions . ix 0 . _2 . outcomePlate %~ LoseItem (Weapon MagicSpear) 1
+          284 -> computedDecision & addEffect (MustEat Hunt)
+          289 -> computedDecision & _Decisions . ix 0 . _2 . outcomePlate %~ Simple [LoseItem SealHammerdalVol2 1, GainItem Gold 40]
+          299 -> computedDecision & _Decisions . ix 0 . _2 . outcomePlate %~ Simple [LoseItem (Weapon MagicSpear) 1]
                                   & _Decisions . ix 1 . _2 %~ Conditional (HasItem (Weapon MagicSpear) 1)
           296 -> evadeCombat 0
           298 -> evadeCombat 0 & biplate . fightMod %~ (BareHanded :)
@@ -252,36 +256,36 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           306 -> computedDecision & outcomePlate . _Fight . _1 . fightMod %~ (DoubleDamage :)
           307 -> computedDecision & _Decisions . ix 1 . _2 %~ Conditional (HasItem SealHammerdalVol2 1)
           308 -> Special Portholes
-          313 -> computedDecision & outcomePlate %~ DamagePlayer 4
-          314 -> threeCond (HasDiscipline Hunting) & _Decisions . ix 2 . _2 . outcomePlate %~ MustEat NoHunt
+          313 -> computedDecision & addEffect (DamagePlayer 4)
+          314 -> threeCond (HasDiscipline Hunting) & _Decisions . ix 2 . _2 . outcomePlate %~ Simple [MustEat NoHunt]
           315 -> threeCond (HasDiscipline MindOverMatter)
-          321 -> Decisions [ ("Has food", Conditional (HasItem Meal 1) (computedDecision & outcomePlate %~ LoseItem Meal 1))
-                           , ("No food", Conditional (Not (HasItem Meal 1)) (computedDecision & outcomePlate %~ DamagePlayer 2) )
+          321 -> Decisions [ ("Has food", Conditional (HasItem Meal 1) (computedDecision & addEffect (LoseItem Meal 1)))
+                           , ("No food", Conditional (Not (HasItem Meal 1)) (computedDecision & addEffect (DamagePlayer 2) ))
                            ]
-          327 -> CanTake RedPassVol2 1 (computedDecision & outcomePlate %~ LoseItem Gold 6)
+          327 -> CanTake RedPassVol2 1 (computedDecision & addEffect (LoseItem Gold 6))
           328 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (Always False)
                                   & _Decisions . ix 1 . _2 %~ Conditional (HasDiscipline Tracking)
                                   & _Decisions . ix 2 . _2 %~ Conditional (Not (HasDiscipline Tracking))
                                   & _Decisions . ix 3 . _2 %~ Conditional (Not (HasDiscipline Tracking))
           329 -> CanTake Gold 10 computedDecision
-          330 -> computedDecision & outcomePlate %~ DamagePlayer 5
+          330 -> computedDecision & addEffect (DamagePlayer 5)
           331 -> computedDecision & CanTake (Weapon Sword) 1
                                   & CanTake (Weapon Dagger) 1
                                   & CanTake Gold 3
           332 -> evadeCombat 0 & _EvadeFight . _3 . fightMod %~ (EnemyMindblast :)
           334 -> threeCond (HasDiscipline Tracking)
-          337 -> threeCond (HasDiscipline Hunting) & outcomePlate %~ LoseItemKind [BackpackSlot, WeaponSlot]
-          338 -> computedDecision & outcomePlate %~ DamagePlayer 2
-          339 -> NoDecision (Conditionally [ (HasItem Gold 1, LoseItem Gold 1 (Goto 249))
+          337 -> threeCond (HasDiscipline Hunting) & addEffect (LoseItemKind [BackpackSlot, WeaponSlot])
+          338 -> computedDecision & addEffect (DamagePlayer 2)
+          339 -> NoDecision (Conditionally [ (HasItem Gold 1, Simple [LoseItem Gold 1] (Goto 249))
                                            , (botherwise, Goto 50)
                                            ] )
           342 -> computedDecision & _Decisions . ix 0 . _2 .~ moneyCond 1 (Goto 72)
                                   & _Decisions . ix 1 . _2 .~ moneyCond 2 (Goto 56)
           346 -> Decisions [ ("Buy a meal, and a room", moneyCond 2 (Goto 280))
-                           , ("Just the room", moneyCond 1 (MustEat NoHunt (Goto 280)))
-                           , ("Nothing", NoDecision (MustEat NoHunt (Goto 280)))
+                           , ("Just the room", moneyCond 1 (Simple [MustEat NoHunt] (Goto 280)))
+                           , ("Nothing", NoDecision (Simple [MustEat NoHunt] (Goto 280)))
                            ]
-          347 -> computedDecision & outcomePlate %~ DamagePlayer 1
+          347 -> computedDecision & addEffect (DamagePlayer 1)
           348 -> evadeCombat 2
           _ -> computedDecision
 

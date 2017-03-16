@@ -21,7 +21,7 @@ library
                        LoneWolf.XML
                        LoneWolf.Rules
                        LoneWolf.CombatChart
-                       LoneWolf.Book02
+                       LoneWolf.Choices
   ghc-options:         -Wall
   build-depends:       base >= 4.7 && < 5
                      , unordered-containers
@@ -42,6 +42,18 @@ executable gamebooksolver-genchapters
   ghc-options:         -threaded -rtsopts -Wall
   build-depends:       base
                      , gamebooksolver
+  default-language:    Haskell2010
+
+executable gamebooksolver-consoleplay
+  hs-source-dirs:      app
+  main-is:             Consoleplay.hs
+  ghc-options:         -threaded -rtsopts -Wall
+  other-modules:       LoneWolf.Book02
+  build-depends:       base
+                     , gamebooksolver
+                     , lens
+                     , containers
+                     , random
   default-language:    Haskell2010
 
 test-suite gamebooksolver-test

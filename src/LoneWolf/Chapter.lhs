@@ -87,6 +87,7 @@ In details, the `Decision` types has the following constructors:
 >    | Special SpecialChapter
 >    | NoDecision ChapterOutcome
 >    | EvadeFight Rounds ChapterId FightDetails ChapterOutcome
+>    | AfterCombat Decision
 >    deriving (Show, Eq, Typeable, Data)
 >
 > data SpecialChapter = Cartwheel
@@ -146,16 +147,27 @@ A `ChapterOutcome` describe what happens to the player once he has made a decisi
 
 > data ChapterOutcome
 >         = Fight FightDetails ChapterOutcome
->         | DamagePlayer Endurance ChapterOutcome
->         | HealPlayer Endurance ChapterOutcome
->         | FullHeal ChapterOutcome
->         | HalfHeal ChapterOutcome
->         | GainItem Item Int ChapterOutcome
->         | LoseItem Item Int ChapterOutcome
->         | LoseItemKind [Slot] ChapterOutcome
->         | MustEat CanHunt ChapterOutcome
+>         | Randomly [(Proba, ChapterOutcome)]
 
-Most of the constructors are built like lists, in the sense that their last argument is a `ChapterOutcome`.
+The `Fight` and `Randomly` constructors include an element of randomness.
+
+>         | Conditionally [(BoolCond, ChapterOutcome)]
+>         | Simple [SimpleOutcome] ChapterOutcome
+>         | Goto ChapterId
+>         | GameLost
+>         | GameWon
+>         deriving (Show, Eq, Typeable, Data)
+
+> data SimpleOutcome
+>         = DamagePlayer Endurance
+>         | HealPlayer Endurance
+>         | FullHeal
+>         | HalfHeal
+>         | GainItem Item Int
+>         | LoseItem Item Int
+>         | LoseItemKind [Slot]
+>         | MustEat CanHunt
+>         deriving (Show, Eq, Typeable, Data)
 
 A constructor of interest is the `MustEat` constructor.
 It represents chapters where the player loses some hit points if he doesn't have a meal in his backpack.
@@ -163,18 +175,6 @@ In the Lone Wolf series, the `Hunting` discipline let the player ignore these ev
 But in this specific book, there are a couple of chapters where `Hunting` can't be used!
 In a previous tentative, I used a flag in the game state to indicate whether or not hunting was permitted (it's explicitely told when it stops and when it starts).
 In general, it is better to make the game state as simple as possible, so as to get good memoization performance, so I decided to manually track the chapters where hunting was disabled, and mark them as such.
-
->         | Goto ChapterId
->         | GameLost
->         | GameWon
-
-Those three constructors are the "leaves" of this type, as they conclude an outcome. They work in the same way as the `[]` constructor that concludes a list.
-
->         | Randomly [(Proba, ChapterOutcome)]
->         | Conditionally [(BoolCond, ChapterOutcome)]
->         deriving (Show, Eq, Typeable, Data)
-
-Finally, those work like trees. They represent random outcomes, or cases where multiple choices are provided to the player, but in reality only one is ever possible depending on the situation. Here are example of the latter, taken from [chapter 36](https://www.projectaon.org/en/xhtml/lw/02fotw/sect36.htm):
 
 ```haskell
 Conditionally
@@ -194,7 +194,6 @@ Note how it works like Haskell's guards, and ends up with the equivalent of `oth
 >
 > data BoolCond = HasDiscipline Discipline
 >               | Not BoolCond
->               | HasEndurance Int
 >               | COr BoolCond BoolCond
 >               | CAnd BoolCond BoolCond
 >               | HasItem Item Int
@@ -251,7 +250,7 @@ Lenses, plates and utilities
 > makeLenses ''FightDetails
 >
 > moneyCond :: Int -> ChapterOutcome -> Decision
-> moneyCond price = Conditional (HasItem Gold price) . NoDecision . LoseItem Gold price
+> moneyCond price = Conditional (HasItem Gold price) . NoDecision . Simple [LoseItem Gold price]
 >
 > outcomePlate :: Traversal' Decision ChapterOutcome
 > outcomePlate = biplate

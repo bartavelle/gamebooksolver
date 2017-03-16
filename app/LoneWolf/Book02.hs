@@ -170,8 +170,8 @@ chapters =
         "17"
         "You have pulled yourself halfway through the deck when the door to the hold below bursts open. A Helghast runs shrieking towards you. You cannot escape in time and it badly wounds you in the legs with its black sword. You lose 5 ENDURANCE points and drop to the hold. You must fight this creature to the death.\nIt is an undead creature, so remember to double all ENDURANCE points that it loses in this combat as a result of the power of the Sommerswerd. This creature is immune to Mindblast.\n"
         (NoDecision
-           (DamagePlayer
-              (Endurance {getEndurance = 5})
+           (Simple
+              [DamagePlayer (Endurance {getEndurance = 5})]
               (Fight
                  (FightDetails
                   { _opponent = "Helghast"
@@ -208,16 +208,16 @@ chapters =
         "The trickster lies dead at your feet. Rolling him over with your foot, you remove several cards from the sleeves of his jacket and throw them on the table. The crowd soon disperses and the tavern is a bustle of noise and activity once more. The other card players retrieve their gold from the table and leave the remainder for you.\nTo find out how much has been left on the table, pick a number from the Random Number Table. (In this instance, 0 = 10 instead of zero.) Now multiply this number by 3. The total is the number of Gold Crowns that are on the table. You may also take the Card Sharp's Dagger if you wish. Remember to mark all the items on your Action Chart.\nAs the body is being dragged outside, you walk to the bar and call for the innkeeper. You press a Gold Crown into his hand and ask for a room for the night.\n"
         (NoDecision
            (Randomly
-              [ (1 % 10, GainItem Gold 2 (Goto 314))
-              , (1 % 10, GainItem Gold 5 (Goto 314))
-              , (1 % 10, GainItem Gold 8 (Goto 314))
-              , (1 % 10, GainItem Gold 11 (Goto 314))
-              , (1 % 10, GainItem Gold 14 (Goto 314))
-              , (1 % 10, GainItem Gold 17 (Goto 314))
-              , (1 % 10, GainItem Gold 20 (Goto 314))
-              , (1 % 10, GainItem Gold 23 (Goto 314))
-              , (1 % 10, GainItem Gold 26 (Goto 314))
-              , (1 % 10, GainItem Gold 29 (Goto 314))
+              [ (1 % 10, Simple [GainItem Gold 2] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 5] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 8] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 11] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 14] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 17] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 20] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 23] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 26] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 29] (Goto 314))
               ])))
   , ( 22
     , Chapter
@@ -267,7 +267,8 @@ chapters =
     , Chapter
         "27"
         "You walk for over three hours along the lonely coast road before night begins to fall. You are very tired and you decide to get some sleep and continue at dawn. You remember the tales told by your Kai masters of the Wildlands between Sommerlund and Durenor, where packs of wild dogs roam the wastelands at night.\nWith these stories in mind, you decide to spend the night in the safety of a large leafy tree at the edge of the road.\n"
-        (NoDecision (HealPlayer (Endurance {getEndurance = 2}) (Goto 312))))
+        (NoDecision
+           (Simple [HealPlayer (Endurance {getEndurance = 2})] (Goto 312))))
   , ( 28
     , Chapter
         "28"
@@ -282,7 +283,8 @@ chapters =
     , Chapter
         "29"
         "You release the lock and slide back the hatch cover. The sudden draught of air causes flames to billow out of the hold. You stumble backwards, clutching your burnt face. Lose 2 ENDURANCE points.\n\"Fire! Fire!\" the cry goes up.\nIn panic the crew fight to put out the flames. It takes over an hour to control the blaze. The damage is considerable-the entire store of food and fresh water was in that hold, and the fire has completely ruined both, as well as weakened the structure of the ship.\nAs you stand surveying the wreckage, the captain approaches you, his face blackened by the smoke. He is carrying something in a bundle under his arm. \"We must talk in private, my lord,\" he says quietly.\nWithout replying, you turn and follow him below to his cabin.\n"
-        (NoDecision (DamagePlayer (Endurance {getEndurance = 2}) (Goto 222))))
+        (NoDecision
+           (Simple [DamagePlayer (Endurance {getEndurance = 2})] (Goto 222))))
   , ( 30
     , Chapter
         "30"
@@ -301,8 +303,8 @@ chapters =
         "31"
         "Your first meeting with the Lord-lieutenant comes as something of a shock. You had perhaps half expected him to be a servile old man, as are the envoys of the southern lands that plague your King's court with their delegations. The man clad in heavy chainmail standing before you is neither old nor servile. You are soon to learn that Lord-lieutenant Rhygar is an exceptional man.\nBorn of a Sommlending father and a Durenese mother, he has become something of a legend in this city. In the last decade, he has led an alliance of the nations to victory against the invading Ice Barbarians of Kalte. Wise in peace, fierce in war, you could not have wished for better company on your quest for the Sommerswerd.\nRhygar orders that a sumptuous meal be served. It is by far the best food you have tasted since the war began. During the feast, you recall the events that have brought you to Port Bax, and reflect on the daunting challenge that still lies before you. After the meal, Rhygar sends for his physician who attends to your wounds. His potions restore 6 ENDURANCE points. Then he advises you to sleep, for you are to leave with the Lord-lieutenant for Hammerdal in the morning.\nEarly next day, you are taken to an enclosed garden at the rear of the consulate where Rhygar and three of his best soldiers await you on horseback. They are to be your bodyguard and guides on the 230 mile ride to Hammerdal. The streets of Port Bax are just beginning to come to life as you ride through the town. Passing under the moss-covered city gate, you now feel confident that your mission will succeed.\nPick a number from the Random Number Table.\n"
         (NoDecision
-           (HealPlayer
-              (Endurance {getEndurance = 6})
+           (Simple
+              [HealPlayer (Endurance {getEndurance = 6})]
               (Randomly [(1 % 2, Goto 176), (1 % 2, Goto 254)]))))
   , ( 32
     , Chapter
@@ -310,9 +312,9 @@ chapters =
         "You awake at dawn to the sound of a shrill cockcrow. You can see the crooked streets of Ragadorn through a veil of heavy rain beating down on the cobblestones outside. It has been six days since you left Holmgard and you are still 200 miles from Port Bax.\nYou are in the loft of a very large coach station. A group of green-clad men have arrived and have started to clean out one of the coaches. You overhear one of them say that the coach leaves for Port Bax at one o'clock this afternoon and that the journey will take seven days.\nYou are hungry and must eat a Meal here or lose 3 ENDURANCE points.\n"
         (Decisions
            [ ( "After the Meal, if you decide to approach the coachmen and ask to buy a ticket for the journey to Port Bax, turn to 136."
-             , NoDecision (MustEat Hunt (Goto 136)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 136)))
            , ( "If you would rather descend the ladder to the street outside, turn to 238."
-             , NoDecision (MustEat Hunt (Goto 238)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 238)))
            ]))
   , ( 33
     , Chapter
@@ -368,11 +370,11 @@ chapters =
         "Inside the coach it is warm and dry. Shaking the rain from your Kai cloak, you notice three other passengers on board: two women and a man who is snoring loudly. One of the women looks up and smiles.\n\"We should reach Ragadorn in six hours,\" she says, placing her basket on the floor so that you can sit beside her. You learn that she lives in Ragadorn and she tells you a little about the port.\n\"Since Killean the Overlord died three years ago, Ragadorn has been ruled by Lachlan, his evil son. He and his mercenaries are nothing but pirates. They bleed the people dry with their heavy taxes, and if anyone complains, they are quietly disposed of. It's a sorry state of affairs. If you take my advice you'll leave Ragadorn as soon as possible.\"\nDuring the journey you must eat a Meal or lose 3 ENDURANCE Points.\nThen in the distance you hear a bell tolling. You look out of the window to see the city wall of Ragadorn. The coach passes through the west gate and pulls to a halt. As you jump to the ground, you are greeted by the awful smell of this dingy seaport. A rusty sign nailed to a wall says \"Welcome to Ragadorn\".\nThe woman tells you that you can board a coach to Port Bax at the coach station near the east gate of the city.\n"
         (Decisions
            [ ( "If you wish to walk north into Westgate Lane, turn to 122."
-             , NoDecision (MustEat Hunt (Goto 122)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 122)))
            , ( "If you wish to head south along West Bank Walk turn to 323."
-             , NoDecision (MustEat Hunt (Goto 323)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 323)))
            , ( "If you want to walk east into Axe Lane, turn to 257."
-             , NoDecision (MustEat Hunt (Goto 257)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 257)))
            ]))
   , ( 38
     , Chapter
@@ -396,21 +398,18 @@ chapters =
         "40"
         "The muster of the army and the preparation of the Durenese fleet takes fourteen days to complete, during which time you remain as a guest of the king in Hammerdal. As each day passes, you despair for your besieged countrymen of Holmgard and pray that they have enough strength to resist the Darklords until you return.\nEvery day of your reluctant exile you devote long periods to exercise and meditation. You are also visited by a Durenese herbwarden called Madin Rendalim, who is famous throughout the Lastlands for his knowledge and skill in the healing arts. He restores all the ENDURANCE points you may have lost so far on your adventure, and he gives you a potent Laumspur potion that will restore 5 ENDURANCE points if swallowed after combat. (Mark this under Backpack Items on your Action Chart.)\nHe is also the bearer of some sad news. The body of Lord-lieutenant Rhygar was found in the forest near to the entrance to Tarnalin. He was killed by Helghast.\n"
         (NoDecision
-           (FullHeal
-              (GainItem
-                 PotentPotion
-                 1
-                 (Conditionally
-                    [ (HasDiscipline SixthSense, Goto 97)
-                    , (Always True, Goto 242)
-                    ])))))
+           (Simple
+              [GainItem PotentPotion 1, FullHeal]
+              (Conditionally
+                 [(HasDiscipline SixthSense, Goto 97), (Always True, Goto 242)]))))
   , ( 41
     , Chapter
         "41"
         "You are in luck, for the boat has seen your distress signal and is heading towards you. It is a small fishing boat from the port of Ragadorn. The fishermen are a rough-looking bunch, but they wrap you in a warm blanket and offer you some food. The captain suggests that you sleep, as it will be two or three hours before they arrive back in Ragadorn.\n"
         (Decisions
            [ ( "If you wish to take his advice, restore 1 ENDURANCE point and turn to 194."
-             , NoDecision (HealPlayer (Endurance {getEndurance = 1}) (Goto 194)))
+             , NoDecision
+                 (Simple [HealPlayer (Endurance {getEndurance = 1})] (Goto 194)))
            , ( "If you prefer to stay awake and keep watch for any other survivors of the storm, turn to 251."
              , NoDecision (Goto 251))
            ]))
@@ -524,16 +523,16 @@ chapters =
         "With the back of his gloved hand, the guard knocks the gold from your grasp and it drops into the dark waters of the Rymerift. Pick a number from the Random Number Table to determine how much gold you have lost (0 = 10 Gold Crowns).\n\"We would not sell the security of our land so cheaply,\" he says. \"Only a bandit or a fool would try to bribe a soldier of Durenor, and I fancy that you are both.\"\nUnfortunately, you have insulted their honour and they intend to teach you a harsh lesson.\n"
         (NoDecision
            (Randomly
-              [ (1 % 10, LoseItem Gold 1 (Goto 282))
-              , (1 % 10, LoseItem Gold 2 (Goto 282))
-              , (1 % 10, LoseItem Gold 3 (Goto 282))
-              , (1 % 10, LoseItem Gold 4 (Goto 282))
-              , (1 % 10, LoseItem Gold 5 (Goto 282))
-              , (1 % 10, LoseItem Gold 6 (Goto 282))
-              , (1 % 10, LoseItem Gold 7 (Goto 282))
-              , (1 % 10, LoseItem Gold 8 (Goto 282))
-              , (1 % 10, LoseItem Gold 9 (Goto 282))
-              , (1 % 10, LoseItem Gold 10 (Goto 282))
+              [ (1 % 10, Simple [LoseItem Gold 1] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 2] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 3] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 4] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 5] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 6] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 7] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 8] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 9] (Goto 282))
+              , (1 % 10, Simple [LoseItem Gold 10] (Goto 282))
               ])))
   , ( 58
     , Chapter
@@ -651,7 +650,9 @@ chapters =
            (Conditionally
               [ (HasDiscipline MindShield, Goto 311)
               , ( Always True
-                , DamagePlayer (Endurance {getEndurance = 2}) (Goto 311))
+                , Simple
+                    [DamagePlayer (Endurance {getEndurance = 2})]
+                    (Goto 311))
               ])))
   , ( 70
     , Chapter
@@ -676,11 +677,14 @@ chapters =
         "The innkeeper takes your Gold Crown and places a foaming tankard of ale on the bar. The ale is strong and fortifying. Restore 1 ENDURANCE point to your current total.\n"
         (Decisions
            [ ( "If you wish to talk to the innkeeper, turn to 226."
-             , NoDecision (HealPlayer (Endurance {getEndurance = 1}) (Goto 226)))
+             , NoDecision
+                 (Simple [HealPlayer (Endurance {getEndurance = 1})] (Goto 226)))
            , ( "If you want a room for the night, pay the innkeeper 2 Gold Crowns and turn to 56."
-             , NoDecision (HealPlayer (Endurance {getEndurance = 1}) (Goto 56)))
+             , NoDecision
+                 (Simple [HealPlayer (Endurance {getEndurance = 1})] (Goto 56)))
            , ( "If you wish to enter an arm-wrestling competition, turn to 276."
-             , NoDecision (HealPlayer (Endurance {getEndurance = 1}) (Goto 276)))
+             , NoDecision
+                 (Simple [HealPlayer (Endurance {getEndurance = 1})] (Goto 276)))
            ]))
   , ( 73
     , Chapter
@@ -701,7 +705,9 @@ chapters =
              , Conditional
                  (HasItem Gold 10)
                  (NoDecision
-                    (LoseItem Gold 10 (GainItem WhitePassVol2 1 (Goto 142)))))
+                    (Simple
+                       [LoseItem Gold 10, GainItem WhitePassVol2 1]
+                       (Goto 142))))
            , ( "If you do not have enough money or do not wish to purchase the pass, leave this office and return to the hall by turning to 318."
              , NoDecision (Goto 318))
            ]))
@@ -727,14 +733,18 @@ chapters =
         (Decisions
            [ ( "If you wish to use your cloak to try to signal to the fishing boat, turn to 278."
              , NoDecision
-                 (DamagePlayer
-                    (Endurance {getEndurance = 1})
-                    (LoseItem ChainMail 99 (Goto 278))))
+                 (Simple
+                    [ DamagePlayer (Endurance {getEndurance = 1})
+                    , LoseItem ChainMail 99
+                    ]
+                    (Goto 278)))
            , ( "If you want to ignore the boat and paddle towards the shore instead, turn to 337."
              , NoDecision
-                 (DamagePlayer
-                    (Endurance {getEndurance = 1})
-                    (LoseItem ChainMail 99 (Goto 337))))
+                 (Simple
+                    [ DamagePlayer (Endurance {getEndurance = 1})
+                    , LoseItem ChainMail 99
+                    ]
+                    (Goto 337)))
            ]))
   , ( 79
     , Chapter
@@ -1002,7 +1012,8 @@ chapters =
         "Laumspur is a delicious herb, much sought after in the Lastlands for its healing properties. You have picked enough for one Meal. Eating this meal will restore 3 ENDURANCE points to your total. (Remember to add this to your Action Chart if you possess a Backpack. Otherwise you must consume it now or abandon it.) You wrap the herb up, and return to the coach with the other passengers.\n"
         (Decisions
            [ ( "Consume now"
-             , NoDecision (HealPlayer (Endurance {getEndurance = 3}) (Goto 249)))
+             , NoDecision
+                 (Simple [HealPlayer (Endurance {getEndurance = 3})] (Goto 249)))
            , ("Take Laumspur", CanTake Laumspur 1 (NoDecision (Goto 249)))
            ]))
   , ( 104
@@ -1048,8 +1059,8 @@ chapters =
         "108"
         "One of the wheels jams in a deep rut and three of the large wooden spokes are shattered. You are forced to stop and replace the wheel before you can continue to Port Bax. You volunteer to help the driver by levering the coach axle with a small tree trunk, so that the spare wheel can be slid into position.\nYou are pushing down on the stout branch with all your strength, when the horses suddenly rear up and race forward. The trunk springs back and catches you square in the face, knocking you backwards to the ground. You are stunned and you lose 2 ENDURANCE points. The driver is not so lucky. The coach has run over him. As the poor man dies in your arms, his last words are: \"No accident...I saw-\"\n"
         (NoDecision
-           (DamagePlayer
-              (Endurance {getEndurance = 2})
+           (Simple
+              [DamagePlayer (Endurance {getEndurance = 2})]
               (Conditionally
                  [(HasDiscipline SixthSense, Goto 343), (Always True, Goto 168)]))))
   , ( 109
@@ -1115,16 +1126,16 @@ chapters =
         "Using your Kai Discipline, you can tell which cup hides the marble, for to you, the clay is as transparent as glass itself.\nPick a number from the Random Number Table and add 5 to it. This equals the number of Gold Crowns that you win before the rogue suspects something is wrong and ends the game.\nWith gold in your purse once more, you return to the bar and hand over 1 Gold Crown for a room.\n"
         (NoDecision
            (Randomly
-              [ (1 % 10, GainItem Gold 5 (Goto 314))
-              , (1 % 10, GainItem Gold 6 (Goto 314))
-              , (1 % 10, GainItem Gold 7 (Goto 314))
-              , (1 % 10, GainItem Gold 8 (Goto 314))
-              , (1 % 10, GainItem Gold 9 (Goto 314))
-              , (1 % 10, GainItem Gold 10 (Goto 314))
-              , (1 % 10, GainItem Gold 11 (Goto 314))
-              , (1 % 10, GainItem Gold 12 (Goto 314))
-              , (1 % 10, GainItem Gold 13 (Goto 314))
-              , (1 % 10, GainItem Gold 14 (Goto 314))
+              [ (1 % 10, Simple [GainItem Gold 5] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 6] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 7] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 8] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 9] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 10] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 11] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 12] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 13] (Goto 314))
+              , (1 % 10, Simple [GainItem Gold 14] (Goto 314))
               ])))
   , ( 117
     , Chapter
@@ -1134,11 +1145,11 @@ chapters =
            [ ( "If you wish to ride inside, pay the driver 3 Gold Crowns and turn to 37."
              , Conditional
                  (HasItem Gold 3)
-                 (NoDecision (LoseItem Gold 3 (Goto 37))))
+                 (NoDecision (Simple [LoseItem Gold 3] (Goto 37))))
            , ( "If you would prefer to ride on the roof, pay him 1 Gold Crown and turn to 148."
              , Conditional
                  (HasItem Gold 1)
-                 (NoDecision (LoseItem Gold 1 (Goto 148))))
+                 (NoDecision (Simple [LoseItem Gold 1] (Goto 148))))
            , ( "If you cannot pay the fare, you must let the coach continue and begin your journey on foot. Turn to 292."
              , NoDecision (Goto 292))
            ]))
@@ -1211,9 +1222,9 @@ chapters =
         "You awake at dawn to the sound of heavy rain falling on the cobbled streets outside.\nIt has been six days since you left Holmgard, and you must eat a Meal here or lose 3 ENDURANCE points. You gather your equipment and leave the room. As you descend the rickety stairs, you see the innkeeper cleaning the floor with a mop and bucket.\n"
         (Decisions
            [ ( "If you wish to ask the innkeeper how you can get to Durenor, turn to 217."
-             , NoDecision (MustEat Hunt (Goto 217)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 217)))
            , ( "If you wish to leave the inn without speaking to him, turn to 143."
-             , NoDecision (MustEat Hunt (Goto 143)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 143)))
            ]))
   , ( 128
     , Chapter
@@ -1306,7 +1317,7 @@ chapters =
            [ ( "If you have 20 Gold Crowns and wish to purchase a ticket, turn to 10."
              , Conditional
                  (HasItem Gold 20)
-                 (NoDecision (LoseItem Gold 20 (Goto 10))))
+                 (NoDecision (Simple [LoseItem Gold 20] (Goto 10))))
            , ( "If you do not have enough money for the fare, turn to 238."
              , NoDecision (Goto 238))
            ]))
@@ -1354,14 +1365,18 @@ chapters =
         (Decisions
            [ ( "If you wish to use your cloak to try to signal to the fishing boat, turn to 278."
              , NoDecision
-                 (DamagePlayer
-                    (Endurance {getEndurance = 2})
-                    (LoseItem ChainMail 99 (Goto 278))))
+                 (Simple
+                    [ DamagePlayer (Endurance {getEndurance = 2})
+                    , LoseItem ChainMail 99
+                    ]
+                    (Goto 278)))
            , ( "If you wish to ignore the boat and paddle towards the shore, turn to 337."
              , NoDecision
-                 (DamagePlayer
-                    (Endurance {getEndurance = 2})
-                    (LoseItem ChainMail 99 (Goto 337))))
+                 (Simple
+                    [ DamagePlayer (Endurance {getEndurance = 2})
+                    , LoseItem ChainMail 99
+                    ]
+                    (Goto 337)))
            ]))
   , ( 142
     , Chapter
@@ -1382,12 +1397,16 @@ chapters =
     , Chapter
         "144"
         "A large Noodnic, wearing a brightly coloured cloak of patchwork silks, orders several of his people to arm themselves and drive you out of the hall. When you speak to them in their own language, a hush of astonishment fills the cavern. Never before have they encountered a human being who could actually speak their tongue. For some of them it is too much to grasp, and they stare at you open-mouthed, their furry little arms hanging loosely by their sides.\nThen the large Noodnic addresses you, saying he is the leader of this colony. His name is Gashgiss and he welcomes you and invites you to join him on top of a raised platform in the centre of the chamber.\n\"Yooze notta Dureneeze man-man, eh? Whereza yooze come za from, eh?\" questions Gashgiss, in his strange Noodnic accent.\nYou tell him that you are a Sommlending on your way to Hammerdal. He looks at you nervously, and then asks, \"Yooze notta Blackscreamerz, eh?\" You realize that the \"Blackscreamerz\" that Gashgiss refers to are Helghast. You learn that two of them arrived in Tarnalin over two hours ago, and caused quite a panic in the main tunnel. Gashgiss knows where they are lying in ambush, waiting for you to appear.\n\"Iza show yooze z'way past zem, eh?\" he offers. You nod your agreement and follow him down the steps of the platform, to the hall below.\nThe Noodnics seem to have overcome their shock and react to you now as if you were one of them. Before you leave, a pretty female Noodnic offers you some food for your journey ahead. There is enough for two Meals. You thank her for her generosity and then follow Gashgiss along one of the many passages leading out of the cavern. After an hour of trekking through the dark, he stops and points towards a shaft of light that is pouring through a crevice in the far distance. \"Yooze goez left, yooze be zafe,\" he says.\nYou thank Gashgiss for his help and silently thank your Kai masters who taught you the skill of Animal Kinship. The many years of instruction have probably saved your life. You squeeze through a fissure in the rock wall and drop three feet to the pathway below. You are thinking how kind the Noodnics were when you discover that they have stolen all your gold! You will have to mark this on your Action Chart.\n"
-        (CanTake Meal 2 (NoDecision (LoseItemKind [PouchSlot] (Goto 349)))))
+        (CanTake
+           Meal
+           2
+           (NoDecision (Simple [LoseItemKind [PouchSlot]] (Goto 349)))))
   , ( 145
     , Chapter
         "145"
         "You are becoming weaker and weaker. After what seems an eternity of painful struggle you find the Laumspur and force yourself to swallow the dry leaves. Within seconds you are violently sick, after which you drift off into a restless sleep.\nIt is nearly an hour before you awake and you still feel dreadfully ill. Deduct 5 ENDURANCE points. (As the dry leaves merely helped purge the poison from your stomach, you do not regain any ENDURANCE points through consuming the Laumspur in this instance.)\nAs you slowly regain your strength, the shock of what has happened soon turns to anger. You grab your equipment and stagger out of the room, intent on confronting your would-be assassin.\n"
-        (NoDecision (DamagePlayer (Endurance {getEndurance = 5}) (Goto 200))))
+        (NoDecision
+           (Simple [DamagePlayer (Endurance {getEndurance = 5})] (Goto 200))))
   , ( 146
     , Chapter
         "146"
@@ -1412,11 +1431,11 @@ chapters =
         "You wrap yourself in your Kai cloak and raise the hood. The driver shouts and whips the horses and soon you are on your way along the tree-lined coast road to Ragadorn. During the journey, you talk to the driver and learn some useful things about the seaport of Ragadorn.\nEver since Killean the Overlord died three years ago, Ragadorn has been ruled (or misruled according to the driver) by his son, Lachlan. It seems that he and his men are nothing more than pirates. They tax the people heavily, and murder all who oppose them.\nYou are hungry and during the coach ride, you must eat a Meal or lose 3 ENDURANCE points.\nAt last, in the distance, you can just make out the city wall of Ragadorn. A bell is tolling-it rings twelve times. Eventually the coach passes through the west gate of the wall and pulls to a halt.\n\"If you want to get to Durenor, you can catch a coach from the stable at the east gate. Best hurry mind, it leaves at one o'clock,\" the driver tells you.\nYou thank the driver for the advice and jump to the cobblestones below. For the first time, you suddenly notice the awful stench of this dirty seaport. A rusty sign nailed to a rot-infested house says \"Welcome to Ragadorn\".\n"
         (Decisions
            [ ( "If you wish to go north along Westgate Lane, turn to 122."
-             , NoDecision (MustEat Hunt (Goto 122)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 122)))
            , ( "If you wish to head south along West Bank Walk, turn to 323."
-             , NoDecision (MustEat Hunt (Goto 323)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 323)))
            , ( "If you wish to head east into Axe Lane, turn to 257."
-             , NoDecision (MustEat Hunt (Goto 257)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 257)))
            ]))
   , ( 149
     , Chapter
@@ -1434,9 +1453,9 @@ chapters =
         "You spur the horse along the twisting village street across a wooden bridge and up a steep path towards the crest of the cove. In the light of the moon, you catch a glimpse of a signpost pointing eastwards.\nYou ride all night without sleep. As the dawn breaks, you are greeted by a startling change of landscape. The barren Wildlands have given way to moors and waterlogged fens. And a dark shadow runs the length of the eastern horizon for as far as the eye can see. This is the Durenor Forest, the natural frontier of the mountain kingdom where it borders the untamed Wildlands. It is indeed a welcome sight.\nYou are no more than a day's ride from Port Bax, but you are tired after your night ride and you must eat a Meal or lose 3 ENDURANCE Points. If you have the Kai Discipline of Hunting, you may use this skill to trap a wild moor-rat or marsh-bird for your breakfast. (You are leaving the Wildlands and heading into the Durenor Forest and may once again use Hunting to hunt for food.)\nAfter an hour's ride you come to a fork in the road. There is no signpost.\n"
         (Decisions
            [ ( "If you wish to take the left fork, turn to 261."
-             , NoDecision (MustEat Hunt (Goto 261)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 261)))
            , ( "If you wish to take the right fork, turn to 334."
-             , NoDecision (MustEat Hunt (Goto 334)))
+             , NoDecision (Simple [MustEat Hunt] (Goto 334)))
            ]))
   , ( 151
     , Chapter
@@ -1466,10 +1485,14 @@ chapters =
         (Decisions
            [ ( "If you wish to try your luck, turn to 308."
              , NoDecision
-                 (DamagePlayer (Endurance {getEndurance = 2}) (Goto 308)))
+                 (Simple
+                    [DamagePlayer (Endurance {getEndurance = 2})]
+                    (Goto 308)))
            , ( "If you would prefer to decline the offer, bid them goodnight and return to your cabin by turning to 197."
              , NoDecision
-                 (DamagePlayer (Endurance {getEndurance = 2}) (Goto 197)))
+                 (Simple
+                    [DamagePlayer (Endurance {getEndurance = 2})]
+                    (Goto 197)))
            ]))
   , ( 155
     , Chapter
@@ -1562,7 +1585,7 @@ chapters =
     , Chapter
         "165"
         "Placing the gold in your pouch, you remove the Seal and hand it to her. She snatches it and examines it closely. As you leave the shop, you hear her sniggering quietly to herself, and you wonder if you have done the right thing.\n"
-        (NoDecision (LoseItem SealHammerdalVol2 1 (Goto 186))))
+        (NoDecision (Simple [LoseItem SealHammerdalVol2 1] (Goto 186))))
   , ( 166
     , Chapter
         "166"
@@ -1584,7 +1607,7 @@ chapters =
         "Slowly, one by one, the other travellers appear and stare in shock at the dead coachman. \"We must bury him,\" says the priest.\nYou silently nod your agreement and prepare a grave in which to lay the corpse. As you all walk back to the coach, you discuss what should be done.\n\"I know the road to Port Bax. I had better drive the coach,\" volunteers Halvorc.\n\"I do hope we're not blamed for his death,\" says the priest nervously.\n\"It was an act of the gods,\" says Dorier.\n\"I shall testify to that,\" says Ganon. \"Lies are never spoken by Knights of the White Mountain.\"\nIt is true that in Durenor, a true knight will speak only the truth whether for his own good or ill. His words seem to reassure the priest and you are all soon once more on the road heading towards the eastern horizon. It is late in the afternoon when you arrive at a coach station in a small coastal village known as Gorn Cove, which is mainly populated by outcasts, thieves, and Szalls.\nThe death of the coachman is met by the villagers with great suspicion, but Dorier's words convince them that it was accidental.\nThere is only one inn at the village, a tavern known as the Forlorn Hope. Its state of disrepair is typical of all the other hovels in this poor sea village. A room for the night costs 1 Gold Crown.\n"
         (NoDecision
            (Conditionally
-              [ (HasItem Gold 1, LoseItem Gold 1 (Goto 314))
+              [ (HasItem Gold 1, Simple [LoseItem Gold 1] (Goto 314))
               , (Always True, Goto 25)
               ])))
   , ( 169
@@ -1779,10 +1802,14 @@ chapters =
         (Decisions
            [ ( "If you wish to fight him, turn to 162."
              , NoDecision
-                 (DamagePlayer (Endurance {getEndurance = 2}) (Goto 162)))
+                 (Simple
+                    [DamagePlayer (Endurance {getEndurance = 2})]
+                    (Goto 162)))
            , ( "If you would rather abandon your horse and run for the safety of the trees, turn to 244."
              , NoDecision
-                 (DamagePlayer (Endurance {getEndurance = 2}) (Goto 244)))
+                 (Simple
+                    [DamagePlayer (Endurance {getEndurance = 2})]
+                    (Goto 244)))
            ]))
   , ( 190
     , Chapter
@@ -1816,23 +1843,31 @@ chapters =
         (Decisions
            [ ( "If you wish to go east along Barnacle Street turn to 215."
              , NoDecision
-                 (LoseItemKind
-                    [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
+                 (Simple
+                    [ LoseItemKind
+                        [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
+                    ]
                     (Goto 215)))
            , ( "If you wish to go south along Eastbank Wharf, turn to 303."
              , NoDecision
-                 (LoseItemKind
-                    [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
+                 (Simple
+                    [ LoseItemKind
+                        [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
+                    ]
                     (Goto 303)))
            , ( "If you wish to go north along Booty Walk, turn to 129."
              , NoDecision
-                 (LoseItemKind
-                    [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
+                 (Simple
+                    [ LoseItemKind
+                        [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
+                    ]
                     (Goto 129)))
            , ( "If you would rather go west back to the jetty and search for the fishing boat, turn to 86."
              , NoDecision
-                 (LoseItemKind
-                    [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
+                 (Simple
+                    [ LoseItemKind
+                        [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot]
+                    ]
                     (Goto 86)))
            ]))
   , ( 195
@@ -1841,7 +1876,7 @@ chapters =
         "You have been travelling for nearly two hours when the driver shouts, \"Toll bridge ahead. One Crown apiece.\"\nLooking out of the window, it is pouring down with rain but you can just make out a wooden bridge and a log cabin in the distance. The driver halts the coach at the log cabin and an ugly creature appears at the doorway. It is a warty-skinned Szall, a harmless and cowardly breed of Giak. They have been natives of the Wildlands since the Age of the Black Moon, when thousands of their kind migrated from the Durncrag Mountains to avoid the tyranny of Vashna, the mightiest of the Darklords.\nThe Szall demands one Gold Crown from each passenger before the coach will be allowed to pass. The other passengers each place one Crown upon a small plate and hand it to you.\n"
         (NoDecision
            (Conditionally
-              [ (HasItem Gold 1, LoseItem Gold 1 (Goto 249))
+              [ (HasItem Gold 1, Simple [LoseItem Gold 1] (Goto 249))
               , (Always True, Goto 50)
               ])))
   , ( 196
@@ -1849,9 +1884,8 @@ chapters =
         "196"
         "King Alin IV sits alone in his domed tower, viewing his mountain domain through one of the many portals of tinted glass. You and Lord Axim are formally announced as you enter the chamber, and you respectfully bow to his Majesty. Then, Lord Axim removes the Seal of Hammerdal from your finger and walks over to the King's side. (Remember to erase the Seal of Hammerdal from your Action Chart.) For nearly an hour they talk, their sombre faces reflecting the seriousness of the situation. There is a short pause of silent meditation, and King Alin suddenly rises from his throne and addresses you for the first time.\n\"Alas, the Darklords have woken once more, and once more does Sommerlund come in search of our aid. I had prayed that my reign would be remembered as a time of peace and fulfilment, but in my heart I knew it was to be otherwise.\"\nThe King removes a golden key from the pocket of his white robe and inserts it in a marble dais standing in the centre of the chamber. A gentle humming fills the room, as the stone cover slides back to reveal the hilt of a golden sword.\n\"Take the sword, Lone Wolf. It is foretold that only a true son of Sommerlund can release the powers that lie within its blade.\"\nAs you grasp the glowing hilt, a tingling sensation runs up your arm and radiates throughout your body.\n"
         (NoDecision
-           (LoseItem
-              SealHammerdalVol2
-              1
+           (Simple
+              [LoseItem SealHammerdalVol2 1]
               (Conditionally
                  [(HasDiscipline SixthSense, Goto 79), (Always True, Goto 123)]))))
   , ( 197
@@ -1864,7 +1898,8 @@ chapters =
     , Chapter
         "198"
         "You have covered less than twenty yards when your horse rears up and bolts. You are thrown to the ground and you lose 1 ENDURANCE point. Brushing the dirt from your cloak, you curse as the animal disappears out of sight. You will have to continue your journey from here on foot.\n"
-        (NoDecision (DamagePlayer (Endurance {getEndurance = 1}) (Goto 138))))
+        (NoDecision
+           (Simple [DamagePlayer (Endurance {getEndurance = 1})] (Goto 138))))
   , ( 199
     , Chapter
         "199"
@@ -1984,7 +2019,7 @@ chapters =
            [ ( "If you wish to pay him, remember to mark it on your Action Chart and turn to 199."
              , Conditional
                  (HasItem Gold 1)
-                 (NoDecision (LoseItem Gold 1 (Goto 199))))
+                 (NoDecision (Simple [LoseItem Gold 1] (Goto 199))))
            , ( "If you wish to leave the inn now, turn to 143."
              , NoDecision (Goto 143))
            ]))
@@ -2001,7 +2036,8 @@ chapters =
     , Chapter
         "219"
         "Already the venom is taking effect. Your wounded arm feels stiff and a cold sweat has broken out on your brow. Quickly you remove the Pendant that Banedon gave you at the Ruins of Raumas. Using a sharp point of the star, you cut a deep V through the two puncture holes made by the fangs, and suck out the venom.\nThe charm is lucky indeed-and so are you. You lose 3 ENDURANCE points but not your life. You decide to climb the tree and spend the rest of the night safely above the ground.\n"
-        (NoDecision (DamagePlayer (Endurance {getEndurance = 3}) (Goto 312))))
+        (NoDecision
+           (Simple [DamagePlayer (Endurance {getEndurance = 3})] (Goto 312))))
   , ( 220
     , Chapter
         "220"
@@ -2049,7 +2085,7 @@ chapters =
            [ ( "If you wish to buy a room for the night pay the innkeeper 2 Gold Crowns and turn to 56."
              , Conditional
                  (HasItem Gold 2)
-                 (NoDecision (LoseItem Gold 2 (Goto 56))))
+                 (NoDecision (Simple [LoseItem Gold 2] (Goto 56))))
            , ( "If you wish to try your luck at winning some Gold Crowns at arm-wrestling, turn to 276."
              , NoDecision (Goto 276))
            ]))
@@ -2145,11 +2181,11 @@ chapters =
            [ ( "If you wish to ride inside the coach, pay the driver 3 Gold Crowns and turn to 37."
              , Conditional
                  (HasItem Gold 3)
-                 (NoDecision (LoseItem Gold 3 (Goto 37))))
+                 (NoDecision (Simple [LoseItem Gold 3] (Goto 37))))
            , ( "If you would prefer to stay on the roof, pay him one Gold Crown and turn to 148."
              , Conditional
                  (HasItem Gold 1)
-                 (NoDecision (LoseItem Gold 1 (Goto 148))))
+                 (NoDecision (Simple [LoseItem Gold 1] (Goto 148))))
            , ( "If you cannot pay the fare, you must leave the coach and walk. Turn to 292."
              , NoDecision (Goto 292))
            ]))
@@ -2211,22 +2247,22 @@ chapters =
                  (HasDiscipline Healing)
                  (Decisions
                     [ ( "If you wish to enter the hold, turn to 29."
-                      , NoDecision (FullHeal (Goto 29)))
+                      , NoDecision (Simple [FullHeal] (Goto 29)))
                     , ( "If you wish to shout \"Fire!\" turn to 236."
-                      , NoDecision (FullHeal (Goto 236)))
+                      , NoDecision (Simple [FullHeal] (Goto 236)))
                     , ( "If you wish to warn the captain, turn to 101."
-                      , NoDecision (FullHeal (Goto 101)))
+                      , NoDecision (Simple [FullHeal] (Goto 101)))
                     ]))
            , ( "Hasn't healing"
              , Conditional
                  (Not (HasDiscipline Healing))
                  (Decisions
                     [ ( "If you wish to enter the hold, turn to 29."
-                      , NoDecision (HalfHeal (Goto 29)))
+                      , NoDecision (Simple [HalfHeal] (Goto 29)))
                     , ( "If you wish to shout \"Fire!\" turn to 236."
-                      , NoDecision (HalfHeal (Goto 236)))
+                      , NoDecision (Simple [HalfHeal] (Goto 236)))
                     , ( "If you wish to warn the captain, turn to 101."
-                      , NoDecision (HalfHeal (Goto 101)))
+                      , NoDecision (Simple [HalfHeal] (Goto 101)))
                     ]))
            ]))
   , ( 241
@@ -2700,7 +2736,7 @@ chapters =
     , Chapter
         "284"
         "Cautiously, the soldiers surround you and take your Weapons and Backpack. (You do not need to adjust your Action Chart.) The knight steps forward and raises the visor of his helm.\n\"Who are you? What is your purpose in Tarnalin?\" he demands in a gruff voice.\nYou tell him that you are a Kai Lord from Sommerlund on an urgent mission to King Alin. He seems unconvinced by your words until you show him the Seal of Hammerdal. Then, without hesitation, he orders his men to return your belongings and ushers you through the wall of wagons. Beyond, you can see a horse-drawn carriage waiting in the centre of the crowded tunnel.\n\"Back to Hammerdal without delay,\" he orders the driver, and you are thrown back in your seat as the coach moves off at breakneck speed.\nYou soon learn that the knight is Lord Axim of Ryme, commander of King Alin's personal bodyguard. He was on his way to Port Bax when the Helghast entered Tarnalin. He and ten soldiers were the only ones to survive a deadly encounter with these evil creatures.\nDuring your ride through the Tarnalin, you must eat a Meal or lose 3 ENDURANCE points. The journey to the capital will take five hours and you are advised by Lord Axim to get some rest. As you slowly drift off to sleep, you begin a dream about the Sommerswerd. You picture a triumphant return to Holmgard and the defeat of the Darklord siege. Perhaps it will be a good omen of events to come?\n"
-        (NoDecision (MustEat Hunt (Goto 9))))
+        (NoDecision (Simple [MustEat Hunt] (Goto 9))))
   , ( 285
     , Chapter
         "285"
@@ -2728,7 +2764,9 @@ chapters =
         (Decisions
            [ ( "If you wish to accept her offer, turn to 165."
              , NoDecision
-                 (LoseItem SealHammerdalVol2 1 (GainItem Gold 40 (Goto 165))))
+                 (Simple
+                    [LoseItem SealHammerdalVol2 1, GainItem Gold 40]
+                    (Goto 165)))
            , ( "If you wish to leave the shop, turn to 186."
              , NoDecision (Goto 186))
            ]))
@@ -2850,7 +2888,7 @@ chapters =
         "For six hours you run without rest. The Helghast are on the highway and you are forced to make your way through the steep and wooded foothills to avoid the risk of capture. Many times you feel that you just cannot go on, that the pain and the fatigue are too much to bear. But each time you falter, you are spurred on by Rhygar. You marvel at his endurance, for he is not a young man and he is clothed in the heavy armour of a Sommlending knight.\nBy nightfall, you have reached the entrance to Tarnalin, the western tunnel through the Hammerdal Mountains. The three tunnels of Durenor were excavated during the age of the Black Moon, and each tunnel is over forty miles long and passes through the huge circle of the Hammerdal Range to the capital. The tunnels provide the only access to the city.\nRhygar sits beside you and takes some bread and meat from his pack. \"Eat this, Lone Wolf. You must sustain your strength for the journey to Hammerdal, for from here you must venture alone through the Tarnalin. I shall remain here and hold the enemy back for as long as I have the strength to fight. Do not argue-that your mission should succeed is the only thing that matters.\"\nIf Rhygar is to hold off the Helghast, he will need a magic weapon as his own sword is of no use against the creatures.\n"
         (Decisions
            [ ( "If you wish to give him your Magic Spear so that he can defend the tunnel entrance, or if you do not possess a Magic Spear, turn to 118."
-             , NoDecision (LoseItem (Weapon MagicSpear) 1 (Goto 118)))
+             , NoDecision (Simple [LoseItem (Weapon MagicSpear) 1] (Goto 118)))
            , ( "If you possess a Magic Spear but do not wish to give it to Rhygar, turn to 102."
              , Conditional
                  (HasItem (Weapon MagicSpear) 1)
@@ -2963,7 +3001,8 @@ chapters =
     , Chapter
         "313"
         "The gruesome death-cries of the Helghast finally fade and you risk stopping for a few seconds to catch your breath. You wince as you discover that the creature's fingers have burnt into your neck. The wounds are very sore and painful and you must lose 4 ENDURANCE points. Tearing the edge of your tunic, you make a bandage before continuing on your journey through the Tarnalin tunnel. (Erase the Magic Spear from your Action Chart.)\n"
-        (NoDecision (DamagePlayer (Endurance {getEndurance = 4}) (Goto 349))))
+        (NoDecision
+           (Simple [DamagePlayer (Endurance {getEndurance = 4})] (Goto 349))))
   , ( 314
     , Chapter
         "314"
@@ -2976,7 +3015,7 @@ chapters =
            , ( "If you do not want to eat this food, you must eat a Meal or lose 3 ENDURANCE points and turn to 178."
              , Conditional
                  (Not (HasDiscipline Hunting))
-                 (NoDecision (MustEat NoHunt (Goto 178))))
+                 (NoDecision (Simple [MustEat NoHunt] (Goto 178))))
            ]))
   , ( 315
     , Chapter
@@ -3043,9 +3082,9 @@ chapters =
                  (HasItem Meal 1)
                  (Decisions
                     [ ( "If you wish to accept his offer, turn to 12."
-                      , NoDecision (LoseItem Meal 1 (Goto 12)))
+                      , NoDecision (Simple [LoseItem Meal 1] (Goto 12)))
                     , ( "If you wish to decline the game, bid the captain goodnight and return to your cabin to sleep by turning to 197."
-                      , NoDecision (LoseItem Meal 1 (Goto 197)))
+                      , NoDecision (Simple [LoseItem Meal 1] (Goto 197)))
                     ]))
            , ( "No food"
              , Conditional
@@ -3053,11 +3092,13 @@ chapters =
                  (Decisions
                     [ ( "If you wish to accept his offer, turn to 12."
                       , NoDecision
-                          (DamagePlayer (Endurance {getEndurance = 2}) (Goto 12)))
+                          (Simple
+                             [DamagePlayer (Endurance {getEndurance = 2})]
+                             (Goto 12)))
                     , ( "If you wish to decline the game, bid the captain goodnight and return to your cabin to sleep by turning to 197."
                       , NoDecision
-                          (DamagePlayer
-                             (Endurance {getEndurance = 2})
+                          (Simple
+                             [DamagePlayer (Endurance {getEndurance = 2})]
                              (Goto 197)))
                     ]))
            ]))
@@ -3122,9 +3163,9 @@ chapters =
            1
            (Decisions
               [ ( "If you wish to enter, turn to 318."
-                , NoDecision (LoseItem Gold 6 (Goto 318)))
+                , NoDecision (Simple [LoseItem Gold 6] (Goto 318)))
               , ( "If you would rather walk back along the tree-lined avenue to the city hall and enquire how you can reach the consulate of Sommerlund, turn to 84."
-                , NoDecision (LoseItem Gold 6 (Goto 84)))
+                , NoDecision (Simple [LoseItem Gold 6] (Goto 84)))
               ])))
   , ( 328
     , Chapter
@@ -3151,7 +3192,8 @@ chapters =
     , Chapter
         "330"
         "Within seconds, you are violently sick and then drift off into unconsciousness. It is nearly an hour before you awake. You feel dreadfully ill but you have survived the poison. Deduct 5 ENDURANCE points. As you slowly regain your strength, the shock of what has happened turns to anger. You grab your equipment and stagger out of the room, intent on discovering the identity of your would-be assassin.\n"
-        (NoDecision (DamagePlayer (Endurance {getEndurance = 5}) (Goto 200))))
+        (NoDecision
+           (Simple [DamagePlayer (Endurance {getEndurance = 5})] (Goto 200))))
   , ( 331
     , Chapter
         "331"
@@ -3232,17 +3274,17 @@ chapters =
              , Conditional
                  (HasDiscipline Hunting)
                  (NoDecision
-                    (LoseItemKind [BackpackSlot, WeaponSlot] (Goto 139))))
+                    (Simple [LoseItemKind [BackpackSlot, WeaponSlot]] (Goto 139))))
            , ( "If you wish to eat this fruit, turn to 228."
              , Conditional
                  (Not (HasDiscipline Hunting))
                  (NoDecision
-                    (LoseItemKind [BackpackSlot, WeaponSlot] (Goto 228))))
+                    (Simple [LoseItemKind [BackpackSlot, WeaponSlot]] (Goto 228))))
            , ( "If you do not wish to eat this fruit, lose 3 ENDURANCE points and turn to 171."
              , Conditional
                  (Not (HasDiscipline Hunting))
                  (NoDecision
-                    (LoseItemKind [BackpackSlot, WeaponSlot] (Goto 171))))
+                    (Simple [LoseItemKind [BackpackSlot, WeaponSlot]] (Goto 171))))
            ]))
   , ( 338
     , Chapter
@@ -3251,10 +3293,14 @@ chapters =
         (Decisions
            [ ( "If you wish to remove the spear, turn to 269."
              , NoDecision
-                 (DamagePlayer (Endurance {getEndurance = 2}) (Goto 269)))
+                 (Simple
+                    [DamagePlayer (Endurance {getEndurance = 2})]
+                    (Goto 269)))
            , ( "If you would rather leave the spear where it is and run away from here as quickly as possible, erase the Magic Spear from your Action Chart and turn to 349."
              , NoDecision
-                 (DamagePlayer (Endurance {getEndurance = 2}) (Goto 349)))
+                 (Simple
+                    [DamagePlayer (Endurance {getEndurance = 2})]
+                    (Goto 349)))
            ]))
   , ( 339
     , Chapter
@@ -3262,7 +3308,7 @@ chapters =
         "After only half an hour, the coach is stopped by some armed horsemen. They wear the black ship and red crest emblem of Lachlan the Overlord of Ragadorn. They demand gold in payment for what they call \"exit taxes\": one Crown from each passenger. The other travellers each place a Crown on a small plate and hand it to you.\n"
         (NoDecision
            (Conditionally
-              [ (HasItem Gold 1, LoseItem Gold 1 (Goto 249))
+              [ (HasItem Gold 1, Simple [LoseItem Gold 1] (Goto 249))
               , (Always True, Goto 50)
               ])))
   , ( 340
@@ -3288,11 +3334,11 @@ chapters =
            [ ( "If you wish to buy some ale, pay the innkeeper 1 Gold Crown and turn to 72."
              , Conditional
                  (HasItem Gold 1)
-                 (NoDecision (LoseItem Gold 1 (Goto 72))))
+                 (NoDecision (Simple [LoseItem Gold 1] (Goto 72))))
            , ( "If you wish to stay here for the night, pay the man 2 Gold Crowns and turn to 56."
              , Conditional
                  (HasItem Gold 2)
-                 (NoDecision (LoseItem Gold 2 (Goto 56))))
+                 (NoDecision (Simple [LoseItem Gold 2] (Goto 56))))
            , ( "If you want neither, but merely wish to ask him a little bit about Ragadorn, turn to 226."
              , NoDecision (Goto 226))
            ]))
@@ -3327,18 +3373,22 @@ chapters =
            [ ( "Buy a meal, and a room"
              , Conditional
                  (HasItem Gold 2)
-                 (NoDecision (LoseItem Gold 2 (Goto 280))))
+                 (NoDecision (Simple [LoseItem Gold 2] (Goto 280))))
            , ( "Just the room"
              , Conditional
                  (HasItem Gold 1)
-                 (NoDecision (LoseItem Gold 1 (MustEat NoHunt (Goto 280)))))
-           , ("Nothing", NoDecision (MustEat NoHunt (Goto 280)))
+                 (NoDecision
+                    (Simple
+                       [LoseItem Gold 1]
+                       (Simple [MustEat NoHunt] (Goto 280)))))
+           , ("Nothing", NoDecision (Simple [MustEat NoHunt] (Goto 280)))
            ]))
   , ( 347
     , Chapter
         "347"
         "At the end of this street is a large stable. To your right, you can see some of the mob searching the shops and houses. Suddenly, one of them sees you and raises the alarm. \"There he is-there's the murderer!\"\nThere is no time to think. You rush into the stable and freeing one of the horses you leap onto its back. As you ride out into the moonlight, an axe flies through the air and grazes your shoulder. You lose 1 ENDURANCE point and make your escape into the night.\n"
-        (NoDecision (DamagePlayer (Endurance {getEndurance = 1}) (Goto 150))))
+        (NoDecision
+           (Simple [DamagePlayer (Endurance {getEndurance = 1})] (Goto 150))))
   , ( 348
     , Chapter
         "348"

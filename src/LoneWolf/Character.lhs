@@ -253,3 +253,24 @@ I decided to let go of all items that were not useful.
 
 > getWeapons :: Inventory -> [Weapon]
 > getWeapons inventory = filter (\w -> hasItem (Weapon w) inventory) [minBound .. maxBound]
+
+> data UsedWeapon = WithSkill Weapon
+>                 | WithoutSkill Weapon
+>                 | NoWeapon
+>                 deriving (Show, Eq)
+
+> usedWeapon :: CharacterConstant -> CharacterVariable -> UsedWeapon
+> usedWeapon cconstant cvariable
+>    | hasItem (Weapon Sommerswerd) inventory =
+>           if any (`elem` wskills) [Sword, ShortSword, BroadSword]
+>                       then WithSkill Sommerswerd
+>                       else WithoutSkill Sommerswerd
+>    | otherwise = case filter ((`hasItem` inventory) . Weapon) wskills of
+>                    (x:_) -> WithSkill x
+>                    [] -> if null weapons
+>                               then NoWeapon
+>                               else WithoutSkill (head weapons)
+>  where
+>    inventory = cvariable ^. equipment
+>    wskills = cconstant ^.. discipline . traverse . _WeaponSkill
+>    weapons = getWeapons inventory
