@@ -27,17 +27,18 @@ Character sheet
 A character is made up of two parts : one is constant, decided at the beginning of the game book. This is an oversimplification, as the Lone Wolf rules support an experience counter that can increase the combat skill of the player.
 As a simplification, I have decided to ignore it.
 
-> data Character = Character { _constantData :: CharacterConstant
->                            , _variableData :: CharacterVariable
->                            } deriving (Generic, Eq, Show, Read)
+> data Character = Character
+>     { _constantData :: CharacterConstant
+>     , _variableData :: CharacterVariable
+>     } deriving (Generic, Eq, Show, Read)
 
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 
 > newtype CombatSkill = CombatSkill { getCombatSkill :: Int }
->                     deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
+>   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
 >
 > newtype Endurance = Endurance { getEndurance :: Int }
->                     deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
+>   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
 >
 > instance D.Grouping Endurance
 >
@@ -222,7 +223,7 @@ I decided to let go of all items that were not useful.
 >   | count < 0 = delItem i (negate count) inv
 >   | count == 0 = inv
 >   | otherwise = case i of
->                   Gold -> inv & gold +~ fromIntegral count
+>                   Gold -> inv & gold %~ \curgold -> min 50 (curgold + fromIntegral count)
 >                   Meal -> inv & meals +~ fromIntegral count
 >                   _    -> inv & singleItems %~ flip setBit (fromEnum i)
 >
@@ -231,7 +232,7 @@ I decided to let go of all items that were not useful.
 >   | count < 0 = addItem i (negate count) inv
 >   | count == 0 = inv
 >   | otherwise = case i of
->                   Gold -> inv & gold -~ fromIntegral count
+>                   Gold -> inv & gold %~ \curgold -> max 0 (curgold - fromIntegral count)
 >                   Meal -> inv & meals -~ fromIntegral count
 >                   _    -> inv & singleItems %~ flip clearBit (fromEnum i)
 

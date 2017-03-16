@@ -148,9 +148,6 @@ A `ChapterOutcome` describe what happens to the player once he has made a decisi
 > data ChapterOutcome
 >         = Fight FightDetails ChapterOutcome
 >         | Randomly [(Proba, ChapterOutcome)]
-
-The `Fight` and `Randomly` constructors include an element of randomness.
-
 >         | Conditionally [(BoolCond, ChapterOutcome)]
 >         | Simple [SimpleOutcome] ChapterOutcome
 >         | Goto ChapterId
