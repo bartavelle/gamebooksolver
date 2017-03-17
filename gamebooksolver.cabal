@@ -22,6 +22,7 @@ library
                        LoneWolf.Rules
                        LoneWolf.CombatChart
                        LoneWolf.Choices
+                       Text.XML.Expat.Lens.Generic
   ghc-options:         -Wall
   build-depends:       base >= 4.7 && < 5
                      , unordered-containers

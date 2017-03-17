@@ -6,7 +6,7 @@ import Control.Lens hiding (children)
 import Control.Applicative
 import Control.Monad
 import Text.XML.Expat.Tree
-import Text.XML.Expat.Lens
+import Text.XML.Expat.Lens.Generic
 import qualified Data.ByteString.Lazy as L
 import Data.List
 import Text.Megaparsec.String
