@@ -242,6 +242,7 @@ Lenses, plates and utilities
 ----------------------------
 
 > makePrisms ''ChapterOutcome
+> makePrisms ''SimpleOutcome
 > makePrisms ''Decision
 > makePrisms ''FightModifier
 > makeLenses ''FightDetails

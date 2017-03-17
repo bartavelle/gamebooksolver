@@ -283,7 +283,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                                   & _Decisions . ix 1 . _2 .~ moneyCond 2 (Goto 56)
           346 -> Decisions [ ("Buy a meal, and a room", moneyCond 2 (Goto 280))
                            , ("Just the room", moneyCond 1 (Simple [MustEat NoHunt] (Goto 280)))
-                           , ("Nothing", NoDecision (Simple [MustEat NoHunt] (Goto 280)))
+                           , ("Nothing", NoDecision (Simple [MustEat NoHunt] (Goto 205)))
                            ]
           347 -> computedDecision & addEffect (DamagePlayer 1)
           348 -> evadeCombat 2

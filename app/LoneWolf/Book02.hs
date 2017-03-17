@@ -3381,7 +3381,7 @@ chapters =
                     (Simple
                        [LoseItem Gold 1]
                        (Simple [MustEat NoHunt] (Goto 280)))))
-           , ("Nothing", NoDecision (Simple [MustEat NoHunt] (Goto 280)))
+           , ("Nothing", NoDecision (Simple [MustEat NoHunt] (Goto 205)))
            ]))
   , ( 347
     , Chapter
