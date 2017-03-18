@@ -1,4 +1,3 @@
-> {-# LANGUAGE BangPatterns #-}
 > {-# LANGUAGE RankNTypes #-}
 > module LoneWolf.Combat (fight, getRatio) where
 
@@ -83,7 +82,7 @@
 >             -> Endurance -- player hp
 >             -> Endurance -- opponent hp
 >             -> Probably (Endurance, Endurance)
-> fightSimple !ratio !ftype !php !ohp
+> fightSimple ratio ftype php ohp
 >   | php <= 0 || ohp <= 0 = certain (max 0 php, max 0 ohp)
 >   | otherwise = regroup $ do
 >       (odmgOpponent, odmgLoneWolf) <- hits ratio
