@@ -35,10 +35,10 @@ As a simplification, I have decided to ignore it.
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 
 > newtype CombatSkill = CombatSkill { getCombatSkill :: Int }
->   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
+>   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
 >
 > newtype Endurance = Endurance { getEndurance :: Int }
->   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic)
+>   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
 >
 > instance D.Grouping Endurance
 >
