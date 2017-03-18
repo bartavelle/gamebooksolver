@@ -17,14 +17,14 @@
 >                | DidFight
 >                deriving (Show, Eq, Generic)
 
-> instance D.Grouping HadCombat where
+> instance D.Grouping HadCombat
 
 > data NextStep = NewChapter ChapterId CharacterVariable HadCombat
 >               | HasLost
 >               | HasWon CharacterVariable
 >               deriving (Show, Eq, Generic)
 
-> instance D.Grouping NextStep where
+> instance D.Grouping NextStep
 
 > makePrisms ''NextStep
 
@@ -40,9 +40,6 @@
 >                           Gold -> cvariable ^. equipment . gold >= n
 >                           Meal -> cvariable ^. equipment . meals >= n
 >                           _    -> hasItem i (cvariable ^. equipment)
-
-> regroup :: D.Grouping a => Probably a -> Probably a
-> regroup = map (\( (a,s): as ) -> (a, s + sum (map snd as)) ) . D.groupWith fst
 
 > updateSimple :: CharacterConstant -> CharacterVariable -> SimpleOutcome -> CharacterVariable
 > updateSimple cconstant cvariable soutcome =
