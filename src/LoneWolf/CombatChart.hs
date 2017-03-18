@@ -2,31 +2,26 @@
 module LoneWolf.CombatChart where
 
 import LoneWolf.Character
-import Control.Lens
-
-data Hits = Kill | Damage Endurance deriving (Show, Eq)
-
-makePrisms ''Hits
 
 -- | (Opponent, LoneWolf)
-hits :: CombatSkill -> [(Hits,Hits)]
+hits :: CombatSkill -> [(Endurance,Endurance)]
 hits ratio = hits' nratio
     where
         nratio | ratio < -10 = -6
                | ratio >  10 =  6
                | otherwise   = ratio `div` 2
-        hits' (-6) = [ ( Damage 0, Kill   ), (  Damage 0,  Kill   ), (  Damage 0,  Damage 8), ( Damage 0,  Damage 8), ( Damage 1,  Damage 7), ( Damage 2,  Damage 6), ( Damage 3,  Damage 5), ( Damage 4,  Damage 4), ( Damage 5,  Damage 3), ( Damage 6,  Damage 0) ]
-        hits' (-5) = [ ( Damage 0, Kill   ), (  Damage 0,  Damage 8), ( Damage 0,  Damage 7), ( Damage 1,  Damage 7), ( Damage 2,  Damage 6), ( Damage 3,  Damage 6), ( Damage 4,  Damage 5), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 0) ]
-        hits' (-4) = [ ( Damage 0, Damage 8), ( Damage 0,  Damage 7), ( Damage 1,  Damage 6), ( Damage 2,  Damage 6), ( Damage 3,  Damage 5), ( Damage 4,  Damage 5), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 2), ( Damage 8,  Damage 0) ]
-        hits' (-3) = [ ( Damage 0, Damage 6), ( Damage 1,  Damage 6), ( Damage 2,  Damage 5), ( Damage 3,  Damage 5), ( Damage 4,  Damage 4), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 2), ( Damage 8,  Damage 0), ( Damage 9,  Damage 0) ]
-        hits' (-2) = [ ( Damage 1, Damage 6), ( Damage 2,  Damage 5), ( Damage 3,  Damage 5), ( Damage 4,  Damage 4), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 2), ( Damage 8,  Damage 1), ( Damage 9,  Damage 0), ( Damage 10, Damage 0) ]
-        hits' (-1) = [ ( Damage 2, Damage 5), ( Damage 3,  Damage 5), ( Damage 4,  Damage 4), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 2), ( Damage 8,  Damage 2), ( Damage 9,  Damage 1), ( Damage 10, Damage 0), ( Damage 11, Damage 0) ]
-        hits'   0  = [ ( Damage 3, Damage 5), ( Damage 4,  Damage 4), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 2), ( Damage 8,  Damage 2), ( Damage 10, Damage 1), ( Damage 10, Damage 0), ( Damage 11, Damage 0), ( Damage 12, Damage 0) ]
-        hits'   1  = [ ( Damage 4, Damage 5), ( Damage 5,  Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 3), ( Damage 8,  Damage 2), ( Damage 9,  Damage 2), ( Damage 11, Damage 1), ( Damage 11, Damage 0), ( Damage 12, Damage 0), ( Damage 14, Damage 0) ]
-        hits'   2  = [ ( Damage 5, Damage 4), ( Damage 6,  Damage 3), ( Damage 7,  Damage 3), ( Damage 8,  Damage 2), ( Damage 9,  Damage 2), ( Damage 10, Damage 2), ( Damage 12, Damage 1), ( Damage 12, Damage 0), ( Damage 14, Damage 0), ( Damage 16, Damage 0) ]
-        hits'   3  = [ ( Damage 6, Damage 4), ( Damage 7,  Damage 3), ( Damage 8,  Damage 3), ( Damage 9,  Damage 2), ( Damage 10, Damage 2), ( Damage 11, Damage 1), ( Damage 14, Damage 0), ( Damage 14, Damage 0), ( Damage 16, Damage 0), ( Damage 18, Damage 0) ]
-        hits'   4  = [ ( Damage 7, Damage 4), ( Damage 8,  Damage 3), ( Damage 9,  Damage 2), ( Damage 10, Damage 2), ( Damage 11, Damage 2), ( Damage 12, Damage 1), ( Damage 14, Damage 0), ( Damage 16, Damage 0), ( Damage 18, Damage 0), ( Kill   ,   Damage 0) ]
-        hits'   5  = [ ( Damage 8, Damage 3), ( Damage 9,  Damage 3), ( Damage 10, Damage 2), ( Damage 11, Damage 2), ( Damage 12, Damage 2), ( Damage 14, Damage 1), ( Damage 16, Damage 0), ( Damage 18, Damage 0), ( Kill   ,   Damage 0), ( Kill   ,   Damage 0) ]
-        hits'   6  = [ ( Damage 9, Damage 3), ( Damage 10, Damage 2), ( Damage 11, Damage 2), ( Damage 12, Damage 2), ( Damage 14, Damage 1), ( Damage 16, Damage 1), ( Damage 18, Damage 0), ( Kill   ,   Damage 0), ( Kill   ,   Damage 0), ( Kill   ,   Damage 0) ]
+        hits' (-6) = [ (0 , 100) , (0  , 100) , (0  , 8) , (0  , 8) , (1  , 7) , (2  , 6) , (3  , 5) , (4   , 4) , (5   , 3) , (6   , 0) ]
+        hits' (-5) = [ (0 , 100) , (0  , 8)   , (0  , 7) , (1  , 7) , (2  , 6) , (3  , 6) , (4  , 5) , (5   , 4) , (6   , 3) , (7   , 0) ]
+        hits' (-4) = [ (0 , 8)   , (0  , 7)   , (1  , 6) , (2  , 6) , (3  , 5) , (4  , 5) , (5  , 4) , (6   , 3) , (7   , 2) , (8   , 0) ]
+        hits' (-3) = [ (0 , 6)   , (1  , 6)   , (2  , 5) , (3  , 5) , (4  , 4) , (5  , 4) , (6  , 3) , (7   , 2) , (8   , 0) , (9   , 0) ]
+        hits' (-2) = [ (1 , 6)   , (2  , 5)   , (3  , 5) , (4  , 4) , (5  , 4) , (6  , 3) , (7  , 2) , (8   , 1) , (9   , 0) , (10  , 0) ]
+        hits' (-1) = [ (2 , 5)   , (3  , 5)   , (4  , 4) , (5  , 4) , (6  , 3) , (7  , 2) , (8  , 2) , (9   , 1) , (10  , 0) , (11  , 0) ]
+        hits'   0  = [ (3 , 5)   , (4  , 4)   , (5  , 4) , (6  , 3) , (7  , 2) , (8  , 2) , (10 , 1) , (10  , 0) , (11  , 0) , (12  , 0) ]
+        hits'   1  = [ (4 , 5)   , (5  , 4)   , (6  , 3) , (7  , 3) , (8  , 2) , (9  , 2) , (11 , 1) , (11  , 0) , (12  , 0) , (14  , 0) ]
+        hits'   2  = [ (5 , 4)   , (6  , 3)   , (7  , 3) , (8  , 2) , (9  , 2) , (10 , 2) , (12 , 1) , (12  , 0) , (14  , 0) , (16  , 0) ]
+        hits'   3  = [ (6 , 4)   , (7  , 3)   , (8  , 3) , (9  , 2) , (10 , 2) , (11 , 1) , (14 , 0) , (14  , 0) , (16  , 0) , (18  , 0) ]
+        hits'   4  = [ (7 , 4)   , (8  , 3)   , (9  , 2) , (10 , 2) , (11 , 2) , (12 , 1) , (14 , 0) , (16  , 0) , (18  , 0) , (100 , 0) ]
+        hits'   5  = [ (8 , 3)   , (9  , 3)   , (10 , 2) , (11 , 2) , (12 , 2) , (14 , 1) , (16 , 0) , (18  , 0) , (100 , 0) , (100 , 0) ]
+        hits'   6  = [ (9 , 3)   , (10 , 2)   , (11 , 2) , (12 , 2) , (14 , 1) , (16 , 1) , (18 , 0) , (100 , 0) , (100 , 0) , (100 , 0) ]
 
         hits'   a = error ("hits " ++ show a)

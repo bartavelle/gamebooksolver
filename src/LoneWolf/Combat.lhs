@@ -15,15 +15,13 @@
 >   let ratio = getRatio cconstant cvariable fdetails
 >       modifiers = map getTimed (fdetails ^. fightMod)
 >   (odmgOpponent, odmgLoneWolf) <- hits ratio
->   let dmgLoneWolf | PlayerInvulnerable `elem` modifiers = Damage 0
->                   | EnemyMindblast `elem` modifiers && hasn't (discipline . traverse . _MindShield) cconstant = odmgLoneWolf & _Damage +~ 2
+>   let dmgLoneWolf | PlayerInvulnerable `elem` modifiers = 0
+>                   | EnemyMindblast `elem` modifiers && hasn't (discipline . traverse . _MindShield) cconstant = odmgLoneWolf + 2
 >                   | otherwise = odmgLoneWolf
->       dmgOpponent | DoubleDamage `elem` modifiers = odmgOpponent &_Damage *~ 2
->                   | hasItem (Weapon Sommerswerd) (cvariable ^. equipment) && Undead `elem` modifiers = odmgOpponent &_Damage *~ 2
+>       dmgOpponent | DoubleDamage `elem` modifiers = odmgOpponent * 2
+>                   | hasItem (Weapon Sommerswerd) (cvariable ^. equipment) && Undead `elem` modifiers = odmgOpponent * 2
 >                   | otherwise = odmgOpponent
->       changeHp dmg curhp = case dmg of
->                               Kill -> 0
->                               Damage x -> curhp - x
+>       changeHp dmg curhp = max 0 (curhp - dmg)
 >   return ( (changeHp dmgLoneWolf (cvariable ^. curendurance), changeHp dmgOpponent (fdetails ^. fendurance) ), 1 / 10 )
 
 > decrementTimed :: FightModifier -> Maybe FightModifier
@@ -61,40 +59,41 @@
 >           ohp = if DoubleDamage `elem` modifiers || (hasItem (Weapon Sommerswerd) (cvariable ^. equipment) && Undead `elem` modifiers)
 >                   then (fdetails ^. fendurance + 1) `div` 2
 >                   else fdetails ^. fendurance
->           ftype | PlayerInvulnerable `elem` modifiers = GodMode
->                 | EnemyMindblast `elem` modifiers && hasn't (discipline . traverse . _MindShield) cconstant = Mindblasted
->                 | otherwise = Vanilla
->       ((php, _), p) <- fightSimpleM ratio ftype (cvariable ^. curendurance) ohp
+>           ftype | PlayerInvulnerable `elem` modifiers = fightGodModeM
+>                 | EnemyMindblast `elem` modifiers && hasn't (discipline . traverse . _MindShield) cconstant = fightMindBlastedM
+>                 | otherwise = fightVanillaM
+>       ((php, _), p) <- ftype ratio (cvariable ^. curendurance) ohp
 >       return (max 0 php, p)
 
-> memo4 :: Memo.Memo a -> Memo.Memo b -> Memo.Memo c -> Memo.Memo d -> (a -> b -> c -> d -> r) -> (a -> b -> c -> d -> r)
-> memo4 a b c d = a . (Memo.memo3 b c d .)
-
-> fightSimpleM :: CombatSkill -- ratio
->              -> FightType
->              -> Endurance -- player hp
->              -> Endurance -- opponent hp
->              -> Probably (Endurance, Endurance)
-> fightSimpleM = memo4 Memo.integral Memo.enum Memo.integral Memo.integral fightSimple
-
-> fightSimple :: CombatSkill -- ratio
->             -> FightType
->             -> Endurance -- player hp
->             -> Endurance -- opponent hp
->             -> Probably (Endurance, Endurance)
-> fightSimple ratio ftype php ohp
+> fightVanillaM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
+> fightVanillaM = Memo.memo3 Memo.integral Memo.integral Memo.integral fightVanilla
+>
+> fightVanilla :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
+> fightVanilla ratio php ohp
 >   | php <= 0 || ohp <= 0 = certain (max 0 php, max 0 ohp)
 >   | otherwise = regroup $ do
->       (odmgOpponent, odmgLoneWolf) <- hits ratio
->       let dmgLoneWolf = case (ftype, odmgLoneWolf) of
->                           (GodMode, _)            -> php
->                           (_, Kill)               -> 0
->                           (Vanilla, Damage x)     -> php - x
->                           (Mindblasted, Damage x) -> php - x - 2
->           dmgOpponent = case odmgOpponent of
->                           Kill -> 0
->                           Damage x -> ohp - x
->       fmap (/10) <$> fightSimpleM ratio ftype dmgLoneWolf dmgOpponent
+>       (odmg, pdmg) <- hits ratio
+>       fmap (/10) <$> fightVanillaM ratio (php - pdmg) (ohp - odmg)
+
+> fightGodModeM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
+> fightGodModeM = Memo.memo3 Memo.integral Memo.integral Memo.integral fightGodMode
+>
+> fightGodMode :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
+> fightGodMode ratio php ohp
+>   | ohp <= 0 = certain (php, max 0 ohp)
+>   | otherwise = regroup $ do
+>       (odmg, _) <- hits ratio
+>       fmap (/10) <$> fightVanillaM ratio php (ohp - odmg)
+
+> fightMindBlastedM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
+> fightMindBlastedM = Memo.memo3 Memo.integral Memo.integral Memo.integral fightMindBlasted
+>
+> fightMindBlasted :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
+> fightMindBlasted ratio php ohp
+>   | php <= 0 || ohp <= 0 = certain (max 0 php, max 0 ohp)
+>   | otherwise = regroup $ do
+>       (odmg, pdmg) <- hits ratio
+>       fmap (/10) <$> fightVanillaM ratio (php - pdmg - 2) (ohp - odmg)
 
 > getRatio :: CharacterConstant -> CharacterVariable -> FightDetails -> CombatSkill
 > getRatio cconstant cvariable fdetails =
