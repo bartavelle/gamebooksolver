@@ -8,7 +8,7 @@ import Data.Ratio
 
 import LoneWolf.Character
 import LoneWolf.Chapter
-import LoneWolf.Rules
+import LoneWolf.Combat
 
 aitem :: Gen Item
 aitem = arbitraryBoundedEnum

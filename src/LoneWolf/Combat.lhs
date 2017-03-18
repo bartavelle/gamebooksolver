@@ -11,7 +11,7 @@
 > fight :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably Endurance
 > fight cconstant cvariable fdetails = regroup $ do
 >   ((hpLW, hpOpponent), p) <- fightRound cconstant cvariable fdetails
->   let evaded = fdetails ^? fightMod . traverse . _Evaded . _1 == Just 0
+>   let evaded = has (fightMod . traverse . _Evaded) fdetails
 >       outcome
 >         | hpLW <= 0 = return (-1, p)
 >         | hpOpponent <= 0 || evaded = return (hpLW, p)
@@ -20,6 +20,31 @@
 >                                               & fightMod %~ mapMaybe decrementTimed
 >                       in  fmap (*p) <$> fight cconstant nvariable ndetails
 >   outcome
+
+> data FightType = Vanilla
+>                | GodMode
+>                | Mindblasted
+>                deriving (Show, Eq)
+
+
+> fightSimple :: CombatSkill -- ratio
+>             -> FightType
+>             -> Endurance -- player hp
+>             -> Endurance -- opponent hp
+>             -> Probably (Endurance, Endurance)
+> fightSimple ratio ftype php ohp
+>   | php <= 0 || ohp <= 0 = certain (php, ohp)
+>   | otherwise = regroup $ do
+>       (odmgOpponent, odmgLoneWolf) <- hits ratio
+>       let dmgLoneWolf = case (ftype, odmgLoneWolf) of
+>                           (GodMode, _)            -> php
+>                           (_, Kill)               -> -1
+>                           (Vanilla, Damage x)     -> php - x
+>                           (Mindblasted, Damage x) -> php - x - 2
+>           dmgOpponent = case odmgOpponent of
+>                           Kill -> -1
+>                           Damage x -> ohp - x
+>       fightSimple ratio ftype dmgLoneWolf dmgOpponent
 
 > fightRound :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Endurance, Endurance)
 > fightRound cconstant cvariable fdetails = regroup $ do
@@ -40,7 +65,6 @@
 > decrementTimed :: FightModifier -> Maybe FightModifier
 > decrementTimed m = case m of
 >                   Timed n x -> if n > 1 then Just (Timed (n - 1) x) else Nothing
->                   Evaded n cid -> Just (Evaded (n - 1) cid)
 >                   _ -> Just m
 
 > getTimed :: FightModifier -> FightModifier

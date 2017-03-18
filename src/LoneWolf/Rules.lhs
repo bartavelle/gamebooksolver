@@ -88,7 +88,7 @@
 >          Just cid -> if charendurance <= 0
 >                        then [(NewChapter cid cvariable Didn'tFight, p)]
 >                        else map (fmap (*p)) $ update cconstant cvariable $
->                               case fd ^? fightMod . traverse . _Evaded . _2 of
+>                               case fd ^? fightMod . traverse . _Evaded of
 >                                   Just evasionDestination -> Goto evasionDestination
 >                                   Nothing -> nxt
 >  where

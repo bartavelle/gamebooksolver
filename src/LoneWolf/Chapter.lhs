@@ -225,7 +225,7 @@ Fights against consecutive opponents are handled by chaining the `Fight` and `Ev
 >                    | EnemyMindblast
 >                    | PlayerInvulnerable
 >                    | DoubleDamage -- chapter 306
->                    | Evaded Rounds ChapterId
+>                    | Evaded ChapterId
 >                    deriving (Show, Eq, Typeable, Data)
 
  * `Undead`: undead creatures take double damage from the `Sommerswerd`.

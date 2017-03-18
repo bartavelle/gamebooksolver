@@ -70,7 +70,7 @@ flattenDecision cconstant cvariable d =
         Special _ -> error "Special chapters not handled yet"
         NoDecision o -> [([], o)]
         EvadeFight nrounds cid fdetails co -> [ (["no evasion"], Fight fdetails co)
-                                              , (["evasion"], Fight (fdetails & fightMod %~ (Evaded nrounds cid :)) co)
+                                              , (["evasion"], Fight (fdetails & fightMod %~ (Timed nrounds (Evaded cid) :)) co)
                                               ]
         Decisions lst -> do
             (desc, d') <- lst
