@@ -73,7 +73,7 @@
 >   | php <= 0 || ohp <= 0 = certain (max 0 php, max 0 ohp)
 >   | otherwise = regroup $ do
 >       (odmg, pdmg) <- hits ratio
->       fmap (/10) <$> fightVanillaM ratio (php - pdmg) (ohp - odmg)
+>       fmap (/10) <$> fightVanillaM ratio (max 0 (php - pdmg)) (max 0 (ohp - odmg))
 
 > fightGodModeM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
 > fightGodModeM = Memo.memo3 Memo.integral Memo.integral Memo.integral fightGodMode
