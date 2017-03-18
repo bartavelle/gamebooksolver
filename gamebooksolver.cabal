@@ -18,6 +18,7 @@ library
   exposed-modules:     Solver
                        LoneWolf.Character
                        LoneWolf.Chapter
+                       LoneWolf.Combat
                        LoneWolf.XML
                        LoneWolf.Rules
                        LoneWolf.CombatChart
