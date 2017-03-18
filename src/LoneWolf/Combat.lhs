@@ -59,7 +59,7 @@
 >           ohp = if DoubleDamage `elem` modifiers || (hasItem (Weapon Sommerswerd) (cvariable ^. equipment) && Undead `elem` modifiers)
 >                   then (fdetails ^. fendurance + 1) `div` 2
 >                   else fdetails ^. fendurance
->           ftype | PlayerInvulnerable `elem` modifiers = fightGodModeM
+>           ftype | PlayerInvulnerable `elem` modifiers = error "PlayerInvulnerable is only a timed effect"
 >                 | EnemyMindblast `elem` modifiers && hasn't (discipline . traverse . _MindShield) cconstant = fightMindBlastedM
 >                 | otherwise = fightVanillaM
 >       ((php, _), p) <- ftype ratio (cvariable ^. curendurance) ohp
@@ -73,17 +73,7 @@
 >   | php <= 0 || ohp <= 0 = certain (max 0 php, max 0 ohp)
 >   | otherwise = regroup $ do
 >       (odmg, pdmg) <- hits ratio
->       fmap (/10) <$> fightVanillaM ratio (max 0 (php - pdmg)) (max 0 (ohp - odmg))
-
-> fightGodModeM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
-> fightGodModeM = Memo.memo3 Memo.integral Memo.integral Memo.integral fightGodMode
->
-> fightGodMode :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
-> fightGodMode ratio php ohp
->   | ohp <= 0 = certain (php, max 0 ohp)
->   | otherwise = regroup $ do
->       (odmg, _) <- hits ratio
->       fmap (/10) <$> fightVanillaM ratio php (ohp - odmg)
+>       fmap (/10) <$> fightVanillaM ratio (php - pdmg) (ohp - odmg)
 
 > fightMindBlastedM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
 > fightMindBlastedM = Memo.memo3 Memo.integral Memo.integral Memo.integral fightMindBlasted
