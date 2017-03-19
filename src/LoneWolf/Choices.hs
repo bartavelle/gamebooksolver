@@ -1,3 +1,4 @@
+{-# LANGUAGE TupleSections #-}
 module LoneWolf.Choices where
 
 import Control.Lens
@@ -6,6 +7,7 @@ import Data.List
 import LoneWolf.Character
 import LoneWolf.Chapter
 import LoneWolf.Rules (check, updateSimple)
+import qualified LoneWolf.Cartwheel
 
 importantItem :: Item -> CharacterConstant -> CharacterVariable -> Bool
 importantItem i cconstant cvariable =
@@ -67,7 +69,8 @@ flattenDecision cconstant cvariable d =
         Conditional bc d' -> if check cconstant cvariable bc
                                 then flattenDecision cconstant cvariable d'
                                 else []
-        Special _ -> error "Special chapters not handled yet"
+        Special Portholes -> [([], Goto 197)]
+        Special Cartwheel -> cartwheel (cvariable ^. equipment . gold)
         NoDecision o -> [([], o)]
         EvadeFight nrounds cid fdetails co -> [ (["no evasion"], Fight fdetails co)
                                               , (["evasion"], Fight (fdetails & fightMod %~ (Timed nrounds (Evaded cid) :)) co)
@@ -115,3 +118,17 @@ flattenDecision cconstant cvariable d =
                               _ -> nosell
           where nosell = flattenDecision cconstant cvariable nxt
                 sell = withEffects [GainItem Gold price, LoseItem item 1] nxt
+
+cartwheel :: Price -> [([String], ChapterOutcome)]
+cartwheel m
+    | m == 50 = [([], Goto 186)]
+    | m == 0 = [([], Goto 169)]
+    | otherwise = do
+        target <- [max m 22 .. min 50 (m + 40)]
+        let desc = "target: " ++ show target
+            res = do
+                (newmoney, proba) <- LoneWolf.Cartwheel.solveFor target m
+                return $ (proba,) $ if newmoney == 0
+                             then GameLost
+                             else Simple [GainItem Gold (newmoney - m)] (Goto 186)
+        return ([desc], Randomly res)
