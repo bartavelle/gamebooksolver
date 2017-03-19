@@ -24,6 +24,7 @@ library
                        LoneWolf.CombatChart
                        LoneWolf.Choices
                        Text.XML.Expat.Lens.Generic
+                       LoneWolf.Cartwheel
   ghc-options:         -Wall
   build-depends:       base >= 4.7 && < 5
                      , unordered-containers
@@ -35,6 +36,8 @@ library
                      , bytestring
                      , megaparsec
                      , discrimination
+                     , linear
+                     , containers
   default-language:    Haskell2010
 
 executable gamebooksolver-genchapters
