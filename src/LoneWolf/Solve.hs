@@ -56,10 +56,7 @@ solveLW book cconstant cvariable = solve memoState step getScore (NewChapter 1 c
     step (HasWon c) = [("won", certain (HasWon c))]
     step HasLost = [("lost", certain HasLost)]
     getScore ns = case ns of
-                      NewChapter 39 _ _ -> Win 1
-                      NewChapter 168 _ _ -> Win 1
-                      NewChapter 314 _ _ -> Win 1
-                      NewChapter 200 _ _ -> Win 1
+                      NewChapter 200 _ _ -> Win 1 -- l
                       NewChapter 33 _ _ -> Win 1
                       NewChapter 88 _ _ -> Win 1
                       NewChapter 150 _ _ -> Win 1

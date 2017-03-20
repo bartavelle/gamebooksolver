@@ -77,7 +77,7 @@ executable gamebooksolver-visualization
 executable gamebooksolver-solvebook02
   hs-source-dirs:      app
   main-is:             SolveBook02.hs
-  ghc-options:         -threaded -rtsopts -Wall -g -with-rtsopts "-M8G -N8"
+  ghc-options:         -threaded -rtsopts -Wall -g -with-rtsopts "-M16G -N8"
   other-modules:       LoneWolf.Book02
   build-depends:       base
                      , gamebooksolver
