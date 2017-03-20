@@ -6,6 +6,7 @@ series: Game book solver
 
 > {-# LANGUAGE RankNTypes #-}
 > {-# LANGUAGE OverloadedStrings #-}
+> {-# LANGUAGE DeriveGeneric #-}
 > module Solver where
 
 > import qualified Data.MemoCombinators as Memo
@@ -13,6 +14,8 @@ series: Game book solver
 > import Data.List
 > import Data.Hashable
 > import qualified Data.HashMap.Strict as HM
+> import Control.Parallel.Strategies
+> import GHC.Generics
 
 > type Proba = Rational
 > type Probably a = [(a, Proba)]
@@ -26,7 +29,9 @@ series: Game book solver
 >                                        }
 >                                 | LeafLost
 >                                 | LeafWin Rational state
->                                 deriving (Show, Eq)
+>                                 deriving (Show, Eq, Generic)
+
+> instance (NFData state, NFData description) => NFData (Solution state description)
 
 > data Score = Lose | Win Rational | Unknown
 
@@ -36,13 +41,11 @@ series: Game book solver
 > regroup :: (Eq a, Hashable a) => Probably a -> Probably a
 > regroup = HM.toList . HM.fromListWith (+)
 
-> winStates :: (Eq state, Hashable state) => Solution state description -> Probably state
+> winStates :: (NFData state, Eq state, Hashable state) => Solution state description -> Probably state
 > winStates s = case s of
 >   LeafLost -> []
 >   LeafWin _ st -> certain st
->   Node _ _ _ ps -> regroup $ do
->       (o, p) <- ps
->       fmap (*p) <$> winStates o
+>   Node _ _ _ ps -> regroup $ concat $ parMap rdeepseq (\(o,p) -> fmap (*p) <$> winStates o) ps
 
 > getSolScore :: Solution state description -> Rational
 > getSolScore s = case s of
@@ -50,7 +53,8 @@ series: Game book solver
 >                  LeafWin x _ -> x
 >                  Node _ _ x _ -> x
 
-> solve ::  Memo.Memo state
+> solve ::  (NFData state, NFData description)
+>        => Memo.Memo state
 >        -> (state -> Choice state description) -- the choice function
 >        -> (state -> Score)
 >        -> state
@@ -67,8 +71,7 @@ series: Game book solver
 >                       else maximumBy (comparing getSolScore) scored
 >       where
 >         choices = getChoice stt
->         scored = do
->           (cdesc, pstates) <- choices
->           let ptrees = map (\(o, p) -> (go o, p)) pstates
->           return (Node cdesc stt (sum (map (\(o, p) -> p * getSolScore o) ptrees)) ptrees)
+>         scored = parMap rdeepseq scoreTree (getChoice stt)
+>         scoreTree (cdesc, pstates) = let ptrees = map (\(o, p) -> (go o, p)) pstates
+>                                      in Node cdesc stt (sum (map (\(o, p) -> p * getSolScore o) ptrees)) ptrees
 

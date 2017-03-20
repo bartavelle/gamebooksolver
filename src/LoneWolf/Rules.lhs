@@ -12,17 +12,21 @@
 > import GHC.Generics
 > import Data.Hashable
 
+> import Control.Parallel.Strategies
+
 > data HadCombat = Didn'tFight
 >                | DidFight
 >                deriving (Show, Eq, Generic)
 
 > instance Hashable HadCombat
+> instance NFData HadCombat
 
 > data NextStep = NewChapter ChapterId CharacterVariable HadCombat
 >               | HasLost
 >               | HasWon CharacterVariable
 >               deriving (Show, Eq, Generic)
 > instance Hashable NextStep
+> instance NFData NextStep
 
 > makePrisms ''NextStep
 

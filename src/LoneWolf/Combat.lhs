@@ -66,7 +66,7 @@
 >       return (max 0 php, p)
 
 > fightVanillaM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
-> fightVanillaM = Memo.memo3 Memo.integral Memo.integral Memo.integral fightVanilla
+> fightVanillaM = Memo.memo3 Memo.bits Memo.bits Memo.bits fightVanilla
 >
 > fightVanilla :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
 > fightVanilla ratio php ohp
