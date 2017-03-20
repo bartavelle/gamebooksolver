@@ -17,7 +17,6 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 > import Data.Data
 > import Data.Word
 > import Control.Lens
-> import qualified Data.Discrimination.Grouping as D
 > import Data.Bits
 > import Data.List
 
@@ -40,8 +39,6 @@ In the constant part, the combat skill and endurance are randomly determined whe
 > newtype Endurance = Endurance { getEndurance :: Int }
 >   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, Hashable)
 >
-> instance D.Grouping Endurance
->
 > data CharacterConstant = CharacterConstant
 >       { _maxendurance :: Endurance
 >       , _combatSkill  :: CombatSkill
@@ -55,8 +52,6 @@ The variable part holds the player inventory, and current health points.
 >       , _equipment    :: !Inventory
 >       } deriving (Generic, Eq, Show, Read)
 >
-> instance D.Grouping CharacterVariable
->
 > instance Hashable CharacterVariable
 
 > data Inventory = Inventory { _singleItems :: Word32
@@ -67,7 +62,6 @@ The variable part holds the player inventory, and current health points.
 > instance Show Inventory where
 >   show i = "(inventoryFromList " ++ show (items i) ++ ")"
 
-> instance D.Grouping Inventory
 > instance Hashable Inventory
 > emptyInventory :: Inventory
 > emptyInventory = Inventory 0 0 0

@@ -7,7 +7,6 @@
 > import LoneWolf.Combat
 > import Solver
 >
-> import qualified Data.Discrimination.Grouping as D
 > import Control.Lens
 > import Data.List
 > import GHC.Generics
@@ -17,7 +16,6 @@
 >                | DidFight
 >                deriving (Show, Eq, Generic)
 
-> instance D.Grouping HadCombat
 > instance Hashable HadCombat
 
 > data NextStep = NewChapter ChapterId CharacterVariable HadCombat
@@ -25,8 +23,6 @@
 >               | HasWon CharacterVariable
 >               deriving (Show, Eq, Generic)
 > instance Hashable NextStep
-
-> instance D.Grouping NextStep
 
 > makePrisms ''NextStep
 
