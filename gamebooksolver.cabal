@@ -68,7 +68,7 @@ executable gamebooksolver-visualization
   main-is:             Visual.hs
   ghc-options:         -threaded -rtsopts -Wall
   other-modules:       LoneWolf.Book02
-  buildable:           False
+  buildable:           True
   build-depends:       base
                      , gamebooksolver
                      , lens

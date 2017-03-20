@@ -12,6 +12,7 @@ import Data.List
 import Text.Megaparsec.String
 import Text.Megaparsec (parseMaybe, string, sepBy1, skipMany, anyChar)
 import Data.Char (isDigit)
+import Data.Maybe
 import Data.Data.Lens
 
 import LoneWolf.Chapter
@@ -29,14 +30,15 @@ select [] = []
 select (x:xs) = (x, xs) : (traverse . _2 %~ (x:)) (select xs)
 
 loadXML :: FilePath -> IO String
-loadXML xmlpath = unlines . intersperse "    , " . map (mkChapterModule . parseChapter) . toListOf getChapters . fst . parse defaultParseOptions <$> L.readFile xmlpath
+loadXML xmlpath = unlines . intersperse "    , " . mapMaybe (fmap mkChapterModule . parseChapter) . toListOf getChapters . fst . parse defaultParseOptions <$> L.readFile xmlpath
    where
       mkChapterModule (cid, Chapter ttl desc pch ) =
           "  (" ++ show cid ++ ", Chapter " ++ unwords [show ttl, show desc, "(", show pch, ")"] ++ ")"
       getChapters = children . traverse . parameterized "id" "title" ./ named "data" ./ parameterized "id" "numbered" ./ named "data" ./ named "section" . parameterized "class" "numbered"
 
-parseChapter :: UNode String -> (ChapterId, Chapter)
-parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
+parseChapter :: UNode String -> Maybe (ChapterId, Chapter)
+parseChapter nd | rcid `elem` [84, 211,252,191,318,62,75,142,126,263,246,170,327] = Nothing
+                | otherwise = Just (rcid, Chapter cid (unlines desc) gdec)
   where
    cid = nd ^. children . traverse . named "meta" ./ named "title" ./ text
    rcid = read cid
@@ -70,7 +72,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                     $ CanTake (Weapon Quarterstaff) 1
                     $ CanTake HealingPotion 1
                     $ CanTake Meal 3
-                    $ CanTake Gold 12
+                    -- $ CanTake Gold 12
                     $ NoDecision (Goto 244)
           17 -> computedDecision & addEffect (DamagePlayer 5)
           21 -> NoDecision (Randomly [ (1/10, Simple [GainItem Gold (n * 3 - 1)] (Goto 314)) | n <- [1..10]])
@@ -144,6 +146,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           144 -> CanTake Meal 2 (computedDecision & addEffect (LoseItemKind [PouchSlot]))
           145 -> computedDecision & addEffect (DamagePlayer 5)
           148 -> computedDecision & addEffect (MustEat Hunt)
+          149 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (HasItem SealHammerdalVol2 1)
           150 -> computedDecision & addEffect (MustEat Hunt)
           154 -> computedDecision & addEffect (DamagePlayer 2)
           160 -> NoDecision (Goto 268) -- shunt annoying choices
@@ -195,8 +198,10 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                            , ("Hasn't healing", Conditional (Not (HasDiscipline Healing)) (computedDecision & addEffect HalfHeal ))
                            ]
           244 -> threeCond (HasDiscipline Tracking)
-          246 -> computedDecision & _Decisions . ix 0 . _2 %~ Conditional (HasItem WhitePassVol2 1)
-                                  & _Decisions . ix 1 . _2 %~ Conditional (HasItem RedPassVol2 1)
+          246 -> NoDecision ( Conditionally [ (HasItem WhitePassVol2 1, Goto 170)
+                                            , (HasItem RedPassVol2 1, Goto 202)
+                                            , (botherwise, Goto 327)
+                                            ] )
           250 -> computedDecision & _Decisions . ix 2 . _2 %~ Conditional (HasItem SealHammerdalVol2 1)
           254 -> threeCond (HasDiscipline SixthSense)
           258 -> threeCond (HasDiscipline SixthSense)
@@ -207,7 +212,8 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                                   & CanTake Gold 6
                                   & CanTake Meal 6
           263 -> CanTake RedPassVol2 1 computedDecision
-          265 -> threeCond (HasDiscipline Tracking)
+          265 -> NoDecision ( Conditionally [ (HasItem SealHammerdalVol2 1, Goto 202)
+                                            , (botherwise, Simple [LoseItem Gold 6] (Goto 202) ) ] )
           266 -> computedDecision & Cansell (Weapon Sword) 3
                                   & Cansell (Weapon Dagger) 1
                                   & Cansell (Weapon BroadSword) 6
@@ -230,7 +236,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           271 -> threeCond (HasDiscipline Camouflage)
           274 -> computedDecision & CanTake (Weapon Sword) 1
                                   & CanTake (Weapon Mace) 1
-                                  & CanTake Gold 6
+                                  -- & CanTake Gold 6
           276 -> let [fd] = extractFightDetails choices
                  in  Decisions [ ("mindblast", Conditional (HasDiscipline MindBlast) (NoDecision (Goto 14)))
                                , ("otherwise", Conditional (Not (HasDiscipline MindBlast)) (NoDecision (Fight (fd & fightMod %~ (FakeFight 192 :)) (Goto 305))))

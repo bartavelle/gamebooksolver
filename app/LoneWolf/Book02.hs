@@ -561,22 +561,6 @@ chapters =
         "61"
         "Through the pouring rain, you can just make out the dark shape of a city patrol marching towards you. If they should stop you and ask your business in Ragadorn, you could end up in the dungeons of Lachlan the Overlord. Rather than risk being arrested, you retreat along Black Knight Street and quickly turn into Sage Street as the soldiers march past.\n"
         (NoDecision (Goto 181)))
-  , ( 62
-    , Chapter
-        "62"
-        "You enter a large room full of ledgers and files. A man wearing the uniform of a Durenese naval officer is seated opposite at a large desk. He peers at you inquisitively from behind a huge book and says, \"You must have pressing business in the naval quadrant to apply for a red pass at this late hour. I shall need to see your access papers and proof of your commanding officer's authorization.\"\n"
-        (Decisions
-           [ ( "If you do not have the documents he requires or do not wish to show them to him, you will have to risk showing him the Seal of Hammerdal if you possess it. Turn to 263."
-             , Conditional (HasItem SealHammerdalVol2 1) (NoDecision (Goto 263)))
-           , ( "If you have collected the necessary documents on your quest, turn to 126."
-             , Conditional (HasItem DocumentsVol2 1) (NoDecision (Goto 126)))
-           , ( "If you do not have either the Seal or the documents, leave the room and return to the outer hall by turning to 318."
-             , Conditional
-                 (CAnd
-                    (Not (HasItem DocumentsVol2 1))
-                    (Not (HasItem SealHammerdalVol2 1)))
-                 (NoDecision (Goto 318)))
-           ]))
   , ( 63
     , Chapter
         "63"
@@ -691,21 +675,6 @@ chapters =
         "74"
         "Placing your hands upon his chest, you try to seal the open wound. He has lost a lot of blood and although he is sweating heavily, his skin is cold to the touch. His eyes suddenly roll open and he shouts a garbled warning.\n\"Pirates...Lakuri pirates...beware the red sails...repel boarders!\"\nThe captain is soon unconscious once more. You wrap him in blankets and place a cushion beneath his head, but he has drifted off into a sleep from which he will not awake. Back on deck, the bodies of the dead crew have been gathered together. Captain Kelman approaches you and hands you a vicious-looking black scimitar.\n\"This is no pirate sword, Lone Wolf. This weapon was forged in the furnaces of Helgedad. It is a Darklord blade.\"\nIt is daunting news. If the Darklords have allied the Lakuri pirates to their cause, the voyage to Durenor will be a perilous one. You fling the black sword into the sea and return to the <<Green Sceptre>>. As you set sail for the east, you watch as the Durenor merchantman slips beneath the waves.\n"
         (NoDecision (Goto 240)))
-  , ( 75
-    , Chapter
-        "75"
-        "You enter a musty office where two men sit hunched over desks bowed beneath the weight of books and papers.\n\"Good evening, sir,\" says one of the men, his long waxed moustache twitching as he speaks. \"Sir requires a merchant's pass?\"\nBefore you can reply, the man passes to you a fistful of complicated forms. \"If sir would care to sign these, I can issue sir's pass immediately. The fee is 10 Gold Crowns.\"\n"
-        (Decisions
-           [ ( "If you wish to sign the forms and purchase a White Pass, mark it on your Action Chart and turn to 142."
-             , Conditional
-                 (HasItem Gold 10)
-                 (NoDecision
-                    (Simple
-                       [LoseItem Gold 10, GainItem WhitePassVol2 1]
-                       (Goto 142))))
-           , ( "If you do not have enough money or do not wish to purchase the pass, leave this office and return to the hall by turning to 318."
-             , NoDecision (Goto 318))
-           ]))
   , ( 76
     , Chapter
         "76"
@@ -780,16 +749,6 @@ chapters =
              , NoDecision (Goto 227))
            , ( "If you wish to turn right into Unicorn Street, turn to 297."
              , NoDecision (Goto 297))
-           ]))
-  , ( 84
-    , Chapter
-        "84"
-        "Just inside the main door sits a kindly old man with a long beard. He is studying a huge leather-bound book that rests on a lectern before him. He has not noticed you enter the city hall.\n"
-        (Decisions
-           [ ( "If you wish to ask him the way to the consulate of Sommerlund, turn to 211."
-             , NoDecision (Goto 211))
-           , ( "If you wish to leave and try to find your own way there, turn to 191."
-             , NoDecision (Goto 191))
            ]))
   , ( 85
     , Chapter
@@ -1206,11 +1165,6 @@ chapters =
         "125"
         "You quickly dash through the side door of the tavern and run the length of the alleyway towards the main square. Through the crowds of people you can see many boats and coracles tied up to the quayside. The thugs are close behind and you must act quickly.\nUntying one of the small boats, you jump from the harbour wall and land with a crash, splintering the wooden seat. It has one paddle which you use to make your way towards the <<Green Sceptre>>, anchored three hundred yards across the water.\n"
         (NoDecision (Goto 300)))
-  , ( 126
-    , Chapter
-        "126"
-        "The man pulls a hidden bell-rope, and suddenly four armed guards burst into the room.\n\"These documents are forgeries. No doubt you are a spy, or worse perhaps? No matter, you'll soon find out how we deal with criminals in Port Bax. Take him away.\"\nBefore you can explain, you are seized by both arms and marched away to the city gaol. All your equipment is confiscated, including all Special Items and Weapons, and you are thrown into a cell full of evil-looking villains. You notice that several of these ruffians bear the strange tattoo of a serpent on their left wrists: the sign of Vonotar the Traitor. By the time the guards have examined your possessions and realized your true identity, you have been strangled to death by the wizard's evil agents.\nYour life and your quest come to a tragic end here in Port Bax.\n"
-        (NoDecision GameLost))
   , ( 127
     , Chapter
         "127"
@@ -1366,11 +1320,6 @@ chapters =
                     ]
                     (Goto 337)))
            ]))
-  , ( 142
-    , Chapter
-        "142"
-        "The man takes your money and hands you a White Pass that is valid for the next seven days. (Mark the White Pass on your Action Chart as a Special Item.) You thank him and leave the building. Outside you turn left and walk towards the guards at the end of the street.\n"
-        (CanTake WhitePassVol2 1 (NoDecision (Goto 246))))
   , ( 143
     , Chapter
         "143"
@@ -1431,7 +1380,7 @@ chapters =
         "You can sense that this guard is a loyal Durenese soldier. If you were to attempt to bribe him, he would be likely to consider it a grave insult and attack you.\n"
         (Decisions
            [ ( "If you wish to show him the Seal of Hammerdal, turn to 223."
-             , NoDecision (Goto 223))
+             , Conditional (HasItem SealHammerdalVol2 1) (NoDecision (Goto 223)))
            , ( "If you would prefer not to show it, if you do not have it, or if you wish to pretend to be a merchant on your way to Port Bax, turn to 250."
              , NoDecision (Goto 250))
            ]))
@@ -1604,11 +1553,6 @@ chapters =
         "You leave the gaming-house and walk dejectedly back towards the coach station. In the distance you can see the east gate of the city. Waiting below it is the coach to Durenor. You must get to Port Bax-the future of Sommerlund depends on it. You slip past the guard and board the coach without him seeing you enter. As the departure time gets nearer, five other passengers climb into the coach and seat themselves around you. The guard slams the door and you begin your journey to Port Bax.\nPick a number from the Random Number Table.\n"
         (NoDecision
            (Randomly [(2 % 5, Goto 39), (3 % 10, Goto 249), (3 % 10, Goto 339)])))
-  , ( 170
-    , Chapter
-        "170"
-        "The guard looks at your white card and sneers, \"This is a merchant's pass. It's of no use to you here. You must have a red pass to gain access to the naval quadrant.\" He flicks the card back at you and returns to his post at the gate.\n"
-        (NoDecision (Goto 327)))
   , ( 171
     , Chapter
         "171"
@@ -1800,16 +1744,6 @@ chapters =
         "190"
         "Using the edge of a steel rule to prise open the lock, you suddenly feel a sharp pain in your chest. A cunning trap has been laid, and as you open the box, a small needle shoots out and embeds itself in your flesh. It is tipped with a deadly poison. You die instantly.\nYour mission and your life come to a tragic end here.\n"
         (NoDecision GameLost))
-  , ( 191
-    , Chapter
-        "191"
-        "At the end of the avenue, the cobbled street turns abruptly to the right. Opposite this point is a tall, white stone building with a plaque above the door.\nYou can see that the cobbled street ends at a high stone wall. There is a large red gate in this wall and it is guarded by two soldiers. Beyond the gate, you can make out the masts of ships moored in the harbour.\n"
-        (Decisions
-           [ ( "If you wish to enter the port watchtower, turn to 318."
-             , NoDecision (Goto 318))
-           , ( "If you wish to approach the red gate, turn to 246."
-             , NoDecision (Goto 246))
-           ]))
   , ( 192
     , Chapter
         "192"
@@ -1960,11 +1894,6 @@ chapters =
         "210"
         "You place both hands on your stomach and try to fight back the pain as you concentrate on focusing your skill. The familiar warmth of your healing power numbs the pain, but the poison is very strong and your struggle is not yet over.\nPick a number from the Random Number Table. May the luck of the gods steer your choice, for your life now hangs on the number that you pick.\n"
         (NoDecision (Randomly [(1 % 2, Goto 275), (1 % 2, Goto 330)])))
-  , ( 211
-    , Chapter
-        "211"
-        "\"The consulate of Sommerlund?\" he says in surprise, somewhat taken aback by your sudden appearance. Then, recovering himself, he says, \"Why, of course! It is in Alin Square, near the harbour. Turn right when you leave and right again at the end of the avenue. That will take you to the Red Gate. You'll need a red pass to enter, as the consulate is in the naval quadrant of the city. It's a restricted area.\"\nYou ask the man how you can obtain a red pass.\n\"From the captain of the port watch,\" he says. \"You're obviously a stranger to Port Bax; there are few indeed that do not know the answer to that question. The port watchtower is at the end of the avenue, just as you turn for the Red Gate.\"\nYou thank the old man and leave the city hall.\n"
-        (NoDecision (Goto 191)))
   , ( 212
     , Chapter
         "212"
@@ -2296,18 +2225,6 @@ chapters =
            , ( "If you wish to continue walking east, turn to 310."
              , NoDecision (Goto 310))
            ]))
-  , ( 246
-    , Chapter
-        "246"
-        "One of the guards steps forward and demands to see your pass.\n"
-        (Decisions
-           [ ( "If you have a White Pass, turn to 170."
-             , Conditional (HasItem WhitePassVol2 1) (NoDecision (Goto 170)))
-           , ( "If you have a Red Pass, turn to 202."
-             , Conditional (HasItem RedPassVol2 1) (NoDecision (Goto 202)))
-           , ( "If you do not have a pass, you will be refused entry to the harbour. Turn to 327."
-             , NoDecision (Goto 327))
-           ]))
   , ( 247
     , Chapter
         "247"
@@ -2340,11 +2257,6 @@ chapters =
         "251"
         "It is nearly dark when the small fishing boat passes through the harbour entrance of Ragadorn. You have still seen no sign of survivors from the storm and you fear the worst.\nYou notice that three of the fishermen are acting very suspiciously. They whisper to each other and their eyes often glance at your money pouch. As the boat sails into the estuary of the River Dorn, they surround you and demand that you hand over all your gold. You are about to fight them when an unexpected blow from behind knocks you to the deck. You see one of the fishermen raise his foot. As it strikes your head, suddenly everything fades into darkness.\n"
         (NoDecision (Goto 194)))
-  , ( 252
-    , Chapter
-        "252"
-        "You try to remember some of the stories told to you by an old Kai master called Wise Hawk. He was envoy to Port Bax for many years, and he knew and loved this city as well as any native Durenese. You recall him saying that the consulate overlooked Alin Square in the naval quadrant of the city. There is a sign to your left pointing along the avenue.\nNaval Quadrant-1/2 Mile\nCertain this is the right direction, you walk confidently along the tree-lined avenue.\n"
-        (NoDecision (Goto 191)))
   , ( 253
     , Chapter
         "253"
@@ -2444,11 +2356,6 @@ chapters =
                     (Weapon Mace)
                     1
                     (CanTake (Weapon Sword) 1 (NoDecision (Goto 65))))))))
-  , ( 263
-    , Chapter
-        "263"
-        "The man stares at the Seal with a look of shocked dismay. Without saying a word, he gets up from his chair and beckons you to follow him up a flight of spiral stairs that lead to a domed chamber. Here you meet the captain of the port watch. He listens intently as you tell of the war in Sommerlund and of your urgent mission.\n\"Issue a red pass immediately,\" he orders. \"Top priority.\"\nYou collect your Red Pass, leave the port watchtower, and hurry along the street towards the harbour guards. (Mark the Red Pass on your Action Chart as a Special Item.)\n"
-        (CanTake RedPassVol2 1 (NoDecision (Goto 246))))
   , ( 264
     , Chapter
         "264"
@@ -2458,16 +2365,11 @@ chapters =
     , Chapter
         "265"
         "At dusk on the tenth day of your quest, you experience your first sight of the magnificent city of Port Bax. Like a diamond set in the green velvet shore, the towers of the city glimmer in the pale light of a waxing moon. To the north is the harbour and the formidable war fleet of the Durenese navy. To the east, beyond the moss-covered city wall, stretches the Forest of Durenor. And there, on the crest of a hill, stands a castle tall and proud, the crowning glory of this beautiful port.\nYou enter Port Bax through an unguarded gate in the green city wall, and make your way through the darkening streets towards the harbour.\nAs you turn into a tree-lined avenue, you notice the wide stone steps of a domed building to your right. You stop to read the brass plaque.\nCITY HALL\nDespite the late hour, the main doors are open.\n"
-        (Decisions
-           [ ( "If you have the Kai Discipline of Tracking, turn to 252."
-             , Conditional (HasDiscipline Tracking) (NoDecision (Goto 252)))
-           , ( "If you wish to enter the city hall, turn to 84."
-             , Conditional (Not (HasDiscipline Tracking)) (NoDecision (Goto 84)))
-           , ( "If you wish to continue on your way towards the harbour, turn to 191."
-             , Conditional
-                 (Not (HasDiscipline Tracking))
-                 (NoDecision (Goto 191)))
-           ]))
+        (NoDecision
+           (Conditionally
+              [ (HasItem SealHammerdalVol2 1, Goto 202)
+              , (Always True, Simple [LoseItem Gold 6] (Goto 202))
+              ])))
   , ( 266
     , Chapter
         "266"
@@ -3029,18 +2931,6 @@ chapters =
         "317"
         "The shriek of the dying Szall is soon echoed by your own death-cry as two crossbow bolts embed themselves in your back.\nYour mission and your life end here.\n"
         (NoDecision GameLost))
-  , ( 318
-    , Chapter
-        "318"
-        "You are standing in a large, empty hall. Opposite are two doors, each with a brass sign above them.\n"
-        (Decisions
-           [ ( "If you wish to enter the door marked \"White Passes\", turn to 75."
-             , NoDecision (Goto 75))
-           , ( "If you wish to enter the door marked \"Red Passes\", turn to 62."
-             , NoDecision (Goto 62))
-           , ( "If you wish to leave and approach the guards at the end of the street, turn to 246."
-             , NoDecision (Goto 246))
-           ]))
   , ( 319
     , Chapter
         "319"
@@ -3138,19 +3028,6 @@ chapters =
                , _fightMod = []
                })
               (Goto 184))))
-  , ( 327
-    , Chapter
-        "327"
-        "You are slowly walking back along the cobbled street, trying to think of the best course of action, when a young boy approaches you. \"I can get you into the harbour, mister,\" he says, \"but it'll cost you.\"\nHe produces an envelope containing a sheaf of official-looking papers. \"These'll get you a red pass at the port watchtower. All yours for only 6 Gold Crowns.\"\nIf you wish to buy the documents, pay the boy 6 Gold Crowns. If you refuse them, he will soon lose interest in you and will disappear. When you have made your decision, you return to the port watchtower.\n"
-        (CanTake
-           RedPassVol2
-           1
-           (Decisions
-              [ ( "If you wish to enter, turn to 318."
-                , NoDecision (Simple [LoseItem Gold 6] (Goto 318)))
-              , ( "If you would rather walk back along the tree-lined avenue to the city hall and enquire how you can reach the consulate of Sommerlund, turn to 84."
-                , NoDecision (Simple [LoseItem Gold 6] (Goto 84)))
-              ])))
   , ( 328
     , Chapter
         "328"
