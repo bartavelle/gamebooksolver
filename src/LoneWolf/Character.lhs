@@ -29,7 +29,7 @@ As a simplification, I have decided to ignore it.
 > data Character = Character
 >     { _constantData :: CharacterConstant
 >     , _variableData :: CharacterVariable
->     } deriving (Generic, Eq, Show, Read)
+>     } deriving (Generic, Eq, Show)
 
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 
@@ -47,24 +47,31 @@ In the constant part, the combat skill and endurance are randomly determined whe
 
 The variable part holds the player inventory, and current health points.
 
-> data CharacterVariable = CharacterVariable
->       { _curendurance :: !Endurance
->       , _equipment    :: !Inventory
->       } deriving (Generic, Eq, Show, Read)
->
-> instance Hashable CharacterVariable
+> newtype CharacterVariable = CharacterVariable { getCharacterVariable :: Word64 }
+>                           deriving (Generic, Eq, Bits, Hashable)
 
-> data Inventory = Inventory { _singleItems :: Word32
->                            , _gold        :: Word8
->                            , _meals       :: Word8
->                            } deriving (Generic, Eq, Read)
+> mkCharacter :: Endurance -> Inventory -> CharacterVariable
+> mkCharacter e i = CharacterVariable 0 & curendurance .~ e & equipment .~ i
+
+> instance Show CharacterVariable where
+>   show c = show (c ^. curendurance, c ^. equipment)
+
+> curendurance :: Lens' CharacterVariable Endurance
+> curendurance f (CharacterVariable w) = (\(Endurance ne) -> CharacterVariable ((w .&. 0xff00ffffffffffff) .|. (fromIntegral ne `shiftL` 48))) <$> f (fromIntegral ((w `shiftR` 48) .&. 0xff))
+> {-# INLINE curendurance #-}
+
+> equipment :: Lens' CharacterVariable Inventory
+> equipment f (CharacterVariable w) = (\(Inventory ng) -> CharacterVariable ((w .&. 0xffff000000000000) .|. ng)) <$> f (Inventory (w .&. 0xffffffffffff))
+> {-# INLINE equipment #-}
+
+> newtype Inventory = Inventory { getInventory :: Word64 }
+>                     deriving (Generic, Eq, Bits, Hashable)
 >
 > instance Show Inventory where
 >   show i = "(inventoryFromList " ++ show (items i) ++ ")"
 
-> instance Hashable Inventory
 > emptyInventory :: Inventory
-> emptyInventory = Inventory 0 0 0
+> emptyInventory = Inventory 0
 
 Five disciplines must be picked before the game starts. Most of them can turn out to be useful during the adventure, but the `WeaponSkill` deserves a special treatment.
 During the adventure, magic weapons can be found, in the form of a sword and a spear.
@@ -194,15 +201,15 @@ I decided to let go of all items that were not useful.
 > itemSlot Shield            = SpecialSlot
 
 > gold :: Lens' Inventory Int
-> gold f inventory = (\ng -> inventory { _gold = fromIntegral ng }) <$> f (fromIntegral (_gold inventory))
+> gold f (Inventory w) = (\ng -> Inventory ((w .&. 0xffff00ffffffffff) .|. (fromIntegral ng `shiftL` 40))) <$> f (fromIntegral ( (w `shiftR` 40) .&. 0xff ))
 > {-# INLINE gold #-}
 
 > meals :: Lens' Inventory Int
-> meals f inventory = (\ng -> inventory { _meals = fromIntegral ng }) <$> f (fromIntegral (_meals inventory))
+> meals f (Inventory w) = (\nm -> Inventory ((w .&. 0xffffff00ffffffff) .|. (fromIntegral nm `shiftL` 32))) <$> f (fromIntegral ( (w `shiftR` 32) .&. 0xff ))
 > {-# INLINE meals #-}
 
 > singleItems :: Lens' Inventory Word32
-> singleItems f inventory = (\ni -> inventory { _singleItems = ni }) <$> f (_singleItems inventory)
+> singleItems f (Inventory w) = (\ni -> Inventory ((w .&. 0xffffffff00000000) .|. fromIntegral ni)) <$> f (fromIntegral (w .&. 0xffffffff))
 > {-# INLINE singleItems #-}
 
 > hasItem :: Item -> Inventory -> Bool
@@ -240,8 +247,8 @@ I decided to let go of all items that were not useful.
 >         removeAll = foldl' (\inv itm -> delItem itm 1 inv)
 
 > items :: Inventory -> [(Item, Int)]
-> items inventory@(Inventory _ gld mls) = filter ( (> 0) . snd )
->       ( (Gold, fromIntegral gld) : (Meal, fromIntegral mls) :
+> items inventory = filter ( (> 0) . snd )
+>       ( (Gold, inventory ^. gold) : (Meal, inventory ^. meals) :
 >         [ (item, if hasItem item inventory then 1 else 0) | item <- standardItems ] )
 >  where
 >    standardItems = filter (`notElem` [Gold, Meal]) [minBound .. maxBound]

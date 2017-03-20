@@ -22,7 +22,7 @@ nstep :: Gen NextStep
 nstep = oneof [ pure HasLost, HasWon <$> cvar, NewChapter <$> elements [1..350] <*> cvar <*> elements [DidFight, Didn'tFight] ]
 
 cvar :: Gen CharacterVariable
-cvar = CharacterVariable <$> elements [0..25] <*> inventory
+cvar = mkCharacter <$> elements [0..25] <*> inventory
 
 inventory :: Gen Inventory
 inventory = foldr (\i inv -> addItem i 1 inv) emptyInventory <$> listOf sitem
@@ -34,7 +34,7 @@ inventory = foldr (\i inv -> addItem i 1 inv) emptyInventory <$> listOf sitem
 main :: IO ()
 main = hspec $ do
     let defConstant = CharacterConstant 25 15 []
-        defVariable = CharacterVariable 25 (addItem (Weapon BroadSword) 1 emptyInventory)
+        defVariable = mkCharacter 25 (addItem (Weapon BroadSword) 1 emptyInventory)
         defCombat   = FightDetails "def" 28 30 []
     describe "Item enum instance" $ do
         it "fromEnum" $ map fromEnum [minBound .. maxBound :: Item] `shouldBe` [0..25]
@@ -43,6 +43,7 @@ main = hspec $ do
     describe "Inventory" $ do
         prop "empty Inventory has no item" $ forAll aitem $ \i -> not (hasItem i emptyInventory)
         prop "single item Inventory" $ forAll aitem $ \i -> items (addItem i 1 emptyInventory) == [(i, 1)]
+        prop "multi item inventory" $ forAll inventory $ \i -> inventoryFromList (items i) == i
     describe "getRatio" $ do
         it "default combat" $ getRatio defConstant defVariable defCombat `shouldBe` -13
         it "no weapons (normal)" $ getRatio defConstant (defVariable & equipment %~ delItem (Weapon BroadSword) 1) defCombat `shouldBe` -17
