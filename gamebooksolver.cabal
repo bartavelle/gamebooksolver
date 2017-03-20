@@ -26,7 +26,8 @@ library
                        LoneWolf.Solve
                        Text.XML.Expat.Lens.Generic
                        LoneWolf.Cartwheel
-  ghc-options:         -Wall
+  ghc-options:         -Wall -funbox-strict-fields
+  ghc-prof-options:    -auto-all -caf-all
   build-depends:       base >= 4.7 && < 5
                      , unordered-containers
                      , data-memocombinators
@@ -39,6 +40,7 @@ library
                      , discrimination
                      , linear
                      , containers
+                     , hashable
   default-language:    Haskell2010
 
 executable gamebooksolver-genchapters
@@ -54,6 +56,7 @@ executable gamebooksolver-consoleplay
   main-is:             Consoleplay.hs
   ghc-options:         -threaded -rtsopts -Wall
   other-modules:       LoneWolf.Book02
+  buildable:           False
   build-depends:       base
                      , gamebooksolver
                      , lens
@@ -66,6 +69,7 @@ executable gamebooksolver-visualization
   main-is:             Visual.hs
   ghc-options:         -threaded -rtsopts -Wall
   other-modules:       LoneWolf.Book02
+  buildable:           False
   build-depends:       base
                      , gamebooksolver
                      , lens

@@ -310,12 +310,7 @@ chapters =
     , Chapter
         "32"
         "You awake at dawn to the sound of a shrill cockcrow. You can see the crooked streets of Ragadorn through a veil of heavy rain beating down on the cobblestones outside. It has been six days since you left Holmgard and you are still 200 miles from Port Bax.\nYou are in the loft of a very large coach station. A group of green-clad men have arrived and have started to clean out one of the coaches. You overhear one of them say that the coach leaves for Port Bax at one o'clock this afternoon and that the journey will take seven days.\nYou are hungry and must eat a Meal here or lose 3 ENDURANCE points.\n"
-        (Decisions
-           [ ( "After the Meal, if you decide to approach the coachmen and ask to buy a ticket for the journey to Port Bax, turn to 136."
-             , NoDecision (Simple [MustEat Hunt] (Goto 136)))
-           , ( "If you would rather descend the ladder to the street outside, turn to 238."
-             , NoDecision (Simple [MustEat Hunt] (Goto 238)))
-           ]))
+        (NoDecision (Simple [MustEat Hunt] (Goto 186))))
   , ( 33
     , Chapter
         "33"
@@ -1313,14 +1308,7 @@ chapters =
     , Chapter
         "136"
         "\"The fare to Port Bax is 20 Gold Crowns,\" says the coachman in a gruff Ragadornian accent.\n"
-        (Decisions
-           [ ( "If you have 20 Gold Crowns and wish to purchase a ticket, turn to 10."
-             , Conditional
-                 (HasItem Gold 20)
-                 (NoDecision (Simple [LoseItem Gold 20] (Goto 10))))
-           , ( "If you do not have enough money for the fare, turn to 238."
-             , NoDecision (Goto 238))
-           ]))
+        (NoDecision (Simple [LoseItem Gold 20] (Goto 10))))
   , ( 137
     , Chapter
         "137"
@@ -1774,11 +1762,7 @@ chapters =
     , Chapter
         "186"
         "You are standing opposite a large building with a sign on the wall:\nRAGADORN STABLES AND COACH STATION\nA green-clad coachman is sitting next to a notice board that reads, \"Port Bax-Journey Time-7 Days\".\n"
-        (Decisions
-           [ ( "If you wish to approach the coachman and ask to buy a ticket for the journey to Port Bax, turn to 136."
-             , NoDecision (Goto 136))
-           , ("If you have no money, turn to 238.", NoDecision (Goto 238))
-           ]))
+        (Special Cartwheel))
   , ( 187
     , Chapter
         "187"

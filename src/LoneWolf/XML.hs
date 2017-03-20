@@ -77,7 +77,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           27 -> NoDecision (Simple [HealPlayer 2] (Goto 312))
           29 -> NoDecision (Simple [DamagePlayer 2] (Goto 222))
           31 -> computedDecision & addEffect (HealPlayer 6)
-          32 -> computedDecision & addEffect (MustEat Hunt)
+          32 -> NoDecision (Simple [MustEat Hunt] (Goto 186)) -- avoid loop
           35 -> threeCond (HasDiscipline Tracking)
           36 -> NoDecision (Conditionally [ (HasItem Laumspur 1, Goto 145)
                                           , (HasDiscipline Healing, Goto 210)
@@ -137,7 +137,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
           131 -> evadeCombat 0 & biplate . fightMod %~ (BareHanded :)
           132 -> CanTake (Weapon Spear) 1 computedDecision
           134 -> NoDecision (Conditionally [ (HasItem (Weapon MagicSpear) 1, Goto 38), (botherwise, Goto 304) ])
-          136 -> computedDecision & _Decisions . ix 0 . _2 .~ moneyCond 20 (Goto 10)
+          136 -> NoDecision (Simple [LoseItem Gold 20] (Goto 10))
           139 -> CanTake Meal 2 computedDecision
           141 -> computedDecision & outcomePlate %~ Simple [DamagePlayer 2, LoseItem ChainMail 99]
           142 -> CanTake WhitePassVol2 1 computedDecision
@@ -163,6 +163,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                                   & Canbuy (Weapon Mace) 4
                                   & Canbuy Backpack 1
           185 -> evadeCombat 0
+          186 -> Special Cartwheel -- fix loop
           187 -> computedDecision & CanTake (Weapon Spear) 2 & CanTake (Weapon Spear) 2 & CanTake Gold 6
           189 -> computedDecision & addEffect (DamagePlayer 2)
           194 -> computedDecision & addEffect (LoseItemKind [PouchSlot, BackpackSlot, WeaponSlot, SpecialSlot])
@@ -189,7 +190,7 @@ parseChapter nd = (rcid, Chapter cid (unlines desc) gdec)
                                   & _Decisions . ix 1 . _2 .~ moneyCond 1 (Goto 148)
 
           235 -> CanTake (Weapon ShortSword) 1 computedDecision
-          238 -> CanTake Gold 1 (Special Cartwheel)
+          238 -> Special Cartwheel
           240 -> Decisions [ ("Has healing", Conditional (HasDiscipline Healing) (computedDecision & addEffect FullHeal ))
                            , ("Hasn't healing", Conditional (Not (HasDiscipline Healing)) (computedDecision & addEffect HalfHeal ))
                            ]

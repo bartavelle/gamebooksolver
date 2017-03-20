@@ -11,17 +11,20 @@
 > import Control.Lens
 > import Data.List
 > import GHC.Generics
+> import Data.Hashable
 
 > data HadCombat = Didn'tFight
 >                | DidFight
 >                deriving (Show, Eq, Generic)
 
 > instance D.Grouping HadCombat
+> instance Hashable HadCombat
 
 > data NextStep = NewChapter ChapterId CharacterVariable HadCombat
 >               | HasLost
 >               | HasWon CharacterVariable
 >               deriving (Show, Eq, Generic)
+> instance Hashable NextStep
 
 > instance D.Grouping NextStep
 

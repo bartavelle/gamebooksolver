@@ -38,7 +38,7 @@ In the constant part, the combat skill and endurance are randomly determined whe
 >   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
 >
 > newtype Endurance = Endurance { getEndurance :: Int }
->   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
+>   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, Hashable)
 >
 > instance D.Grouping Endurance
 >
@@ -51,19 +51,24 @@ In the constant part, the combat skill and endurance are randomly determined whe
 The variable part holds the player inventory, and current health points.
 
 > data CharacterVariable = CharacterVariable
->       { _curendurance :: Endurance
->       , _equipment    :: Inventory
+>       { _curendurance :: !Endurance
+>       , _equipment    :: !Inventory
 >       } deriving (Generic, Eq, Show, Read)
 >
 > instance D.Grouping CharacterVariable
+>
+> instance Hashable CharacterVariable
 
 > data Inventory = Inventory { _singleItems :: Word32
 >                            , _gold        :: Word8
 >                            , _meals       :: Word8
->                            } deriving (Generic, Eq, Show, Read)
+>                            } deriving (Generic, Eq, Read)
 >
+> instance Show Inventory where
+>   show i = "(inventoryFromList " ++ show (items i) ++ ")"
+
 > instance D.Grouping Inventory
->
+> instance Hashable Inventory
 > emptyInventory :: Inventory
 > emptyInventory = Inventory 0 0 0
 
@@ -194,11 +199,6 @@ I decided to let go of all items that were not useful.
 > itemSlot SealHammerdalVol2 = SpecialSlot
 > itemSlot Shield            = SpecialSlot
 
-> makeLenses ''CharacterVariable
-> makeLenses ''CharacterConstant
-> makeLenses ''Character
-> makePrisms ''Discipline
-
 > gold :: Lens' Inventory Int
 > gold f inventory = (\ng -> inventory { _gold = fromIntegral ng }) <$> f (fromIntegral (_gold inventory))
 > {-# INLINE gold #-}
@@ -252,6 +252,9 @@ I decided to let go of all items that were not useful.
 >  where
 >    standardItems = filter (`notElem` [Gold, Meal]) [minBound .. maxBound]
 
+> inventoryFromList :: [(Item, Int)] -> Inventory
+> inventoryFromList = foldr (uncurry addItem) emptyInventory
+
 > getWeapons :: Inventory -> [Weapon]
 > getWeapons inventory = filter (\w -> hasItem (Weapon w) inventory) [minBound .. maxBound]
 
@@ -259,6 +262,11 @@ I decided to let go of all items that were not useful.
 >                 | WithoutSkill Weapon
 >                 | NoWeapon
 >                 deriving (Show, Eq)
+
+> makeLenses ''CharacterVariable
+> makeLenses ''CharacterConstant
+> makeLenses ''Character
+> makePrisms ''Discipline
 
 > usedWeapon :: CharacterConstant -> CharacterVariable -> UsedWeapon
 > usedWeapon cconstant cvariable
@@ -275,3 +283,4 @@ I decided to let go of all items that were not useful.
 >    inventory = cvariable ^. equipment
 >    wskills = cconstant ^.. discipline . traverse . _WeaponSkill
 >    weapons = getWeapons inventory
+

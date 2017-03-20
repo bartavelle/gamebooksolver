@@ -8,9 +8,11 @@ series: Game book solver
 > {-# LANGUAGE OverloadedStrings #-}
 > module Solver where
 
-> import qualified Data.Discrimination.Grouping as D
+> import qualified Data.MemoCombinators as Memo
 > import Data.Ord (comparing)
 > import Data.List
+> import Data.Hashable
+> import qualified Data.HashMap.Strict as HM
 
 > type Proba = Rational
 > type Probably a = [(a, Proba)]
@@ -31,8 +33,16 @@ series: Game book solver
 > certain :: a -> Probably a
 > certain a = [(a,1)]
 
-> regroup :: D.Grouping a => Probably a -> Probably a
-> regroup = map (\( (a,s): as ) -> (a, s + sum (map snd as)) ) . D.groupWith fst
+> regroup :: (Eq a, Hashable a) => Probably a -> Probably a
+> regroup = HM.toList . HM.fromListWith (+)
+
+> winStates :: (Eq state, Hashable state) => Solution state description -> Probably state
+> winStates s = case s of
+>   LeafLost -> []
+>   LeafWin _ st -> certain st
+>   Node _ _ _ ps -> regroup $ do
+>       (o, p) <- ps
+>       fmap (*p) <$> winStates o
 
 > getSolScore :: Solution state description -> Rational
 > getSolScore s = case s of
@@ -40,23 +50,25 @@ series: Game book solver
 >                  LeafWin x _ -> x
 >                  Node _ _ x _ -> x
 
-> solve ::  (state -> Choice state description) -- the choice function
+> solve ::  Memo.Memo state
+>        -> (state -> Choice state description) -- the choice function
 >        -> (state -> Score)
 >        -> state
 >        -> Solution state description
-> solve getChoice score stt =
->   case score stt of
->       Lose -> LeafLost
->       Win x -> LeafWin x stt
->       Unknown -> if null choices
->                   then LeafLost
->                   else maximumBy (comparing getSolScore) scored
+> solve memo getChoice score = go
 >   where
->     choices = getChoice stt
->     scored = do
->       (cdesc, pstates) <- choices
->       let ptrees = do
->               (o, p) <- pstates
->               return (solve getChoice score o, p)
->       return (Node cdesc stt (sum (map (\(o, p) -> p * getSolScore o) ptrees)) ptrees)
+>     go = memo solve'
+>     solve' stt =
+>       case score stt of
+>           Lose -> LeafLost
+>           Win x -> LeafWin x stt
+>           Unknown -> if null choices
+>                       then LeafLost
+>                       else maximumBy (comparing getSolScore) scored
+>       where
+>         choices = getChoice stt
+>         scored = do
+>           (cdesc, pstates) <- choices
+>           let ptrees = map (\(o, p) -> (go o, p)) pstates
+>           return (Node cdesc stt (sum (map (\(o, p) -> p * getSolScore o) ptrees)) ptrees)
 

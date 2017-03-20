@@ -33,7 +33,7 @@ transition n = foldl' ins (emptyMatrix n) (transitions ++ zero ++ fixedWon)
     [ (x, max 0 (x - 1), 7 / 10), (x, x + 7, 1 / 10), (x, x + 4, 2 / 10) ]
 
 approx :: Fractional a => Int -> Matrix a
-approx n = iterate (\a -> a !*! a) (transition n) !! 20
+approx n = iterate (\a -> a !*! a) (transition n) !! 14
 
 allmatrices :: IM.IntMap (Matrix Double)
 allmatrices = IM.fromList [ (n, approx n) | n <- [21..50] ]
