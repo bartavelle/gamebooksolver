@@ -13,13 +13,11 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 > module LoneWolf.Character where
 >
 > import GHC.Generics
-> import Data.Hashable
 > import Data.Data
 > import Data.Word
 > import Control.Lens
 > import Data.Bits
 > import Data.List
-> import Control.Parallel.Strategies
 
 Character sheet
 ---------------
@@ -38,7 +36,7 @@ In the constant part, the combat skill and endurance are randomly determined whe
 >   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
 >
 > newtype Endurance = Endurance { getEndurance :: Int }
->   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, Hashable)
+>   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
 >
 > data CharacterConstant = CharacterConstant
 >       { _maxendurance :: Endurance
@@ -49,7 +47,7 @@ In the constant part, the combat skill and endurance are randomly determined whe
 The variable part holds the player inventory, and current health points.
 
 > newtype CharacterVariable = CharacterVariable { getCharacterVariable :: Word64 }
->                           deriving (Generic, Eq, Bits, Hashable, NFData)
+>                           deriving (Generic, Eq, Bits, Ord)
 
 > mkCharacter :: Endurance -> Inventory -> CharacterVariable
 > mkCharacter e i = CharacterVariable 0 & curendurance .~ e & equipment .~ i
@@ -66,7 +64,7 @@ The variable part holds the player inventory, and current health points.
 > {-# INLINE equipment #-}
 
 > newtype Inventory = Inventory { getInventory :: Word64 }
->                     deriving (Generic, Eq, Bits, Hashable, NFData)
+>                     deriving (Generic, Eq, Bits)
 >
 > instance Show Inventory where
 >   show i = "(inventoryFromList " ++ show (items i) ++ ")"
@@ -167,9 +165,6 @@ I decided to let go of all items that were not useful.
 >     13 -> Gold
 >     14 -> Meal
 >     _  -> Weapon (toEnum (n - 15))
-
-> instance Hashable Item
-> instance Hashable Weapon
 
 > data Slot = WeaponSlot
 >           | BackpackSlot

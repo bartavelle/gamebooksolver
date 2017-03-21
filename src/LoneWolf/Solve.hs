@@ -1,11 +1,13 @@
 module LoneWolf.Solve where
 
 import Solver
+import qualified SimpleSolver as S
 import LoneWolf.Choices
 import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.Rules
 import qualified Data.MemoCombinators as Memo
+import qualified Data.IntSet as IS
 import Data.Word
 import Data.Bits
 
@@ -43,25 +45,33 @@ fromWord64 (cid16, cvalue) =
             then HasWon cvariable
             else NewChapter cid cvariable hadfight
 
-solveLW :: [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> Solution NextStep String
-solveLW book cconstant cvariable = solve memoState step getScore (NewChapter 1 cvariable Didn'tFight)
+
+step :: IM.IntMap Chapter -> CharacterConstant -> NextStep -> [(String, Probably NextStep)]
+step chapters cconstant (NewChapter cid curvariable m) =
+        case IM.lookup cid chapters of
+            Nothing -> error ("Unknown chapter: " ++ show cid)
+            Just (Chapter _ _ d) -> do
+                (desc, outcome) <- flattenDecision cconstant curvariable (if m == DidFight then AfterCombat d else d)
+                return (unwords desc, update cconstant curvariable outcome)
+step _ _ (HasWon c) = [("won", certain (HasWon c))]
+step _ _ HasLost = [("lost", certain HasLost)]
+
+getScore :: IS.IntSet -> NextStep -> Score
+getScore target ns =
+    case ns of
+      NewChapter x _ _ -> if x `IS.member` target then Win 1 else Unknown
+      HasWon _ -> Win 1
+      HasLost -> Lose
+
+solveLW :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> Solution NextStep String
+solveLW target book cconstant cvariable = solve memoState 1 (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
   where
     chapters = IM.fromList book
-    step :: NextStep -> [(String, Probably NextStep)]
-    step (NewChapter cid curvariable m) = case IM.lookup cid chapters of
-                                              Nothing -> error ("Unknown chapter: " ++ show cid)
-                                              Just (Chapter _ _ d) -> do
-                                                  (desc, outcome) <- flattenDecision cconstant curvariable (if m == DidFight then AfterCombat d else d)
-                                                  return (unwords desc, update cconstant curvariable outcome)
-    step (HasWon c) = [("won", certain (HasWon c))]
-    step HasLost = [("lost", certain HasLost)]
-    getScore ns = case ns of
-                      NewChapter 200 _ _ -> Win 1 -- l
-                      NewChapter 33 _ _ -> Win 1
-                      NewChapter 88 _ _ -> Win 1
-                      NewChapter 150 _ _ -> Win 1
-                      NewChapter 265 _ _ -> Win 1
-                      HasWon _ -> Win 1
-                      HasLost -> Lose
-                      _ -> Unknown
+    starget = IS.fromList target
+
+solveLWs :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> S.Solution NextStep String
+solveLWs target book cconstant cvariable = S.solve memoState (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
+  where
+    chapters = IM.fromList book
+    starget = IS.fromList target
 

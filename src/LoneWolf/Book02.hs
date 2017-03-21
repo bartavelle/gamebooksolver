@@ -148,18 +148,21 @@ chapters =
            Backpack
            1
            (CanTake
-              (Weapon BroadSword)
+              PasswordVol2
               1
               (CanTake
-                 (Weapon Mace)
+                 (Weapon BroadSword)
                  1
                  (CanTake
-                    (Weapon Quarterstaff)
+                    (Weapon Mace)
                     1
                     (CanTake
-                       HealingPotion
+                       (Weapon Quarterstaff)
                        1
-                       (CanTake Meal 3 (CanTake Gold 12 (NoDecision (Goto 244))))))))))
+                       (CanTake
+                          HealingPotion
+                          1
+                          (CanTake Meal 3 (NoDecision (Goto 244))))))))))
   , ( 16
     , Chapter
         "16"
@@ -1675,7 +1678,7 @@ chapters =
     , Chapter
         "183"
         "The forest drops away steeply at the edge of your campsite, and in your haste you trip and fall headlong through the trees.\nPick a number from the Random Number Table.\n"
-        (NoDecision (Randomly [(9 % 10, Goto 311), (1 % 1, Goto 159)])))
+        (NoDecision (Randomly [(9 % 10, Goto 311), (1 % 10, Goto 159)])))
   , ( 184
     , Chapter
         "184"
@@ -1811,7 +1814,7 @@ chapters =
         "197"
         "As dawn breaks, a fierce storm rises and you are woken by the violent rocking of the ship. The floor of your cabin is awash, and the shouts of the crew can hardly be heard above the howling wind. You quickly dress, gather up your equipment, and make your way to the deck.\nYou are soon joined by the captain, who takes hold of your arm and orders you to return to your cabin. Suddenly, as you start to go down, there is a thunderous crack as, high in the rigging, part of the mast snaps. You look up to see the shattered pole falling towards you.\nPick a number from the Random Number Table.\n"
         (NoDecision
-           (Randomly [(2 % 5, Goto 78), (1 % 2, Goto 141), (1 % 1, Goto 247)])))
+           (Randomly [(2 % 5, Goto 78), (1 % 2, Goto 141), (1 % 10, Goto 247)])))
   , ( 198
     , Chapter
         "198"
@@ -2506,12 +2509,9 @@ chapters =
         "274"
         "A quick search of the bodies reveals a Sword, 6 Gold Crowns, and a Mace. Take what you wish and mark them on your Action Chart.\nBefore you can leave by the front door, more angry villagers have forced their way into the shop. You can only leave now by the first-floor window.\n"
         (CanTake
-           Gold
-           6
-           (CanTake
-              (Weapon Mace)
-              1
-              (CanTake (Weapon Sword) 1 (NoDecision (Goto 132))))))
+           (Weapon Mace)
+           1
+           (CanTake (Weapon Sword) 1 (NoDecision (Goto 132)))))
   , ( 275
     , Chapter
         "275"

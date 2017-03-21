@@ -1,18 +1,57 @@
-module Main where
+module Main (main) where
 
 import LoneWolf.Solve
+import LoneWolf.Chapter
+import LoneWolf.Character
 import LoneWolf.Book02
+import LoneWolf.Rules (NextStep)
 import Solver
+import qualified SimpleSolver as S
 
 import Text.Printf
+import Text.Read (readMaybe)
 import Data.List
 import Data.Ord
+import Data.Maybe (mapMaybe)
+import Control.Lens
+import Data.Data.Lens
+
+import System.Environment
+
+pchapters :: [(ChapterId, Chapter)]
+pchapters = map patch chapters
+ where
+   patch (200, Chapter t d _) = (200, Chapter t d (NoDecision (Goto 158)))
+   patch (314, Chapter t d dc) = (314, Chapter t d (limitMoneyAt 12 dc))
+   patch (33, Chapter t d dc) = (33, Chapter t d (limitMoneyAt 12 dc))
+   patch (150, Chapter t d _) = (150, Chapter t d (NoDecision (Simple [MustEat Hunt] condhammer))) -- patch, better way
+   patch x = x
+   condhammer = Conditionally [ (HasItem SealHammerdalVol2 1, Goto 15)
+                              , (Always True, Goto 244)
+                              ]
+   limitMoneyAt maxmoney dc = dc & biplate %~ \o -> Conditionally [ (HasItem Gold maxmoney, Simple [LoseItemKind [PouchSlot], GainItem Gold maxmoney] o )
+                                                                  , (Always True, Simple [LoseItemKind [PouchSlot]] o) ]
+
+defaultSol :: [Int] -> (Double, [(NextStep, Proba)])
+defaultSol target =
+    let solution = solveLW target pchapters startConstant startVariable
+    in  (fromRational (getCertain $ _score solution),  winStates solution)
+
+simpleSol :: [Int] -> (Double, [(NextStep, Proba)])
+simpleSol target =
+    let solution = solveLWs target pchapters startConstant startVariable
+    in  (fromRational (S._score solution),  S.winStates solution)
 
 main :: IO ()
 main = do
     putStrLn "solving..."
-    let solution = solveLW chapters startConstant startVariable
-    print (fromRational (_score solution) :: Double)
-    let wstates = winStates solution
-        showWinState (st, p) = printf "%.4f %s\n" (fromRational p :: Double) (show st)
+    args <- getArgs
+    let (score, wstates) = case args of
+                               ("simple" : xs) -> simpleSol (checkChapters $ mapMaybe readMaybe xs)
+                               _ -> defaultSol (checkChapters $ mapMaybe readMaybe args)
+        checkChapters cs | null cs = [39]
+                         | otherwise = cs
+    print score
+    let showWinState (st, p) = printf "%.4f %s\n" (fromRational p :: Double) (show st)
     mapM_ showWinState (sortBy (flip (comparing snd)) wstates)
+

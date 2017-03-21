@@ -67,6 +67,7 @@ parseChapter nd | rcid `elem` [84, 211,252,191,318,62,75,142,126,263,246,170,327
                           , ("no sixth sense", Conditional (HasDiscipline SixthSense) (NoDecision (Randomly [(4/10, Goto 58), (3/10, Goto 167), (3/10, Goto 329)])) )
                           ]
           15 -> CanTake Backpack 1
+                    $ CanTake PasswordVol2 1
                     $ CanTake (Weapon BroadSword) 1
                     $ CanTake (Weapon Mace) 1
                     $ CanTake (Weapon Quarterstaff) 1
@@ -334,7 +335,7 @@ toDec a | all (has _Jmp) a = parseJump (jumps a)
                                                                    , "If it is "
                                                                    ] ) ) of
                                Just ( x : '-' : y : _ ) -> Just (fromIntegral (1 + read [y] - read [x] :: Int) / 10, cid)
-                               Just ( x : ',' : _) | isDigit x -> Just (1, cid)
+                               Just ( x : ',' : _) | isDigit x -> Just (1/10, cid)
                                _ -> Nothing
 
 toDec events =

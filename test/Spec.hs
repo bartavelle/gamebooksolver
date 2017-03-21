@@ -11,6 +11,10 @@ import LoneWolf.Chapter
 import LoneWolf.Combat
 import LoneWolf.Solve
 import LoneWolf.Rules (NextStep(..), HadCombat(..))
+import LoneWolf.Book02 (chapters)
+import Control.Monad
+import Solver
+import qualified SimpleSolver as S
 
 aitem :: Gen Item
 aitem = arbitraryBoundedEnum
@@ -22,7 +26,7 @@ nstep :: Gen NextStep
 nstep = oneof [ pure HasLost, HasWon <$> cvar, NewChapter <$> elements [1..350] <*> cvar <*> elements [DidFight, Didn'tFight] ]
 
 cvar :: Gen CharacterVariable
-cvar = mkCharacter <$> elements [0..25] <*> inventory
+cvar = mkCharacter <$> elements [1..25] <*> inventory
 
 inventory :: Gen Inventory
 inventory = foldr (\i inv -> addItem i 1 inv) emptyInventory <$> listOf sitem
@@ -30,6 +34,27 @@ inventory = foldr (\i inv -> addItem i 1 inv) emptyInventory <$> listOf sitem
    sitem = oneof [ elements [Backpack .. RedPassVol2]
                  , Weapon <$> arbitraryBoundedEnum
                  ]
+
+proba :: Gen Proba
+proba = elements (map (/100) [0..100])
+
+addProba :: [a] -> Gen (Probably a)
+addProba [] = return []
+addProba lst = do
+  probas <- suchThat (replicateM (length lst) proba) ( (/= 0) . sum )
+  let sprobas = sum probas
+      normalized = map (/ sprobas) probas
+  return (zip lst normalized)
+
+solution :: Gen (Solution Int Int)
+solution = do
+  let lsolution = frequency [ (1, solution), (20, pure LeafLost), (5, LeafWin <$> proba <*> arbitrary) ]
+  aleaves <- suchThat (listOf lsolution) (\l -> not (null l) && length l < 10)
+  leaves <- addProba aleaves
+  Node <$> arbitrary <*> arbitrary <*> pure (mkPScore leaves) <*> pure leaves
+
+sumScore :: [(Solution a b, Proba)] -> Rational
+sumScore = sum . map (\(s, p) -> getSolScore s * p)
 
 main :: IO ()
 main = hspec $ do
@@ -58,3 +83,38 @@ main = hspec $ do
         it "vanilla test" $ fight defConstant defVariable defCombat `shouldMatchList` [(0,19879281 % 20000000),(1,6883 % 10000000),(2,8139 % 20000000),(3,9043 % 10000000),(4,11197 % 20000000),(5,649 % 800000),(6,2719 % 5000000),(7,91 % 200000),(8,147 % 500000),(9,111 % 500000),(10,253 % 2000000),(11,87 % 400000),(12,99 % 1000000),(13,451 % 2000000),(14,33 % 250000),(15,27 % 200000),(16,1 % 12500),(17,11 % 200000),(18,7 % 200000),(19,1 % 50000),(20,1 % 200000),(21,1 % 200000),(22,1 % 200000),(25,1 % 100000)]
     describe "state memo" $ do
         prop "memo works" $ forAll nstep $ \ns -> fromWord64 (toWord64 ns) == ns
+    describe "PScore" $ do
+        prop "PScore returns a proper score" $ forAll (listOf solution >>= addProba) $ \sols -> getCertain (mkPScore sols) == sumScore sols
+    describe "Solver" $ do
+        let randomBook = [ (1, Chapter "1" "1" (NoDecision (Randomly [(1/2, Goto 2), (1/2, Goto 3)])))
+                         , (2, Chapter "w" "w" (NoDecision GameWon))
+                         , (3, Chapter "w" "w" (NoDecision GameLost))
+                         ]
+        it "Should score a random book properly" $ getSolScore (solveLW [5] randomBook defConstant defVariable) `shouldBe` (1/2)
+        let choiceBook = [ (1, Chapter "1" "1" (Decisions [("x", NoDecision (Goto 2)), ("y", NoDecision (Goto 3))]))
+                         , (2, Chapter "w" "w" (NoDecision GameWon))
+                         , (3, Chapter "w" "w" (NoDecision GameLost))
+                         ]
+        it "Should score a pure choice book properly" $ getSolScore (solveLW [5] choiceBook defConstant defVariable) `shouldBe` 1
+        let mixedBook = [ (1, Chapter "1" "1" (Decisions [("x", NoDecision (Goto 2)), ("y", NoDecision (Goto 3))]))
+                        , (2, Chapter "w" "w" (NoDecision (Randomly [(1/3, GameWon), (2/3, GameLost)] ) ))
+                        , (3, Chapter "w" "w" (NoDecision (Randomly [(2/3, GameWon), (1/3, GameLost)] ) ))
+                        ]
+        it "Should score a mixed choice book properly" $ getSolScore (solveLW [5] mixedBook defConstant defVariable) `shouldBe` (2/3)
+        let fightBook = [ (1, Chapter "1" "1" (Decisions [("x", NoDecision (Fight (FightDetails "hard" 30 30 [] ) GameWon))
+                                                         ,("y", NoDecision (Fight (FightDetails "easy" 10 10 [] ) GameWon))]))
+                        ]
+        let fsol = solveLW [5] fightBook defConstant defVariable
+        it "Should choose the easiest fight" $ Solver._desc fsol `shouldBe` "y"
+    describe "Solver vs SimpleSolver" $ do
+        let getSols target = (solveLW target chapters defConstant defVariable, solveLWs target chapters defConstant defVariable)
+            (fast240, slow240) = getSols [240]
+        it "Scores should be equal" $ getSolScore fast240 `shouldBe` S.getSolScore slow240
+        it "Winstates should be equivalent (240)" $ winStates fast240 `shouldMatchList` S.winStates slow240
+    describe "Generated chapters" $ do
+        it "Auto random should be consistent" $
+            let lst = map fst (filter (wrongRandom . snd) chapters)
+                wrongRandom (Chapter _ _ pc) = case pc ^? _NoDecision . _Randomly of
+                                                   Nothing -> False
+                                                   Just l -> sum (map fst l) /= 1
+            in  lst `shouldBe` []
