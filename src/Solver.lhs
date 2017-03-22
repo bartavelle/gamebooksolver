@@ -51,31 +51,37 @@ series: Game book solver
 >   | sb / pb > sa + (1 - pa) * smax = LT
 >   | pa > pb   = scoreCompare smax ca nb
 >   | otherwise = scoreCompare smax na cb
+> {-# INLINE scoreCompare #-}
 
 > getCertain :: PScore -> Rational
 > getCertain ps = case ps of
 >                   Certain x -> x
 >                   Approximate _ _ n -> getCertain n
+> {-# INLINE getCertain #-}
 
 > data Score = Known !Rational | Unknown
 
 > certain :: a -> Probably a
 > certain a = [(a,1)]
+> {-# INLINE certain #-}
 
 > regroup :: Ord a => Probably a -> Probably a
 > regroup = M.toList . M.fromListWith (+)
+> {-# INLINE regroup #-}
 
 > winStates :: Ord state => Solution state description -> Probably state
 > winStates s = case s of
 >   LeafLost -> []
 >   Leaf _ st -> certain st
 >   Node _ _ _ ps -> regroup $ concat $ parMap rseq (\(o,p) -> fmap (*p) <$> winStates o) ps
+> {-# INLINE winStates #-}
 
 > getSolScore :: Solution state description -> Rational
 > getSolScore s = case s of
 >                  LeafLost     -> 0
 >                  Leaf x _     -> x
 >                  Node _ _ x _ -> getCertain x
+> {-# INLINE getSolScore #-}
 
 > solve :: Memo.Memo state
 >       -> Rational -- max score
@@ -112,4 +118,4 @@ This works on the assumption the states are grouped!
 >           in  if nproba == 1
 >                   then Certain nscore
 >                   else Approximate nproba nscore (go nproba nscore xs)
-
+> {-# INLINE mkPScore #-}

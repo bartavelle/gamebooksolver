@@ -32,26 +32,28 @@ pchapters = map patch chapters
    limitMoneyAt maxmoney dc = dc & biplate %~ \o -> Conditionally [ (HasItem Gold maxmoney, Simple [LoseItemKind [PouchSlot], GainItem Gold maxmoney] o )
                                                                   , (Always True, Simple [LoseItemKind [PouchSlot]] o) ]
 
-defaultSol :: [Int] -> (Double, [(NextStep, Proba)])
+defaultSol :: [Int] -> (Rational, [(NextStep, Proba)])
 defaultSol target =
     let solution = solveLW target pchapters startConstant startVariable
-    in  (fromRational (getCertain $ _score solution),  winStates solution)
+    in  (getCertain (_score solution),  winStates solution)
 
-simpleSol :: [Int] -> (Double, [(NextStep, Proba)])
+simpleSol :: [Int] -> (Rational, [(NextStep, Proba)])
 simpleSol target =
     let solution = solveLWs target pchapters startConstant startVariable
-    in  (fromRational (S._score solution),  S.winStates solution)
+    in  (S._score solution,  S.winStates solution)
 
 main :: IO ()
 main = do
-    putStrLn "solving..."
+    putStrLn "Solving for the following initial state:"
+    print startConstant
+    print startVariable
     args <- getArgs
     let (score, wstates) = case args of
                                ("simple" : xs) -> simpleSol (checkChapters $ mapMaybe readMaybe xs)
                                _ -> defaultSol (checkChapters $ mapMaybe readMaybe args)
         checkChapters cs | null cs = [39]
                          | otherwise = cs
-    print score
+    putStrLn ("Winning probability: " ++ show (fromRational score :: Double) ++ " [" ++ show score ++ "]")
     let showWinState (st, p) = printf "%.4f %s\n" (fromRational p :: Double) (show st)
     mapM_ showWinState (sortBy (flip (comparing snd)) wstates)
 

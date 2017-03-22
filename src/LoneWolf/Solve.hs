@@ -21,6 +21,7 @@ startVariable = mkCharacter 25 (inventoryFromList [(Weapon ShortSword, 1), (Gold
 
 memoState :: Memo.Memo NextStep
 memoState = Memo.wrap fromWord64 toWord64 (Memo.pair Memo.bits Memo.bits)
+{-# INLINE memoState #-}
 
 toWord64 :: NextStep -> (Word16, Word64)
 toWord64 s = case s of
@@ -32,6 +33,7 @@ toWord64 s = case s of
                                     then cidb16
                                     else setBit cidb16 15
                     in  (cid16, cvalue)
+{-# INLINE toWord64 #-}
 
 fromWord64 :: (Word16, Word64) -> NextStep
 fromWord64 (cid, 0) = HasLost (fromIntegral cid)
@@ -44,6 +46,7 @@ fromWord64 (cid16, cvalue) =
     in  if cid == 0
             then HasWon cvariable
             else NewChapter cid cvariable hadfight
+{-# INLINE fromWord64 #-}
 
 
 step :: IM.IntMap Chapter -> CharacterConstant -> NextStep -> [(String, Probably NextStep)]
@@ -55,6 +58,7 @@ step chapters cconstant (NewChapter cid curvariable m) =
                 return (unwords desc, update cconstant curvariable cid outcome)
 step _ _ (HasWon c) = [("won", certain (HasWon c))]
 step _ _ (HasLost cid) = [("lost", certain (HasLost cid))]
+{-# INLINE step #-}
 
 getScore :: IS.IntSet -> NextStep -> Score
 getScore target ns =
@@ -62,6 +66,7 @@ getScore target ns =
       NewChapter x _ _ -> if x `IS.member` target then Known 1 else Unknown
       HasWon _ -> Known 1
       HasLost _ -> Known 0
+{-# INLINE getScore #-}
 
 solveLW :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> Solution NextStep String
 solveLW target book cconstant cvariable = solve memoState 1 (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
