@@ -16,8 +16,8 @@
 >                deriving (Show, Eq, Generic, Ord)
 
 > data NextStep = NewChapter !ChapterId !CharacterVariable !HadCombat
->               | HasLost
->               | HasWon CharacterVariable
+>               | HasLost !ChapterId
+>               | HasWon !CharacterVariable
 >               deriving (Show, Eq, Generic, Ord)
 
 > makePrisms ''NextStep
@@ -59,39 +59,39 @@
 >    eqp = cvariable ^. equipment
 >    updates lst = foldl' (updateSimple cconstant) cvariable lst
 
-> update :: CharacterConstant -> CharacterVariable -> ChapterOutcome -> Probably NextStep
-> update cconstant cvariable outcome =
+> update :: CharacterConstant -> CharacterVariable -> ChapterId -> ChapterOutcome -> Probably NextStep
+> update cconstant cvariable cid outcome =
 >   case outcome of
->     Goto cid -> certain (NewChapter cid cvariable Didn'tFight)
->     GameLost -> certain HasLost
+>     Goto cid' -> certain (NewChapter cid' cvariable Didn'tFight)
+>     GameLost -> certain (HasLost cid)
 >     GameWon -> certain (HasWon cvariable)
 >     Simple effects nxt ->
 >       let nvariable = foldl' (updateSimple cconstant) cvariable effects
 >       in  if nvariable ^. curendurance <= 0
->               then certain HasLost
->               else update cconstant nvariable nxt
+>               then certain (HasLost cid)
+>               else update cconstant nvariable cid nxt
 >     Conditionally conditions -> uCheck conditions
 >     Randomly rands -> regroup $ do
 >       (p, o) <- rands
->       fmap (*p) <$> update cconstant cvariable o
+>       fmap (*p) <$> update cconstant cvariable cid o
 >     Fight fd nxt -> regroup $ (traverse . _1 . _NewChapter . _3 .~ DidFight)  $ do
 >       (charendurance, p) <- fight cconstant cvariable fd
 >       case fd ^? fightMod . traverse . _FakeFight of
 >          Nothing -> if charendurance <= 0
->                       then [(HasLost, p)]
->                       else fmap (*p) <$> update cconstant (cvariable & curendurance .~ charendurance) nxt
->          Just cid -> if charendurance <= 0
->                        then [(NewChapter cid cvariable Didn'tFight, p)]
->                        else map (fmap (*p)) $ update cconstant cvariable $
+>                       then [(HasLost cid, p)]
+>                       else fmap (*p) <$> update cconstant (cvariable & curendurance .~ charendurance) cid nxt
+>          Just cid' -> if charendurance <= 0
+>                         then [(NewChapter cid' cvariable Didn'tFight, p)]
+>                         else map (fmap (*p)) $ update cconstant cvariable cid $
 >                               case fd ^? fightMod . traverse . _Evaded of
 >                                   Just evasionDestination -> Goto evasionDestination
 >                                   Nothing -> nxt
 >  where
 >    uCheck conds = case conds of
 >                     [] -> error "Can't happen"
->                     [(_, lst)] -> update cconstant cvariable lst
+>                     [(_, lst)] -> update cconstant cvariable cid lst
 >                     ((c,o):cs) -> if check cconstant cvariable c
->                                     then update cconstant cvariable o
+>                                     then update cconstant cvariable cid o
 >                                     else uCheck cs
 
 > getMaxHp :: CharacterConstant -> CharacterVariable -> Endurance

@@ -20,7 +20,7 @@ series: Game book solver
 
 > type Proba = Rational
 > type Probably a = [(a, Proba)]
-> type Choice state description = [(description, Probably state)]
+> type Choice state description = (description, Probably state)
 > type Solver state description = state -> (description, Rational, Probably state)
 
 > data Solution state description = Node { _desc    :: !description
@@ -29,7 +29,7 @@ series: Game book solver
 >                                        , _outcome :: !(Probably (Solution state description))
 >                                        }
 >                                 | LeafLost
->                                 | LeafWin !Rational !state
+>                                 | Leaf !Rational !state
 >                                 deriving (Show, Eq, Generic)
 
 > data PScore = Approximate { _proba :: !Proba, _pscore :: !Rational, _next :: PScore }
@@ -57,7 +57,7 @@ series: Game book solver
 >                   Certain x -> x
 >                   Approximate _ _ n -> getCertain n
 
-> data Score = Lose | Win Rational | Unknown
+> data Score = Known !Rational | Unknown
 
 > certain :: a -> Probably a
 > certain a = [(a,1)]
@@ -68,28 +68,27 @@ series: Game book solver
 > winStates :: Ord state => Solution state description -> Probably state
 > winStates s = case s of
 >   LeafLost -> []
->   LeafWin _ st -> certain st
+>   Leaf _ st -> certain st
 >   Node _ _ _ ps -> regroup $ concat $ parMap rseq (\(o,p) -> fmap (*p) <$> winStates o) ps
 
 > getSolScore :: Solution state description -> Rational
 > getSolScore s = case s of
 >                  LeafLost     -> 0
->                  LeafWin x _  -> x
+>                  Leaf x _     -> x
 >                  Node _ _ x _ -> getCertain x
 
 > solve :: Memo.Memo state
->        -> Rational -- max score
->        -> (state -> Choice state description) -- the choice function
->        -> (state -> Score)
->        -> state
->        -> Solution state description
+>       -> Rational -- max score
+>       -> (state -> [Choice state description])
+>       -> (state -> Score)
+>       -> state
+>       -> Solution state description
 > solve memo maxScore getChoice score = go
 >   where
 >     go = memo solve'
 >     solve' stt =
 >       case score stt of
->           Lose    -> LeafLost
->           Win x   -> LeafWin x stt
+>           Known x -> Leaf x stt
 >           Unknown -> if null choices
 >                       then LeafLost
 >                       else maximumBy (scoreCompare maxScore `on` _score) scored
@@ -102,11 +101,8 @@ series: Game book solver
 This works on the assumption the states are grouped!
 
 > mkPScore :: [(Solution state description, Proba)] -> PScore
-> mkPScore = dropTill50 . go 0 0 . sortBy (flip (comparing snd))
+> mkPScore = go 0 0 . sortBy (flip (comparing snd))
 >   where
->     dropTill50 ps = case ps of
->                       Certain _ -> ps
->                       Approximate p _ n -> if p >= (1/2) then ps else dropTill50 n
 >     go curproba curscore lst =
 >       case lst of
 >         [] -> Certain curscore

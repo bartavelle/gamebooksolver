@@ -1,5 +1,4 @@
 > {-# LANGUAGE RankNTypes #-}
-> {-# LANGUAGE OverloadedStrings #-}
 > module SimpleSolver where
 
 > import Data.Ord (comparing)
@@ -14,33 +13,32 @@
 >                                        , _outcome :: Probably (Solution state description)
 >                                        }
 >                                 | LeafLost
->                                 | LeafWin Rational state
+>                                 | Leaf Rational state
 >                                 deriving (Show, Eq)
 
 > getSolScore :: Solution state description -> Rational
 > getSolScore s = case s of
->                  LeafLost -> 0
->                  LeafWin x _ -> x
+>                  LeafLost     -> 0
+>                  Leaf x _     -> x
 >                  Node _ _ x _ -> x
 
 > winStates :: Ord state => Solution state description -> Probably state
 > winStates s = case s of
->   LeafLost -> []
->   LeafWin _ st -> certain st
+>   LeafLost      -> []
+>   Leaf _ st     -> certain st
 >   Node _ _ _ ps -> regroup $ concat $ parMap rseq (\(o,p) -> fmap (*p) <$> winStates o) ps
 
 > solve :: Memo.Memo state
->        ->  (state -> Choice state description) -- the choice function
->        -> (state -> Score)
->        -> state
->        -> Solution state description
+>       ->  (state -> [Choice state description]) -- the choice function
+>       -> (state -> Score)
+>       -> state
+>       -> Solution state description
 > solve memo getChoice score = go
 >  where
 >   go = memo solve'
 >   solve' stt =
 >     case score stt of
->         Lose -> LeafLost
->         Win x -> LeafWin x stt
+>         Known x -> Leaf x stt
 >         Unknown -> if null choices
 >                     then LeafLost
 >                     else maximumBy (comparing getSolScore) scored
