@@ -70,7 +70,7 @@
 >       in  if nvariable ^. curendurance <= 0
 >               then certain (HasLost cid)
 >               else update cconstant nvariable cid nxt
->     Conditionally conditions -> uCheck conditions
+>     Conditionally conditions -> update cconstant cvariable cid (uCheck cconstant cvariable conditions)
 >     Randomly rands -> regroup $ do
 >       (p, o) <- rands
 >       fmap (*p) <$> update cconstant cvariable cid o
@@ -86,13 +86,14 @@
 >                               case fd ^? fightMod . traverse . _Evaded of
 >                                   Just evasionDestination -> Goto evasionDestination
 >                                   Nothing -> nxt
->  where
->    uCheck conds = case conds of
->                     [] -> error "Can't happen"
->                     [(_, lst)] -> update cconstant cvariable cid lst
->                     ((c,o):cs) -> if check cconstant cvariable c
->                                     then update cconstant cvariable cid o
->                                     else uCheck cs
+
+> uCheck :: CharacterConstant -> CharacterVariable -> [(BoolCond, t)] -> t
+> uCheck cconstant cvariable conds = case conds of
+>                  [] -> error "Can't happen"
+>                  [(_, o)] -> o
+>                  ((c,o):cs) -> if check cconstant cvariable c
+>                                  then o
+>                                  else uCheck cconstant cvariable cs
 
 > getMaxHp :: CharacterConstant -> CharacterVariable -> Endurance
 > getMaxHp cconstant cvariable = cconstant ^. maxendurance + if hasItem ChainMail (cvariable ^. equipment) then 4 else 0
