@@ -246,6 +246,7 @@ Lenses, plates and utilities
 > makePrisms ''Decision
 > makePrisms ''FightModifier
 > makeLenses ''FightDetails
+> makeLenses ''Chapter
 >
 > moneyCond :: Int -> ChapterOutcome -> Decision
 > moneyCond price = Conditional (HasItem Gold price) . NoDecision . Simple [LoseItem Gold price]

@@ -76,9 +76,9 @@ flattenDecision cconstant cvariable d =
                                               , (["evasion"], Fight (fdetails & fightMod %~ (Timed nrounds (Evaded cid) :)) co)
                                               ]
         Decisions lst -> do
-            (desc, d') <- lst
+            (cdesc, d') <- lst
             (alldesc, o) <- flattenDecision cconstant cvariable d'
-            return (desc : alldesc, o)
+            return (cdesc : alldesc, o)
         CanTake item count nxt
             | item == Gold
                 -> withEffects [GainItem Gold count] nxt
@@ -125,10 +125,10 @@ cartwheel m
     | otherwise = do
         let cmoney = m + 1 -- free token!
         target <- [max m 22 .. min 50 (cmoney + 40)]
-        let desc = "target: " ++ show target
+        let cdesc = "target: " ++ show target
             res = do
                 (newmoney, proba) <- LoneWolf.Cartwheel.solveFor target cmoney
                 return $ (proba,) $ if newmoney == 0
                              then GameLost
                              else Simple [GainItem Gold (newmoney - m)] (Goto 136)
-        return ([desc], Randomly res)
+        return ([cdesc], Randomly res)

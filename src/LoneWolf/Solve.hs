@@ -54,8 +54,8 @@ step chapters cconstant (NewChapter cid curvariable m) =
         case IM.lookup cid chapters of
             Nothing -> error ("Unknown chapter: " ++ show cid)
             Just (Chapter _ _ d) -> do
-                (desc, outcome) <- flattenDecision cconstant curvariable (if m == DidFight then AfterCombat d else d)
-                return (unwords desc, update cconstant curvariable cid outcome)
+                (cdesc, outcome) <- flattenDecision cconstant curvariable (if m == DidFight then AfterCombat d else d)
+                return (unwords cdesc, update cconstant curvariable cid outcome)
 step _ _ (HasWon c) = [("won", certain (HasWon c))]
 step _ _ (HasLost cid) = [("lost", certain (HasLost cid))]
 {-# INLINE step #-}

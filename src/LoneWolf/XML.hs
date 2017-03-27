@@ -32,18 +32,18 @@ select (x:xs) = (x, xs) : (traverse . _2 %~ (x:)) (select xs)
 loadXML :: FilePath -> IO String
 loadXML xmlpath = unlines . intersperse "    , " . mapMaybe (fmap mkChapterModule . parseChapter) . toListOf getChapters . fst . parse defaultParseOptions <$> L.readFile xmlpath
    where
-      mkChapterModule (cid, Chapter ttl desc pch ) =
-          "  (" ++ show cid ++ ", Chapter " ++ unwords [show ttl, show desc, "(", show pch, ")"] ++ ")"
+      mkChapterModule (cid, Chapter ttl cdesc pch ) =
+          "  (" ++ show cid ++ ", Chapter " ++ unwords [show ttl, show cdesc, "(", show pch, ")"] ++ ")"
       getChapters = children . traverse . parameterized "id" "title" ./ named "data" ./ parameterized "id" "numbered" ./ named "data" ./ named "section" . parameterized "class" "numbered"
 
 parseChapter :: UNode String -> Maybe (ChapterId, Chapter)
 parseChapter nd | rcid `elem` [84, 211,252,191,318,62,75,142,126,263,246,170,327] = Nothing
-                | otherwise = Just (rcid, Chapter cid (unlines desc) gdec)
+                | otherwise = Just (rcid, Chapter cid (unlines cdesc) gdec)
   where
    cid = nd ^. children . traverse . named "meta" ./ named "title" ./ text
    rcid = read cid
    dt = nd ^. children . traverse . named "data" . children
-   (desc, choices) = foldMap accumChoices dt
+   (cdesc, choices) = foldMap accumChoices dt
    computedDecision = case toDec choices of
                           Decisions [(_, o)] -> o
                           o -> o
