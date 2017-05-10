@@ -3,6 +3,7 @@ module Main (main) where
 import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.Book02
+import LoneWolf.Simplify
 
 import Control.Lens
 import Data.Data.Lens
@@ -10,6 +11,7 @@ import Control.Monad
 import Data.List
 import Data.Maybe
 import Data.Ratio
+import System.Environment (getArgs)
 
 getDestinations :: Decision -> [(ChapterId, [String])]
 getDestinations d =
@@ -71,20 +73,22 @@ getDestinations d =
 
 main :: IO ()
 main = do
+    disciplines <- map read <$> getArgs
     putStrLn "digraph G {"
     putStrLn "rankdir=LR;"
-    forM_ chapters $ \(_, Chapter title _ desc) -> do
-        let hasCombat = has (outcomePlate . biplate . _Fight) desc || has (biplate . _EvadeFight) desc
-            eating = preview (outcomePlate . biplate . _MustEat) desc
+    let cconstant = CharacterConstant 25 25 disciplines
+    forM_ (simplify cconstant chapters) $ \(_, Chapter ctitle _ cdesc) -> do
+        let hasCombat = has (outcomePlate . biplate . _Fight) cdesc || has (biplate . _EvadeFight) cdesc
+            eating = preview (outcomePlate . biplate . _MustEat) cdesc
             style | eating == Just NoHunt = "color=yellow style=filled"
                   | eating == Just Hunt = "color=yellow"
                   | hasCombat = "color=red"
-                  | has (biplate . _GameLost) desc = "fillcolor=black style=filled fontcolor=white"
-                  | has _Special desc = "shape=square color=blue"
+                  | has (biplate . _GameLost) cdesc = "fillcolor=black style=filled fontcolor=white"
+                  | has _Special cdesc = "shape=square color=blue"
                   | otherwise = ""
-            label | has (biplate . _GameLost) desc = title ++ " :("
-                  | otherwise = title
-        putStrLn (show title ++ " [" ++ style ++ " label=" ++ show label ++ " URL=\"https://www.projectaon.org/en/xhtml/lw/02fotw/sect" ++ title ++ ".htm\"];")
-        forM_ (nub $ getDestinations desc) $ \(dest, comment) -> do
-            putStrLn (show title ++ " -> " ++ show (show dest) ++ " [label=" ++ show (unwords (nub comment)) ++ "]")
+            label | has (biplate . _GameLost) cdesc = ctitle ++ " :("
+                  | otherwise = ctitle
+        putStrLn (show ctitle ++ " [" ++ style ++ " label=" ++ show label ++ " URL=\"https://www.projectaon.org/en/xhtml/lw/02fotw/sect" ++ ctitle ++ ".htm\"];")
+        forM_ (nub $ getDestinations cdesc) $ \(dest, comment) ->
+            putStrLn (show ctitle ++ " -> " ++ show (show dest) ++ " [label=" ++ show (unwords (nub comment)) ++ "]")
     putStrLn "}"

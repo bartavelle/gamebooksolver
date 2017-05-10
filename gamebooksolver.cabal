@@ -25,6 +25,7 @@ library
                        LoneWolf.CombatChart
                        LoneWolf.Choices
                        LoneWolf.Solve
+                       LoneWolf.Simplify
                        LoneWolf.Book02
                        Text.XML.Expat.Lens.Generic
                        LoneWolf.Cartwheel
@@ -40,6 +41,8 @@ library
                      , linear
                      , containers
                      , parallel
+                     , mtl
+                     , superbubbles
   default-language:    Haskell2010
 
 executable gamebooksolver-genchapters
