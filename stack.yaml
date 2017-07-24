@@ -44,8 +44,6 @@ packages:
 extra-deps:
 - hexpat-0.20.10
 - hexpat-tagsoup-0.1
-- discrimination-0.2.1
-- promises-0.3
 
 # Override default flag values for local packages and extra-deps
 flags: {}
