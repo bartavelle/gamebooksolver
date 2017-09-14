@@ -3250,6 +3250,7 @@ chapters =
         "At the end of this street is a large stable. To your right, you can see some of the mob searching the shops and houses. Suddenly, one of them sees you and raises the alarm. \"There he is-there's the murderer!\"\nThere is no time to think. You rush into the stable and freeing one of the horses you leap onto its back. As you ride out into the moonlight, an axe flies through the air and grazes your shoulder. You lose 1 ENDURANCE point and make your escape into the night.\n"
         (NoDecision
            (Simple [DamagePlayer (Endurance {getEndurance = 1})] (Goto 150))))
+           {-
   , ( 348
     , Chapter
         "348"
@@ -3263,7 +3264,7 @@ chapters =
             , _fendurance = Endurance {getEndurance = 25}
             , _fightMod = []
             })
-           (Goto 333)))
+           (Goto 333))) -}
   , ( 349
     , Chapter
         "349"

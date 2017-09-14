@@ -23,7 +23,7 @@ uitem :: Gen Item
 uitem = suchThat aitem (`notElem` [Gold, Meal])
 
 nstep :: Gen NextStep
-nstep = oneof [ pure HasLost, HasWon <$> cvar, NewChapter <$> elements [1..350] <*> cvar <*> elements [DidFight, Didn'tFight] ]
+nstep = oneof [ HasLost <$> elements [1..350], HasWon <$> cvar, NewChapter <$> elements [1..350] <*> cvar <*> elements [DidFight, Didn'tFight] ]
 
 cvar :: Gen CharacterVariable
 cvar = mkCharacter <$> elements [1..25] <*> inventory
@@ -48,7 +48,7 @@ addProba lst = do
 
 solution :: Gen (Solution Int Int)
 solution = do
-  let lsolution = frequency [ (1, solution), (20, pure LeafLost), (5, LeafWin <$> proba <*> arbitrary) ]
+  let lsolution = frequency [ (1, solution), (20, pure LeafLost), (5, Leaf <$> proba <*> arbitrary) ]
   aleaves <- suchThat (listOf lsolution) (\l -> not (null l) && length l < 10)
   leaves <- addProba aleaves
   Node <$> arbitrary <*> arbitrary <*> pure (mkPScore leaves) <*> pure leaves

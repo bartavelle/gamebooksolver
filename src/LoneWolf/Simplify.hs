@@ -9,17 +9,22 @@ import Graph.Superbubbles
 import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
+import qualified Data.Tree as T
 import Control.Monad.State
 import Data.Monoid
 import Control.Lens
-import Data.List
-import Data.Ord
 
-newtype ChapterSummary = ChapterSummary { _getSummary :: M.Map (S.Set ChapterId) (LinkType, ItemList) }
-                         deriving (Show, Eq)
+import Debug.Trace
 
-newtype ItemList = ItemList { _getItemList :: M.Map Item Int }
-                   deriving (Show, Eq)
+newtype ChapterSummary
+  = ChapterSummary
+  { _getSummary :: M.Map (S.Set ChapterId) (LinkType, ItemList)
+  } deriving (Show, Eq)
+
+newtype ItemList
+  = ItemList
+  { _getItemList :: M.Map Item Int
+  } deriving (Show, Eq)
 
 instance Monoid ItemList where
     mempty = ItemList mempty
@@ -173,7 +178,10 @@ getEffectType so = case so of
     GainItem i n   -> (Good, itemlist i n)
 
 simplify' :: CharacterConstant -> IM.IntMap Chapter -> IM.IntMap Chapter
-simplify' cconstant chapters = execState (go 1) chapters
+simplify' cconstant chapters = error (show (length $ superBubbleTree cconstant chapters))
+
+superBubbleTree :: CharacterConstant -> IM.IntMap Chapter -> T.Forest (ChapterId, ChapterId)
+superBubbleTree cconstant chapters = go 1 350
   where
     cmap = fmap (getCChildren cconstant . _pchoice) chapters
     pmap = IM.fromListWith mappend $ do
@@ -181,43 +189,14 @@ simplify' cconstant chapters = execState (go 1) chapters
       c <- S.toList cs
       return (c, S.singleton p)
     findBubble = findSuperbubble (\i -> cmap ^?! ix i) (\i -> pmap ^?! ix i)
-    go :: ChapterId -> State (IM.IntMap Chapter) ()
-    go 350 = return ()
-    go 39 = go 346
-    go start =
-      case findBubble start of
-        Left _ -> case toListOf (ix start . folded) cmap of
-                    [] -> error ("No children for " ++ show start ++ ", this should not happen")
-                    (x:_) -> go x
-        Right end -> do
-          modify (pruneBadPath start end)
-          go end
+    go :: Int -> Int -> T.Forest (ChapterId, ChapterId)
+    go s e
+      | traceShow (s,e) (s == e) = []
+      | otherwise = case findBubble s of
+               Left r -> case cmap ^.. ix s . folded of
+                           [c] -> go c e
+                           x -> traceShow (s,e,r,x) []
+               Right e' -> T.Node (s, e') (bub s e') : go e' e
+    bub :: Int -> Int -> T.Forest (ChapterId, ChapterId)
+    bub s e = concatMap (`go` e) (cmap ^.. ix s . folded)
 
-pruneBadPath :: ChapterId -> ChapterId -> IM.IntMap Chapter -> IM.IntMap Chapter
-pruneBadPath start end chapters
-    | not (null goods) = dropPathes (bads ++ neutrals)
-    | not (null neutrals) = dropPathes (bads ++ longNeutrals)
-    | otherwise = dropPathes longNeutrals
-  where
-    dropPathes :: [ [S.Set ChapterId] ] -> IM.IntMap Chapter
-    dropPathes = undefined
-    bads, neutrals, goods :: [ [S.Set ChapterId] ]
-    bads     = pathMap ^.. ix Bad     . folded
-    neutrals = pathMap ^.. ix Neutral . folded
-    goods    = pathMap ^.. ix Good    . folded
-    longNeutrals
-      | null neutrals = []
-      | otherwise = case minimumBy (comparing (length . snd)) (select neutrals) of
-                      (_, remaining) -> remaining
-
-    pathMap = M.fromListWith (++) $ do
-      pth <- allpathes
-      let (lt, pth') = pathType pth
-      return (lt, [pth'])
-    pathType :: [(S.Set ChapterId, LinkType)] -> (LinkType, [S.Set ChapterId])
-    pathType lst = (foldMap snd lst, map fst lst)
-    allpathes :: [ [(S.Set ChapterId, LinkType)] ]
-    allpathes = findPathes start
-    findPathes curchapter
-      | curchapter == end = []
-      | otherwise = undefined
