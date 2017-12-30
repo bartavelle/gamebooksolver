@@ -2,7 +2,6 @@ module LoneWolf.Simplify (simplify, path, getLinks) where
 
 import LoneWolf.Chapter
 import LoneWolf.Character
-import LoneWolf.XML (select)
 
 import Graph.Superbubbles
 
@@ -178,13 +177,17 @@ getEffectType so = case so of
     GainItem i n   -> (Good, itemlist i n)
 
 simplify' :: CharacterConstant -> IM.IntMap Chapter -> IM.IntMap Chapter
-simplify' cconstant chapters = error (show (length $ superBubbleTree cconstant chapters))
+simplify' cconstant chapters = error ("simplify': " ++ show (superBubbleTree cconstant chapters))
 
 superBubbleTree :: CharacterConstant -> IM.IntMap Chapter -> T.Forest (ChapterId, ChapterId)
 superBubbleTree cconstant chapters = go 1 350
   where
-    cmap = fmap (getCChildren cconstant . _pchoice) chapters
-    pmap = IM.fromListWith mappend $ do
+    cmapO = fmap (getCChildren cconstant . _pchoice) chapters
+    allParents = S.fromList (IM.keys cmapO)
+    allChildren = mconcat (IM.elems cmapO)
+    withoutParents = S.delete 1 (allParents `S.difference` allChildren)
+    cmap = IM.filterWithKey (\k _ -> k `S.notMember` withoutParents) cmapO
+    pmap = IM.fromListWith S.union $ do
       (p, cs) <- IM.toList cmap
       c <- S.toList cs
       return (c, S.singleton p)
@@ -192,7 +195,7 @@ superBubbleTree cconstant chapters = go 1 350
     go :: Int -> Int -> T.Forest (ChapterId, ChapterId)
     go s e
       | traceShow (s,e) (s == e) = []
-      | otherwise = case findBubble s of
+      | otherwise = case traceShowId (findBubble s) of
                Left r -> case cmap ^.. ix s . folded of
                            [c] -> go c e
                            x -> traceShow (s,e,r,x) []
