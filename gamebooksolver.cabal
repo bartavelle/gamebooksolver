@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Solver
                        SimpleSolver
+                       Simplifier
                        LoneWolf.Character
                        LoneWolf.Chapter
                        LoneWolf.Combat
@@ -93,6 +94,7 @@ test-suite gamebooksolver-test
                      , hspec
                      , QuickCheck
                      , lens
+                     , containers
   ghc-options:         -threaded -rtsopts -Wall
   default-language:    Haskell2010
 

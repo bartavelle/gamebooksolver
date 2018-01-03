@@ -16,6 +16,8 @@ import Control.Monad
 import Solver
 import qualified SimpleSolver as S
 
+import qualified SimplifierSpec
+
 aitem :: Gen Item
 aitem = arbitraryBoundedEnum
 
@@ -118,3 +120,4 @@ main = hspec $ do
                                                    Nothing -> False
                                                    Just l -> sum (map fst l) /= 1
             in  lst `shouldBe` []
+    SimplifierSpec.tests

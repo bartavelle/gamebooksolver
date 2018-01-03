@@ -1,14 +1,14 @@
-module LoneWolf.Simplify (simplify, path, getLinks) where
+module LoneWolf.Simplify (simplify, path, getLinks, forSimplification) where
 
 import LoneWolf.Chapter
 import LoneWolf.Character
-
-import Graph.Superbubbles
+import Simplifier
 
 import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
 import qualified Data.Tree as T
+import qualified Data.Graph as G
 import Control.Monad.State
 import Data.Monoid
 import Control.Lens
@@ -71,20 +71,6 @@ dropUnreachable cconstant chapters = fmap pruneBadChoices chapters
     reachablechoice decision =
       let targets = getCChildren cconstant decision
       in  any (\i -> path cconstant chapters i 350) targets
-
-data LinkType = Neutral
-              | Good
-              | Bad
-              | Both
-              deriving (Show, Eq, Ord)
-
-instance Monoid LinkType where
-    mempty = Neutral
-    Neutral `mappend` b = b
-    a `mappend` Neutral = a
-    a `mappend` b = if a == b
-                        then a
-                        else Both
 
 data ConditionIs = Possible
                  | Impossible
@@ -176,30 +162,28 @@ getEffectType so = case so of
     MustEat _      -> (Bad, mempty)
     GainItem i n   -> (Good, itemlist i n)
 
-simplify' :: CharacterConstant -> IM.IntMap Chapter -> IM.IntMap Chapter
-simplify' cconstant chapters = error ("simplify': " ++ show (superBubbleTree cconstant chapters))
-
-superBubbleTree :: CharacterConstant -> IM.IntMap Chapter -> T.Forest (ChapterId, ChapterId)
-superBubbleTree cconstant chapters = go 1 350
+forSimplification :: CharacterConstant
+                  -> IM.IntMap Chapter
+                  -> (ChapterId -> Int, ChapterId -> S.Set ChapterId)
+forSimplification cconstant chapters = (priority, childs)
   where
-    cmapO = fmap (getCChildren cconstant . _pchoice) chapters
-    allParents = S.fromList (IM.keys cmapO)
-    allChildren = mconcat (IM.elems cmapO)
-    withoutParents = S.delete 1 (allParents `S.difference` allChildren)
-    cmap = IM.filterWithKey (\k _ -> k `S.notMember` withoutParents) cmapO
-    pmap = IM.fromListWith S.union $ do
-      (p, cs) <- IM.toList cmap
+    childsMap = childMap cconstant chapters
+    childs k = IM.findWithDefault mempty k childsMap
+    priority k = IM.findWithDefault 999 k priomap
+    priomap = IM.fromList (zip tsorted [0 :: Int ..])
+    tsorted = G.topSort graph
+    graph = G.buildG (1, 350) $ do
+      (p, cs) <- IM.toList childsMap
       c <- S.toList cs
-      return (c, S.singleton p)
-    findBubble = findSuperbubble (\i -> cmap ^?! ix i) (\i -> pmap ^?! ix i)
-    go :: Int -> Int -> T.Forest (ChapterId, ChapterId)
-    go s e
-      | traceShow (s,e) (s == e) = []
-      | otherwise = case traceShowId (findBubble s) of
-               Left r -> case cmap ^.. ix s . folded of
-                           [c] -> go c e
-                           x -> traceShow (s,e,r,x) []
-               Right e' -> T.Node (s, e') (bub s e') : go e' e
-    bub :: Int -> Int -> T.Forest (ChapterId, ChapterId)
-    bub s e = concatMap (`go` e) (cmap ^.. ix s . folded)
+      return (p, c)
+
+simplify' :: CharacterConstant -> IM.IntMap Chapter -> IM.IntMap Chapter
+simplify' cconstant chapters = case bubbleTree priority childs 1 350 of
+                                 Nothing -> chapters
+                                 Just f -> trace (T.drawTree $ fmap show f) chapters
+  where
+    (priority, childs) = forSimplification cconstant chapters
+
+childMap :: CharacterConstant -> IM.IntMap Chapter -> IM.IntMap (S.Set ChapterId)
+childMap cconstant = fmap (getCChildren cconstant . _pchoice)
 
