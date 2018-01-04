@@ -35,7 +35,6 @@ module Text.XML.Expat.Lens.Generic (
          
   ) where
 
-import Control.Applicative
 import Control.Lens hiding (children)
 import Control.Monad
 

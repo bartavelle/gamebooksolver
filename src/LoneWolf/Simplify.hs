@@ -7,13 +7,11 @@ import Simplifier
 import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
-import qualified Data.Tree as T
-import qualified Data.Graph as G
 import Control.Monad.State
 import Data.Monoid
 import Control.Lens
-
-import Debug.Trace
+import Data.List
+import Data.Ord
 
 newtype ChapterSummary
   = ChapterSummary
@@ -164,25 +162,22 @@ getEffectType so = case so of
 
 forSimplification :: CharacterConstant
                   -> IM.IntMap Chapter
-                  -> (ChapterId -> Int, ChapterId -> S.Set ChapterId)
-forSimplification cconstant chapters = (priority, childs)
+                  -> (ChapterId -> Int, ChapterId -> S.Set ChapterId, ChapterId -> M.Map (S.Set ChapterId) LinkType)
+forSimplification cconstant chapters = (priority, childs, childsComplete)
   where
+    childsComplete :: ChapterId -> M.Map (S.Set ChapterId) LinkType
+    childsComplete k = IM.findWithDefault mempty k (fmap (fmap fst . _getSummary . getLinks cconstant . _pchoice) chapters)
     childsMap = childMap cconstant chapters
     childs k = IM.findWithDefault mempty k childsMap
     priority k = IM.findWithDefault 999 k priomap
-    priomap = IM.fromList (zip tsorted [0 :: Int ..])
-    tsorted = G.topSort graph
-    graph = G.buildG (1, 350) $ do
-      (p, cs) <- IM.toList childsMap
-      c <- S.toList cs
-      return (p, c)
+    priomap = IM.fromList (zip (map fst $ sortBy (comparing snd) $ M.toList (dfs childs 1)) [0..])
 
 simplify' :: CharacterConstant -> IM.IntMap Chapter -> IM.IntMap Chapter
 simplify' cconstant chapters = case bubbleTree priority childs 1 350 of
                                  Nothing -> chapters
-                                 Just f -> trace (T.drawTree $ fmap show f) chapters
+                                 Just _ -> chapters
   where
-    (priority, childs) = forSimplification cconstant chapters
+    (priority, childs, _) = forSimplification cconstant chapters
 
 childMap :: CharacterConstant -> IM.IntMap Chapter -> IM.IntMap (S.Set ChapterId)
 childMap cconstant = fmap (getCChildren cconstant . _pchoice)

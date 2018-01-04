@@ -11,10 +11,12 @@ import LoneWolf.Chapter (ChapterId)
 import qualified Data.Graph as G
 import qualified Data.Set as S
 import qualified Data.IntMap.Strict as IM
+import qualified Data.Map.Strict as M
 
 priority :: ChapterId -> Int
 childs :: ChapterId -> S.Set ChapterId
-(priority, childs) = forSimplification (CharacterConstant 25 25 []) (IM.fromList chapters)
+childsComplete :: ChapterId -> M.Map (S.Set ChapterId) LinkType
+(priority, childs, childsComplete) = forSimplification (CharacterConstant 25 25 []) (IM.fromList chapters)
 
 tests :: SpecWith ()
 tests = do
@@ -29,6 +31,9 @@ tests = do
       btree 1 160 `shouldBe` Just (G.Node (1, 160) [] )
     it "Works for part 1-300" $
       btree 1 300 `shouldBe` Just (G.Node (1, 300) [G.Node (1, 160) [], G.Node (268, 300) [G.Node (333, 300) []]] )
+  describe "findAllPathes" $
+    it "Works for part 1-160" $
+      findAllPathes childsComplete mempty 1 160 `shouldBe` [[(S.fromList [160],Neutral)],[(S.fromList [273],Neutral),(S.fromList [160],Neutral)]]
 
-foo :: String
-foo = graphMap childs 1 350
+foo :: Int -> String
+foo = graphMap priority childsComplete childs 1
