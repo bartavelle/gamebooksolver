@@ -17,13 +17,15 @@ data LinkType = Neutral
               | Both
               deriving (Show, Eq, Ord)
 
+instance Semigroup LinkType where
+    a <> Neutral = a
+    a <> b = if a == b
+               then a
+               else Both
+
 instance Monoid LinkType where
     mempty = Neutral
     Neutral `mappend` b = b
-    a `mappend` Neutral = a
-    a `mappend` b = if a == b
-                        then a
-                        else Both
 
 uselessEdges
   :: forall chapterid priority. (Ord chapterid, Ord priority, Show chapterid)

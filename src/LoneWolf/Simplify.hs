@@ -23,13 +23,17 @@ newtype ItemList
   { _getItemList :: M.Map Item Int
   } deriving (Show, Eq)
 
+instance Semigroup ItemList where
+    ItemList a <> ItemList b = ItemList (M.unionWith (+) a b)
+
 instance Monoid ItemList where
     mempty = ItemList mempty
-    mappend (ItemList a) (ItemList b) = ItemList (M.unionWith (+) a b)
+
+instance Semigroup ChapterSummary where
+    ChapterSummary a <> ChapterSummary b = ChapterSummary (M.unionWith (<>) a b)
 
 instance Monoid ChapterSummary where
     mempty = ChapterSummary mempty
-    mappend (ChapterSummary a) (ChapterSummary b) = ChapterSummary (M.unionWith (<>) a b)
 
 getSummary :: Lens' ChapterSummary (M.Map (S.Set ChapterId) (LinkType, ItemList))
 getSummary f (ChapterSummary s) = ChapterSummary <$> f s
@@ -75,10 +79,13 @@ data ConditionIs = Possible
                  | Unknown
                  deriving (Show, Eq, Ord)
 
+instance Semigroup ConditionIs where
+    a <> b = if a == b
+               then a
+               else Unknown
+
 instance Monoid ConditionIs where
     mempty = Unknown
-    mappend a b | a == b = a
-                | otherwise = Unknown
 
 alt :: ChapterSummary -> ChapterSummary -> ChapterSummary
 alt (ChapterSummary a) (ChapterSummary b) = ChapterSummary $ M.fromListWith (<>) $ do

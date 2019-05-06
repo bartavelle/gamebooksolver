@@ -9,14 +9,17 @@ import Text.XML.Expat.Tree
 import Text.XML.Expat.Lens.Generic
 import qualified Data.ByteString.Lazy as L
 import Data.List
-import Text.Megaparsec.String
-import Text.Megaparsec (parseMaybe, string, sepBy1, skipMany, anyChar)
+import Text.Megaparsec.Char
+import Text.Megaparsec (parseMaybe, sepBy1, skipMany, Parsec, satisfy)
 import Data.Char (isDigit)
 import Data.Maybe
 import Data.Data.Lens
+import Data.Void
 
 import LoneWolf.Chapter
 import LoneWolf.Character
+
+type Parser = Parsec Void String
 
 data AC = Jmp String ChapterId
         | Combat String Int Int
@@ -315,7 +318,7 @@ parseCondition = parseMaybe pcond
                   [x] -> HasDiscipline x
                   [x,y] -> COr (HasDiscipline x) (HasDiscipline y)
                   _ -> error ("cnd: " ++  show ds)
-    skipMany (anyChar)
+    skipMany (satisfy (const True))
     return cnd
 
 toDec :: [AC] -> Decision
@@ -328,12 +331,12 @@ toDec a | all (has _Jmp) a = parseJump (jumps a)
                                                               Nothing -> Decisions [(s1, NoDecision cid1), (s2, NoDecision cid2)]
                                                               Just cnd -> NoDecision (Conditionally [(cnd, cid1), (botherwise, cid2)])
                          _ -> Decisions $ map (\(s,cid) -> (s, NoDecision cid)) jmps
-    randomRange (s, cid) = case (msum (map (\p -> stripPrefix p s) [ "If the number that you have picked is "
-                                                                   , "If the number you have picked is "
-                                                                   , "If the number you have chosen is "
-                                                                   , "If the number is "
-                                                                   , "If it is "
-                                                                   ] ) ) of
+    randomRange (s, cid) = case msum (map (`stripPrefix` s) [ "If the number that you have picked is "
+                                                            , "If the number you have picked is "
+                                                            , "If the number you have chosen is "
+                                                            , "If the number is "
+                                                            , "If it is "
+                                                            ] ) of
                                Just ( x : '-' : y : _ ) -> Just (fromIntegral (1 + read [y] - read [x] :: Int) / 10, cid)
                                Just ( x : ',' : _) | isDigit x -> Just (1/10, cid)
                                _ -> Nothing
