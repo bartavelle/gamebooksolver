@@ -10,7 +10,6 @@ maintainer:          bartavelle@gmail.com
 copyright:           Simon Marechal
 category:            Web
 build-type:          Simple
-extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
@@ -28,6 +27,7 @@ library
                        LoneWolf.Solve
                        LoneWolf.Simplify
                        LoneWolf.Book02
+                       LoneWolf.Various
                        Text.XML.Expat.Lens.Generic
                        LoneWolf.Cartwheel
   ghc-options:         -Wall -funbox-strict-fields -g

@@ -8,7 +8,10 @@
 >
 > import qualified Data.MemoCombinators as Memo
 > import Control.Lens
+> import Data.Bifunctor (first)
 > import Data.Maybe
+
+Fight a single round
 
 > fightRound :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Endurance, Endurance)
 > fightRound cconstant cvariable fdetails = regroup $ do
@@ -42,7 +45,7 @@
 > fight :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably Endurance
 > fight cconstant cvariable fdetails
 >   | has (fightMod . traverse . _Evaded) fdetails =
->       (\(a,p) -> (fst a, p)) <$> fightRound cconstant cvariable fdetails
+>       first fst <$> fightRound cconstant cvariable fdetails
 >   | has (fightMod . traverse . _Timed) fdetails = regroup $ do
 >       ((hpLW, hpOpponent), p) <- fightRound cconstant cvariable fdetails
 >       let outcome
@@ -83,7 +86,7 @@
 >   | php <= 0 || ohp <= 0 = certain (max 0 php, max 0 ohp)
 >   | otherwise = regroup $ do
 >       (odmg, pdmg) <- hits ratio
->       fmap (/10) <$> fightVanillaM ratio (php - pdmg - 2) (ohp - odmg)
+>       fmap (/10) <$> fightMindBlastedM ratio (php - pdmg - 2) (ohp - odmg)
 
 > getRatio :: CharacterConstant -> CharacterVariable -> FightDetails -> CombatSkill
 > getRatio cconstant cvariable fdetails =
@@ -97,12 +100,15 @@
 >     disciplines = cconstant ^. discipline
 >     weaponModifier | BareHanded `elem` modifiers = -4
 >                    | null weapons = -4
+>                    | MagicSpear `elem` weapons = if WeaponSkill Spear `elem` disciplines
+>                                                     then 2
+>                                                     else 0
 >                    | Sommerswerd `elem` weapons = if any ((`elem` disciplines) . WeaponSkill) [ShortSword, BroadSword, Sword]
 >                                                       then 12
 >                                                       else 10
 >                    | any ((`elem` disciplines) . WeaponSkill) weapons = 2
 >                    | otherwise = 0
->     mindblastBonus = if MindBlast `elem` disciplines && not (MindblastImmune `elem` modifiers)
+>     mindblastBonus = if MindBlast `elem` disciplines && notElem MindblastImmune modifiers
 >                          then 2
 >                          else 0
 >     shieldBonus = if hasItem Shield (cvariable ^. equipment) then 2 else 0
