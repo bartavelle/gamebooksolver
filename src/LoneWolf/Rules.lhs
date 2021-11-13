@@ -9,17 +9,19 @@
 >
 > import Control.Lens
 > import Data.List
+> import Data.Hashable
 > import GHC.Generics
 
 > data HadCombat = Didn'tFight
 >                | DidFight
 >                deriving (Show, Eq, Generic, Ord)
+> instance Hashable HadCombat
 
 > data NextStep = NewChapter !ChapterId !CharacterVariable !HadCombat
 >               | HasLost !ChapterId
 >               | HasWon !CharacterVariable
 >               deriving (Show, Eq, Generic, Ord)
-
+> instance Hashable NextStep
 > makePrisms ''NextStep
 
 > check :: CharacterConstant -> CharacterVariable -> BoolCond -> Bool

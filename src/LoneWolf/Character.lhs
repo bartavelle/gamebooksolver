@@ -5,9 +5,9 @@ Language extensions, imports
 
 Nothing much to say here, except perhaps the not that common option `DeriveDataTypeable`, which will turn out to be very handy for using `biplate`.
 
+> {-# LANGUAGE DeriveDataTypeable #-}
 > {-# LANGUAGE DeriveGeneric #-}
 > {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-> {-# LANGUAGE DeriveDataTypeable #-}
 > {-# LANGUAGE TemplateHaskell #-}
 >
 > module LoneWolf.Character where
@@ -18,6 +18,7 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 > import Control.Lens
 > import Data.Bits
 > import Data.List
+> import Data.Hashable
 
 Character sheet
 ---------------
@@ -37,7 +38,7 @@ In the constant part, the combat skill and endurance are randomly determined whe
 >
 > newtype Endurance = Endurance { getEndurance :: Int }
 >   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
->
+
 > data CharacterConstant = CharacterConstant
 >       { _maxendurance :: Endurance
 >       , _combatSkill  :: CombatSkill
@@ -47,7 +48,7 @@ In the constant part, the combat skill and endurance are randomly determined whe
 The variable part holds the player inventory, and current health points.
 
 > newtype CharacterVariable = CharacterVariable { getCharacterVariable :: Word64 }
->                           deriving (Generic, Eq, Bits, Ord)
+>                           deriving (Generic, Eq, Bits, Ord, Hashable)
 
 > mkCharacter :: Endurance -> Inventory -> CharacterVariable
 > mkCharacter e i = CharacterVariable 0 & curendurance .~ e & equipment .~ i

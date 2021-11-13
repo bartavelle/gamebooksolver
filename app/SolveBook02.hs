@@ -59,5 +59,5 @@ main = do
         | null cs = [39]
         | otherwise = cs
   putStrLn ("Winning probability: " ++ show (fromRational score :: Double) ++ " [" ++ show score ++ "]")
-  let showWinState (st, p) = printf "%.4f %s\n" (fromRational p :: Double) (show st)
-  mapM_ showWinState (sortBy (flip (comparing snd)) wstates)
+--   let showWinState (st, p) = printf "%.4f %s\n" (fromRational p :: Double) (show st)
+--   mapM_ showWinState (sortBy (flip (comparing snd)) wstates)

@@ -11,6 +11,7 @@ import LoneWolf.Choices
 import LoneWolf.Rules
 import qualified SimpleSolver as S
 import Solver
+import SolverHashable
 
 startConstant :: CharacterConstant
 startConstant = CharacterConstant 25 15 [Hunting, WeaponSkill ShortSword, MindBlast, SixthSense, MindShield]
@@ -74,8 +75,20 @@ solveLW target book cconstant cvariable = solve memoState 1 (step chapters ccons
     chapters = IM.fromList book
     starget = IS.fromList target
 
+wstep :: IM.IntMap Chapter -> CharacterConstant -> (Word16, Word64) -> [(String, Probably (Word16, Word64))]
+wstep is cc = map (fmap (mapProbably toWord64)) . step is cc . fromWord64
+
+wgetScore :: IS.IntSet -> (Word16, Word64) -> Score
+wgetScore is = getScore is . fromWord64
+
 solveLWs :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> S.Solution NextStep String
-solveLWs target book cconstant cvariable = S.solve memoState (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
+solveLWs target book cconstant cvariable = solveH (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
   where
     chapters = IM.fromList book
     starget = IS.fromList target
+
+-- solveLWs :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> S.Solution NextStep String
+-- solveLWs target book cconstant cvariable = S.lmapSol fromWord64 $ solveH (wstep chapters cconstant) (wgetScore starget) (toWord64 (NewChapter 1 cvariable Didn'tFight))
+--   where
+--     chapters = IM.fromList book
+--     starget = IS.fromList target

@@ -23,6 +23,9 @@ series: Game book solver
 > type Choice state description = (description, Probably state)
 > type Solver state description = state -> (description, Rational, Probably state)
 
+> mapProbably :: (a -> b) -> Probably a -> Probably b
+> mapProbably f = map (\(a, p) -> (f a, p))
+
 > data Solution state description = Node { _desc    :: !description
 >                                        , _stt     :: !state
 >                                        , _score   :: !PScore
@@ -31,6 +34,13 @@ series: Game book solver
 >                                 | LeafLost
 >                                 | Leaf !Rational !state
 >                                 deriving (Show, Eq, Generic)
+
+> lmapSol :: (s1 -> s2) -> Solution s1 desc -> Solution s2 desc
+> lmapSol f s =
+>   case s of
+>     LeafLost -> LeafLost
+>     Leaf sc st -> Leaf sc (f st)
+>     Node d st sc o -> Node d (f st) sc (mapProbably (lmapSol f) o)
 
 > data PScore = Approximate { _proba :: !Proba, _pscore :: !Rational, _next :: PScore }
 >             | Certain !Rational

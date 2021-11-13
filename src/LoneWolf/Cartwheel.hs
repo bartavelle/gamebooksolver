@@ -3,7 +3,6 @@ module LoneWolf.Cartwheel (allmatrices, solveFor, showMatrix, graph) where
 import Control.Lens
 import qualified Data.IntMap as IM
 import Data.List
-import Data.Ratio
 import Linear.Matrix
 import Text.Printf
 

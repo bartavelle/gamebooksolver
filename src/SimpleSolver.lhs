@@ -3,7 +3,7 @@
 
 > import Data.Ord (comparing)
 > import Data.List
-> import Solver hiding (solve, Solution(..), getSolScore, winStates)
+> import Solver hiding (solve, Solution(..), getSolScore, winStates, lmapSol)
 > import qualified Data.MemoCombinators as Memo
 > import Control.Parallel.Strategies
 
@@ -15,6 +15,13 @@
 >                                 | LeafLost
 >                                 | Leaf Rational state
 >                                 deriving (Show, Eq)
+
+> lmapSol :: (s1 -> s2) -> Solution s1 desc -> Solution s2 desc
+> lmapSol f s =
+>   case s of
+>     LeafLost -> LeafLost
+>     Leaf sc st -> Leaf sc (f st)
+>     Node d st sc o -> Node d (f st) sc (mapProbably (lmapSol f) o)
 
 > getSolScore :: Solution state description -> Rational
 > getSolScore s = case s of

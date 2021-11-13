@@ -5,7 +5,6 @@ import Control.Monad.State
 import qualified Data.IntMap.Strict as IM
 import Data.List
 import qualified Data.Map.Strict as M
-import Data.Monoid
 import Data.Ord
 import qualified Data.Set as S
 import LoneWolf.Chapter
