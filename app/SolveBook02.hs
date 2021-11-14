@@ -1,41 +1,13 @@
 module Main (main) where
 
-import Control.Lens
-import Data.Data.Lens
-import Data.List
 import Data.Maybe (mapMaybe)
-import Data.Ord
 import LoneWolf.Book02
-import LoneWolf.Chapter
-import LoneWolf.Character
 import LoneWolf.Rules (NextStep)
-import LoneWolf.Simplify (extractMultiFight)
 import LoneWolf.Solve
 import qualified SimpleSolver as S
 import Solver
 import System.Environment
-import Text.Printf
 import Text.Read (readMaybe)
-
-pchapters :: [(ChapterId, Chapter)]
-pchapters = map patch (extractMultiFight chapters)
-  where
-    patch (200, Chapter t d _) = (200, Chapter t d (NoDecision (Goto 158)))
-    patch (314, Chapter t d dc) = (314, Chapter t d (limitMoneyAt 12 dc))
-    patch (33, Chapter t d dc) = (33, Chapter t d (limitMoneyAt 12 dc))
-    patch (150, Chapter t d _) = (150, Chapter t d (NoDecision (Simple [MustEat Hunt] condhammer))) -- patch, better way
-    patch x = x
-    condhammer =
-      Conditionally
-        [ (HasItem SealHammerdalVol2 1, Goto 15),
-          (Always True, Goto 244)
-        ]
-    limitMoneyAt maxmoney dc =
-      dc & biplate %~ \o ->
-        Conditionally
-          [ (HasItem Gold maxmoney, Simple [LoseItemKind [PouchSlot], GainItem Gold maxmoney] o),
-            (Always True, o)
-          ]
 
 defaultSol :: [Int] -> (Rational, [(NextStep, Proba)])
 defaultSol target =

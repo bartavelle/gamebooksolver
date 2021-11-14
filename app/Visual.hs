@@ -5,84 +5,34 @@ import Control.Monad
 import Data.Data.Lens
 import qualified Data.IntMap.Strict as IM
 import Data.List
-import Data.Maybe
-import Data.Ratio
-import qualified Data.Set as S
+import qualified Data.Map.Strict as M
 import LoneWolf.Book02
 import LoneWolf.Chapter
-import LoneWolf.Character
-import LoneWolf.Simplify
-import Simplifier
-import System.Environment (getArgs)
+import LoneWolf.Various (getDestinations)
 
-getDestinations :: Decision -> [(ChapterId, [String])]
-getDestinations d =
-  case d of
-    Decisions lst -> concatMap (getDestinations . snd) lst
-    CanTake i c d' -> append (takeDesc i c) $ getDestinations d'
-    Cansell _ _ d' -> append "sell" $ getDestinations d'
-    Canbuy _ _ d' -> append "buy" $ getDestinations d'
-    Conditional c d' -> append (condDesc c) $ getDestinations d'
-    EvadeFight _ cid _ co -> (cid, ["evade"]) : append "fight" (getDestinationsO co)
-    AfterCombat d' -> getDestinations d'
-    Special s -> case s of
-      Cartwheel -> [(169, ["lost"]), (186, ["won"])]
-      Portholes -> [(197, [])]
-    NoDecision co -> getDestinationsO co
+orderChapters :: IM.IntMap Chapter -> M.Map ChapterId Int
+orderChapters book = M.fromList $ zip (reverse orderedlist) [1 ..]
   where
-    itemDesc i c = case i of
-      Gold -> show c ++ "$"
-      Weapon _ -> "w"
-      TicketVol2 -> "TKT"
-      Meal -> show c ++ "M"
-      _ -> show i
-    takeDesc i c = '+' : itemDesc i c
-    condDesc c = case c of
-      Always True -> ""
-      Always False -> "never"
-      HasItem i cnt -> '?' : itemDesc i cnt
-      Not co -> '!' : condDesc co
-      COr a b -> condDesc a ++ "||" ++ condDesc b
-      CAnd a b -> condDesc a ++ "&&" ++ condDesc b
-      HasDiscipline di ->
-        '?' : case di of
-          SixthSense -> "6th"
-          Hunting -> "hunt"
-          MindOverMatter -> "MoM"
-          Healing -> "heal"
-          Tracking -> "trk"
-          MindBlast -> "mb"
-          Camouflage -> "camo"
-          AnimalKinship -> "ak"
-          _ -> show di
-    append s = map (fmap (s :))
-    sdesc s = case s of
-      LoseItemKind k | length k == 4 -> Just "LOSEALL"
-      LoseItem i c -> Just ('-' : itemDesc i c)
-      MustEat _ -> Just "eat"
-      HealPlayer h -> Just ('+' : show (getEndurance h) ++ "HP")
-      DamagePlayer h -> Just ('-' : show (getEndurance h) ++ "HP")
-      FullHeal -> Just "+100%HP"
-      HalfHeal -> Just "+50%HP"
-      _ -> Just (show s)
-    getDestinationsO co = case co of
-      Simple s co' -> map (fmap (mapMaybe sdesc s ++)) (getDestinationsO co')
-      Fight _ co' -> getDestinationsO co'
-      Randomly lst -> concatMap (\(p, o) -> append ("r(" ++ show (numerator p) ++ "/" ++ show (denominator p) ++ ")") (getDestinationsO o)) lst
-      Conditionally lst -> concatMap (\(c, o) -> append (condDesc c) $ getDestinationsO o) lst
-      Goto c -> [(c, [])]
-      GameLost -> []
-      GameWon -> []
+    orderedlist = go startedges [] edgemap
+    startedges = filter (`M.notMember` edgemap) (IM.keys book)
+    edgemap = M.fromListWith (++) $ do
+      (cid, Chapter _ _ d) <- IM.toList book
+      (dst, _) <- getDestinations d
+      guard (dst /= cid)
+      pure (dst, [cid])
+    go [] out _ = out
+    go (x : xs) out emap = go (xs ++ newedges) (x : out) emap'
+      where
+        pruned = fmap (filter (/= x)) emap
+        (newedgesmap, emap') = M.partition null pruned
+        newedges = M.keys newedgesmap
 
 main :: IO ()
 main = do
-  disciplines <- map read <$> getArgs
   putStrLn "digraph G {"
   putStrLn "rankdir=LR;"
-  let cconstant = CharacterConstant 25 25 disciplines
-      (priority, _, childsComplete) = forSimplification cconstant (IM.fromList chapters)
-      badEdges = uselessEdges priority childsComplete 1 350
-  forM_ (simplify cconstant chapters) $ \(cnumber, Chapter ctitle _ cdesc) -> do
+  let rank = orderChapters (IM.fromList pchapters)
+  forM_ pchapters $ \(cnumber, Chapter ctitle _ cdesc) -> do
     let hasCombat = has (outcomePlate . biplate . _Fight) cdesc || has (biplate . _EvadeFight) cdesc
         eating = preview (outcomePlate . biplate . _MustEat) cdesc
         style
@@ -95,7 +45,10 @@ main = do
         label
           | has (biplate . _GameLost) cdesc = ctitle ++ " :("
           | otherwise = ctitle
-    putStrLn (show ctitle ++ " [" ++ style ++ " label=" ++ show label ++ " URL=\"https://www.projectaon.org/en/xhtml/lw/02fotw/sect" ++ ctitle ++ ".htm\"];")
+        rnk = case M.lookup cnumber rank of
+          Nothing -> "??"
+          Just r -> show r
+    putStrLn (show ctitle ++ " [" ++ style ++ " label=" ++ show (label ++ " " ++ rnk) ++ " URL=\"https://www.projectaon.org/en/xhtml/lw/02fotw/sect" ++ ctitle ++ ".htm\"];")
     forM_ (nub $ getDestinations cdesc) $ \(dest, comment) ->
-      putStrLn (show ctitle ++ " -> " ++ show (show dest) ++ " [label=" ++ show (unwords (nub comment)) ++ " color=" ++ (if (cnumber, dest) `S.member` badEdges then "red" else "black") ++ "]")
+      putStrLn (show ctitle ++ " -> " ++ show (show dest) ++ " [label=" ++ show (unwords (nub comment)) ++ " color=black]")
   putStrLn "}"

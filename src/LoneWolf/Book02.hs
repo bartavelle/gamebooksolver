@@ -1,8 +1,32 @@
 module LoneWolf.Book02 where
 
+import Control.Lens
+import Data.Data.Lens
 import Data.Ratio
 import LoneWolf.Chapter
 import LoneWolf.Character
+import LoneWolf.Simplify (extractMultiFight)
+
+pchapters :: [(ChapterId, Chapter)]
+pchapters = map patch (extractMultiFight chapters)
+  where
+    patch (200, Chapter t d _) = (200, Chapter t d (NoDecision (Goto 158)))
+    patch (314, Chapter t d dc) = (314, Chapter t d (limitMoneyAt 12 dc))
+    patch (33, Chapter t d dc) = (33, Chapter t d (limitMoneyAt 12 dc))
+    patch (150, Chapter t d _) = (150, Chapter t d (NoDecision (Simple [MustEat Hunt] condhammer))) -- patch, better way
+    patch (172, Chapter t d _) = (172, Chapter t d (Decisions [("If you wish to climb the stone steps and confront it, turn to 52.", NoDecision (Goto 52)), ("If you wish to sprint past the steps and platform, turn to 256.", NoDecision (Goto 256))]))
+    patch x = x
+    condhammer =
+      Conditionally
+        [ (HasItem SealHammerdalVol2 1, Goto 15),
+          (Always True, Goto 244)
+        ]
+    limitMoneyAt maxmoney dc =
+      dc & biplate %~ \o ->
+        Conditionally
+          [ (HasItem Gold maxmoney, Simple [LoseItemKind [PouchSlot], GainItem Gold maxmoney] o),
+            (Always True, o)
+          ]
 
 chapters :: [(ChapterId, Chapter)]
 chapters =
@@ -4250,21 +4274,23 @@ chapters =
             (Simple [DamagePlayer (Endurance {getEndurance = 1})] (Goto 150))
         )
     ),
-    {-
-    , ( 348
-      , Chapter
-          "348"
-          "The sailor's face changes from a smile to a sneer at your reply. He quickly moves away from the table.\n\"Perhaps neither you nor I are all we claim to be. No matter. You will not live long enough to discover who I really am!\" You hear a door crash open behind you. Spinning round, you see three harbour thugs moving towards you. Each is armed with a scimitar and you must fight them as one enemy.\n"
-          (EvadeFight
-             2
-             125
-             (FightDetails
-              { _opponent = "Harbour Thugs"
-              , _fcombatSkill = CombatSkill {getCombatSkill = 16}
-              , _fendurance = Endurance {getEndurance = 25}
-              , _fightMod = []
-              })
-             (Goto 333))) -}
+    ( 348,
+      Chapter
+        "348"
+        "The sailor's face changes from a smile to a sneer at your reply. He quickly moves away from the table.\n\"Perhaps neither you nor I are all we claim to be. No matter. You will not live long enough to discover who I really am!\" You hear a door crash open behind you. Spinning round, you see three harbour thugs moving towards you. Each is armed with a scimitar and you must fight them as one enemy.\n"
+        ( EvadeFight
+            2
+            125
+            ( FightDetails
+                { _opponent = "Harbour Thugs",
+                  _fcombatSkill = CombatSkill {getCombatSkill = 16},
+                  _fendurance = Endurance {getEndurance = 25},
+                  _fightMod = []
+                }
+            )
+            (Goto 333)
+        )
+    ),
     ( 349,
       Chapter
         "349"

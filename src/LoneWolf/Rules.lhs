@@ -19,9 +19,9 @@
 > instance Hashable HadCombat
 > instance NFData HadCombat
 
-> data NextStep = NewChapter !ChapterId !CharacterVariable !HadCombat
->               | HasLost !ChapterId
+> data NextStep = HasLost !ChapterId
 >               | HasWon !CharacterVariable
+>               | NewChapter !ChapterId !CharacterVariable !HadCombat
 >               deriving (Show, Eq, Generic, Ord)
 > instance Hashable NextStep
 > makePrisms ''NextStep

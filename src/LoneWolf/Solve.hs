@@ -1,14 +1,19 @@
 module LoneWolf.Solve where
 
+import Control.Monad
 import Data.Bits
 import qualified Data.IntMap.Strict as IM
 import qualified Data.IntSet as IS
+import Data.List (sortBy)
+import qualified Data.Map.Strict as M
 import qualified Data.MemoCombinators as Memo
+import Data.Ord (comparing)
 import Data.Word
 import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.Choices
 import LoneWolf.Rules
+import LoneWolf.Various (getDestinations)
 import qualified SimpleSolver as S
 import Solver
 import SolverHashable
@@ -50,15 +55,42 @@ fromWord64 (cid16, cvalue) =
         else NewChapter cid cvariable hadfight
 {-# INLINE fromWord64 #-}
 
-step :: IM.IntMap Chapter -> CharacterConstant -> NextStep -> [(String, Probably NextStep)]
-step chapters cconstant (NewChapter cid curvariable m) =
+orderChapters :: IM.IntMap Chapter -> M.Map ChapterId Int
+orderChapters book = M.fromList $ zip (reverse orderedlist) [1..]
+  where
+    orderedlist = go startedges [] edgemap
+    startedges = filter (`M.notMember` edgemap) (IM.keys book)
+    edgemap = M.fromListWith (++) $ do
+      (cid, Chapter _ _ d) <- IM.toList book
+      (dst, _) <- getDestinations d
+      guard (dst /= cid)
+      pure (dst, [cid])
+    go [] out _ = out
+    go (x : xs) out emap =go (xs ++ newedges) (x : out) emap'
+      where
+        pruned = fmap (filter (/= x)) emap
+        (newedgesmap, emap') = M.partition null pruned
+        newedges = M.keys newedgesmap
+
+step :: M.Map ChapterId Int -> IM.IntMap Chapter -> CharacterConstant -> NextStep -> [(String, Probably NextStep)]
+step order chapters cconstant (NewChapter cid curvariable m) =
   case IM.lookup cid chapters of
     Nothing -> error ("Unknown chapter: " ++ show cid)
-    Just (Chapter _ _ d) -> do
-      (cdesc, outcome) <- flattenDecision cconstant curvariable (if m == DidFight then AfterCombat d else d)
-      return (unwords cdesc, update cconstant curvariable cid outcome)
-step _ _ (HasWon c) = [("won", certain (HasWon c))]
-step _ _ (HasLost cid) = [("lost", certain (HasLost cid))]
+    Just (Chapter _ _ d) -> map snd $
+      sortBy (comparing fst) $ do
+        (cdesc, outcome) <- flattenDecision cconstant curvariable (if m == DidFight then AfterCombat d else d)
+        let res = update cconstant curvariable cid outcome
+            score = stepprio res
+        return (score, (unwords cdesc, res))
+  where
+    stepprio :: Probably NextStep -> Int
+    stepprio = maximum . map (stepi . fst)
+    stepi ns = case ns of
+      HasLost _ -> 0
+      HasWon _ -> 0
+      NewChapter xid _ _ -> M.findWithDefault 0 xid order
+step _ _ _ (HasWon c) = [("won", certain (HasWon c))]
+step _ _ _ (HasLost cid) = [("lost", certain (HasLost cid))]
 {-# INLINE step #-}
 
 getScore :: IS.IntSet -> NextStep -> Score
@@ -70,25 +102,15 @@ getScore target ns =
 {-# INLINE getScore #-}
 
 solveLW :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> Solution NextStep String
-solveLW target book cconstant cvariable = solve memoState 1 (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
+solveLW target book cconstant cvariable = solve memoState 1 (step order chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
   where
+    order = orderChapters chapters
     chapters = IM.fromList book
     starget = IS.fromList target
-
-wstep :: IM.IntMap Chapter -> CharacterConstant -> (Word16, Word64) -> [(String, Probably (Word16, Word64))]
-wstep is cc = map (fmap (mapProbably toWord64)) . step is cc . fromWord64
-
-wgetScore :: IS.IntSet -> (Word16, Word64) -> Score
-wgetScore is = getScore is . fromWord64
 
 solveLWs :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> S.Solution NextStep String
-solveLWs target book cconstant cvariable = solveHST (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
+solveLWs target book cconstant cvariable = solveHST (step order chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
   where
+    order = orderChapters chapters
     chapters = IM.fromList book
     starget = IS.fromList target
-
--- solveLWs :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> S.Solution NextStep String
--- solveLWs target book cconstant cvariable = S.lmapSol fromWord64 $ solveH (wstep chapters cconstant) (wgetScore starget) (toWord64 (NewChapter 1 cvariable Didn'tFight))
---   where
---     chapters = IM.fromList book
---     starget = IS.fromList target
