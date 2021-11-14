@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+{-
 ---
 title: "Solving a gamebook : chapters"
 series: Gamebook solver
@@ -18,40 +20,49 @@ Extensions and imports
 ----------------------
 
 Clearly not the best part :)
+-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-> {-# LANGUAGE GADTs #-}
-> {-# LANGUAGE TemplateHaskell #-}
-> {-# LANGUAGE DeriveDataTypeable #-}
-> module LoneWolf.Chapter where
->
-> import LoneWolf.Character
-> import Control.Lens
-> import Data.Data
-> import Data.Data.Lens
-> import Solver
+module LoneWolf.Chapter where
 
+import Control.Lens
+import Data.Data
+import Data.Data.Lens
+import LoneWolf.Character
+import Solver
+
+{-
 Basic types
 -----------
 
 The following types should get a newtype, but to be honest, it is much more handy that way right now, because of the vicious code generation that is happening later ...
+-}
 
-> -- each chapter has an identifier, with a value ranging from 1 to 350
-> type ChapterId = Int
-> -- some combat effects are timed, for example some fights can be evaded after a certain number of rounds
-> type Rounds = Int
-> -- price of stuff, in gold coins
-> type Price = Int
+-- each chapter has an identifier, with a value ranging from 1 to 350
+type ChapterId = Int
 
+-- some combat effects are timed, for example some fights can be evaded after a certain number of rounds
+type Rounds = Int
+
+-- price of stuff, in gold coins
+type Price = Int
+
+{-
 What's in a chapter?
 --------------------
 
 Lone Wolf chapters usually have a descriptive text, some figures, a description of what happens to the payer, and a list of choices. The `title` of the chapter serves no real purpose here, as it is identical (in `String` form) to the associated `ChapterId`.
+-}
 
-> data Chapter = Chapter { _title   :: String
->                        , _desc    :: String
->                        , _pchoice :: Decision
->                        } deriving (Show, Eq)
+data Chapter = Chapter
+  { _title :: String,
+    _desc :: String,
+    _pchoice :: Decision
+  }
+  deriving (Show, Eq)
 
+{-
 Here is what an actual chapter looks like:
 
 ```haskell
@@ -77,24 +88,26 @@ The Decision type
 -----------------
 
 In details, the `Decision` types has the following constructors:
+-}
 
-> data Decision
->    = Decisions [(String, Decision)]
->    | CanTake Item Int Decision
->    | Canbuy Item Price Decision
->    | Cansell Item Price Decision
->    | Conditional BoolCond Decision
->    | Special SpecialChapter
->    | NoDecision ChapterOutcome
->    | EvadeFight Rounds ChapterId FightDetails ChapterOutcome
->    | AfterCombat Decision
->    deriving (Show, Eq, Typeable, Data)
->
-> data SpecialChapter = Cartwheel
->                     | Portholes
->                     deriving (Show, Eq, Typeable, Data)
+data Decision
+  = Decisions [(String, Decision)]
+  | CanTake Item Int Decision
+  | Canbuy Item Price Decision
+  | Cansell Item Price Decision
+  | Conditional BoolCond Decision
+  | Special SpecialChapter
+  | NoDecision ChapterOutcome
+  | EvadeFight Rounds ChapterId FightDetails ChapterOutcome
+  | AfterCombat Decision
+  deriving (Show, Eq, Typeable, Data)
 
+data SpecialChapter
+  = Cartwheel
+  | Portholes
+  deriving (Show, Eq, Typeable, Data)
 
+{-
  * The `Decisions` constructor represents a list of possible choices for the player, with, for each case, a textual and programmatic description.
 
  * The `CanTake` and `CanBuy` constructors represent situations where the player can take, or buy, items.
@@ -144,28 +157,30 @@ The ChapterOutcome type
 -----------------------
 
 A `ChapterOutcome` describe what happens to the player once he has made a decision.
+-}
 
-> data ChapterOutcome
->         = Fight FightDetails ChapterOutcome
->         | Randomly [(Proba, ChapterOutcome)]
->         | Conditionally [(BoolCond, ChapterOutcome)]
->         | Simple [SimpleOutcome] ChapterOutcome
->         | Goto ChapterId
->         | GameLost
->         | GameWon
->         deriving (Show, Eq, Typeable, Data)
+data ChapterOutcome
+  = Fight FightDetails ChapterOutcome
+  | Randomly [(Proba, ChapterOutcome)]
+  | Conditionally [(BoolCond, ChapterOutcome)]
+  | Simple [SimpleOutcome] ChapterOutcome
+  | Goto ChapterId
+  | GameLost
+  | GameWon
+  deriving (Show, Eq, Typeable, Data)
 
-> data SimpleOutcome
->         = DamagePlayer Endurance
->         | HealPlayer Endurance
->         | FullHeal
->         | HalfHeal
->         | GainItem Item Int
->         | LoseItem Item Int
->         | LoseItemKind [Slot]
->         | MustEat CanHunt
->         deriving (Show, Eq, Typeable, Data)
+data SimpleOutcome
+  = DamagePlayer Endurance
+  | HealPlayer Endurance
+  | FullHeal
+  | HalfHeal
+  | GainItem Item Int
+  | LoseItem Item Int
+  | LoseItemKind [Slot]
+  | MustEat CanHunt
+  deriving (Show, Eq, Typeable, Data)
 
+{-
 A constructor of interest is the `MustEat` constructor.
 It represents chapters where the player loses some hit points if he doesn't have a meal in his backpack.
 In the Lone Wolf series, the `Hunting` discipline let the player ignore these events.
@@ -182,24 +197,27 @@ Conditionally
 ```
 
 Note how it works like Haskell's guards, and ends up with the equivalent of `otherwise`, which I called ... `botherwise`:
+-}
 
-> botherwise :: BoolCond
-> botherwise = Always True
->
-> data CanHunt = Hunt | NoHunt
->              deriving (Show, Eq, Typeable, Data)
->
-> data BoolCond = HasDiscipline Discipline
->               | Not BoolCond
->               | COr BoolCond BoolCond
->               | CAnd BoolCond BoolCond
->               | HasItem Item Int
->               | Always Bool
->               deriving (Show, Eq, Typeable, Data)
->
-> (.&&.) :: BoolCond -> BoolCond -> BoolCond
-> (.&&.) = CAnd
+botherwise :: BoolCond
+botherwise = Always True
 
+data CanHunt = Hunt | NoHunt
+  deriving (Show, Eq, Typeable, Data)
+
+data BoolCond
+  = HasDiscipline Discipline
+  | Not BoolCond
+  | COr BoolCond BoolCond
+  | CAnd BoolCond BoolCond
+  | HasItem Item Int
+  | Always Bool
+  deriving (Show, Eq, Typeable, Data)
+
+(.&&.) :: BoolCond -> BoolCond -> BoolCond
+(.&&.) = CAnd
+
+{-
 The boolean conditions type (`BoolCond`) is pretty self-explanatory.
 
 Combat description
@@ -208,26 +226,30 @@ Combat description
 The three main parts of a combat descriptions are the name of the opponent, its combat skill, and its endurance.
 There are however many combat situations that involve special modifiers which are detailled here.
 Fights against consecutive opponents are handled by chaining the `Fight` and `EvadeFight` constructors.
+-}
 
-> data FightDetails = FightDetails
->           { _opponent     :: String
->           , _fcombatSkill :: CombatSkill
->           , _fendurance   :: Endurance
->           , _fightMod     :: [FightModifier]
->           } deriving (Show, Eq, Typeable, Data)
->
-> data FightModifier = Undead
->                    | MindblastImmune
->                    | Timed Int FightModifier
->                    | CombatBonus CombatSkill
->                    | BareHanded
->                    | FakeFight ChapterId
->                    | EnemyMindblast
->                    | PlayerInvulnerable
->                    | DoubleDamage -- chapter 306
->                    | Evaded ChapterId
->                    deriving (Show, Eq, Typeable, Data)
+data FightDetails = FightDetails
+  { _opponent :: String,
+    _fcombatSkill :: CombatSkill,
+    _fendurance :: Endurance,
+    _fightMod :: [FightModifier]
+  }
+  deriving (Show, Eq, Typeable, Data)
 
+data FightModifier
+  = Undead
+  | MindblastImmune
+  | Timed Int FightModifier
+  | CombatBonus CombatSkill
+  | BareHanded
+  | FakeFight ChapterId
+  | EnemyMindblast
+  | PlayerInvulnerable
+  | DoubleDamage -- chapter 306
+  | Evaded ChapterId
+  deriving (Show, Eq, Typeable, Data)
+
+{-
  * `Undead`: undead creatures take double damage from the `Sommerswerd`.
  * `MindblastImmune`: the opponent is not affected by the `MindBlast` ability of the player.
  * `CombatBonus`: the player receives a combat bonus for this fight.
@@ -240,20 +262,22 @@ Fights against consecutive opponents are handled by chaining the `Fight` and `Ev
 
 Lenses, plates and utilities
 ----------------------------
+-}
 
-> makePrisms ''ChapterOutcome
-> makePrisms ''SimpleOutcome
-> makePrisms ''Decision
-> makePrisms ''FightModifier
-> makeLenses ''FightDetails
-> makeLenses ''Chapter
->
-> moneyCond :: Int -> ChapterOutcome -> Decision
-> moneyCond price = Conditional (HasItem Gold price) . NoDecision . Simple [LoseItem Gold price]
->
-> outcomePlate :: Traversal' Decision ChapterOutcome
-> outcomePlate = biplate
+makePrisms ''ChapterOutcome
+makePrisms ''SimpleOutcome
+makePrisms ''Decision
+makePrisms ''FightModifier
+makeLenses ''FightDetails
+makeLenses ''Chapter
 
+moneyCond :: Int -> ChapterOutcome -> Decision
+moneyCond price = Conditional (HasItem Gold price) . NoDecision . Simple [LoseItem Gold price]
+
+outcomePlate :: Traversal' Decision ChapterOutcome
+outcomePlate = biplate
+
+{-
 All of these are mainly useful in the `LoneWolf.XML` module.
 
 The actual chapters data
@@ -278,3 +302,4 @@ I also realized my previous encoding was imperfect in parts (I never realized th
 
 Next time will have actual code, with a rules interpreter!
 
+-}

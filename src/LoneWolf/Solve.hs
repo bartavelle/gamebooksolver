@@ -1,22 +1,26 @@
 module LoneWolf.Solve where
 
-import Control.Monad
-import Data.Bits
+import Control.Monad (guard)
+import Data.Bits (Bits (clearBit, setBit, testBit))
 import qualified Data.IntMap.Strict as IM
 import qualified Data.IntSet as IS
 import Data.List (sortBy)
 import qualified Data.Map.Strict as M
 import qualified Data.MemoCombinators as Memo
 import Data.Ord (comparing)
-import Data.Word
+import Data.Word (Word16, Word64)
 import LoneWolf.Chapter
 import LoneWolf.Character
-import LoneWolf.Choices
+import LoneWolf.Choices (flattenDecision)
 import LoneWolf.Rules
+  ( HadCombat (DidFight, Didn'tFight),
+    NextStep (..),
+    update,
+  )
 import LoneWolf.Various (getDestinations)
 import qualified SimpleSolver as S
-import Solver
-import SolverHashable
+import Solver (Probably, Score (..), Solution, certain, solve)
+import SolverHashable (solveHST)
 
 startConstant :: CharacterConstant
 startConstant = CharacterConstant 25 15 [Hunting, WeaponSkill ShortSword, MindBlast, SixthSense, MindShield]
@@ -56,7 +60,7 @@ fromWord64 (cid16, cvalue) =
 {-# INLINE fromWord64 #-}
 
 orderChapters :: IM.IntMap Chapter -> M.Map ChapterId Int
-orderChapters book = M.fromList $ zip (reverse orderedlist) [1..]
+orderChapters book = M.fromList $ zip (reverse orderedlist) [1 ..]
   where
     orderedlist = go startedges [] edgemap
     startedges = filter (`M.notMember` edgemap) (IM.keys book)
@@ -66,7 +70,7 @@ orderChapters book = M.fromList $ zip (reverse orderedlist) [1..]
       guard (dst /= cid)
       pure (dst, [cid])
     go [] out _ = out
-    go (x : xs) out emap =go (xs ++ newedges) (x : out) emap'
+    go (x : xs) out emap = go (xs ++ newedges) (x : out) emap'
       where
         pruned = fmap (filter (/= x)) emap
         (newedgesmap, emap') = M.partition null pruned
