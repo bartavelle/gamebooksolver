@@ -19,6 +19,7 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 > import Data.Bits
 > import Data.List
 > import Data.Hashable
+> import Control.DeepSeq
 
 Character sheet
 ---------------
@@ -48,7 +49,7 @@ In the constant part, the combat skill and endurance are randomly determined whe
 The variable part holds the player inventory, and current health points.
 
 > newtype CharacterVariable = CharacterVariable { getCharacterVariable :: Word64 }
->                           deriving (Generic, Eq, Bits, Ord, Hashable)
+>                           deriving (Generic, Eq, Bits, Ord, Hashable, NFData)
 
 > mkCharacter :: Endurance -> Inventory -> CharacterVariable
 > mkCharacter e i = CharacterVariable 0 & curendurance .~ e & equipment .~ i

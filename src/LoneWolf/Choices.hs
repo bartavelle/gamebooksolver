@@ -129,11 +129,11 @@ flattenDecision cconstant cvariable d =
 
 cartwheel :: Price -> [([String], ChapterOutcome)]
 cartwheel m
-  | m == 50 = [([], Goto 136)]
-  | otherwise = do
+  | m >= 22 = [([], Goto 136)]
+  | otherwise =
     let cmoney = m + 1 -- free token!
-    target <- [max m 22 .. min 50 (cmoney + 40)]
-    let cdesc = "target: " ++ show target
+        target = 22
+        cdesc = "target: " ++ show target
         res = do
           (newmoney, proba) <- LoneWolf.Cartwheel.solveFor target cmoney
           return $
@@ -141,4 +141,4 @@ cartwheel m
               if newmoney == 0
                 then GameLost
                 else Simple [GainItem Gold (newmoney - m)] (Goto 136)
-    return ([cdesc], Randomly res)
+     in [([cdesc], Randomly res)]

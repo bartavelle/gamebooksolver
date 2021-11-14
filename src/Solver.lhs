@@ -113,6 +113,7 @@ series: Game book solver
 >         scored = parMap rseq scoreTree choices
 >         scoreTree (cdesc, pstates) = let ptrees = map (\(o, p) -> (go o, p)) pstates
 >                                      in Node cdesc stt (mkPScore ptrees) ptrees
+> {-# INLINEABLE solve #-}
 
 This works on the assumption the states are grouped!
 

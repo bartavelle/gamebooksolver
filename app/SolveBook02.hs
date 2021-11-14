@@ -9,6 +9,7 @@ import LoneWolf.Book02
 import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.Rules (NextStep)
+import LoneWolf.Simplify (extractMultiFight)
 import LoneWolf.Solve
 import qualified SimpleSolver as S
 import Solver
@@ -17,7 +18,7 @@ import Text.Printf
 import Text.Read (readMaybe)
 
 pchapters :: [(ChapterId, Chapter)]
-pchapters = map patch chapters
+pchapters = map patch (extractMultiFight chapters)
   where
     patch (200, Chapter t d _) = (200, Chapter t d (NoDecision (Goto 158)))
     patch (314, Chapter t d dc) = (314, Chapter t d (limitMoneyAt 12 dc))
@@ -59,5 +60,6 @@ main = do
         | null cs = [39]
         | otherwise = cs
   putStrLn ("Winning probability: " ++ show (fromRational score :: Double) ++ " [" ++ show score ++ "]")
+
 --   let showWinState (st, p) = printf "%.4f %s\n" (fromRational p :: Double) (show st)
 --   mapM_ showWinState (sortBy (flip (comparing snd)) wstates)

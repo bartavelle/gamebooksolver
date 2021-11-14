@@ -1,8 +1,10 @@
 > {-# LANGUAGE RankNTypes #-}
+> {-# LANGUAGE DeriveGeneric #-}
 > module SimpleSolver where
 
 > import Data.Ord (comparing)
 > import Data.List
+> import GHC.Generics
 > import Solver hiding (solve, Solution(..), getSolScore, winStates, lmapSol)
 > import qualified Data.MemoCombinators as Memo
 > import Control.Parallel.Strategies
@@ -14,7 +16,9 @@
 >                                        }
 >                                 | LeafLost
 >                                 | Leaf Rational state
->                                 deriving (Show, Eq)
+>                                 deriving (Show, Eq, Generic)
+
+> instance (NFData state, NFData description) => NFData (Solution state description)
 
 > lmapSol :: (s1 -> s2) -> Solution s1 desc -> Solution s2 desc
 > lmapSol f s =

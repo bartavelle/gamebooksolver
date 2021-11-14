@@ -82,7 +82,7 @@ wgetScore :: IS.IntSet -> (Word16, Word64) -> Score
 wgetScore is = getScore is . fromWord64
 
 solveLWs :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> S.Solution NextStep String
-solveLWs target book cconstant cvariable = solveH (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
+solveLWs target book cconstant cvariable = solveHST (step chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
   where
     chapters = IM.fromList book
     starget = IS.fromList target

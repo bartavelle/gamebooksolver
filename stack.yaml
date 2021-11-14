@@ -15,7 +15,11 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: ghc-9.2.1
+resolver: nightly-2021-11-14
+
+ghc-options:
+  linear: -fno-prof-auto
+
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -41,96 +45,4 @@ packages:
 
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
-extra-deps:
-- plots-0.1.1.2@sha256:41e955f063df50c27ee2183d8ff53cf9082b04c21af3e8f1fad765e2349137e2,2131
-- data-default-0.7.1.1@sha256:2804e8d14f521a1edee88b68b66347448e7f3b685868290fdc55930e4471f5a9,645
-- data-memocombinators-0.5.1@sha256:bf7f56cf280a6e6d7a0958a8f7c23b4c23f26e56e5ada320cdf5b0ec49634800,486
-- hexpat-0.20.13@sha256:8e2f645d695b9f6dceccbb744fb03967dd4b862dca4865b991e486b09c7bf71d,6960
-- github: ekmett/lens
-  commit: 999bde58ced6cab663b892927ab99ae42015c796
-- linear-1.21.7@sha256:d72488d2dddf6a3e681342a04ff44eeb73d14b1b7357f3725f02df46d4cb8bd6,4323
-- megaparsec-9.2.0@sha256:0c272aa13b9f663dbd7b74ef81e9b1f9f05cafde50f5362ce87ffd4913046e0b,3213
-- parallel-3.2.2.0@sha256:421ce1717610bab82969572b96be89d83ea8d8afe7751cb54d80b996fff063d3,1817
-- List-0.6.2@sha256:3604364499e42777dfb1ca3813fd66afd55202394d34cab625f3fcdfd8489a87,869
-- adjunctions-4.4@sha256:2738dd5f5d5e93749adb14a05472e58a96a75d0f299e46371c6f46dc4e97daf9,3067
-- assoc-1.0.2@sha256:a824e4f615469a27ad949dbf4907ba258bd6b459deebec00524c7bcb3f65cc9f,1205
-- base-orphans-0.8.5@sha256:b01baac1b88cc80e70214c064ec8c174718c19400232588bff591f5a9c49a750,3177
-- bifunctors-5.5.11@sha256:cc425ee85aae56dba1123baf6fb3fa7abcd90782f26bb904eef14c7332ee85f6,3919
-- bytes-0.17.1@sha256:a33322ffc8018e8631e8e92909e1b845a1f1299d92dc990794ff299f393ed91b,2409
-- call-stack-0.4.0@sha256:ac44d2c00931dc20b01750da8c92ec443eb63a7231e8550188cb2ac2385f7feb,1200
-- case-insensitive-1.2.1.0@sha256:9dfd3171fc7698cf8d931727d3af3a7b389135b583e46b5adac1f9d2026fff61,2244
-- cereal-0.5.8.2
-- comonad-5.0.8@sha256:1f1aabd73ec7f80f20cf078a748a60cd48d8e57277802fdf6a9ab3601a9b8f7e,3631
-- contravariant-1.5.5@sha256:470ed0e040e879e2da4af1b2c8f94e199f6135852a8107858d5ae0a95365835f,3041
-- data-default-class-0.1.2.0@sha256:63e62120b7efd733a5a17cf59ceb43268e9a929c748127172d7d42f4a336e327,542
-- data-default-instances-containers-0.0.1@sha256:6e1f4b28028a3bc455aaf4b5a9104b71ea72cff78b1b8041863df7afd1a8deb3,527
-- data-default-instances-dlist-0.0.1@sha256:4286abacbb256c392907701be16986a6e07f2beaf2778e7bd925465655d9e301,507
-- data-default-instances-old-locale-0.0.1@sha256:d4a757f68f0f83531fcb34a4525fe6769c54a45182e28ffdfff19c2b0ace42fb,526
-- data-inttrie-0.1.4@sha256:7b91bbc80c667b6f38e38c872c65f51a79d929774967166c172a73e5cebb0e33,812
-- distributive-0.6.2.1@sha256:0f99f5541cca04acf89b64432b03422b6408e830a8dff30e6c4334ef1a48680c,2996
-- free-5.1.7@sha256:fe55684a2c445e9fac09053f4ea63270b429a65a7a7aea304e057d9f6a827b56,4959
-- hashable-1.3.4.1@sha256:838e92f704bfdafc33246ac5deb8d71e79a21a4c57079b2d0b9a6a5e7e48f480,4193
-- indexed-traversable-0.1.1@sha256:e4602357513aa3b146546227732e6e5698392f4324ab690e109cc05676ba3b4f,2491
-- indexed-traversable-instances-0.1@sha256:3aaf97040001bbe583e29c2b9c7d41660df265e6565a0d2ac09a3ed5b8bc21be,2874
-- kan-extensions-5.2.3@sha256:f98303d68cfe59981e30cd981327503a8bff429a6124654700c813ec1eedf8fa,2922
-- parser-combinators-1.3.0@sha256:edd54ba56cbae8fadbcceebcfef31b2c70a835e92e5eda41151b939c40647281,1570
-- profunctors-5.6.2@sha256:d91e81cf7fc186d616543d5ca7aad78b1c45c692486ca75a3f022466ff8e4bad,2483
-- random-1.2.1@sha256:8bee24dc0c985a90ee78d94c61f8aed21c49633686f0f1c14c5078d818ee43a2,6598
-- reflection-2.1.6@sha256:044acb7caf41a9d8246878f849baed2dffbc4582d0a1e5c7c079d4287239e970,3976
-- scientific-0.3.7.0@sha256:0f188a7b92780d81a2e3cf1195a3a24cfe3e7c43d0e9e0f2101a465803d68076,4773
-- semigroupoids-5.3.6@sha256:095698e4a67d419f5a7e1ca2cbfcf3337fe0633257f97938bb0ba1d2919ecb46,7752
-- semigroups-0.19.2@sha256:fc1fe428fd6d2b8571422a5c707af177d0a4577ce097cff1b6ff5acd20a27514,6335
-- strict-0.4.0.1@sha256:50187e750751a258efea12ef2979e16a014a953c15bf4c2fca2f1168a44a5a12,4156
-- tagged-0.8.6.1@sha256:29c67d98a4404607f024750ab9c7210dadcbbef4e1944c48c52902f2071b2662,2874
-- th-abstraction-0.4.3.0@sha256:db4b3b69398acd8a7c5c8cc8a962da55d65d05d44d5039b51bd3cb5fb3d8400f,2148
-- these-1.1.1.1@sha256:bdc0a3015b2e5cdf016e402937d71856ae5fe4e9e9a0d4823cc94a214c55a39b,2732
-- transformers-compat-0.7@sha256:c4cc2d01c4e490ba680e9a0b607a1a790137856a6b3af12f8bdc7788a567bcf5,5572
-- unordered-containers-0.2.14.0@sha256:2fe789f78246b7c7ec10d7b85c72d898a9f72fdda5b60d581e839d21016bc628,4992
-- utf8-string-1.0.2@sha256:79416292186feeaf1f60e49ac5a1ffae9bf1b120e040a74bf0e81ca7f1d31d3f,1538
-- vector-0.12.3.1@sha256:672884b271c15501f1398dc1755c435d3659cf9aa77144c0316d055b5fbdfa82,7932
-- void-0.7.3@sha256:13d30f62fcdf065e595d679d4ac8b4b0c1bb1a1b73db7b5b5a8f857cb5c8a546,1857
-- StateVar-1.2.2@sha256:3c022c00485fe165e3080d5da6b3ca9c9b02f62c5deebc584d1b3d1309ce673e,1673
-- binary-orphans-1.0.1@sha256:c6c9d3d482b30b532b56414bcc395887249a30b1325a7873b29c65f7f5194dc0,2116
-- dlist-1.0@sha256:124cb3aa1decebd5171b46601b1f74cca6cfae12d266ace3799b86dd05ef7cb4,3560
-- integer-logarithms-1.0.3.1@sha256:888fb6c4fbd79ed2e8f8b94b61bccac25f7fab2b13b32b496e86828bc60b17cf,3184
-- invariant-0.5.5
-- old-locale-1.0.0.7@sha256:fa998be2c7e00cd26a6e9075bea790caaf3932caa3e9497ad69bc20380dd6911,1071
-- primitive-0.7.2.0@sha256:d7c3635e83ae160129cdfe2be4092ab6389199d73a2c29adf904124dbcfe6100,2660
-- splitmix-0.1.0.3@sha256:fc3aae74c467f4b608050bef53aec17904a618731df9407e655d8f3bf8c32d5c,6049
-- transformers-base-0.4.6@sha256:6f18f320e371c8954c4b6b211e2fdd5d15a6d6310bd605b9d640f47ede408961,1643
-- QuickCheck-2.14.2@sha256:4ce29211223d5e6620ebceba34a3ca9ccf1c10c0cf387d48aea45599222ee5aa,7736
-- hspec-2.9.0@sha256:8ce53437f4bbf2770ea4767451f3272ad1f2d00f117ded6681049a0be0426b5a,1709
-- hspec-core-2.9.0@sha256:0fceb6bf21681a8c9937c1322e83ff01eb81b0f2c8b0dc0f983aa7774611498a,5513
-- hspec-discover-2.9.0@sha256:96dc4d4c05b42b637f74b08dea02ebcbabf89718c4da75f6c470e3729e513532,2157
-- hspec-expectations-0.8.2@sha256:e2db24881baadc2d9d23b03cb629e80dcbda89a6b04ace9adb5f4d02ef8b31aa,1594
-- HUnit-1.6.2.0@sha256:1a79174e8af616117ad39464cac9de205ca923da6582825e97c10786fda933a4,1588
-- ansi-terminal-0.11@sha256:97470250c92aae14c4c810d7f664c532995ba8910e2ad797b29f22ad0d2d0194,3307
-- clock-0.8.2@sha256:473ffd59765cc67634bdc55b63c699a85addf3a024089073ec2a862881e83e2a,4313
-- quickcheck-io-0.2.0@sha256:7bf0b68fb90873825eb2e5e958c1b76126dcf984debb998e81673e6d837e0b2d,1133
-- setenv-0.1.1.3@sha256:c5916ac0d2a828473cd171261328a290afe0abd799db1ac8c310682fe778c45b,1053
-- tf-random-0.5@sha256:14012837d0f0e18fdbbe3d56e67da8622ee5e20b180abce952dd50bd9f36b326,3983
-- colour-2.3.6@sha256:ebdcbf15023958838a527e381ab3c3b1e99ed12d1b25efeb7feaa4ad8c37664a,2378
-
-# Override default flag values for local packages and extra-deps
-flags: {}
-
-# Extra package databases containing global packages
-extra-package-dbs: []
-
-# Control whether we use the GHC we find on the path
-# system-ghc: true
-#
-# Require a specific version of stack, using version ranges
-# require-stack-version: -any # Default
-# require-stack-version: ">=1.2"
-#
-# Override the architecture used by stack, especially useful on Windows
-# arch: i386
-# arch: x86_64
-#
-# Extra directories used by stack for building
-# extra-include-dirs: [/path/to/dir]
-# extra-lib-dirs: [/path/to/dir]
-#
-# Allow a newer minor version of GHC than the snapshot specifies
-# compiler-check: newer-minor
+extra-deps: []

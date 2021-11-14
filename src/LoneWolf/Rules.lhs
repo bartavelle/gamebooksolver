@@ -6,7 +6,8 @@
 > import LoneWolf.Chapter
 > import LoneWolf.Combat
 > import Solver
->
+
+> import Control.DeepSeq
 > import Control.Lens
 > import Data.List
 > import Data.Hashable
@@ -16,6 +17,7 @@
 >                | DidFight
 >                deriving (Show, Eq, Generic, Ord)
 > instance Hashable HadCombat
+> instance NFData HadCombat
 
 > data NextStep = NewChapter !ChapterId !CharacterVariable !HadCombat
 >               | HasLost !ChapterId
@@ -23,6 +25,7 @@
 >               deriving (Show, Eq, Generic, Ord)
 > instance Hashable NextStep
 > makePrisms ''NextStep
+> instance NFData NextStep
 
 > check :: CharacterConstant -> CharacterVariable -> BoolCond -> Bool
 > check cconstant cvariable cond =
