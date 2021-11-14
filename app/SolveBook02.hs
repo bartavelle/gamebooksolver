@@ -1,23 +1,24 @@
 module Main (main) where
 
+import qualified Data.Map.Strict as M
 import Data.Maybe (mapMaybe)
-import LoneWolf.Book02
-import LoneWolf.Rules (NextStep)
+import LoneWolf.Book02 (pchapters)
+import LoneWolf.Rules (NextStep (..))
 import LoneWolf.Solve
 import qualified SimpleSolver as S
 import Solver
-import System.Environment
+import System.Environment (getArgs)
 import Text.Read (readMaybe)
 
-defaultSol :: [Int] -> (Rational, [(NextStep, Proba)])
+defaultSol :: [Int] -> (Rational, SolMap NextStep)
 defaultSol target =
   let solution = solveLW target pchapters startConstant startVariable
-   in (getCertain (_score solution), winStates solution)
+   in (getCertain (_score solution), toSolMap (HasLost 0) solution)
 
-simpleSol :: [Int] -> (Rational, [(NextStep, Proba)])
+simpleSol :: [Int] -> (Rational, SolMap NextStep)
 simpleSol target =
   let solution = solveLWs target pchapters startConstant startVariable
-   in (S._score solution, S.winStates solution)
+   in (S._score solution, S.toSolMap (HasLost 0) solution)
 
 main :: IO ()
 main = do
@@ -25,13 +26,12 @@ main = do
   print startConstant
   print startVariable
   args <- getArgs
-  let (score, wstates) = case args of
+  let (score, solmap) = case args of
         ("simple" : xs) -> simpleSol (checkChapters $ mapMaybe readMaybe xs)
         _ -> defaultSol (checkChapters $ mapMaybe readMaybe args)
       checkChapters cs
         | null cs = [39]
         | otherwise = cs
   putStrLn ("Winning probability: " ++ show (fromRational score :: Double) ++ " [" ++ show score ++ "]")
-
---   let showWinState (st, p) = printf "%.4f %s\n" (fromRational p :: Double) (show st)
---   mapM_ showWinState (sortBy (flip (comparing snd)) wstates)
+  putStrLn ("solution map size: " ++ show (length solmap))
+  mapM_ print (M.toList solmap)

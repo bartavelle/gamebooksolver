@@ -9,9 +9,11 @@ series: Game book solver
 ---
 -}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Solver where
 
+import Control.Lens (Bifunctor (bimap))
 import Control.Parallel.Strategies
 import Data.Function (on)
 import Data.List
@@ -27,6 +29,8 @@ type Probably a = [(a, Proba)]
 type Choice state description = (description, Probably state)
 
 type Solver state description = state -> (description, Rational, Probably state)
+
+type SolMap state = M.Map state (Rational, Probably state)
 
 mapProbably :: (a -> b) -> Probably a -> Probably b
 mapProbably f = map (\(a, p) -> (f a, p))
@@ -53,6 +57,25 @@ data PScore
   = Approximate {_proba :: !Proba, _pscore :: !Rational, _next :: PScore}
   | Certain !Rational
   deriving (Show, Eq, Generic)
+
+toSolMap :: forall state description. Ord state => state -> Solution state description -> SolMap state
+toSolMap loststate = go 1 M.empty
+  where
+    go :: Rational -> SolMap state -> Solution state description -> SolMap state
+    go curp mp n = case n of
+      LeafLost -> insertTuple loststate (curp, []) mp
+      Leaf r stt -> insertTuple stt (r * curp, []) mp
+      Node _ stt sc outcome ->
+        let outcomemap = foldl' (\cmp (sol, p) -> go (curp * p) cmp sol) mp outcome
+         in insertTuple stt (getCertain sc * curp, map (bimap extractState (* curp)) outcome) outcomemap
+    insertTuple :: state -> (Rational, Probably state) -> SolMap state -> SolMap state
+    insertTuple = M.insertWith combine
+    combine (np, nps) (op, ops) = (np + op, regroup (nps ++ ops))
+    extractState :: Solution state description -> state
+    extractState s = case s of
+      LeafLost -> loststate
+      Leaf _ stt -> stt
+      Node _ stt _ _ -> stt
 
 scoreCompare :: Rational -> PScore -> PScore -> Ordering
 scoreCompare _ (Certain sa) (Certain sb) = compare sa sb

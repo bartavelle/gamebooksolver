@@ -1,15 +1,17 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module SimpleSolver where
 
-import Control.Parallel.Strategies
-import Data.List
+import Control.Lens (Bifunctor (bimap))
+import Control.Parallel.Strategies (NFData, parMap, rseq)
+import Data.List (foldl', maximumBy)
 import qualified Data.Map.Strict as M
 import qualified Data.MemoCombinators as Memo
 import Data.Ord (comparing)
-import GHC.Generics
-import Solver hiding (Solution (..), getSolScore, lmapSol, solve, winStates)
+import GHC.Generics (Generic)
+import Solver hiding (Solution (..), getSolScore, lmapSol, solve, toSolMap, winStates)
 
 data Solution state description
   = Node
@@ -24,10 +26,24 @@ data Solution state description
 
 instance (NFData state, NFData description) => NFData (Solution state description)
 
-type SolMap state description = M.Map state (description, Rational, Probably state)
-
-toSolMap :: Solution state description -> SolMap state description
-toSolMap = undefined
+toSolMap :: forall state description. Ord state => state -> Solution state description -> SolMap state
+toSolMap loststate = go 1 M.empty
+  where
+    go :: Rational -> SolMap state -> Solution state description -> SolMap state
+    go curp mp n = case n of
+      LeafLost -> insertTuple loststate (curp, []) mp
+      Leaf r stt -> insertTuple stt (r * curp, []) mp
+      Node _ stt sc outcome ->
+        let outcomemap = foldl' (\cmp (sol, p) -> go (curp * p) cmp sol) mp outcome
+         in insertTuple stt (sc * curp, map (bimap extractState (* curp)) outcome) outcomemap
+    insertTuple :: state -> (Rational, Probably state) -> SolMap state -> SolMap state
+    insertTuple = M.insertWith combine
+    combine (np, nps) (op, ops) = (np + op, regroup (nps ++ ops))
+    extractState :: Solution state description -> state
+    extractState s = case s of
+      LeafLost -> loststate
+      Leaf _ stt -> stt
+      Node _ stt _ _ -> stt
 
 lmapSol :: (s1 -> s2) -> Solution s1 desc -> Solution s2 desc
 lmapSol f s =
