@@ -52,6 +52,6 @@ graph = unlines $ do
   (a, (p1, p2)) <- z
   return (unwords [show a, show p1, show p2])
   where
-    z = zip p22 p40 & map (\((a, p1), (_, p2)) -> (a, (p1, p2)))
+    z = zipWith (curry (\((a, p1), (_, p2)) -> (a, (p1, p2)))) p22 p40
     p22 = (approx 22 :: Matrix Double) & IM.findWithDefault mempty 0 & IM.toList
     p40 = (approx 50 :: Matrix Double) & IM.findWithDefault mempty 0 & IM.toList

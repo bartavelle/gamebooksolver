@@ -1,7 +1,9 @@
 module LoneWolf.Solve where
 
+import Control.Lens
 import Control.Monad (guard)
 import Data.Bits (Bits (clearBit, setBit, testBit))
+import qualified Data.HashMap.Strict as HM
 import qualified Data.IntMap.Strict as IM
 import qualified Data.IntSet as IS
 import Data.List (sortBy)
@@ -15,6 +17,7 @@ import LoneWolf.Choices (flattenDecision)
 import LoneWolf.Rules
   ( HadCombat (DidFight, Didn'tFight),
     NextStep (..),
+    getMaxHp,
     update,
   )
 import LoneWolf.Various (getDestinations)
@@ -23,7 +26,7 @@ import Solver (Probably, Score (..), Solution, certain, solve)
 import SolverHashable (solveHST)
 
 startConstant :: CharacterConstant
-startConstant = CharacterConstant 25 15 [Hunting, WeaponSkill ShortSword, MindBlast, SixthSense, MindShield]
+startConstant = CharacterConstant 25 15 [MindBlast, MindShield]
 
 startVariable :: CharacterVariable
 startVariable = mkCharacter 25 (inventoryFromList [(Weapon ShortSword, 1), (Gold, 15), (Meal, 2), (SealHammerdalVol2, 1)])
@@ -77,15 +80,17 @@ orderChapters book = M.fromList $ zip (reverse orderedlist) [1 ..]
         newedges = M.keys newedgesmap
 
 step :: M.Map ChapterId Int -> IM.IntMap Chapter -> CharacterConstant -> NextStep -> [(String, Probably NextStep)]
-step order chapters cconstant (NewChapter cid curvariable m) =
-  case IM.lookup cid chapters of
-    Nothing -> error ("Unknown chapter: " ++ show cid)
-    Just (Chapter _ _ d) -> map snd $
-      sortBy (comparing fst) $ do
-        (cdesc, outcome) <- flattenDecision cconstant curvariable (if m == DidFight then AfterCombat d else d)
-        let res = update cconstant curvariable cid outcome
-            score = stepprio res
-        return (score, (unwords cdesc, res))
+step order chapters cconstant xx@(NewChapter cid curvariable m)
+  | curvariable ^. curendurance > getMaxHp cconstant curvariable = error (show xx)
+  | otherwise =
+    case IM.lookup cid chapters of
+      Nothing -> error ("Unknown chapter: " ++ show cid)
+      Just (Chapter _ _ d) -> map snd $
+        sortBy (comparing fst) $ do
+          (cdesc, outcome) <- flattenDecision cconstant curvariable (if m == DidFight then AfterCombat d else d)
+          let res = update cconstant curvariable cid outcome
+              score = stepprio res
+          return (score, (unwords cdesc, res))
   where
     stepprio :: Probably NextStep -> Int
     stepprio = maximum . map (stepi . fst)
@@ -112,7 +117,7 @@ solveLW target book cconstant cvariable = solve memoState 1 (step order chapters
     chapters = IM.fromList book
     starget = IS.fromList target
 
-solveLWs :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> S.Solution NextStep String
+solveLWs :: [ChapterId] -> [(ChapterId, Chapter)] -> CharacterConstant -> CharacterVariable -> (S.Solution NextStep String, HM.HashMap NextStep (S.Solution NextStep String))
 solveLWs target book cconstant cvariable = solveHST (step order chapters cconstant) (getScore starget) (NewChapter 1 cvariable Didn'tFight)
   where
     order = orderChapters chapters

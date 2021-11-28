@@ -13,14 +13,8 @@ pchapters = map patch (extractMultiFight chapters)
     patch (200, Chapter t d _) = (200, Chapter t d (NoDecision (Goto 158)))
     patch (314, Chapter t d dc) = (314, Chapter t d (limitMoneyAt 12 dc))
     patch (33, Chapter t d dc) = (33, Chapter t d (limitMoneyAt 12 dc))
-    patch (150, Chapter t d _) = (150, Chapter t d (NoDecision (Simple [MustEat Hunt] condhammer))) -- patch, better way
     patch (172, Chapter t d _) = (172, Chapter t d (Decisions [("If you wish to climb the stone steps and confront it, turn to 52.", NoDecision (Goto 52)), ("If you wish to sprint past the steps and platform, turn to 256.", NoDecision (Goto 256))]))
     patch x = x
-    condhammer =
-      Conditionally
-        [ (HasItem SealHammerdalVol2 1, Goto 15),
-          (Always True, Goto 244)
-        ]
     limitMoneyAt maxmoney dc =
       dc & biplate %~ \o ->
         Conditionally
@@ -437,7 +431,11 @@ chapters =
       Chapter
         "32"
         "You awake at dawn to the sound of a shrill cockcrow. You can see the crooked streets of Ragadorn through a veil of heavy rain beating down on the cobblestones outside. It has been six days since you left Holmgard and you are still 200 miles from Port Bax.\nYou are in the loft of a very large coach station. A group of green-clad men have arrived and have started to clean out one of the coaches. You overhear one of them say that the coach leaves for Port Bax at one o'clock this afternoon and that the journey will take seven days.\nYou are hungry and must eat a Meal here or lose 3 ENDURANCE points.\n"
-        (NoDecision (Simple [MustEat Hunt] (Goto 186)))
+        ( Decisions
+            [ ("After the Meal, if you decide to approach the coachmen and ask to buy a ticket for the journey to Port Bax", NoDecision (Simple [MustEat Hunt] (Goto 136))),
+              ("If you would rather descend the ladder to the street outside", NoDecision (Simple [MustEat Hunt] (Goto 238)))
+            ]
+        )
     ),
     ( 33,
       Chapter
@@ -731,7 +729,7 @@ chapters =
       Chapter
         "58"
         "\"Bad luck, Lone Wolf. Your strategy is daring, but I think I have you now.\"\nThe captain moves his ornate keystone across the board and you realize that the game is lost. You congratulate him on his mastery of Samor and hand over 10 Gold Crowns.\n\"Perhaps another game tomorrow evening? Never let it be said that I am not a fair man,\" the captain says. \"Perhaps,\" you answer cautiously. You bid the smiling captain goodnight before returning to your cabin.\n"
-        (NoDecision (Goto 197))
+        (NoDecision (Simple [LoseItem Gold 10] (Goto 197)))
     ),
     ( 59,
       Chapter
@@ -3121,6 +3119,7 @@ chapters =
       Chapter
         "265"
         "At dusk on the tenth day of your quest, you experience your first sight of the magnificent city of Port Bax. Like a diamond set in the green velvet shore, the towers of the city glimmer in the pale light of a waxing moon. To the north is the harbour and the formidable war fleet of the Durenese navy. To the east, beyond the moss-covered city wall, stretches the Forest of Durenor. And there, on the crest of a hill, stands a castle tall and proud, the crowning glory of this beautiful port.\nYou enter Port Bax through an unguarded gate in the green city wall, and make your way through the darkening streets towards the harbour.\nAs you turn into a tree-lined avenue, you notice the wide stone steps of a domed building to your right. You stop to read the brass plaque.\nCITY HALL\nDespite the late hour, the main doors are open.\n"
+        -- patched
         ( NoDecision
             ( Conditionally
                 [ (HasItem SealHammerdalVol2 1, Goto 202),

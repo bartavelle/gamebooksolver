@@ -12,6 +12,7 @@ import qualified Data.HashTable.Class as STC
 import qualified Data.HashTable.ST.Basic as ST
 import Data.Hashable (Hashable)
 import Data.List
+import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import SimpleSolver
 import Solver (Choice, Proba, Probably, Score (..))
@@ -34,7 +35,7 @@ solveHST ::
   (state -> [Choice state description]) ->
   (state -> Score) ->
   state ->
-  Solution state description
+  (Solution state description, HM.HashMap state (Solution state description))
 solveHST getChoice score start = ST.runST $ do
   visited <- ST.newSized 10000000
   let go [] = pure ()
@@ -83,10 +84,13 @@ solveHST getChoice score start = ST.runST $ do
 
   go [start]
   s <- ST.lookup visited start
+  let filterSolution (_, SS _) = Nothing
+      filterSolution (k, OK sl) = Just (k, sl)
+  solmap <- HM.fromList . mapMaybe filterSolution <$> STC.toList visited
   case s of
     Nothing -> error "??"
     Just (SS _) -> error ":("
-    Just (OK r) -> pure r
+    Just (OK r) -> pure (r, solmap)
 {-# INLINEABLE solveHST #-}
 
 solveH ::

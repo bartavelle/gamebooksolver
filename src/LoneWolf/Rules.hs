@@ -50,8 +50,8 @@ check cconstant cvariable cond =
 updateSimple :: CharacterConstant -> CharacterVariable -> SimpleOutcome -> CharacterVariable
 updateSimple cconstant cvariable soutcome =
   case soutcome of
-    DamagePlayer dmg -> cvariable & curendurance -~ dmg
-    HealPlayer heal -> cvariable & curendurance %~ \hp -> max maxhp (hp + heal)
+    DamagePlayer dmg -> cvariable & curendurance %~ \hp -> max 0 (hp - dmg)
+    HealPlayer heal -> cvariable & curendurance %~ \hp -> min maxhp (hp + heal)
     FullHeal -> cvariable & curendurance .~ (cconstant ^. maxendurance)
     HalfHeal -> cvariable & curendurance %~ \hp -> (hp + maxhp) `div` 2
     GainItem item count -> cvariable & equipment %~ addItem item count
@@ -69,7 +69,7 @@ updateSimple cconstant cvariable soutcome =
     curhp = cvariable ^. curendurance
     maxhp = getMaxHp cconstant cvariable
     eqp = cvariable ^. equipment
-    updates lst = foldl' (updateSimple cconstant) cvariable lst
+    updates = foldl' (updateSimple cconstant) cvariable
 
 update :: CharacterConstant -> CharacterVariable -> ChapterId -> ChapterOutcome -> Probably NextStep
 update cconstant cvariable cid outcome =
@@ -113,4 +113,4 @@ uCheck cconstant cvariable conds = case conds of
       else uCheck cconstant cvariable cs
 
 getMaxHp :: CharacterConstant -> CharacterVariable -> Endurance
-getMaxHp cconstant cvariable = cconstant ^. maxendurance + if hasItem ChainMail (cvariable ^. equipment) then 4 else 0
+getMaxHp cconstant cvariable = cconstant ^. maxendurance + (if hasItem ChainMail (cvariable ^. equipment) then 4 else 0)

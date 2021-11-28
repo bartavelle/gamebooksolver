@@ -31,6 +31,7 @@ library
                        LoneWolf.Simplify
                        LoneWolf.Book02
                        LoneWolf.Various
+                       LoneWolf.StateSelector
                        Text.XML.Expat.Lens.Generic
                        LoneWolf.Cartwheel
   ghc-options:         -Wall -funbox-strict-fields -g
@@ -92,7 +93,8 @@ executable gamebooksolver-solvebook02
   build-depends:       base
                      , gamebooksolver
                      , lens
-                     , containers
+                     , unordered-containers
+                     , optparse-applicative
   default-language:    Haskell2010
 
 test-suite gamebooksolver-test
