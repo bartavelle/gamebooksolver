@@ -5,6 +5,7 @@ module LoneWolf.Rules where
 
 import Control.DeepSeq
 import Control.Lens
+import Data.Aeson (ToJSON)
 import Data.Hashable
 import Data.List
 import GHC.Generics
@@ -20,6 +21,8 @@ data HadCombat
 
 instance Hashable HadCombat
 
+instance ToJSON HadCombat
+
 instance NFData HadCombat
 
 data NextStep
@@ -29,6 +32,8 @@ data NextStep
   deriving (Show, Eq, Generic, Ord)
 
 instance Hashable NextStep
+
+instance ToJSON NextStep
 
 makePrisms ''NextStep
 

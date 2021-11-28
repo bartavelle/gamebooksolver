@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -6,6 +7,15 @@ module SimpleSolver where
 
 import Control.Lens (Bifunctor (bimap))
 import Control.Parallel.Strategies (NFData, parMap, rseq)
+import Data.Aeson
+  ( Options (..),
+    SumEncoding (ObjectWithSingleField),
+    ToJSON (toEncoding, toJSON),
+    defaultOptions,
+    genericToEncoding,
+    genericToJSON,
+  )
+import Data.Bifunctor (first)
 import Data.List (foldl', maximumBy)
 import qualified Data.Map.Strict as M
 import qualified Data.MemoCombinators as Memo
@@ -25,6 +35,40 @@ data Solution state description
   deriving (Show, Eq, Generic)
 
 instance (NFData state, NFData description) => NFData (Solution state description)
+
+data ChoppedSolution state description
+  = CNode
+      { _cdesc :: description,
+        _cstt :: state,
+        _cscore :: Rational,
+        _coutcome :: Probably (Maybe state)
+      }
+  | CLeafLost
+  | CLeaf Rational state
+  deriving (Show, Eq, Generic)
+
+choppedSolutionOptions :: Options
+choppedSolutionOptions =
+  defaultOptions
+    { fieldLabelModifier = drop 2,
+      constructorTagModifier = drop 1,
+      sumEncoding = ObjectWithSingleField
+    }
+
+instance (ToJSON state, ToJSON description) => ToJSON (ChoppedSolution state description) where
+  toJSON = genericToJSON choppedSolutionOptions
+  toEncoding = genericToEncoding choppedSolutionOptions
+
+chopSolution :: Solution state description -> ChoppedSolution state description
+chopSolution = \case
+  LeafLost -> CLeafLost
+  Leaf sc stt -> CLeaf sc stt
+  Node d stt c o -> CNode d stt c (map (first mstate) o)
+  where
+    mstate = \case
+      Leaf _ stt -> Just stt
+      LeafLost -> Nothing
+      Node _ stt' _ _ -> Just stt'
 
 toSolMap :: forall state description. Ord state => state -> Solution state description -> SolMap state
 toSolMap loststate = go 1 M.empty
@@ -84,5 +128,5 @@ solve memo getChoice score = go
         choices = getChoice stt
         scored = parMap rseq scoreTree choices
         scoreTree (cdesc, pstates) =
-          let ptrees = map (\(o, p) -> (go o, p)) pstates
+          let ptrees = map (first go) pstates
            in Node cdesc stt (sum (map (\(o, p) -> p * getSolScore o) ptrees)) ptrees

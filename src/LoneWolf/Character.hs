@@ -15,6 +15,7 @@ module LoneWolf.Character where
 
 import Control.DeepSeq
 import Control.Lens
+import Data.Aeson (ToJSON)
 import Data.Bits
 import Data.Data
 import Data.Hashable
@@ -55,7 +56,7 @@ data CharacterConstant = CharacterConstant
 The variable part holds the player inventory, and current health points.
 -}
 newtype CharacterVariable = CharacterVariable {getCharacterVariable :: Word64}
-  deriving (Generic, Eq, Bits, Ord, Hashable, NFData)
+  deriving (Generic, Eq, Bits, Ord, Hashable, NFData, ToJSON)
 
 mkCharacter :: Endurance -> Inventory -> CharacterVariable
 mkCharacter e i = CharacterVariable 0 & curendurance .~ e & equipment .~ i

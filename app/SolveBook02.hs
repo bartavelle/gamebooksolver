@@ -1,32 +1,92 @@
 module Main (main) where
 
-import Control.Monad
+import Control.Monad (forM_)
+import Data.Aeson (encode)
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HM
+import qualified Data.Map.Strict as M
+import Data.Maybe (fromMaybe)
 import LoneWolf.Book02 (pchapters)
 import LoneWolf.Chapter (ChapterId)
+import LoneWolf.Character
 import LoneWolf.Rules (NextStep (..))
-import LoneWolf.Solve
-import LoneWolf.StateSelector
+import LoneWolf.Solve (solveLWs)
+import LoneWolf.StateSelector (Log, Selector, selectChar)
 import Options.Applicative
 import SimpleSolver
 
-simpleSol :: [Int] -> (Rational, HM.HashMap NextStep (Solution NextStep String))
-simpleSol target =
-  let (solution, smap) = solveLWs target pchapters startConstant startVariable
+simpleSol :: CharacterConstant -> CharacterVariable -> [Int] -> (Rational, HM.HashMap NextStep (Solution NextStep String))
+simpleSol ccst cvar target =
+  let (solution, smap) = solveLWs target pchapters ccst cvar
    in (_score solution, smap)
+
+data Commands
+  = Explore (Maybe ChapterId) (Maybe (Log Selector))
+  | JsonDump (Maybe FilePath)
+  | Standard
 
 data Opts = Opts
   { _finalchapters :: [ChapterId],
-    _exploreAt :: Maybe ChapterId,
-    _cfilter :: Maybe (Log Selector)
+    _ccst :: CharacterConstant,
+    _cvar :: CVarState,
+    _command :: Commands
   }
+
+data CVarState = CVarState
+  { _items :: [Item],
+    _gold :: Int,
+    _meals :: Int
+  }
+
+mkchar :: CharacterConstant -> CVarState -> CharacterVariable
+mkchar cst (CVarState sitems gld cmeals) = mkCharacter (_maxendurance cst) (inventoryFromList allitems)
+  where
+    numbereditems = M.toList $
+      M.fromListWith (+) $ do
+        i <- sitems
+        pure (i, 1)
+    citems = if null sitems then [(Weapon ShortSword, 1), (SealHammerdalVol2, 1)] else numbereditems
+    allitems = citems ++ [(Gold, gld), (Meal, cmeals)]
+
+cconstant :: Parser CharacterConstant
+cconstant =
+  CharacterConstant
+    <$> fmap Endurance (option auto (long "endurance" <> short 'e' <> help "Max endurance" <> value 25))
+    <*> fmap CombatSkill (option auto (long "skill" <> short 's' <> help "Combat skill" <> value 15))
+    <*> many (option auto (long "discipline" <> short 'd' <> help "Disciplines"))
+
+cvariable :: Parser CVarState
+cvariable =
+  CVarState
+    <$> many (option auto (long "item" <> short 'i' <> help "Starting items (default items if empty)"))
+    <*> option auto (long "gold" <> help "Starting gold" <> value 15)
+    <*> option auto (long "meals" <> help "Starting meals" <> value 2)
 
 options :: Parser Opts
 options =
   Opts
-    <$> many (argument auto (metavar "CHAPTER" <> help "Stop at these chapters"))
-    <*> optional (option auto (long "explore" <> help "Start exploring at this chapter"))
-    <*> optional (option auto (long "filter" <> help "Character filter"))
+    <$> many (option auto (long "stopat" <> metavar "CHAPTER" <> help "Stop at these chapters"))
+    <*> cconstant
+    <*> cvariable
+    <*> subparser
+      ( command
+          "explore"
+          ( info
+              ( Explore
+                  <$> optional (argument auto (metavar "CHAPTERID" <> help "Start at this chapter"))
+                  <*> optional (option auto (long "filter" <> help "Character filter"))
+              )
+              (progDesc "Explore the solution")
+          )
+          <> command
+            "jsondump"
+            ( info
+                ( JsonDump <$> optional (strArgument (metavar "PATH" <> help "Dumped file path"))
+                )
+                (progDesc "Dump as JSON")
+            )
+          <> command "standard" (info (pure Standard) (progDesc "Just display statistics"))
+      )
 
 programOpts :: ParserInfo Opts
 programOpts =
@@ -65,27 +125,38 @@ exploreSolution sol =
 
 main :: IO ()
 main = do
-  putStrLn "Solving for the following initial state:"
-  print startConstant
-  print startVariable
-  opts <- execParser programOpts
+  Opts fchapters ccst ccvar cmd <- execParser programOpts
   let checkChapters cs
         | null cs = [39]
         | otherwise = cs
-  let (score, solmap) = simpleSol (checkChapters (_finalchapters opts))
+      cvar = mkchar ccst ccvar
+      finalchapters = case fchapters of
+        [] -> [350]
+        fc -> fc
+
+  putStrLn ("Constant: " ++ show ccst)
+  putStrLn ("Variable: " ++ show cvar)
+
+  let (score, solmap) = simpleSol ccst cvar (checkChapters finalchapters)
   putStrLn ("Winning probability: " ++ show (fromRational score :: Double) ++ " [" ++ show score ++ "]")
   putStrLn ("solution map size: " ++ show (length solmap))
-  forM_ (_exploreAt opts) $ \chapterid ->
-    let startStates = filter startChapter (HM.keys solmap)
-        check = case (_cfilter opts) of
-          Nothing -> const True
-          Just flt -> selectChar flt
-        startChapter c =
-          case c of
-            NewChapter cid cvar _ -> cid == chapterid && check cvar
-            _ -> False
-     in case startStates of
-          [] -> putStrLn ("Expression " ++ show (_cfilter opts) ++ " did not select anything")
-          sstate : _ -> case HM.lookup sstate solmap of
-            Nothing -> putStrLn "No solution?!?"
-            Just sol -> exploreSolution sol
+  case cmd of
+    Standard -> pure ()
+    JsonDump mtarget -> do
+      let encoded = encode $ HM.toList $ fmap chopSolution solmap
+      case mtarget of
+        Just pth -> BSL.writeFile pth encoded
+        Nothing -> BSL.putStr encoded
+    Explore mcid mselector -> do
+      let chapterid = fromMaybe 1 mcid
+          startStates = filter startChapter (HM.keys solmap)
+          check = maybe (const True) selectChar mselector
+          startChapter c =
+            case c of
+              NewChapter cid cvar' _ -> cid == chapterid && check cvar'
+              _ -> False
+      case startStates of
+        [] -> putStrLn ("Expression " ++ show mselector ++ " did not select anything")
+        sstate : _ -> case HM.lookup sstate solmap of
+          Nothing -> putStrLn "No solution?!?"
+          Just sol -> exploreSolution sol

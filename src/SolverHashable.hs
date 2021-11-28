@@ -31,7 +31,7 @@ type UChoice state description = UP description (Probably state)
 
 solveHST ::
   forall state description.
-  (Eq state, Hashable state, Show state, Show description) =>
+  (Eq state, Hashable state, Show state) =>
   (state -> [Choice state description]) ->
   (state -> Score) ->
   state ->
@@ -92,53 +92,3 @@ solveHST getChoice score start = ST.runST $ do
     Just (SS _) -> error ":("
     Just (OK r) -> pure (r, solmap)
 {-# INLINEABLE solveHST #-}
-
-solveH ::
-  forall state description.
-  (Eq state, Hashable state, Show state) =>
-  (state -> [Choice state description]) ->
-  (state -> Score) ->
-  state ->
-  Solution state description
-solveH getChoice score start = case HM.lookup start (go HM.empty [start]) of
-  Nothing -> error "??"
-  Just (SS _) -> error ":("
-  Just (OK s) -> s
-  where
-    go :: HM.HashMap state (SearchNode state description) -> [state] -> HM.HashMap state (SearchNode state description)
-    go visited q =
-      case q of
-        [] -> visited
-        stt : q' ->
-          case (HM.lookup stt visited, score stt) of
-            (Just (OK _), _) ->
-              -- already resolved
-              go visited q'
-            (_, Known x) -> go (HM.insert stt (OK (Leaf x stt)) visited) q'
-            (Nothing, _) ->
-              -- new node, nothing known about it
-              let choices = getChoice stt
-                  newstates = HM.fromList $ do
-                    (_, ps) <- choices
-                    (s, _) <- ps
-                    pure (s, ())
-                  unknownstates = HM.difference newstates visited
-               in go (HM.insert stt (SS choices) visited) (HM.keys unknownstates ++ q)
-            (Just (SS chs), _) ->
-              -- all the child nodes must be solved now
-              let solved = map extractSol chs
-                  extractSol (d, ps) =
-                    let psols = map getSttSol ps
-                        getSttSol (stt', proba) =
-                          case HM.lookup stt' visited of
-                            Nothing -> error "unvisited state"
-                            Just (SS _) -> error ("loop on state " ++ show stt)
-                            Just (OK s) -> (s, proba)
-                        scr = sum (map (\(csol, proba) -> getSolScore csol * proba) psols)
-                     in Node d stt scr psols
-                  sol =
-                    if null solved
-                      then LeafLost
-                      else maximumBy (comparing _score) solved
-               in go (HM.insert stt (OK sol) visited) q'
-{-# INLINEABLE solveH #-}

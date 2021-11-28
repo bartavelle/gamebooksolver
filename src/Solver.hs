@@ -14,13 +14,14 @@ series: Game book solver
 module Solver where
 
 import Control.Lens (Bifunctor (bimap))
-import Control.Parallel.Strategies
+import Control.Parallel.Strategies (parMap, rseq)
+import Data.Bifunctor (first)
 import Data.Function (on)
-import Data.List
+import Data.List (foldl', maximumBy, sortBy)
 import qualified Data.Map.Strict as M
 import qualified Data.MemoCombinators as Memo
 import Data.Ord (comparing)
-import GHC.Generics
+import GHC.Generics (Generic)
 
 type Proba = Rational
 
@@ -33,7 +34,7 @@ type Solver state description = state -> (description, Rational, Probably state)
 type SolMap state = M.Map state (Rational, Probably state)
 
 mapProbably :: (a -> b) -> Probably a -> Probably b
-mapProbably f = map (\(a, p) -> (f a, p))
+mapProbably f = map (first f)
 
 data Solution state description
   = Node
@@ -159,7 +160,7 @@ mkPScore = go 0 0 . sortBy (flip (comparing snd))
         [] -> Certain curscore
         ((st, p) : xs) ->
           let !nproba = curproba + p
-              !nscore = curscore + (getSolScore st) * p
+              !nscore = curscore + getSolScore st * p
            in if nproba == 1
                 then Certain nscore
                 else Approximate nproba nscore (go nproba nscore xs)

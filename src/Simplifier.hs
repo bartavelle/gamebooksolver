@@ -4,6 +4,7 @@ module Simplifier where
 
 import Control.Arrow ((&&&))
 import Control.Monad.State.Strict
+import Data.Foldable (fold)
 import qualified Data.Graph as G
 import Data.List
 import qualified Data.Map.Strict as M
@@ -29,6 +30,7 @@ instance Monoid LinkType where
   mempty = Neutral
   Neutral `mappend` b = b
   b `mappend` Neutral = b
+  _ `mappend` _ = error "?!"
 
 uselessEdges ::
   forall chapterid priority.
@@ -41,7 +43,7 @@ uselessEdges ::
 uselessEdges priority childs istart iend =
   foldMap go simplTree
   where
-    childs' = foldMap id . M.keysSet . childs
+    childs' = fold . M.keysSet . childs
     simplTree = bubbleTree priority childs' istart iend
     go :: G.Tree (chapterid, chapterid) -> S.Set (chapterid, chapterid)
     go (G.Node (start, end) subs) =
@@ -49,7 +51,7 @@ uselessEdges priority childs istart iend =
        in prunePathes childs forbidden start end
 
 moreThan :: Int -> [a] -> Bool
-moreThan n lst = n < 0 || (not (null lst) && moreThan (n -1) (tail lst))
+moreThan n lst = n < 0 || (not (null lst) && moreThan (n - 1) (tail lst))
 
 prunePathes ::
   forall chapterid.
