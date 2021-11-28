@@ -20,16 +20,16 @@ simpleSol ccst cvar target =
   let (solution, smap) = solveLWs target pchapters ccst cvar
    in (_score solution, smap)
 
-data Commands
-  = Explore (Maybe ChapterId) (Maybe (Log Selector))
-  | JsonDump (Maybe FilePath)
-  | Standard
+data Opts
+  = Explore SolDesc (Maybe ChapterId) (Maybe (Log Selector))
+  | JsonDump SolDesc (Maybe FilePath)
+  | Standard SolDesc
+  | MultiStats [Discipline] CVarState
 
-data Opts = Opts
+data SolDesc = SolDesc
   { _finalchapters :: [ChapterId],
     _ccst :: CharacterConstant,
-    _cvar :: CVarState,
-    _command :: Commands
+    _cvar :: CVarState
   }
 
 data CVarState = CVarState
@@ -53,7 +53,10 @@ cconstant =
   CharacterConstant
     <$> fmap Endurance (option auto (long "endurance" <> short 'e' <> help "Max endurance" <> value 25))
     <*> fmap CombatSkill (option auto (long "skill" <> short 's' <> help "Combat skill" <> value 15))
-    <*> many (option auto (long "discipline" <> short 'd' <> help "Disciplines"))
+    <*> disciplines
+
+disciplines :: Parser [Discipline]
+disciplines = many (option auto (long "discipline" <> short 'd' <> help "Disciplines"))
 
 cvariable :: Parser CVarState
 cvariable =
@@ -62,31 +65,44 @@ cvariable =
     <*> option auto (long "gold" <> help "Starting gold" <> value 15)
     <*> option auto (long "meals" <> help "Starting meals" <> value 2)
 
-options :: Parser Opts
-options =
-  Opts
+soldesc :: Parser SolDesc
+soldesc =
+  SolDesc
     <$> many (option auto (long "stopat" <> metavar "CHAPTER" <> help "Stop at these chapters"))
     <*> cconstant
     <*> cvariable
-    <*> subparser
-      ( command
-          "explore"
-          ( info
-              ( Explore
-                  <$> optional (argument auto (metavar "CHAPTERID" <> help "Start at this chapter"))
+
+options :: Parser Opts
+options =
+  subparser
+    ( command
+        "explore"
+        ( info
+            ( Explore
+                <$> soldesc
+                  <*> optional (argument auto (metavar "CHAPTERID" <> help "Start at this chapter"))
                   <*> optional (option auto (long "filter" <> help "Character filter"))
-              )
-              (progDesc "Explore the solution")
-          )
-          <> command
-            "jsondump"
-            ( info
-                ( JsonDump <$> optional (strArgument (metavar "PATH" <> help "Dumped file path"))
-                )
-                (progDesc "Dump as JSON")
             )
-          <> command "standard" (info (pure Standard) (progDesc "Just display statistics"))
-      )
+            (progDesc "Explore the solution")
+        )
+        <> command
+          "jsondump"
+          ( info
+              ( JsonDump <$> soldesc <*> optional (strArgument (metavar "PATH" <> help "Dumped file path"))
+              )
+              (progDesc "Dump as JSON")
+          )
+        <> command "standard" (info (Standard <$> soldesc) (progDesc "Just display statistics"))
+        <> command
+          "multistats"
+          ( info
+              ( MultiStats
+                  <$> disciplines
+                  <*> cvariable
+              )
+              (progDesc "Multi stats")
+          )
+    )
 
 programOpts :: ParserInfo Opts
 programOpts =
@@ -123,32 +139,37 @@ exploreSolution sol =
           idx <- read <$> getLine
           exploreSolution (fst (outcome !! idx))
 
-main :: IO ()
-main = do
-  Opts fchapters ccst ccvar cmd <- execParser programOpts
-  let checkChapters cs
-        | null cs = [39]
-        | otherwise = cs
-      cvar = mkchar ccst ccvar
+getSol :: SolDesc -> (Rational, HM.HashMap NextStep (Solution NextStep String))
+getSol (SolDesc fchapters ccst ccvar) =
+  let cvar = mkchar ccst ccvar
       finalchapters = case fchapters of
         [] -> [350]
         fc -> fc
+   in simpleSol ccst cvar finalchapters
 
-  putStrLn ("Constant: " ++ show ccst)
-  putStrLn ("Variable: " ++ show cvar)
+showRecap :: Foldable t => SolDesc -> Rational -> t a -> IO ()
+showRecap (SolDesc _ ccst cvar) score solmap = do
+  putStrLn ("CONSTANT: " ++ show ccst)
+  putStrLn ("VARIABLE: " ++ show (mkchar ccst cvar))
+  putStrLn ("STATES:   " ++ show (length solmap))
+  putStrLn ("WIN:      " ++ show (fromRational score :: Double))
 
-  let (score, solmap) = simpleSol ccst cvar (checkChapters finalchapters)
-  putStrLn ("Winning probability: " ++ show (fromRational score :: Double) ++ " [" ++ show score ++ "]")
-  putStrLn ("solution map size: " ++ show (length solmap))
+main :: IO ()
+main = do
+  cmd <- execParser programOpts
   case cmd of
-    Standard -> pure ()
-    JsonDump mtarget -> do
-      let encoded = encode $ HM.toList $ fmap chopSolution solmap
+    Standard sd -> do
+      let (r, solmap) = getSol sd
+      showRecap sd r solmap
+    JsonDump sd mtarget -> do
+      let (_, solmap) = getSol sd
+          encoded = encode $ HM.toList $ fmap chopSolution solmap
       case mtarget of
         Just pth -> BSL.writeFile pth encoded
         Nothing -> BSL.putStr encoded
-    Explore mcid mselector -> do
-      let chapterid = fromMaybe 1 mcid
+    Explore sd mcid mselector -> do
+      let (_, solmap) = getSol sd
+          chapterid = fromMaybe 1 mcid
           startStates = filter startChapter (HM.keys solmap)
           check = maybe (const True) selectChar mselector
           startChapter c =
@@ -160,3 +181,8 @@ main = do
         sstate : _ -> case HM.lookup sstate solmap of
           Nothing -> putStrLn "No solution?!?"
           Just sol -> exploreSolution sol
+    MultiStats discs variable ->
+      forM_ [20 .. 29] $ \e -> forM_ [10 .. 19] $ \s -> do
+        let cst = CharacterConstant e s discs
+            (score, _) = getSol (SolDesc [350] cst variable)
+        print (e, s, fromRational score :: Double)
