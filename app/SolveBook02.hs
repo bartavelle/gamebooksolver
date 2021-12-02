@@ -1,27 +1,36 @@
 module Main (main) where
 
-import Control.Monad (forM_)
+import Control.Lens (to, (^.))
+import Control.Monad (forM_, guard, when)
 import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HM
-import qualified Data.Map.Strict as M
-import Data.Maybe (fromMaybe)
+import Data.List (intercalate)
+import Data.Maybe (fromMaybe, mapMaybe)
 import LoneWolf.Book02 (pchapters)
 import LoneWolf.Chapter (ChapterId)
 import LoneWolf.Character
+import LoneWolf.Data
 import LoneWolf.Rules (NextStep (..))
 import LoneWolf.Solve (solveLWs)
 import LoneWolf.StateSelector (Log, Selector, selectChar)
 import Options.Applicative
 import SimpleSolver
+import Text.Printf (printf)
 
 simpleSol :: CharacterConstant -> CharacterVariable -> [Int] -> (Rational, HM.HashMap NextStep (Solution NextStep String))
 simpleSol ccst cvar target =
   let (solution, smap) = solveLWs target pchapters ccst cvar
    in (_score solution, smap)
 
-data Opts
+data Opts = Opts
+  { _optDebug :: Bool,
+    _optCommand :: Command
+  }
+
+data Command
   = Explore SolDesc (Maybe ChapterId) (Maybe (Log Selector))
+  | ShowStates SolDesc ChapterId
   | JsonDump SolDesc (Maybe FilePath)
   | Standard SolDesc
   | MultiStats [Discipline] CVarState
@@ -32,21 +41,8 @@ data SolDesc = SolDesc
     _cvar :: CVarState
   }
 
-data CVarState = CVarState
-  { _items :: [Item],
-    _gold :: Int,
-    _meals :: Int
-  }
-
-mkchar :: CharacterConstant -> CVarState -> CharacterVariable
-mkchar cst (CVarState sitems gld cmeals) = mkCharacter (_maxendurance cst) (inventoryFromList allitems)
-  where
-    numbereditems = M.toList $
-      M.fromListWith (+) $ do
-        i <- sitems
-        pure (i, 1)
-    citems = if null sitems then [(Weapon ShortSword, 1), (SealHammerdalVol2, 1)] else numbereditems
-    allitems = citems ++ [(Gold, gld), (Meal, cmeals)]
+options :: Parser Opts
+options = Opts <$> switch (long "debug" <> help "Verbose execution") <*> scommand
 
 cconstant :: Parser CharacterConstant
 cconstant =
@@ -58,13 +54,6 @@ cconstant =
 disciplines :: Parser [Discipline]
 disciplines = many (option auto (long "discipline" <> short 'd' <> help "Disciplines"))
 
-cvariable :: Parser CVarState
-cvariable =
-  CVarState
-    <$> many (option auto (long "item" <> short 'i' <> help "Starting items (default items if empty)"))
-    <*> option auto (long "gold" <> help "Starting gold" <> value 15)
-    <*> option auto (long "meals" <> help "Starting meals" <> value 2)
-
 soldesc :: Parser SolDesc
 soldesc =
   SolDesc
@@ -72,8 +61,8 @@ soldesc =
     <*> cconstant
     <*> cvariable
 
-options :: Parser Opts
-options =
+scommand :: Parser Command
+scommand =
   subparser
     ( command
         "explore"
@@ -102,6 +91,7 @@ options =
               )
               (progDesc "Multi stats")
           )
+        <> command "showstates" (info (ShowStates <$> soldesc <*> argument auto (metavar "CHAPTERID" <> help "Chapter with states to explore")) (progDesc "Show states"))
     )
 
 programOpts :: ParserInfo Opts
@@ -154,9 +144,33 @@ showRecap (SolDesc _ ccst cvar) score solmap = do
   putStrLn ("STATES:   " ++ show (length solmap))
   putStrLn ("WIN:      " ++ show (fromRational score :: Double))
 
+shortSolstate :: Solution NextStep String -> String
+shortSolstate s = case s of
+  LeafLost -> "!lost"
+  Leaf sc es -> "win " ++ printf "%.03f" (fromRational sc :: Double) ++ " -> " ++ shortNS es
+  Node _ stt _ _ -> shortNS stt
+
+shortNS :: NextStep -> String
+shortNS ns =
+  case ns of
+    HasLost _ -> "lost"
+    HasWon _ -> "won"
+    NewChapter _ cv _ -> shortState cv
+
+shortState :: CharacterVariable -> String
+shortState s = "e:" ++ printf "%02d" (s ^. curendurance . to getEndurance) ++ " " ++ itemlist (items (s ^. equipment))
+  where
+    itemlist = intercalate "/" . map singleitem
+    singleitem (i, c) =
+      itm ++ (if c == 1 then "" else "(" ++ show c ++ ")")
+      where
+        itm = case i of
+          Weapon x -> show x
+          _ -> show i
+
 main :: IO ()
 main = do
-  cmd <- execParser programOpts
+  Opts debug cmd <- execParser programOpts
   case cmd of
     Standard sd -> do
       let (r, solmap) = getSol sd
@@ -181,8 +195,31 @@ main = do
         sstate : _ -> case HM.lookup sstate solmap of
           Nothing -> putStrLn "No solution?!?"
           Just sol -> exploreSolution sol
-    MultiStats discs variable ->
-      forM_ [20 .. 29] $ \e -> forM_ [10 .. 19] $ \s -> do
-        let cst = CharacterConstant e s discs
-            (score, _) = getSol (SolDesc [350] cst variable)
-        print (e, s, fromRational score :: Double)
+    MultiStats discs scvariable ->
+      let entries = do
+            e <- if AnimalKinship `elem` discs then [20 .. 29] else [20, 25, 29]
+            s <- if AnimalKinship `elem` discs then [10 .. 19] else [10, 15, 19]
+            let cst = CharacterConstant e s discs
+                (score, solmap) = getSol (SolDesc [350] cst scvariable)
+            pure (MultistatEntry e s (fromRational score) score (HM.size solmap))
+       in do
+            when debug (forM_ entries $ \(MultistatEntry e s c _ _) -> print (e, s, c))
+            BSL.putStr (encode (Multistat discs scvariable entries))
+    ShowStates sd chapterid -> do
+      let (_, solmap) = getSol sd
+          filterState (c, v) =
+            case c of
+              NewChapter cid cv _ -> (cv, v) <$ guard (cid == chapterid)
+              _ -> Nothing
+          startStates = mapMaybe filterState (HM.toList solmap)
+      forM_ startStates $ \(k, v) -> do
+        let l2 = case v of
+              Node desc _ score outcomes -> printf "%.03f " (fromRational score :: Double) ++ targetstate ++ " " ++ desc
+                where
+                  targetstate = case outcomes of
+                    [] -> "[]"
+                    [(x, _)] -> shortSolstate x
+                    _ -> "[" ++ show (length outcomes) ++ "]"
+              _ -> shortSolstate v
+        putStrLn (shortState k)
+        putStrLn (" -> " ++ l2)

@@ -23,6 +23,7 @@ library
                        LoneWolf.Character
                        LoneWolf.Chapter
                        LoneWolf.Combat
+                       LoneWolf.Data
                        LoneWolf.XML
                        LoneWolf.Rules
                        LoneWolf.CombatChart
@@ -54,6 +55,7 @@ library
                      , deepseq
                      , hashtables
                      , aeson
+                     , optparse-applicative
   default-language:    Haskell2010
 
 executable gamebooksolver-genchapters
@@ -87,6 +89,22 @@ executable gamebooksolver-solvebook02
                      , optparse-applicative
                      , aeson
                      , bytestring
+  default-language:    Haskell2010
+
+executable gamebooksolver-blogpost
+  hs-source-dirs:      app
+  main-is:             BlogPost.hs
+  ghc-options:         -threaded -rtsopts -Wall
+  build-depends:       base
+                     , gamebooksolver
+                     , aeson
+                     , containers
+                     , unordered-containers
+                     , lucid
+                     , directory
+                     , lens
+                     , text
+                     , optparse-applicative
   default-language:    Haskell2010
 
 test-suite gamebooksolver-test

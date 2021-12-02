@@ -15,7 +15,7 @@ module LoneWolf.Character where
 
 import Control.DeepSeq
 import Control.Lens
-import Data.Aeson (ToJSON)
+import Data.Aeson (FromJSON, ToJSON)
 import Data.Bits
 import Data.Data
 import Data.Hashable
@@ -40,10 +40,10 @@ data Character = Character
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 -}
 newtype CombatSkill = CombatSkill {getCombatSkill :: Int}
-  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
+  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON)
 
 newtype Endurance = Endurance {getEndurance :: Int}
-  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits)
+  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON)
 
 data CharacterConstant = CharacterConstant
   { _maxendurance :: Endurance,
@@ -56,7 +56,7 @@ data CharacterConstant = CharacterConstant
 The variable part holds the player inventory, and current health points.
 -}
 newtype CharacterVariable = CharacterVariable {getCharacterVariable :: Word64}
-  deriving (Generic, Eq, Bits, Ord, Hashable, NFData, ToJSON)
+  deriving (Generic, Eq, Bits, Ord, Hashable, NFData, ToJSON, FromJSON)
 
 mkCharacter :: Endurance -> Inventory -> CharacterVariable
 mkCharacter e i = CharacterVariable 0 & curendurance .~ e & equipment .~ i
@@ -99,6 +99,10 @@ data Discipline
   | MindOverMatter
   deriving (Show, Eq, Generic, Read, Ord, Typeable, Data)
 
+instance ToJSON Discipline
+
+instance FromJSON Discipline
+
 {-
 Two weapons are selected by the player before the story starts. The `MagicSpear` and `Sommerswerd` can't be picked when the game begins, but can be found during the adventure.
 Given that these weapons are magic and more powerful than their mundane counterparts, and given the preference for `WeaponSkill` selection, The `ShortSword` and `Spear` will always be picked at the start of the adventure.
@@ -116,6 +120,10 @@ data Weapon
   | MagicSpear
   | Sommerswerd
   deriving (Show, Eq, Generic, Ord, Enum, Bounded, Read, Typeable, Data)
+
+instance ToJSON Weapon
+
+instance FromJSON Weapon
 
 {-
 Not all items that are referenced in the books are described here.
@@ -138,7 +146,12 @@ data Item
   | SealHammerdalVol2
   | WhitePassVol2
   | RedPassVol2
+  | CrystalStarPendantVol1
   deriving (Show, Eq, Generic, Ord, Read, Typeable, Data)
+
+instance ToJSON Item
+
+instance FromJSON Item
 
 instance Bounded Item where
   minBound = Backpack
@@ -161,7 +174,8 @@ instance Enum Item where
     RedPassVol2 -> 12
     Gold -> 13
     Meal -> 14
-    Weapon w -> fromEnum w + 15
+    CrystalStarPendantVol1 -> 15
+    Weapon w -> fromEnum w + 16
 
   toEnum n = case n of
     0 -> Backpack
@@ -179,7 +193,8 @@ instance Enum Item where
     12 -> RedPassVol2
     13 -> Gold
     14 -> Meal
-    _ -> Weapon (toEnum (n - 15))
+    15 -> CrystalStarPendantVol1
+    _ -> Weapon (toEnum (n - 16))
 
 data Slot
   = WeaponSlot
@@ -211,6 +226,7 @@ itemSlot WhitePassVol2 = SpecialSlot
 itemSlot RedPassVol2 = SpecialSlot
 itemSlot SealHammerdalVol2 = SpecialSlot
 itemSlot Shield = SpecialSlot
+itemSlot CrystalStarPendantVol1 = SpecialSlot
 
 gold :: Lens' Inventory Int
 gold f (Inventory w) = (\ng -> Inventory ((w .&. 0xffff00ffffffffff) .|. (fromIntegral ng `shiftL` 40))) <$> f (fromIntegral ((w `shiftR` 40) .&. 0xff))

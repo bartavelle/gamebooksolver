@@ -1,8 +1,8 @@
 module LoneWolf.Book02 where
 
-import Control.Lens
-import Data.Data.Lens
-import Data.Ratio
+import Control.Lens ((%~), (&))
+import Data.Data.Lens (biplate)
+import Data.Ratio ((%))
 import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.Simplify (extractMultiFight)
@@ -87,8 +87,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Wounded Helghast",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 22},
-                      _fendurance = Endurance {getEndurance = 20},
+                      _fcombatSkill = 22,
+                      _fendurance = 20,
                       _fightMod = [Undead, MindblastImmune]
                     }
                 )
@@ -118,11 +118,11 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Dorier + Ganon",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 28},
-                      _fendurance = Endurance {getEndurance = 30},
+                      _fcombatSkill = 28,
+                      _fendurance = 30,
                       _fightMod =
                         [ MindblastImmune,
-                          Timed 1 (CombatBonus (CombatSkill {getCombatSkill = 2}))
+                          Timed 1 (CombatBonus 2)
                         ]
                     }
                 )
@@ -225,7 +225,7 @@ chapters =
                             ( CanTake
                                 HealingPotion
                                 1
-                                (CanTake Meal 3 (NoDecision (Goto 244)))
+                                (CanTake Meal 3 (CanTake Gold 12 (NoDecision (Goto 244))))
                             )
                         )
                     )
@@ -245,12 +245,12 @@ chapters =
         "You have pulled yourself halfway through the deck when the door to the hold below bursts open. A Helghast runs shrieking towards you. You cannot escape in time and it badly wounds you in the legs with its black sword. You lose 5 ENDURANCE points and drop to the hold. You must fight this creature to the death.\nIt is an undead creature, so remember to double all ENDURANCE points that it loses in this combat as a result of the power of the Sommerswerd. This creature is immune to Mindblast.\n"
         ( NoDecision
             ( Simple
-                [DamagePlayer (Endurance {getEndurance = 5})]
+                [DamagePlayer 5]
                 ( Fight
                     ( FightDetails
                         { _opponent = "Helghast",
-                          _fcombatSkill = CombatSkill {getCombatSkill = 22},
-                          _fendurance = Endurance {getEndurance = 30},
+                          _fcombatSkill = 22,
+                          _fendurance = 30,
                           _fightMod = [Undead, MindblastImmune]
                         }
                     )
@@ -292,19 +292,23 @@ chapters =
       Chapter
         "21"
         "The trickster lies dead at your feet. Rolling him over with your foot, you remove several cards from the sleeves of his jacket and throw them on the table. The crowd soon disperses and the tavern is a bustle of noise and activity once more. The other card players retrieve their gold from the table and leave the remainder for you.\nTo find out how much has been left on the table, pick a number from the Random Number Table. (In this instance, 0 = 10 instead of zero.) Now multiply this number by 3. The total is the number of Gold Crowns that are on the table. You may also take the Card Sharp's Dagger if you wish. Remember to mark all the items on your Action Chart.\nAs the body is being dragged outside, you walk to the bar and call for the innkeeper. You press a Gold Crown into his hand and ask for a room for the night.\n"
-        ( NoDecision
-            ( Randomly
-                [ (1 % 10, Simple [GainItem Gold 2] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 5] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 8] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 11] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 14] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 17] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 20] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 23] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 26] (Goto 314)),
-                  (1 % 10, Simple [GainItem Gold 29] (Goto 314))
-                ]
+        ( CanTake
+            (Weapon Dagger)
+            1
+            ( NoDecision
+                ( Randomly
+                    [ (1 % 10, Simple [GainItem Gold 2] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 5] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 8] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 11] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 14] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 17] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 20] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 23] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 26] (Goto 314)),
+                      (1 % 10, Simple [GainItem Gold 29] (Goto 314))
+                    ]
+                )
             )
         )
     ),
@@ -374,7 +378,7 @@ chapters =
         "27"
         "You walk for over three hours along the lonely coast road before night begins to fall. You are very tired and you decide to get some sleep and continue at dawn. You remember the tales told by your Kai masters of the Wildlands between Sommerlund and Durenor, where packs of wild dogs roam the wastelands at night.\nWith these stories in mind, you decide to spend the night in the safety of a large leafy tree at the edge of the road.\n"
         ( NoDecision
-            (Simple [HealPlayer (Endurance {getEndurance = 2})] (Goto 312))
+            (Simple [HealPlayer 2] (Goto 312))
         )
     ),
     ( 28,
@@ -395,9 +399,7 @@ chapters =
       Chapter
         "29"
         "You release the lock and slide back the hatch cover. The sudden draught of air causes flames to billow out of the hold. You stumble backwards, clutching your burnt face. Lose 2 ENDURANCE points.\n\"Fire! Fire!\" the cry goes up.\nIn panic the crew fight to put out the flames. It takes over an hour to control the blaze. The damage is considerable-the entire store of food and fresh water was in that hold, and the fire has completely ruined both, as well as weakened the structure of the ship.\nAs you stand surveying the wreckage, the captain approaches you, his face blackened by the smoke. He is carrying something in a bundle under his arm. \"We must talk in private, my lord,\" he says quietly.\nWithout replying, you turn and follow him below to his cabin.\n"
-        ( NoDecision
-            (Simple [DamagePlayer (Endurance {getEndurance = 2})] (Goto 222))
-        )
+        (NoDecision (Simple [DamagePlayer 2] (Goto 222)))
     ),
     ( 30,
       Chapter
@@ -407,9 +409,9 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Zombie Crew",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 13},
-                      _fendurance = Endurance {getEndurance = 16},
-                      _fightMod = []
+                      _fcombatSkill = 13,
+                      _fendurance = 16,
+                      _fightMod = [Undead, MindblastImmune]
                     }
                 )
                 (Goto 258)
@@ -422,7 +424,7 @@ chapters =
         "Your first meeting with the Lord-lieutenant comes as something of a shock. You had perhaps half expected him to be a servile old man, as are the envoys of the southern lands that plague your King's court with their delegations. The man clad in heavy chainmail standing before you is neither old nor servile. You are soon to learn that Lord-lieutenant Rhygar is an exceptional man.\nBorn of a Sommlending father and a Durenese mother, he has become something of a legend in this city. In the last decade, he has led an alliance of the nations to victory against the invading Ice Barbarians of Kalte. Wise in peace, fierce in war, you could not have wished for better company on your quest for the Sommerswerd.\nRhygar orders that a sumptuous meal be served. It is by far the best food you have tasted since the war began. During the feast, you recall the events that have brought you to Port Bax, and reflect on the daunting challenge that still lies before you. After the meal, Rhygar sends for his physician who attends to your wounds. His potions restore 6 ENDURANCE points. Then he advises you to sleep, for you are to leave with the Lord-lieutenant for Hammerdal in the morning.\nEarly next day, you are taken to an enclosed garden at the rear of the consulate where Rhygar and three of his best soldiers await you on horseback. They are to be your bodyguard and guides on the 230 mile ride to Hammerdal. The streets of Port Bax are just beginning to come to life as you ride through the town. Passing under the moss-covered city gate, you now feel confident that your mission will succeed.\nPick a number from the Random Number Table.\n"
         ( NoDecision
             ( Simple
-                [HealPlayer (Endurance {getEndurance = 6})]
+                [HealPlayer 6]
                 (Randomly [(1 % 2, Goto 176), (1 % 2, Goto 254)])
             )
         )
@@ -457,8 +459,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Giaks",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                      _fendurance = Endurance {getEndurance = 14},
+                      _fcombatSkill = 16,
+                      _fendurance = 14,
                       _fightMod = []
                     }
                 )
@@ -547,7 +549,7 @@ chapters =
         "The muster of the army and the preparation of the Durenese fleet takes fourteen days to complete, during which time you remain as a guest of the king in Hammerdal. As each day passes, you despair for your besieged countrymen of Holmgard and pray that they have enough strength to resist the Darklords until you return.\nEvery day of your reluctant exile you devote long periods to exercise and meditation. You are also visited by a Durenese herbwarden called Madin Rendalim, who is famous throughout the Lastlands for his knowledge and skill in the healing arts. He restores all the ENDURANCE points you may have lost so far on your adventure, and he gives you a potent Laumspur potion that will restore 5 ENDURANCE points if swallowed after combat. (Mark this under Backpack Items on your Action Chart.)\nHe is also the bearer of some sad news. The body of Lord-lieutenant Rhygar was found in the forest near to the entrance to Tarnalin. He was killed by Helghast.\n"
         ( NoDecision
             ( Simple
-                [GainItem PotentPotion 1, FullHeal]
+                [FullHeal, GainItem PotentPotion 1]
                 ( Conditionally
                     [(HasDiscipline SixthSense, Goto 97), (Always True, Goto 242)]
                 )
@@ -561,7 +563,7 @@ chapters =
         ( Decisions
             [ ( "If you wish to take his advice, restore 1 ENDURANCE point and turn to 194.",
                 NoDecision
-                  (Simple [HealPlayer (Endurance {getEndurance = 1})] (Goto 194))
+                  (Simple [HealPlayer 1] (Goto 194))
               ),
               ( "If you prefer to stay awake and keep watch for any other survivors of the storm, turn to 251.",
                 NoDecision (Goto 251)
@@ -751,8 +753,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Halvorc",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 8},
-                      _fendurance = Endurance {getEndurance = 11},
+                      _fcombatSkill = 8,
+                      _fendurance = 11,
                       _fightMod = [Timed 2 PlayerInvulnerable]
                     }
                 )
@@ -822,8 +824,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Zombie Captain",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 15},
-                      _fendurance = Endurance {getEndurance = 15},
+                      _fcombatSkill = 15,
+                      _fendurance = 15,
                       _fightMod = [MindblastImmune, Undead]
                     }
                 )
@@ -852,7 +854,7 @@ chapters =
                 [ (HasDiscipline MindShield, Goto 311),
                   ( Always True,
                     Simple
-                      [DamagePlayer (Endurance {getEndurance = 2})]
+                      [DamagePlayer 2]
                       (Goto 311)
                   )
                 ]
@@ -863,7 +865,7 @@ chapters =
       Chapter
         "70"
         "You gasp with pain as the serpent's fangs sink deeply into your arm. Grabbing the snake behind its ugly head, you rip away the thrashing creature and hurl it into the long grass. But your wound is deep and inflamed by venom.\n"
-        (NoDecision (Goto 44))
+        (NoDecision (Conditionally [(HasItem CrystalStarPendantVol1 1, Goto 219), (Always True, Goto 44)]))
     ),
     ( 71,
       Chapter
@@ -888,16 +890,13 @@ chapters =
         "The innkeeper takes your Gold Crown and places a foaming tankard of ale on the bar. The ale is strong and fortifying. Restore 1 ENDURANCE point to your current total.\n"
         ( Decisions
             [ ( "If you wish to talk to the innkeeper, turn to 226.",
-                NoDecision
-                  (Simple [HealPlayer (Endurance {getEndurance = 1})] (Goto 226))
+                NoDecision (Simple [HealPlayer 1] (Goto 226))
               ),
               ( "If you want a room for the night, pay the innkeeper 2 Gold Crowns and turn to 56.",
-                NoDecision
-                  (Simple [HealPlayer (Endurance {getEndurance = 1})] (Goto 56))
+                Conditional (HasItem Gold 2) (NoDecision (Simple [HealPlayer 1, LoseItem Gold 2] (Goto 56)))
               ),
               ( "If you wish to enter an arm-wrestling competition, turn to 276.",
-                NoDecision
-                  (Simple [HealPlayer (Endurance {getEndurance = 1})] (Goto 276))
+                NoDecision (Simple [HealPlayer 1] (Goto 276))
               )
             ]
         )
@@ -940,22 +939,10 @@ chapters =
         "You dive backwards, but only just in time to avoid the falling mast as it smashes straight through the deck. You stagger upright and peer into the mass of shattered timbers. Pinned beneath the broken mast is the lifeless body of Captain Kelman.\nAs you stare in horror, a loud crack fills the air as the storm breaks open the already damaged hull of the <<Green Sceptre>>. As the ship breaks up you are hurled over the side and into the raging sea.\nGasping for air, you claw your way up to the surface but strike your head on a hatch cover. Lose 1 ENDURANCE point and pull yourself onto this makeshift raft. If you are wearing a Chainmail Waistcoat, you must discard this now or you will surely drown. In the grey light of the storm, you watch as the broken ship sinks beneath the heaving sea. You are feeling dizzy and very sick. Hanging on to the cover with all your strength, you gradually slip into unconsciousness.\nWhen you eventually awake, the storm has passed. The only trace of the <<Green Sceptre>> is the hatch cover on which you lie. By the position of the sun you suppose it to be late afternoon. In the distance, you can see a small fishing boat and beyond it, the coastline stretches out along the horizon.\n"
         ( Decisions
             [ ( "If you wish to use your cloak to try to signal to the fishing boat, turn to 278.",
-                NoDecision
-                  ( Simple
-                      [ DamagePlayer (Endurance {getEndurance = 1}),
-                        LoseItem ChainMail 99
-                      ]
-                      (Goto 278)
-                  )
+                NoDecision (Simple [DamagePlayer 1, LoseItem ChainMail 99] (Goto 278))
               ),
               ( "If you want to ignore the boat and paddle towards the shore instead, turn to 337.",
-                NoDecision
-                  ( Simple
-                      [ DamagePlayer (Endurance {getEndurance = 1}),
-                        LoseItem ChainMail 99
-                      ]
-                      (Goto 337)
-                  )
+                NoDecision (Simple [DamagePlayer 1, LoseItem ChainMail 99] (Goto 337))
               )
             ]
         )
@@ -1022,8 +1009,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Viveka",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 24},
-                      _fendurance = Endurance {getEndurance = 27},
+                      _fcombatSkill = 24,
+                      _fendurance = 27,
                       _fightMod = []
                     }
                 )
@@ -1071,10 +1058,10 @@ chapters =
                 Conditional (HasDiscipline Camouflage) (NoDecision (Goto 179))
               ),
               ( "If you wish to take a horse and escape, turn to 150.",
-                NoDecision (Goto 150)
+                Conditional (Not (HasDiscipline Camouflage)) (NoDecision (Goto 150))
               ),
               ( "If you wish to hide in the wheelwright's shop, turn to 71.",
-                NoDecision (Goto 71)
+                Conditional (Not (HasDiscipline Camouflage)) (NoDecision (Goto 71))
               )
             ]
         )
@@ -1098,47 +1085,14 @@ chapters =
         ( EvadeFight
             0
             132
-            ( FightDetails
-                { _opponent = "Villager 1",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 10},
-                  _fendurance = Endurance {getEndurance = 16},
-                  _fightMod = []
-                }
-            )
+            (FightDetails {_opponent = "Villager 1", _fcombatSkill = 10, _fendurance = 16, _fightMod = []})
             ( Fight
-                ( FightDetails
-                    { _opponent = "Szall 1",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 6},
-                      _fendurance = Endurance {getEndurance = 9},
-                      _fightMod = []
-                    }
-                )
+                (FightDetails {_opponent = "Szall 1", _fcombatSkill = 6, _fendurance = 9, _fightMod = []})
                 ( Fight
-                    ( FightDetails
-                        { _opponent = "Villager 2",
-                          _fcombatSkill = CombatSkill {getCombatSkill = 11},
-                          _fendurance = Endurance {getEndurance = 14},
-                          _fightMod = []
-                        }
-                    )
+                    (FightDetails {_opponent = "Villager 2", _fcombatSkill = 11, _fendurance = 14, _fightMod = []})
                     ( Fight
-                        ( FightDetails
-                            { _opponent = "Szall 2",
-                              _fcombatSkill = CombatSkill {getCombatSkill = 5},
-                              _fendurance = Endurance {getEndurance = 8},
-                              _fightMod = []
-                            }
-                        )
-                        ( Fight
-                            ( FightDetails
-                                { _opponent = "Villager 3",
-                                  _fcombatSkill = CombatSkill {getCombatSkill = 11},
-                                  _fendurance = Endurance {getEndurance = 17},
-                                  _fightMod = []
-                                }
-                            )
-                            (Goto 274)
-                        )
+                        (FightDetails {_opponent = "Szall 2", _fcombatSkill = 5, _fendurance = 8, _fightMod = []})
+                        (Fight (FightDetails {_opponent = "Villager 3", _fcombatSkill = 11, _fendurance = 17, _fightMod = []}) (Goto 274))
                     )
                 )
             )
@@ -1153,37 +1107,22 @@ chapters =
                 CanTake Backpack 1 (CanTake Meal 1 (NoDecision (Goto 245)))
               ),
               ( "Take Weapon Quarterstaff and Backpack",
-                CanTake
-                  (Weapon Quarterstaff)
-                  1
-                  (CanTake Backpack 1 (NoDecision (Goto 245)))
+                CanTake (Weapon Quarterstaff) 1 (CanTake Backpack 1 (NoDecision (Goto 245)))
               ),
               ( "Take Weapon Quarterstaff and Meal",
-                CanTake
-                  (Weapon Quarterstaff)
-                  1
-                  (CanTake Meal 1 (NoDecision (Goto 245)))
+                CanTake (Weapon Quarterstaff) 1 (CanTake Meal 1 (NoDecision (Goto 245)))
               ),
               ( "Take Meal and Meal",
                 CanTake Meal 1 (CanTake Meal 1 (NoDecision (Goto 245)))
               ),
               ( "Take Weapon Dagger and Backpack",
-                CanTake
-                  (Weapon Dagger)
-                  1
-                  (CanTake Backpack 1 (NoDecision (Goto 245)))
+                CanTake (Weapon Dagger) 1 (CanTake Backpack 1 (NoDecision (Goto 245)))
               ),
               ( "Take Weapon Dagger and Weapon Quarterstaff",
-                CanTake
-                  (Weapon Dagger)
-                  1
-                  (CanTake (Weapon Quarterstaff) 1 (NoDecision (Goto 245)))
+                CanTake (Weapon Dagger) 1 (CanTake (Weapon Quarterstaff) 1 (NoDecision (Goto 245)))
               ),
               ( "Take Weapon Dagger and Meal",
-                CanTake
-                  (Weapon Dagger)
-                  1
-                  (CanTake Meal 1 (NoDecision (Goto 245)))
+                CanTake (Weapon Dagger) 1 (CanTake Meal 1 (NoDecision (Goto 245)))
               )
             ]
         )
@@ -1210,11 +1149,7 @@ chapters =
       Chapter
         "95"
         "You spur your horse through the tangle of trees until you enter a small clearing. Six Szalls are jumping excitedly around the writhing body of a man on the ground. A strangely carved spear is stuck in his chest, and lying dead beside him is the body of a Knight of the White Mountain. The creatures are shrieking at each other and appear to be unconcerned with the man's obvious agony.\n"
-        ( NoDecision
-            ( Conditionally
-                [(HasDiscipline Healing, Goto 239), (Always True, Goto 28)]
-            )
-        )
+        (NoDecision (Conditionally [(HasDiscipline Healing, Goto 239), (Always True, Goto 28)]))
     ),
     ( 96,
       Chapter
@@ -1280,9 +1215,7 @@ chapters =
                 Conditional (Not (HasDiscipline Tracking)) (NoDecision (Goto 64))
               ),
               ( "If you wish to take the right tunnel, turn to 164.",
-                Conditional
-                  (Not (HasDiscipline Tracking))
-                  (NoDecision (Goto 164))
+                Conditional (Not (HasDiscipline Tracking)) (NoDecision (Goto 164))
               )
             ]
         )
@@ -1292,10 +1225,7 @@ chapters =
         "103"
         "Laumspur is a delicious herb, much sought after in the Lastlands for its healing properties. You have picked enough for one Meal. Eating this meal will restore 3 ENDURANCE points to your total. (Remember to add this to your Action Chart if you possess a Backpack. Otherwise you must consume it now or abandon it.) You wrap the herb up, and return to the coach with the other passengers.\n"
         ( Decisions
-            [ ( "Consume now",
-                NoDecision
-                  (Simple [HealPlayer (Endurance {getEndurance = 3})] (Goto 249))
-              ),
+            [ ("Consume now", NoDecision (Simple [HealPlayer 3] (Goto 249))),
               ("Take Laumspur", CanTake Laumspur 1 (NoDecision (Goto 249)))
             ]
         )
@@ -1305,12 +1235,8 @@ chapters =
         "104"
         "The fishermen stare at you with open mouths as if they have just seen a corpse return from the dead. Suddenly one of them kicks over the table and they make their escape through the back door of the tavern. In one bound, you leap over the table and pursue them out of the tavern, into the darkness beyond.\n"
         ( Decisions
-            [ ( "If you wish to continue your chase, turn to 231.",
-                NoDecision (Goto 231)
-              ),
-              ( "If you decide to let them go, turn to 177.",
-                NoDecision (Goto 177)
-              )
+            [ ("If you wish to continue your chase, turn to 231.", NoDecision (Goto 231)),
+              ("If you decide to let them go, turn to 177.", NoDecision (Goto 177))
             ]
         )
     ),
@@ -1328,15 +1254,12 @@ chapters =
             (Weapon MagicSpear)
             1
             ( NoDecision
-                ( Fight
-                    ( FightDetails
-                        { _opponent = "Helghast",
-                          _fcombatSkill = CombatSkill {getCombatSkill = 22},
-                          _fendurance = Endurance {getEndurance = 30},
-                          _fightMod = [EnemyMindblast, Undead, MindblastImmune]
-                        }
+                ( Simple
+                    [DamagePlayer 2]
+                    ( Fight
+                        (FightDetails {_opponent = "Helghast", _fcombatSkill = 22, _fendurance = 30, _fightMod = [EnemyMindblast, Undead, MindblastImmune]})
+                        (Goto 320)
                     )
-                    (Goto 320)
                 )
             )
         )
@@ -1345,23 +1268,14 @@ chapters =
       Chapter
         "107"
         "The captain orders his crew to go alongside. As they board the trader, you are shocked by the sight that awaits you. Dead sailors cover the deck, many pierced by arrows. It seems they must have put up a desperate fight to defend their cargo, but not a trace of it remains in any of the ship's holds. Below deck, you discover the captain in his cabin. He is very badly wounded and near to death.\n"
-        ( NoDecision
-            ( Conditionally
-                [(HasDiscipline Healing, Goto 74), (Always True, Goto 294)]
-            )
-        )
+        (NoDecision (Conditionally [(HasDiscipline Healing, Goto 74), (Always True, Goto 294)]))
     ),
     ( 108,
       Chapter
         "108"
         "One of the wheels jams in a deep rut and three of the large wooden spokes are shattered. You are forced to stop and replace the wheel before you can continue to Port Bax. You volunteer to help the driver by levering the coach axle with a small tree trunk, so that the spare wheel can be slid into position.\nYou are pushing down on the stout branch with all your strength, when the horses suddenly rear up and race forward. The trunk springs back and catches you square in the face, knocking you backwards to the ground. You are stunned and you lose 2 ENDURANCE points. The driver is not so lucky. The coach has run over him. As the poor man dies in your arms, his last words are: \"No accident...I saw-\"\n"
         ( NoDecision
-            ( Simple
-                [DamagePlayer (Endurance {getEndurance = 2})]
-                ( Conditionally
-                    [(HasDiscipline SixthSense, Goto 343), (Always True, Goto 168)]
-                )
-            )
+            (Simple [DamagePlayer 2] (Conditionally [(HasDiscipline SixthSense, Goto 343), (Always True, Goto 168)]))
         )
     ),
     ( 109,
@@ -1377,13 +1291,7 @@ chapters =
         ( EvadeFight
             0
             65
-            ( FightDetails
-                { _opponent = "Watchtower Guard",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 15},
-                  _fendurance = Endurance {getEndurance = 22},
-                  _fightMod = []
-                }
-            )
+            (FightDetails {_opponent = "Watchtower Guard", _fcombatSkill = 15, _fendurance = 22, _fightMod = []})
             (Goto 331)
         )
     ),
@@ -1488,14 +1396,10 @@ chapters =
                 Conditional (HasDiscipline AnimalKinship) (NoDecision (Goto 279))
               ),
               ( "If you wish to follow this creature, turn to 23.",
-                Conditional
-                  (Not (HasDiscipline AnimalKinship))
-                  (NoDecision (Goto 23))
+                Conditional (Not (HasDiscipline AnimalKinship)) (NoDecision (Goto 23))
               ),
               ( "If you wish to ignore it and continue on your way, turn to 340.",
-                Conditional
-                  (Not (HasDiscipline AnimalKinship))
-                  (NoDecision (Goto 340))
+                Conditional (Not (HasDiscipline AnimalKinship)) (NoDecision (Goto 340))
               )
             ]
         )
@@ -1540,11 +1444,7 @@ chapters =
       Chapter
         "124"
         "You quickly search her body but find no evidence that she was your would-be assassin. You discover 42 Gold Crowns, a Short Sword, and a Dagger. Take any of these items if you wish, and mark them on your Action Chart.\n"
-        ( CanTake
-            (Weapon ShortSword)
-            1
-            (CanTake Gold 42 (CanTake (Weapon Dagger) 1 (NoDecision (Goto 33))))
-        )
+        (CanTake (Weapon ShortSword) 1 (CanTake Gold 42 (CanTake (Weapon Dagger) 1 (NoDecision (Goto 33)))))
     ),
     ( 125,
       Chapter
@@ -1572,13 +1472,7 @@ chapters =
         "A golden glow runs the length of the Sommerswerd as you raise it high above your head, ready to face your enemy. You are confronted by six grisly zombies and you must fight them as one enemy.\nThey are undead creatures, so remember to double all ENDURANCE points they lose as a result of the power of the Sommerswerd.\n"
         ( NoDecision
             ( Fight
-                ( FightDetails
-                    { _opponent = "Zombie Crew",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 13},
-                      _fendurance = Endurance {getEndurance = 19},
-                      _fightMod = [Undead]
-                    }
-                )
+                (FightDetails {_opponent = "Zombie Crew", _fcombatSkill = 13, _fendurance = 19, _fightMod = [Undead]})
                 (Goto 237)
             )
         )
@@ -1602,29 +1496,11 @@ chapters =
         ( EvadeFight
             0
             121
-            ( FightDetails
-                { _opponent = "Street Thief Leader",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 15},
-                  _fendurance = Endurance {getEndurance = 23},
-                  _fightMod = [BareHanded]
-                }
-            )
+            (FightDetails {_opponent = "Street Thief Leader", _fcombatSkill = 15, _fendurance = 23, _fightMod = [BareHanded]})
             ( Fight
-                ( FightDetails
-                    { _opponent = "Street Thief 1",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 13},
-                      _fendurance = Endurance {getEndurance = 21},
-                      _fightMod = [BareHanded]
-                    }
-                )
+                (FightDetails {_opponent = "Street Thief 1", _fcombatSkill = 13, _fendurance = 21, _fightMod = [BareHanded]})
                 ( Fight
-                    ( FightDetails
-                        { _opponent = "Street Thief 2",
-                          _fcombatSkill = CombatSkill {getCombatSkill = 13},
-                          _fendurance = Endurance {getEndurance = 20},
-                          _fightMod = [BareHanded]
-                        }
-                    )
+                    (FightDetails {_opponent = "Street Thief 2", _fcombatSkill = 13, _fendurance = 20, _fightMod = [BareHanded]})
                     (Goto 301)
                 )
             )
@@ -1715,9 +1591,7 @@ chapters =
             2
             ( Decisions
                 [ ("If you wish to head east, turn to 27.", NoDecision (Goto 27)),
-                  ( "If you wish to head west, turn to 114.",
-                    NoDecision (Goto 114)
-                  )
+                  ("If you wish to head west, turn to 114.", NoDecision (Goto 114))
                 ]
             )
         )
@@ -1734,22 +1608,10 @@ chapters =
         "As the mast smashes into the deck, a splintered beam hits your head and you are knocked overboard. Gasping for air, you fight your way to the surface and catch hold of a hatch cover. You are half-stunned. You lose 2 ENDURANCE points.\nYou pull yourself onto this makeshift raft and cling to it with all your strength. If you are wearing a Chainmail Waistcoat, you must discard it now or otherwise you will be drowned for sure.\nYou feel dizzy and sick. As the heaving sea buffets you relentlessly, you gradually slip into unconsciousness. When you awake many hours later, the storm has passed. By the position of the sun, you judge it to be late afternoon. In the distance you can see a small fishing boat and beyond it, on the horizon, land. The only trace of the <<Green Sceptre>> is the hatch cover on which you now sit.\n"
         ( Decisions
             [ ( "If you wish to use your cloak to try to signal to the fishing boat, turn to 278.",
-                NoDecision
-                  ( Simple
-                      [ DamagePlayer (Endurance {getEndurance = 2}),
-                        LoseItem ChainMail 99
-                      ]
-                      (Goto 278)
-                  )
+                NoDecision (Simple [DamagePlayer (2), LoseItem ChainMail 99] (Goto 278))
               ),
               ( "If you wish to ignore the boat and paddle towards the shore, turn to 337.",
-                NoDecision
-                  ( Simple
-                      [ DamagePlayer (Endurance {getEndurance = 2}),
-                        LoseItem ChainMail 99
-                      ]
-                      (Goto 337)
-                  )
+                NoDecision (Simple [DamagePlayer (2), LoseItem ChainMail 99] (Goto 337))
               )
             ]
         )
@@ -1783,7 +1645,7 @@ chapters =
         "145"
         "You are becoming weaker and weaker. After what seems an eternity of painful struggle you find the Laumspur and force yourself to swallow the dry leaves. Within seconds you are violently sick, after which you drift off into a restless sleep.\nIt is nearly an hour before you awake and you still feel dreadfully ill. Deduct 5 ENDURANCE points. (As the dry leaves merely helped purge the poison from your stomach, you do not regain any ENDURANCE points through consuming the Laumspur in this instance.)\nAs you slowly regain your strength, the shock of what has happened soon turns to anger. You grab your equipment and stagger out of the room, intent on confronting your would-be assassin.\n"
         ( NoDecision
-            (Simple [DamagePlayer (Endurance {getEndurance = 5})] (Goto 200))
+            (Simple [DamagePlayer 5] (Goto 200))
         )
     ),
     ( 146,
@@ -1792,13 +1654,7 @@ chapters =
         "You were right. The cloud is made of huge Zlanbeast and many Kraan, a smaller species but one that is just as deadly. Hanging below their black bellies are nets full of Giaks. As the Zlanbeast descend on the <<Green Sceptre>>, a net of shrieking Giaks crashes onto the deck behind you. Some are crushed in the fall, but many more have survived and waste no time attacking you. You must fight them as one enemy.\n"
         ( NoDecision
             ( Fight
-                ( FightDetails
-                    { _opponent = "Giaks",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 15},
-                      _fendurance = Endurance {getEndurance = 15},
-                      _fightMod = []
-                    }
-                )
+                (FightDetails {_opponent = "Giaks", _fcombatSkill = 15, _fendurance = 15, _fightMod = []})
                 (Goto 345)
             )
         )
@@ -1888,18 +1744,10 @@ chapters =
         "The crew's quarters are cramped and stifling. But despite a lack of space and a poor evening meal (so poor in fact that you lose 2 ENDURANCE points!) the men are pleased that their invitation was accepted and you are treated as an honoured guest.\nAfter supper, they invite you to play \"Portholes\" with them, and wager a little gold on the fall of the dice.\n"
         ( Decisions
             [ ( "If you wish to try your luck, turn to 308.",
-                NoDecision
-                  ( Simple
-                      [DamagePlayer (Endurance {getEndurance = 2})]
-                      (Goto 308)
-                  )
+                NoDecision (Simple [DamagePlayer 2] (Goto 308))
               ),
               ( "If you would prefer to decline the offer, bid them goodnight and return to your cabin by turning to 197.",
-                NoDecision
-                  ( Simple
-                      [DamagePlayer (Endurance {getEndurance = 2})]
-                      (Goto 197)
-                  )
+                NoDecision (Simple [DamagePlayer 2] (Goto 197))
               )
             ]
         )
@@ -1923,13 +1771,7 @@ chapters =
         ( EvadeFight
             0
             65
-            ( FightDetails
-                { _opponent = "Watchtower Guard",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 15},
-                  _fendurance = Endurance {getEndurance = 22},
-                  _fightMod = []
-                }
-            )
+            (FightDetails {_opponent = "Watchtower Guard", _fcombatSkill = 15, _fendurance = 22, _fightMod = []})
             (Goto 331)
         )
     ),
@@ -1939,13 +1781,7 @@ chapters =
         "The priest does not seem to be surprised by your attack, and he draws a black sword from beneath his robes.\n"
         ( NoDecision
             ( Fight
-                ( FightDetails
-                    { _opponent = "Priest",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                      _fendurance = Endurance {getEndurance = 23},
-                      _fightMod = []
-                    }
-                )
+                (FightDetails {_opponent = "Priest", _fcombatSkill = 16, _fendurance = 23, _fightMod = []})
                 (Goto 220)
             )
         )
@@ -1975,13 +1811,7 @@ chapters =
         ( EvadeFight
             0
             244
-            ( FightDetails
-                { _opponent = "Knight of the White Mountain",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 20},
-                  _fendurance = Endurance {getEndurance = 27},
-                  _fightMod = []
-                }
-            )
+            (FightDetails {_opponent = "Knight of the White Mountain", _fcombatSkill = 20, _fendurance = 27, _fightMod = []})
             (Goto 302)
         )
     ),
@@ -2000,14 +1830,10 @@ chapters =
                 Conditional (HasDiscipline SixthSense) (NoDecision (Goto 172))
               ),
               ( "If you wish to climb the steps and investigate the platform, turn to 52.",
-                Conditional
-                  (Not (HasDiscipline SixthSense))
-                  (NoDecision (Goto 52))
+                Conditional (Not (HasDiscipline SixthSense)) (NoDecision (Goto 52))
               ),
               ( "If you wish to ignore the steps and continue on your journey, turn to 256.",
-                Conditional
-                  (Not (HasDiscipline SixthSense))
-                  (NoDecision (Goto 256))
+                Conditional (Not (HasDiscipline SixthSense)) (NoDecision (Goto 256))
               )
             ]
         )
@@ -2233,23 +2059,8 @@ chapters =
         ( EvadeFight
             0
             286
-            ( FightDetails
-                { _opponent = "Drakkar 1",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 17},
-                  _fendurance = Endurance {getEndurance = 25},
-                  _fightMod = []
-                }
-            )
-            ( Fight
-                ( FightDetails
-                    { _opponent = "Drakkar 2",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                      _fendurance = Endurance {getEndurance = 26},
-                      _fightMod = []
-                    }
-                )
-                (Goto 120)
-            )
+            (FightDetails {_opponent = "Drakkar 1", _fcombatSkill = 17, _fendurance = 25, _fightMod = []})
+            (Fight (FightDetails {_opponent = "Drakkar 2", _fcombatSkill = 16, _fendurance = 26, _fightMod = []}) (Goto 120))
         )
     ),
     ( 186,
@@ -2262,15 +2073,7 @@ chapters =
       Chapter
         "187"
         "A quick search of their bodies reveals the following items:\n * 2 Spears\n * 2 Swords\n * 6 Gold Crowns\nIf you decide to take any of these, remember to mark them on your Action Chart.\nYou roll the bodies into the Rymerift and then run across the bridge in case anyone saw the incident. The forest track continues for over an hour before you arrive at a junction, where you see a signpost.\nPort Bax-3 Miles\nYou adjust your equipment and set off towards the east.\n"
-        ( CanTake
-            Gold
-            6
-            ( CanTake
-                (Weapon Spear)
-                2
-                (CanTake (Weapon Spear) 2 (NoDecision (Goto 265)))
-            )
-        )
+        (CanTake Gold 6 (CanTake (Weapon Spear) 2 (CanTake (Weapon Sword) 2 (NoDecision (Goto 265)))))
     ),
     ( 188,
       Chapter
@@ -2284,18 +2087,10 @@ chapters =
         "\"Impostor!\" he cries, and draws his weapon. Before you can react to his attack, his sword has grazed your arm and you lose 2 ENDURANCE points. He runs at you and knocks you backwards through the open doorway. In a tangle of limbs and curses, you both fall headlong down the watchtower stairs. You stagger to your feet, but the knight is already up and searching for his broadsword.\n"
         ( Decisions
             [ ( "If you wish to fight him, turn to 162.",
-                NoDecision
-                  ( Simple
-                      [DamagePlayer (Endurance {getEndurance = 2})]
-                      (Goto 162)
-                  )
+                NoDecision (Simple [DamagePlayer 2] (Goto 162))
               ),
               ( "If you would rather abandon your horse and run for the safety of the trees, turn to 244.",
-                NoDecision
-                  ( Simple
-                      [DamagePlayer (Endurance {getEndurance = 2})]
-                      (Goto 244)
-                  )
+                NoDecision (Simple [DamagePlayer 2] (Goto 244))
               )
             ]
         )
@@ -2400,7 +2195,7 @@ chapters =
         "198"
         "You have covered less than twenty yards when your horse rears up and bolts. You are thrown to the ground and you lose 1 ENDURANCE point. Brushing the dirt from your cloak, you curse as the animal disappears out of sight. You will have to continue your journey from here on foot.\n"
         ( NoDecision
-            (Simple [DamagePlayer (Endurance {getEndurance = 1})] (Goto 138))
+            (Simple [DamagePlayer 1] (Goto 138))
         )
     ),
     ( 199,
@@ -2571,7 +2366,7 @@ chapters =
         "219"
         "Already the venom is taking effect. Your wounded arm feels stiff and a cold sweat has broken out on your brow. Quickly you remove the Pendant that Banedon gave you at the Ruins of Raumas. Using a sharp point of the star, you cut a deep V through the two puncture holes made by the fangs, and suck out the venom.\nThe charm is lucky indeed-and so are you. You lose 3 ENDURANCE points but not your life. You decide to climb the tree and spend the rest of the night safely above the ground.\n"
         ( NoDecision
-            (Simple [DamagePlayer (Endurance {getEndurance = 3})] (Goto 312))
+            (Simple [DamagePlayer 3] (Goto 312))
         )
     ),
     ( 220,
@@ -2809,13 +2604,7 @@ chapters =
         "The dead zombies lie around your feet. By now, the soldiers' fear of the undead has turned to sheer hatred. A chorus of Durenese battle-cries resounds along the deck. You lead the charge along a boarding plank and onto the deck of the death-hulk, cleaving the zombie crew aside like a scythe through wheat. Then suddenly a black-cloaked figure blocks your path, a twisted sword held in its shrunken black hand. It is a Helghast, and you must fight it to the death.\nIt is an undead creature, so remember to double all ENDURANCE points that it loses as a result of your possessing the Sommerswerd. It is immune to Mindblast.\n"
         ( NoDecision
             ( Fight
-                ( FightDetails
-                    { _opponent = "Helghast",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 23},
-                      _fendurance = Endurance {getEndurance = 30},
-                      _fightMod = [Undead, MindblastImmune]
-                    }
-                )
+                (FightDetails {_opponent = "Helghast", _fcombatSkill = 23, _fendurance = 30, _fightMod = [Undead, MindblastImmune]})
                 (Goto 309)
             )
         )
@@ -2884,8 +2673,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Trickster",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 17},
-                      _fendurance = Endurance {getEndurance = 25},
+                      _fcombatSkill = 17,
+                      _fendurance = 25,
                       _fightMod = []
                     }
                 )
@@ -3093,7 +2882,7 @@ chapters =
         "The guard roughly pushes you aside and runs out of the watchtower towards Tomb Square. There is a small room off the staircase and you decide to enter and search it before he returns. In it you discover:\n * Sword\n * Mace\n * Quarterstaff\n * Enough Food for 1 Meal\n * 6 Gold Crowns\n * Potion of Orange Liquid\nIf you wish to take any of these items, mark them on your Action Chart.\nAs you are leaving, you collide with another guard and you both tumble down the stairs, but before he can gather his senses, you have sprinted off into the night.\n"
         ( CanTake
             Meal
-            6
+            1
             ( CanTake
                 Gold
                 6
@@ -3132,64 +2921,58 @@ chapters =
       Chapter
         "266"
         "As you enter, a bell rings and a small man in a padded leather jerkin bids you welcome. He is busy polishing a rusty suit of armour with a wire brush. The prices of his weapons are displayed on a wooden board above the counter:\n * Swords 4 Gold Crowns each\n * Daggers 2 Gold Crowns each\n * Broadswords 7 Gold Crowns each\n * Short Swords 3 Gold Crowns each\n * Warhammers 6 Gold Crowns each\n * Spears 5 Gold Crowns each\n * Maces 4 Gold Crowns each\n * Axes 3 Gold Crowns each\n * Quarterstaves 3 Gold Crowns each\nYou may purchase any of the above weapons if you have enough money to do so. The weaponsmith will also buy any Weapons that you may already have for 1 Gold Crown less than the price shown on his wooden board. Mark any necessary changes on your Action Chart before bidding him goodnight and returning to the street.\nAt the end of Oxyoke Way, on your right you find a large stable and coach station. It is now very dark and you must find somewhere to spend the night. Climbing a ladder at the side of the building, you spend a comfortable night hidden in the hay-loft.\n"
-        ( Canbuy
+        ( Cansell
             (Weapon Quarterstaff)
-            3
-            ( Canbuy
+            2
+            ( Cansell
                 (Weapon Axe)
-                3
-                ( Canbuy
+                2
+                ( Cansell
                     (Weapon Mace)
-                    4
-                    ( Canbuy
+                    3
+                    ( Cansell
                         (Weapon Spear)
-                        5
-                        ( Canbuy
+                        4
+                        ( Cansell
                             (Weapon Warhammer)
-                            6
-                            ( Canbuy
+                            5
+                            ( Cansell
                                 (Weapon ShortSword)
-                                3
-                                ( Canbuy
+                                2
+                                ( Cansell
                                     (Weapon BroadSword)
-                                    7
-                                    ( Canbuy
+                                    6
+                                    ( Cansell
                                         (Weapon Dagger)
-                                        2
+                                        1
                                         ( Canbuy
-                                            (Weapon Sword)
-                                            4
-                                            ( Cansell
-                                                (Weapon Quarterstaff)
-                                                2
-                                                ( Cansell
-                                                    (Weapon Axe)
-                                                    2
-                                                    ( Cansell
-                                                        (Weapon Mace)
-                                                        3
-                                                        ( Cansell
-                                                            (Weapon Spear)
-                                                            4
-                                                            ( Cansell
-                                                                (Weapon Warhammer)
-                                                                5
-                                                                ( Cansell
-                                                                    (Weapon ShortSword)
-                                                                    2
-                                                                    ( Cansell
-                                                                        (Weapon BroadSword)
-                                                                        6
-                                                                        ( Cansell
-                                                                            (Weapon Dagger)
-                                                                            1
-                                                                            ( Cansell
-                                                                                (Weapon Sword)
-                                                                                3
-                                                                                ( NoDecision
-                                                                                    (Goto 32)
-                                                                                )
-                                                                            )
+                                            (Weapon Quarterstaff)
+                                            3
+                                            ( Canbuy
+                                                (Weapon Axe)
+                                                3
+                                                ( Canbuy
+                                                    (Weapon Mace)
+                                                    4
+                                                    ( Canbuy
+                                                        (Weapon Spear)
+                                                        5
+                                                        ( Canbuy
+                                                            (Weapon Warhammer)
+                                                            6
+                                                            ( Canbuy
+                                                                (Weapon ShortSword)
+                                                                3
+                                                                ( Canbuy
+                                                                    (Weapon BroadSword)
+                                                                    7
+                                                                    ( Canbuy
+                                                                        (Weapon Dagger)
+                                                                        2
+                                                                        ( Canbuy
+                                                                            (Weapon Sword)
+                                                                            4
+                                                                            (Cansell (Weapon Sword) 3 (NoDecision (Goto 32)))
                                                                         )
                                                                     )
                                                                 )
@@ -3229,13 +3012,7 @@ chapters =
         ( EvadeFight
             2
             125
-            ( FightDetails
-                { _opponent = "Harbour Thugs",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                  _fendurance = Endurance {getEndurance = 25},
-                  _fightMod = []
-                }
-            )
+            (FightDetails {_opponent = "Harbour Thugs", _fcombatSkill = 16, _fendurance = 25, _fightMod = []})
             (Goto 333)
         )
     ),
@@ -3253,11 +3030,11 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Ganon + Dorier",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 28},
-                      _fendurance = Endurance {getEndurance = 30},
+                      _fcombatSkill = 28,
+                      _fendurance = 30,
                       _fightMod =
                         [ MindblastImmune,
-                          Timed 1 (CombatBonus (CombatSkill {getCombatSkill = 2}))
+                          Timed 1 (CombatBonus (2))
                         ]
                     }
                 )
@@ -3302,11 +3079,7 @@ chapters =
       Chapter
         "274"
         "A quick search of the bodies reveals a Sword, 6 Gold Crowns, and a Mace. Take what you wish and mark them on your Action Chart.\nBefore you can leave by the front door, more angry villagers have forced their way into the shop. You can only leave now by the first-floor window.\n"
-        ( CanTake
-            (Weapon Mace)
-            1
-            (CanTake (Weapon Sword) 1 (NoDecision (Goto 132)))
-        )
+        (CanTake Gold 6 (CanTake (Weapon Mace) 1 (CanTake (Weapon Sword) 1 (NoDecision (Goto 132)))))
     ),
     ( 275,
       Chapter
@@ -3327,13 +3100,7 @@ chapters =
                   (Not (HasDiscipline MindBlast))
                   ( NoDecision
                       ( Fight
-                          ( FightDetails
-                              { _opponent = "Sailor",
-                                _fcombatSkill = CombatSkill {getCombatSkill = 18},
-                                _fendurance = Endurance {getEndurance = 25},
-                                _fightMod = [FakeFight 192]
-                              }
-                          )
+                          (FightDetails {_opponent = "Sailor", _fcombatSkill = 18, _fendurance = 25, _fightMod = [FakeFight 192]})
                           (Goto 305)
                       )
                   )
@@ -3393,23 +3160,8 @@ chapters =
         "Both soldiers stab at you with their spears and try to force you off the bridge. As you lash out at one, the other dodges past you and attacks you from behind.\nYou cannot evade and you must fight them both to the death.\n"
         ( NoDecision
             ( Fight
-                ( FightDetails
-                    { _opponent = "Bridge Guard 1",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                      _fendurance = Endurance {getEndurance = 24},
-                      _fightMod = []
-                    }
-                )
-                ( Fight
-                    ( FightDetails
-                        { _opponent = "Bridge Guard 2",
-                          _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                          _fendurance = Endurance {getEndurance = 22},
-                          _fightMod = []
-                        }
-                    )
-                    (Goto 187)
-                )
+                (FightDetails {_opponent = "Bridge Guard 1", _fcombatSkill = 16, _fendurance = 24, _fightMod = []})
+                (Fight (FightDetails {_opponent = "Bridge Guard 2", _fcombatSkill = 16, _fendurance = 22, _fightMod = []}) (Goto 187))
             )
         )
     ),
@@ -3499,7 +3251,7 @@ chapters =
       Chapter
         "290"
         "The food smells delicious, but you notice that there are two or three drops of clear liquid on the side of the plate and another on the tray. At first you suspect that it is only water, until you touch the fluid and notice that it is sticky. You recognize it as sap from the gnadurn tree, a deadly poison used by assassins because of its lack of flavour or scent. The shock of your discovery soon turns to anger and you race out of the room, intent on discovering the identity of your enemy.\n"
-        (NoDecision (Goto 200))
+        (NoDecision (Simple [MustEat NoHunt] (Goto 200)))
     ),
     ( 291,
       Chapter
@@ -3538,53 +3290,17 @@ chapters =
         ( EvadeFight
             0
             88
-            ( FightDetails
-                { _opponent = "Town Guard Sergeant",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 13},
-                  _fendurance = Endurance {getEndurance = 22},
-                  _fightMod = []
-                }
-            )
+            (FightDetails {_opponent = "Town Guard Sergeant", _fcombatSkill = 13, _fendurance = 22, _fightMod = []})
             ( Fight
-                ( FightDetails
-                    { _opponent = "Town Guard Corporal",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 12},
-                      _fendurance = Endurance {getEndurance = 20},
-                      _fightMod = []
-                    }
-                )
+                (FightDetails {_opponent = "Town Guard Corporal", _fcombatSkill = 12, _fendurance = 20, _fightMod = []})
                 ( Fight
-                    ( FightDetails
-                        { _opponent = "Town Guard 1",
-                          _fcombatSkill = CombatSkill {getCombatSkill = 11},
-                          _fendurance = Endurance {getEndurance = 19},
-                          _fightMod = []
-                        }
-                    )
+                    (FightDetails {_opponent = "Town Guard 1", _fcombatSkill = 11, _fendurance = 19, _fightMod = []})
                     ( Fight
-                        ( FightDetails
-                            { _opponent = "Town Guard 2",
-                              _fcombatSkill = CombatSkill {getCombatSkill = 11},
-                              _fendurance = Endurance {getEndurance = 19},
-                              _fightMod = []
-                            }
-                        )
+                        (FightDetails {_opponent = "Town Guard 2", _fcombatSkill = 11, _fendurance = 19, _fightMod = []})
                         ( Fight
-                            ( FightDetails
-                                { _opponent = "Town Guard 3",
-                                  _fcombatSkill = CombatSkill {getCombatSkill = 10},
-                                  _fendurance = Endurance {getEndurance = 18},
-                                  _fightMod = []
-                                }
-                            )
+                            (FightDetails {_opponent = "Town Guard 3", _fcombatSkill = 10, _fendurance = 18, _fightMod = []})
                             ( Fight
-                                ( FightDetails
-                                    { _opponent = "Town Guard 4",
-                                      _fcombatSkill = CombatSkill {getCombatSkill = 10},
-                                      _fendurance = Endurance {getEndurance = 17},
-                                      _fightMod = []
-                                    }
-                                )
+                                (FightDetails {_opponent = "Town Guard 4", _fcombatSkill = 10, _fendurance = 17, _fightMod = []})
                                 (Goto 221)
                             )
                         )
@@ -3606,29 +3322,11 @@ chapters =
         ( EvadeFight
             0
             121
-            ( FightDetails
-                { _opponent = "Street Thief Leader",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 15},
-                  _fendurance = Endurance {getEndurance = 23},
-                  _fightMod = [BareHanded]
-                }
-            )
+            (FightDetails {_opponent = "Street Thief Leader", _fcombatSkill = 15, _fendurance = 23, _fightMod = [BareHanded]})
             ( Fight
-                ( FightDetails
-                    { _opponent = "Street Thief 1",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 13},
-                      _fendurance = Endurance {getEndurance = 21},
-                      _fightMod = [BareHanded]
-                    }
-                )
+                (FightDetails {_opponent = "Street Thief 1", _fcombatSkill = 13, _fendurance = 21, _fightMod = [BareHanded]})
                 ( Fight
-                    ( FightDetails
-                        { _opponent = "Street Thief 2",
-                          _fcombatSkill = CombatSkill {getCombatSkill = 13},
-                          _fendurance = Endurance {getEndurance = 20},
-                          _fightMod = [BareHanded]
-                        }
-                    )
+                    (FightDetails {_opponent = "Street Thief 2", _fcombatSkill = 13, _fendurance = 20, _fightMod = [BareHanded]})
                     (Goto 301)
                 )
             )
@@ -3674,7 +3372,7 @@ chapters =
             3
             ( CanTake
                 (Weapon Dagger)
-                1
+                2 -- there are really 3, but that will simplify everything
                 (CanTake (Weapon ShortSword) 1 (NoDecision (Goto 20)))
             )
         )
@@ -3683,7 +3381,7 @@ chapters =
       Chapter
         "302"
         "Stepping over the body, you set about a quick search of these living quarters. You find:\n * Mace\n * Broadsword\n * Quarterstaff\n * Healing Potion (restores 3  *  *  points)\n * Enough Food for 3 Meals\n * Backpack\n * 12 Gold Crowns\nTake whatever items you wish and quickly leave the watchtower in case someone discovers you.\nYou realize that the forest is very thick in this area and you will have to abandon your horse and continue on foot.\n"
-        (NoDecision (Goto 15))
+        (canTakeItems [(Backpack, 1), (Gold, 12), (Weapon Mace, 1), (HealingPotion, 1), (Weapon BroadSword, 1), (Weapon Quarterstaff, 1), (Meal, 3)] (NoDecision (Goto 15)))
     ),
     ( 303,
       Chapter
@@ -3719,8 +3417,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Border Guard",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                      _fendurance = Endurance {getEndurance = 24},
+                      _fcombatSkill = 16,
+                      _fendurance = 24,
                       _fightMod = [DoubleDamage]
                     }
                 )
@@ -3788,7 +3486,7 @@ chapters =
         "313"
         "The gruesome death-cries of the Helghast finally fade and you risk stopping for a few seconds to catch your breath. You wince as you discover that the creature's fingers have burnt into your neck. The wounds are very sore and painful and you must lose 4 ENDURANCE points. Tearing the edge of your tunic, you make a bandage before continuing on your journey through the Tarnalin tunnel. (Erase the Magic Spear from your Action Chart.)\n"
         ( NoDecision
-            (Simple [DamagePlayer (Endurance {getEndurance = 4})] (Goto 349))
+            (Simple [DamagePlayer 4] (Goto 349))
         )
     ),
     ( 314,
@@ -3888,18 +3586,10 @@ chapters =
                   (Not (HasItem Meal 1))
                   ( Decisions
                       [ ( "If you wish to accept his offer, turn to 12.",
-                          NoDecision
-                            ( Simple
-                                [DamagePlayer (Endurance {getEndurance = 2})]
-                                (Goto 12)
-                            )
+                          NoDecision (Simple [DamagePlayer 2] (Goto 12))
                         ),
                         ( "If you wish to decline the game, bid the captain goodnight and return to your cabin to sleep by turning to 197.",
-                          NoDecision
-                            ( Simple
-                                [DamagePlayer (Endurance {getEndurance = 2})]
-                                (Goto 197)
-                            )
+                          NoDecision (Simple [DamagePlayer 2] (Goto 197))
                         )
                       ]
                   )
@@ -3969,8 +3659,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Drakkar",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 15},
-                      _fendurance = Endurance {getEndurance = 25},
+                      _fcombatSkill = 15,
+                      _fendurance = 25,
                       _fightMod = []
                     }
                 )
@@ -3984,7 +3674,7 @@ chapters =
         "Two zombies try to block your passage but you cleave them in half with one sweep of the Sommerswerd. You are at the foot of the tower and you can now see a hunchbacked man in crimson robes above you. He wears a tall, curved tokmor, a magician's head-dress. It bears the emblem of a serpent. In his right hand is a black staff.\n"
         ( Decisions
             [ ( "If you have ever been given a Crystal Star Pendant, turn immediately to 113.",
-                Conditional (Always False) (NoDecision (Goto 113))
+                Conditional (HasItem CrystalStarPendantVol1 1) (NoDecision (Goto 113))
               ),
               ( "If you have the Kai Discipline of Tracking, turn to 204.",
                 Conditional (HasDiscipline Tracking) (NoDecision (Goto 204))
@@ -4011,7 +3701,7 @@ chapters =
         "330"
         "Within seconds, you are violently sick and then drift off into unconsciousness. It is nearly an hour before you awake. You feel dreadfully ill but you have survived the poison. Deduct 5 ENDURANCE points. As you slowly regain your strength, the shock of what has happened turns to anger. You grab your equipment and stagger out of the room, intent on discovering the identity of your would-be assassin.\n"
         ( NoDecision
-            (Simple [DamagePlayer (Endurance {getEndurance = 5})] (Goto 200))
+            (Simple [DamagePlayer (5)] (Goto 200))
         )
     ),
     ( 331,
@@ -4037,8 +3727,8 @@ chapters =
             92
             ( FightDetails
                 { _opponent = "Helghast",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 21},
-                  _fendurance = Endurance {getEndurance = 30},
+                  _fcombatSkill = 21,
+                  _fendurance = 30,
                   _fightMod = [EnemyMindblast, Undead, MindblastImmune]
                 }
             )
@@ -4131,7 +3821,7 @@ chapters =
                 Conditional
                   (Not (HasDiscipline Hunting))
                   ( NoDecision
-                      (Simple [LoseItemKind [BackpackSlot, WeaponSlot]] (Goto 171))
+                      (Simple [DamagePlayer 3, LoseItemKind [BackpackSlot, WeaponSlot]] (Goto 171))
                   )
               )
             ]
@@ -4145,14 +3835,14 @@ chapters =
             [ ( "If you wish to remove the spear, turn to 269.",
                 NoDecision
                   ( Simple
-                      [DamagePlayer (Endurance {getEndurance = 2})]
+                      [DamagePlayer 2]
                       (Goto 269)
                   )
               ),
               ( "If you would rather leave the spear where it is and run away from here as quickly as possible, erase the Magic Spear from your Action Chart and turn to 349.",
                 NoDecision
                   ( Simple
-                      [DamagePlayer (Endurance {getEndurance = 2})]
+                      [DamagePlayer 2]
                       (Goto 349)
                   )
               )
@@ -4232,8 +3922,8 @@ chapters =
             ( Fight
                 ( FightDetails
                     { _opponent = "Drakkar",
-                      _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                      _fendurance = Endurance {getEndurance = 24},
+                      _fcombatSkill = 16,
+                      _fendurance = 24,
                       _fightMod = []
                     }
                 )
@@ -4270,7 +3960,7 @@ chapters =
         "347"
         "At the end of this street is a large stable. To your right, you can see some of the mob searching the shops and houses. Suddenly, one of them sees you and raises the alarm. \"There he is-there's the murderer!\"\nThere is no time to think. You rush into the stable and freeing one of the horses you leap onto its back. As you ride out into the moonlight, an axe flies through the air and grazes your shoulder. You lose 1 ENDURANCE point and make your escape into the night.\n"
         ( NoDecision
-            (Simple [DamagePlayer (Endurance {getEndurance = 1})] (Goto 150))
+            (Simple [DamagePlayer 1] (Goto 150))
         )
     ),
     ( 348,
@@ -4282,8 +3972,8 @@ chapters =
             125
             ( FightDetails
                 { _opponent = "Harbour Thugs",
-                  _fcombatSkill = CombatSkill {getCombatSkill = 16},
-                  _fendurance = Endurance {getEndurance = 25},
+                  _fcombatSkill = 16,
+                  _fendurance = 25,
                   _fightMod = []
                 }
             )
@@ -4311,3 +4001,6 @@ chapters =
         (NoDecision GameWon)
     )
   ]
+
+canTakeItems :: [(Item, Int)] -> Decision -> Decision
+canTakeItems itms fin = foldr (\(curitem, curcount) nxt -> CanTake curitem curcount nxt) fin itms

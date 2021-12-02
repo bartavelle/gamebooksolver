@@ -119,10 +119,7 @@ flattenDecision cconstant cvariable d =
         Cansell item price nxt
           | not (hasItem item inventory) ->
             flattenDecision cconstant cvariable nxt
-          | otherwise -> case usedWeapon cconstant cvariable of
-            WithSkill w -> if Weapon w == item then nosell else sell
-            WithoutSkill w -> if Weapon w == item then nosell else sell
-            _ -> nosell
+          | otherwise -> nosell ++ sell
           where
             nosell = flattenDecision cconstant cvariable nxt
             sell = withEffects [GainItem Gold price, LoseItem item 1] nxt
