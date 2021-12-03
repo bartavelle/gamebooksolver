@@ -56,6 +56,7 @@ library
                      , hashtables
                      , aeson
                      , optparse-applicative
+                     , serialise
   default-language:    Haskell2010
 
 executable gamebooksolver-genchapters
@@ -89,6 +90,7 @@ executable gamebooksolver-solvebook02
                      , optparse-applicative
                      , aeson
                      , bytestring
+                     , serialise
   default-language:    Haskell2010
 
 executable gamebooksolver-blogpost

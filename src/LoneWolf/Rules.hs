@@ -3,9 +3,10 @@
 
 module LoneWolf.Rules where
 
+import Codec.Serialise (Serialise)
 import Control.DeepSeq
 import Control.Lens
-import Data.Aeson (ToJSON)
+import Data.Aeson (FromJSON, ToJSON)
 import Data.Hashable
 import Data.List
 import GHC.Generics
@@ -19,9 +20,13 @@ data HadCombat
   | DidFight
   deriving (Show, Eq, Generic, Ord)
 
+instance Serialise HadCombat
+
 instance Hashable HadCombat
 
 instance ToJSON HadCombat
+
+instance FromJSON HadCombat
 
 instance NFData HadCombat
 
@@ -31,9 +36,13 @@ data NextStep
   | NewChapter !ChapterId !CharacterVariable !HadCombat
   deriving (Show, Eq, Generic, Ord)
 
+instance Serialise NextStep
+
 instance Hashable NextStep
 
 instance ToJSON NextStep
+
+instance FromJSON NextStep
 
 makePrisms ''NextStep
 

@@ -1,5 +1,8 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Main (main) where
 
+import qualified Codec.Serialise as S
 import Control.Lens (to, (^.))
 import Control.Monad (forM_, guard, when)
 import Data.Aeson (encode)
@@ -28,18 +31,14 @@ data Opts = Opts
     _optCommand :: Command
   }
 
+data DumpMode = Json | CBor
+
 data Command
   = Explore SolDesc (Maybe ChapterId) (Maybe (Log Selector))
   | ShowStates SolDesc ChapterId
-  | JsonDump SolDesc (Maybe FilePath)
+  | SolDump DumpMode SolDesc (Maybe FilePath)
   | Standard SolDesc
   | MultiStats [Discipline] CVarState
-
-data SolDesc = SolDesc
-  { _finalchapters :: [ChapterId],
-    _ccst :: CharacterConstant,
-    _cvar :: CVarState
-  }
 
 options :: Parser Opts
 options = Opts <$> switch (long "debug" <> help "Verbose execution") <*> scommand
@@ -47,12 +46,19 @@ options = Opts <$> switch (long "debug" <> help "Verbose execution") <*> scomman
 cconstant :: Parser CharacterConstant
 cconstant =
   CharacterConstant
-    <$> fmap Endurance (option auto (long "endurance" <> short 'e' <> help "Max endurance" <> value 25))
-    <*> fmap CombatSkill (option auto (long "skill" <> short 's' <> help "Combat skill" <> value 15))
+    <$> fmap Endurance (option auto (long "endurance" <> short 'e' <> help "Max endurance" <> value 25 <> showDefault))
+    <*> fmap CombatSkill (option auto (long "skill" <> short 's' <> help "Combat skill" <> value 15 <> showDefault))
     <*> disciplines
 
 disciplines :: Parser [Discipline]
 disciplines = many (option auto (long "discipline" <> short 'd' <> help "Disciplines"))
+
+dumpmode :: Parser DumpMode
+dumpmode = option (maybeReader validator) (long "mode" <> help "dump mode (json, cbor)" <> value CBor)
+  where
+    validator "json" = Just Json
+    validator "cbor" = Just CBor
+    validator _ = Nothing
 
 soldesc :: Parser SolDesc
 soldesc =
@@ -75,11 +81,11 @@ scommand =
             (progDesc "Explore the solution")
         )
         <> command
-          "jsondump"
+          "soldump"
           ( info
-              ( JsonDump <$> soldesc <*> optional (strArgument (metavar "PATH" <> help "Dumped file path"))
+              ( SolDump <$> dumpmode <*> soldesc <*> optional (strArgument (metavar "PATH" <> help "Dumped file path"))
               )
-              (progDesc "Dump as JSON")
+              (progDesc "Dump a solution")
           )
         <> command "standard" (info (Standard <$> soldesc) (progDesc "Just display statistics"))
         <> command
@@ -175,12 +181,15 @@ main = do
     Standard sd -> do
       let (r, solmap) = getSol sd
       showRecap sd r solmap
-    JsonDump sd mtarget -> do
+    SolDump dmode sd mtarget -> do
       let (_, solmap) = getSol sd
-          encoded = encode $ HM.toList $ fmap chopSolution solmap
+          dmap = SolutionDump sd (HM.toList (fmap chopSolution solmap))
+          todump = case dmode of
+            Json -> encode dmap
+            CBor -> S.serialise dmap
       case mtarget of
-        Just pth -> BSL.writeFile pth encoded
-        Nothing -> BSL.putStr encoded
+        Just pth -> BSL.writeFile pth todump
+        Nothing -> BSL.putStr todump
     Explore sd mcid mselector -> do
       let (_, solmap) = getSol sd
           chapterid = fromMaybe 1 mcid

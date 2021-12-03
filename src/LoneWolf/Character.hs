@@ -13,6 +13,7 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 
 module LoneWolf.Character where
 
+import Codec.Serialise (Serialise)
 import Control.DeepSeq
 import Control.Lens
 import Data.Aeson (FromJSON, ToJSON)
@@ -40,10 +41,10 @@ data Character = Character
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 -}
 newtype CombatSkill = CombatSkill {getCombatSkill :: Int}
-  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON)
+  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise)
 
 newtype Endurance = Endurance {getEndurance :: Int}
-  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON)
+  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise)
 
 data CharacterConstant = CharacterConstant
   { _maxendurance :: Endurance,
@@ -52,11 +53,17 @@ data CharacterConstant = CharacterConstant
   }
   deriving (Generic, Eq, Show, Read)
 
+instance FromJSON CharacterConstant
+
+instance ToJSON CharacterConstant
+
+instance Serialise CharacterConstant
+
 {-
 The variable part holds the player inventory, and current health points.
 -}
 newtype CharacterVariable = CharacterVariable {getCharacterVariable :: Word64}
-  deriving (Generic, Eq, Bits, Ord, Hashable, NFData, ToJSON, FromJSON)
+  deriving (Generic, Eq, Bits, Ord, Hashable, NFData, ToJSON, FromJSON, Serialise)
 
 mkCharacter :: Endurance -> Inventory -> CharacterVariable
 mkCharacter e i = CharacterVariable 0 & curendurance .~ e & equipment .~ i
@@ -103,6 +110,8 @@ instance ToJSON Discipline
 
 instance FromJSON Discipline
 
+instance Serialise Discipline
+
 {-
 Two weapons are selected by the player before the story starts. The `MagicSpear` and `Sommerswerd` can't be picked when the game begins, but can be found during the adventure.
 Given that these weapons are magic and more powerful than their mundane counterparts, and given the preference for `WeaponSkill` selection, The `ShortSword` and `Spear` will always be picked at the start of the adventure.
@@ -124,6 +133,8 @@ data Weapon
 instance ToJSON Weapon
 
 instance FromJSON Weapon
+
+instance Serialise Weapon
 
 {-
 Not all items that are referenced in the books are described here.
@@ -152,6 +163,8 @@ data Item
 instance ToJSON Item
 
 instance FromJSON Item
+
+instance Serialise Item
 
 instance Bounded Item where
   minBound = Backpack

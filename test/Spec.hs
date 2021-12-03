@@ -65,8 +65,8 @@ main = hspec $ do
       defVariable = mkCharacter 25 (addItem (Weapon BroadSword) 1 emptyInventory)
       defCombat = FightDetails "def" 28 30 []
   describe "Item enum instance" $ do
-    it "fromEnum" $ map fromEnum [minBound .. maxBound :: Item] `shouldBe` [0 .. 25]
-    it "toEnum" $ map toEnum [0 .. 25] `shouldBe` [minBound .. maxBound :: Item]
+    it "fromEnum" $ map fromEnum [minBound .. maxBound :: Item] `shouldBe` [0 .. 26]
+    it "toEnum" $ map toEnum [0 .. 26] `shouldBe` [minBound .. maxBound :: Item]
     it "toEnum . fromEnum == id" $ forAll aitem $ \i -> toEnum (fromEnum i) == i
   describe "Inventory" $ do
     prop "empty Inventory has no item" $ forAll aitem $ \i -> not (hasItem i emptyInventory)
@@ -122,7 +122,7 @@ main = hspec $ do
     let fsol = solveLW [5] fightBook defConstant defVariable
     it "Should choose the easiest fight" $ Solver._desc fsol `shouldBe` "y"
   describe "Solver vs SimpleSolver" $ do
-    let getSols target = (solveLW target chapters defConstant defVariable, solveLWs target chapters defConstant defVariable)
+    let getSols target = (solveLW target chapters defConstant defVariable, fst (solveLWs target chapters defConstant defVariable))
         (fast240, slow240) = getSols [240]
     it "Scores should be equal" $ getSolScore fast240 `shouldBe` S.getSolScore slow240
     it "Winstates should be equivalent (240)" $ winStates fast240 `shouldMatchList` S.winStates slow240
