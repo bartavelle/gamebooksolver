@@ -16,7 +16,7 @@ import LoneWolf.Character
 import LoneWolf.Data
 import LoneWolf.Rules (NextStep (..))
 import LoneWolf.Solve (solveLWs)
-import LoneWolf.StateSelector (Log, Selector, selectChar)
+import LoneWolf.StateSelector (Log (..), Selector (..), parseSelector, selectChar)
 import Options.Applicative
 import SimpleSolver
 import Text.Printf (printf)
@@ -34,7 +34,7 @@ data Opts = Opts
 data DumpMode = Json | CBor
 
 data Command
-  = Explore SolDesc (Maybe ChapterId) (Maybe (Log Selector))
+  = Explore SolDesc (Maybe (Log Selector))
   | ShowStates SolDesc ChapterId
   | SolDump DumpMode SolDesc (Maybe FilePath)
   | Standard SolDesc
@@ -67,17 +67,16 @@ soldesc =
     <*> cconstant
     <*> cvariable
 
+charfilter :: Parser (Maybe (Log Selector))
+charfilter = optional (option (eitherReader parseSelector) (long "filter" <> help "Character filter"))
+
 scommand :: Parser Command
 scommand =
   subparser
     ( command
         "explore"
         ( info
-            ( Explore
-                <$> soldesc
-                  <*> optional (argument auto (metavar "CHAPTERID" <> help "Start at this chapter"))
-                  <*> optional (option auto (long "filter" <> help "Character filter"))
-            )
+            (Explore <$> soldesc <*> charfilter)
             (progDesc "Explore the solution")
         )
         <> command
@@ -190,15 +189,10 @@ main = do
       case mtarget of
         Just pth -> BSL.writeFile pth todump
         Nothing -> BSL.putStr todump
-    Explore sd mcid mselector -> do
+    Explore sd mselector -> do
       let (_, solmap) = getSol sd
-          chapterid = fromMaybe 1 mcid
-          startStates = filter startChapter (HM.keys solmap)
-          check = maybe (const True) selectChar mselector
-          startChapter c =
-            case c of
-              NewChapter cid cvar' _ -> cid == chapterid && check cvar'
-              _ -> False
+          startStates = filter (selectChar check) (HM.keys solmap)
+          check = fromMaybe (P (InChapter 1)) mselector
       case startStates of
         [] -> putStrLn ("Expression " ++ show mselector ++ " did not select anything")
         sstate : _ -> case HM.lookup sstate solmap of

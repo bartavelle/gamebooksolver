@@ -10,6 +10,7 @@ import LoneWolf.Combat
 import LoneWolf.Rules (HadCombat (..), NextStep (..))
 import LoneWolf.Simplify (extractMultiFight)
 import LoneWolf.Solve
+import qualified LoneWolf.StateSelector as SS
 import qualified SimpleSolver as S
 import qualified SimplifierSpec
 import Solver
@@ -30,7 +31,7 @@ cvar :: Gen CharacterVariable
 cvar = mkCharacter <$> elements [1 .. 25] <*> inventory
 
 inventory :: Gen Inventory
-inventory = foldr (\i inv -> addItem i 1 inv) emptyInventory <$> listOf sitem
+inventory = foldr (`addItem` 1) emptyInventory <$> listOf sitem
   where
     sitem =
       oneof
@@ -152,5 +153,11 @@ main = hspec $ do
                             (301, Chapter "301" "Dummy chapter 301" (NoDecision (Fight fd2 (Goto 302)))),
                             (302, Chapter "302" "Dummy chapter 302" (NoDecision (Goto 12)))
                           ]
-
+  describe "Character selector" $
+    forM_
+      [ ("chapter 12", SS.P (SS.InChapter 12)),
+        ("Sword && SealHammerdalVol2", SS.And (SS.P (SS.HasItem (Weapon Sword))) (SS.P (SS.HasItem SealHammerdalVol2)))
+      ]
+      $ \(i, e) ->
+        it i (SS.parseSelector i `shouldBe` Right e)
   SimplifierSpec.tests

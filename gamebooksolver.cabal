@@ -57,6 +57,8 @@ library
                      , aeson
                      , optparse-applicative
                      , serialise
+                     , megaparsec
+                     , parser-combinators
   default-language:    Haskell2010
 
 executable gamebooksolver-genchapters
