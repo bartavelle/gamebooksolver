@@ -45,7 +45,7 @@ data CVarState = CVarState
     _cvgold :: Int,
     _cvmeals :: Int
   }
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq)
 
 instance Serialise CVarState
 
@@ -88,10 +88,10 @@ data SolDesc = SolDesc
     _ccst :: CharacterConstant,
     _cvar :: CVarState
   }
-  deriving (Generic)
+  deriving (Generic, Eq)
 
 data SolutionDump = SolutionDump SolDesc [(NextStep, ChoppedSolution NextStep)]
-  deriving (Generic)
+  deriving (Generic, Eq)
 
 instance ToJSON SolDesc
 

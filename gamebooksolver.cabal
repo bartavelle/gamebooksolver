@@ -93,6 +93,8 @@ executable gamebooksolver-solvebook02
                      , aeson
                      , bytestring
                      , serialise
+                     , cryptohash-sha256
+                     , zstd
   default-language:    Haskell2010
 
 executable gamebooksolver-blogpost

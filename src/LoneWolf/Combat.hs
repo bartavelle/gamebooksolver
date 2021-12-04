@@ -1,15 +1,15 @@
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE RankNTypes #-}
 
-module LoneWolf.Combat (fight, getRatio) where
+module LoneWolf.Combat (fight, getRatio, Escaped (..)) where
 
 import Control.Lens
-import Data.Bifunctor (first)
-import Data.Maybe
+import Data.Maybe (mapMaybe)
 import qualified Data.MemoCombinators as Memo
 import LoneWolf.Chapter
 import LoneWolf.Character
-import LoneWolf.CombatChart
-import Solver
+import LoneWolf.CombatChart (hits)
+import Solver (Probably, certain, regroup)
 
 fightRound :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Endurance, Endurance)
 fightRound cconstant cvariable fdetails = regroup $ do
@@ -29,7 +29,12 @@ fightRound cconstant cvariable fdetails = regroup $ do
 
 decrementTimed :: FightModifier -> Maybe FightModifier
 decrementTimed m = case m of
-  Timed n x -> if n > 1 then Just (Timed (n - 1) x) else Nothing
+  Timed n x ->
+    if n > 1
+      then Just (Timed (n - 1) x)
+      else case x of
+        Evaded _ -> Just x
+        _ -> Nothing
   _ -> Just m
 
 getTimed :: FightModifier -> FightModifier
@@ -43,15 +48,17 @@ data FightType
   | Mindblasted
   deriving (Show, Eq, Enum, Bounded)
 
-fight :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably Endurance
+data Escaped a = HasEscaped Int a | NotEscaped a
+  deriving (Functor, Eq, Ord, Show)
+
+fight :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Escaped Endurance)
 fight cconstant cvariable fdetails
-  | has (fightMod . traverse . _Evaded) fdetails =
-    first fst <$> fightRound cconstant cvariable fdetails
+  | Just ecid <- fdetails ^? fightMod . traverse . _Evaded = certain (HasEscaped ecid (cvariable ^. curendurance))
   | has (fightMod . traverse . _Timed) fdetails = regroup $ do
     ((hpLW, hpOpponent), p) <- fightRound cconstant cvariable fdetails
     let outcome
-          | hpLW <= 0 = return (0, p)
-          | hpOpponent <= 0 = return (hpLW, p)
+          | hpLW <= 0 = return (NotEscaped 0, p)
+          | hpOpponent <= 0 = return (NotEscaped hpLW, p)
           | otherwise =
             let nvariable = cvariable & curendurance .~ hpLW
                 ndetails =
@@ -71,7 +78,7 @@ fight cconstant cvariable fdetails
           | EnemyMindblast `elem` modifiers && hasn't (discipline . traverse . _MindShield) cconstant = fightMindBlastedM
           | otherwise = fightVanillaM
     ((php, _), p) <- ftype ratio (cvariable ^. curendurance) ohp
-    return (max 0 php, p)
+    return (NotEscaped (max 0 php), p)
 
 fightVanillaM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
 fightVanillaM = Memo.memo3 Memo.bits Memo.bits Memo.bits fightVanilla

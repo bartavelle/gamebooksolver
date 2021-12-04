@@ -1,25 +1,51 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Main (main) where
 
+import Codec.Compression.Zstd.Lazy (compress, decompress)
 import qualified Codec.Serialise as S
 import Control.Lens (to, (^.))
 import Control.Monad (forM_, guard, when)
 import Data.Aeson (encode)
+import Data.Bifunctor (first)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HM
+import qualified Data.IntMap.Strict as IM
 import Data.List (intercalate)
+import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Tuple (swap)
 import LoneWolf.Book02 (pchapters)
 import LoneWolf.Chapter (ChapterId)
 import LoneWolf.Character
 import LoneWolf.Data
 import LoneWolf.Rules (NextStep (..))
-import LoneWolf.Solve (solveLWs)
+import LoneWolf.Solve (orderChapters, solveLWs, step)
 import LoneWolf.StateSelector (Log (..), Selector (..), parseSelector, selectChar)
 import Options.Applicative
 import SimpleSolver
+import Solver (Probably)
 import Text.Printf (printf)
+import Text.Read (readMaybe)
+
+discnames :: M.Map Discipline String
+discnames =
+  M.fromList
+    [ (Camouflage, "CA"),
+      (Hunting, "HU"),
+      (SixthSense, "6S"),
+      (Tracking, "TR"),
+      (Healing, "HL"),
+      (WeaponSkill Spear, "SP"),
+      (WeaponSkill ShortSword, "SS"),
+      (MindShield, "MS"),
+      (MindBlast, "MB"),
+      (AnimalKinship, "AK"),
+      (MindOverMatter, "MO")
+    ]
+
+rdiscnames :: M.Map String Discipline
+rdiscnames = M.fromList $ map swap $ M.toList discnames
 
 simpleSol :: CharacterConstant -> CharacterVariable -> [Int] -> (Rational, HM.HashMap NextStep (Solution NextStep String))
 simpleSol ccst cvar target =
@@ -35,6 +61,7 @@ data DumpMode = Json | CBor
 
 data Command
   = Explore SolDesc (Maybe (Log Selector))
+  | ExploreFile FilePath (Maybe (Log Selector))
   | ShowStates SolDesc ChapterId
   | SolDump DumpMode SolDesc (Maybe FilePath)
   | Standard SolDesc
@@ -51,7 +78,9 @@ cconstant =
     <*> disciplines
 
 disciplines :: Parser [Discipline]
-disciplines = many (option auto (long "discipline" <> short 'd' <> help "Disciplines"))
+disciplines = many (option (maybeReader decodedisc) (long "discipline" <> short 'd' <> help "Disciplines"))
+  where
+    decodedisc s = M.lookup s rdiscnames <|> readMaybe s
 
 dumpmode :: Parser DumpMode
 dumpmode = option (maybeReader validator) (long "mode" <> help "dump mode (json, cbor)" <> value CBor)
@@ -79,6 +108,12 @@ scommand =
             (Explore <$> soldesc <*> charfilter)
             (progDesc "Explore the solution")
         )
+        <> command
+          "explorefrom"
+          ( info
+              (ExploreFile <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> charfilter)
+              (progDesc "Explore the solution from a saved file")
+          )
         <> command
           "soldump"
           ( info
@@ -160,10 +195,10 @@ shortNS ns =
   case ns of
     HasLost _ -> "lost"
     HasWon _ -> "won"
-    NewChapter _ cv _ -> shortState cv
+    NewChapter cid cv _ -> "ch:" ++ show cid ++ " " ++ shortState cv
 
 shortState :: CharacterVariable -> String
-shortState s = "e:" ++ printf "%02d" (s ^. curendurance . to getEndurance) ++ " " ++ itemlist (items (s ^. equipment))
+shortState s = "e:" ++ printf "%2d" (s ^. curendurance . to getEndurance) ++ " " ++ itemlist (items (s ^. equipment))
   where
     itemlist = intercalate "/" . map singleitem
     singleitem (i, c) =
@@ -172,6 +207,50 @@ shortState s = "e:" ++ printf "%02d" (s ^. curendurance . to getEndurance) ++ " 
         itm = case i of
           Weapon x -> show x
           _ -> show i
+
+percent :: Rational -> String
+percent = printf "%.3f%%" . fromRational @Double . (* 100)
+
+selector :: (a -> String) -> [a] -> IO a
+selector disp choices = do
+  forM_ (zip [0 :: Int ..] choices) $ \(choiceid, choice) -> do
+    putStrLn (printf "%02d" choiceid ++ " - " ++ disp choice)
+  case choices of
+    [] -> error "no choices"
+    [x] -> pure x
+    _ -> do
+      idx <- read <$> getLine
+      if idx >= 0 && idx < length choices
+        then pure (choices !! idx)
+        else do
+          putStrLn "ERROR"
+          selector disp choices
+
+exploreChopped :: HM.HashMap NextStep (ChoppedSolution NextStep) -> CharacterConstant -> NextStep -> IO ()
+exploreChopped mp cc = go
+  where
+    book = IM.fromList pchapters
+    order = orderChapters book
+    stepper = step order book cc
+    go ns = do
+      let nstates = stepper ns
+          advance :: Rational -> Probably NextStep -> IO ()
+          advance score outcomes = do
+            putStrLn (percent score ++ " - " ++ shortNS ns)
+            -- selection
+            (_, ch) <- selector (\(desc, os) -> (if os == outcomes then " *** " else "  -  ") ++ desc) nstates
+            -- outcome
+            (cns, _) <- selector (\(sns, p) -> percent p ++ " - " ++ shortNS sns) ch
+            go cns
+
+      case HM.lookup ns mp of
+        Nothing -> error ("not found " ++ show ns)
+        Just sl ->
+          case sl of
+            CLeaf sc -> putStrLn ("Win: " ++ percent sc)
+            CLeafLost -> putStrLn "Lost!"
+            CNode sc os -> advance sc (map (first (fromMaybe (HasLost 0))) os)
+            CJump sc ns' -> advance sc [(ns', 1)]
 
 main :: IO ()
 main = do
@@ -185,10 +264,19 @@ main = do
           dmap = SolutionDump sd (HM.toList (fmap chopSolution solmap))
           todump = case dmode of
             Json -> encode dmap
-            CBor -> S.serialise dmap
+            CBor -> compress 3 (S.serialise dmap)
       case mtarget of
         Just pth -> BSL.writeFile pth todump
         Nothing -> BSL.putStr todump
+    ExploreFile pth mselector -> do
+      cnt <- decompress <$> BSL.readFile pth
+      let SolutionDump (SolDesc _ cc _) res = S.deserialise cnt
+      print cc
+      let startStates = filter (selectChar check) (map fst res)
+          check = fromMaybe (P (InChapter 1)) mselector
+      case startStates of
+        [] -> putStrLn ("Expression " ++ show mselector ++ " did not select anything")
+        sstate : _ -> exploreChopped (HM.fromList res) cc sstate
     Explore sd mselector -> do
       let (_, solmap) = getSol sd
           startStates = filter (selectChar check) (HM.keys solmap)

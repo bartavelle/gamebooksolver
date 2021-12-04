@@ -17,7 +17,9 @@ survival end cs discs wpn fdetails = fromRational proba
     var = mkCharacter end (addItem (Weapon wpn) 1 emptyInventory)
     proba = sum $ do
       (r, p) <- fight cst var fdetails
-      guard (r > 0)
+      case r of
+        HasEscaped _ _ -> error "escaped"
+        NotEscaped e -> guard (e > 0)
       pure p
 
 combatMap :: [Discipline] -> Weapon -> FightDetails -> [(Int, Int, Double)]

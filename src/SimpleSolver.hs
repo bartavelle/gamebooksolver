@@ -32,13 +32,12 @@ instance (NFData state, NFData description) => NFData (Solution state descriptio
 
 data ChoppedSolution state
   = CNode
-      { _cstt :: state,
-        _cscore :: Rational,
+      { _cscore :: Rational,
         _coutcome :: Probably (Maybe state)
       }
-  | CJump state Rational state
+  | CJump Rational state
   | CLeafLost
-  | CLeaf Rational state
+  | CLeaf Rational
   deriving (Show, Eq, Generic)
 
 instance (Serialise state) => Serialise (ChoppedSolution state)
@@ -61,10 +60,10 @@ instance (FromJSON state) => FromJSON (ChoppedSolution state) where
 chopSolution :: Solution state description -> ChoppedSolution state
 chopSolution = \case
   LeafLost -> CLeafLost
-  Leaf sc stt -> CLeaf sc stt
-  Node _ stt c o -> case map (first mstate) o of
-    [(Just r, p)] | p == 1 -> CJump stt c r
-    ms -> CNode stt c ms
+  Leaf sc _ -> CLeaf sc
+  Node _ _ c o -> case map (first mstate) o of
+    [(Just r, p)] | p == 1 -> CJump c r
+    ms -> CNode c ms
   where
     mstate = \case
       Leaf _ stt -> Just stt

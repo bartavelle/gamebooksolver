@@ -2,10 +2,12 @@ module Main where
 
 import Control.Lens hiding (elements)
 import Control.Monad
+import qualified Data.IntMap.Strict as IM
 import Data.Ratio
 import LoneWolf.Book02 (chapters)
 import LoneWolf.Chapter
 import LoneWolf.Character
+import LoneWolf.Choices (flattenDecision)
 import LoneWolf.Combat
 import LoneWolf.Rules (HadCombat (..), NextStep (..))
 import LoneWolf.Simplify (extractMultiFight)
@@ -84,7 +86,7 @@ main = hspec $ do
     it "sommerswerd" $ getRatio defConstant (defVariable & equipment %~ addItem (Weapon Sommerswerd) 1) defCombat `shouldBe` -3
     it "sommerswerd + skill" $ getRatio (defConstant & discipline .~ [WeaponSkill BroadSword]) (defVariable & equipment %~ addItem (Weapon Sommerswerd) 1) defCombat `shouldBe` -1
   describe "fight" $ do
-    it "vanilla test" $ fight defConstant defVariable defCombat `shouldMatchList` [(0, 19879281 % 20000000), (1, 6883 % 10000000), (2, 8139 % 20000000), (3, 9043 % 10000000), (4, 11197 % 20000000), (5, 649 % 800000), (6, 2719 % 5000000), (7, 91 % 200000), (8, 147 % 500000), (9, 111 % 500000), (10, 253 % 2000000), (11, 87 % 400000), (12, 99 % 1000000), (13, 451 % 2000000), (14, 33 % 250000), (15, 27 % 200000), (16, 1 % 12500), (17, 11 % 200000), (18, 7 % 200000), (19, 1 % 50000), (20, 1 % 200000), (21, 1 % 200000), (22, 1 % 200000), (25, 1 % 100000)]
+    it "vanilla test" $ fight defConstant defVariable defCombat `shouldMatchList` [(NotEscaped e, p) | (e, p) <- [(0, 19879281 % 20000000), (1, 6883 % 10000000), (2, 8139 % 20000000), (3, 9043 % 10000000), (4, 11197 % 20000000), (5, 649 % 800000), (6, 2719 % 5000000), (7, 91 % 200000), (8, 147 % 500000), (9, 111 % 500000), (10, 253 % 2000000), (11, 87 % 400000), (12, 99 % 1000000), (13, 451 % 2000000), (14, 33 % 250000), (15, 27 % 200000), (16, 1 % 12500), (17, 11 % 200000), (18, 7 % 200000), (19, 1 % 50000), (20, 1 % 200000), (21, 1 % 200000), (22, 1 % 200000), (25, 1 % 100000)]]
   describe "state memo" $ do
     prop "memo works" $ forAll nstep $ \ns -> fromWord64 (toWord64 ns) == ns
   describe "PScore" $ do
@@ -160,4 +162,35 @@ main = hspec $ do
       ]
       $ \(i, e) ->
         it i (SS.parseSelector i `shouldBe` Right e)
+  describe "Evasion" $ do
+    let rawfd = FightDetails "F1" 20 20 []
+        fdesc n = EvadeFight n 88 rawfd (Goto 2)
+        cconst = CharacterConstant 25 15 []
+        scvar = mkCharacter 25 (inventoryFromList [(Weapon ShortSword, 1)])
+        stepper n = step order schapters cconst (NewChapter 1 scvar Didn'tFight)
+          where
+            schapters = IM.fromList [(1, Chapter "1" "dummy" (fdesc n)), (2, Chapter "2" "dummy" (NoDecision GameLost)), (88, Chapter "88" "dummy" (NoDecision GameWon))]
+            order = orderChapters schapters
+    it "Properly flattened" $ do
+      flattenDecision cconst scvar (fdesc 0) `shouldBe` [(["no evasion"], Fight rawfd (Goto 2)), (["evasion"], Fight (FightDetails "F1" 20 20 [Evaded 88]) (Goto 2))]
+      flattenDecision cconst scvar (fdesc 2) `shouldBe` [(["no evasion"], Fight rawfd (Goto 2)), (["evasion"], Fight (FightDetails "F1" 20 20 [Timed 2 (Evaded 88)]) (Goto 2))]
+    it "Fight result" $ do
+      fight cconst scvar (FightDetails "F1" 20 20 [Evaded 88]) `shouldBe` certain (HasEscaped 88 25)
+    it "Directly escape" $ do
+      let r = stepper 0
+      length r `shouldBe` 2
+      case filter ((== "evasion") . fst) r of
+        [x] -> x `shouldBe` ("evasion", certain (NewChapter 88 scvar DidFight))
+        _ -> fail "no evasion?"
+    it "Ratio" $ getRatio cconst scvar rawfd `shouldBe` (-5)
+    it "Escapes after a round" $ do
+      let r = stepper 1
+      length r `shouldBe` 2
+      let healthloss = [6, 6, 5, 5, 4, 4, 3, 2, 0, 0] -- combat ratio = -5
+          expectedResult = regroup $ do
+            l <- healthloss
+            pure (NewChapter 88 (scvar & curendurance -~ l) DidFight, 1 % 10)
+      case filter ((== "evasion") . fst) r of
+        [x] -> x `shouldBe` ("evasion", expectedResult)
+        _ -> fail "no evasion?"
   SimplifierSpec.tests

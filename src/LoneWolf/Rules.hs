@@ -102,20 +102,19 @@ update cconstant cvariable cid outcome =
       fmap (* p) <$> update cconstant cvariable cid o
     Fight fd nxt -> regroup $
       (traverse . _1 . _NewChapter . _3 .~ DidFight) $ do
-        (charendurance, p) <- fight cconstant cvariable fd
+        (echarendurance, p) <- fight cconstant cvariable fd
+        let (noutcome, charendurance) = case echarendurance of
+              HasEscaped ecid n -> (Goto ecid, n)
+              NotEscaped n -> (nxt, n)
         case fd ^? fightMod . traverse . _FakeFight of
           Nothing ->
             if charendurance <= 0
               then [(HasLost cid, p)]
-              else fmap (* p) <$> update cconstant (cvariable & curendurance .~ charendurance) cid nxt
+              else fmap (* p) <$> update cconstant (cvariable & curendurance .~ charendurance) cid noutcome
           Just cid' ->
             if charendurance <= 0
               then [(NewChapter cid' cvariable Didn'tFight, p)]
-              else map (fmap (* p)) $
-                update cconstant cvariable cid $
-                  case fd ^? fightMod . traverse . _Evaded of
-                    Just evasionDestination -> Goto evasionDestination
-                    Nothing -> nxt
+              else fmap (* p) <$> update cconstant cvariable cid noutcome
 
 uCheck :: CharacterConstant -> CharacterVariable -> [(BoolCond, t)] -> t
 uCheck cconstant cvariable conds = case conds of

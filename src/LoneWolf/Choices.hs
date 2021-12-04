@@ -79,7 +79,7 @@ flattenDecision cconstant cvariable d =
         NoDecision o -> [([], o)]
         EvadeFight nrounds cid fdetails co ->
           [ (["no evasion"], Fight fdetails co),
-            (["evasion"], Fight (fdetails & fightMod %~ (Timed nrounds (Evaded cid) :)) co)
+            (["evasion"], Fight (fdetails & fightMod %~ ((if nrounds > 0 then Timed nrounds (Evaded cid) else Evaded cid) :)) co)
           ]
         Decisions lst -> do
           (cdesc, d') <- lst

@@ -10,9 +10,22 @@ import LoneWolf.Simplify (extractMultiFight)
 pchapters :: [(ChapterId, Chapter)]
 pchapters = map patch (extractMultiFight chapters)
   where
-    patch (200, Chapter t d _) = (200, Chapter t d (NoDecision (Goto 158)))
+    -- remove hard fight with no upside
+    patch (200, Chapter t d _) =
+      ( 200,
+        Chapter
+          t
+          d
+          ( Decisions
+              [ ( "If you wish to attack the merchant called Halvorc, turn to 60.", NoDecision (Goto 60)),
+                ( "If you wish to attack the adventuress called Viveka, turn to 85.", NoDecision (Goto 85)),
+                ( "If you wish to attack the priest called Parsion, turn to 158.", NoDecision (Goto 158))
+              ]
+          )
+      )
     patch (314, Chapter t d dc) = (314, Chapter t d (limitMoneyAt 12 dc))
     patch (33, Chapter t d dc) = (33, Chapter t d (limitMoneyAt 12 dc))
+    -- loop breaker
     patch (172, Chapter t d _) = (172, Chapter t d (Decisions [("If you wish to climb the stone steps and confront it, turn to 52.", NoDecision (Goto 52)), ("If you wish to sprint past the steps and platform, turn to 256.", NoDecision (Goto 256))]))
     patch x = x
     limitMoneyAt maxmoney dc =
