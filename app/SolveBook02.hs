@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeApplications #-}
 
 module Main (main) where
@@ -6,18 +7,18 @@ import Codec.Compression.Zstd.Lazy (compress, decompress)
 import qualified Codec.Serialise as S
 import Control.Lens (to, (^.))
 import Control.Monad (forM_, guard, when)
-import Data.Aeson (encode)
+import Data.Aeson (encode, encodeFile)
 import Data.Bifunctor (first)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HM
 import qualified Data.IntMap.Strict as IM
-import Data.List (intercalate)
+import Data.List (foldl', intercalate)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, mapMaybe)
-import Data.Tuple (swap)
 import LoneWolf.Book02 (pchapters)
-import LoneWolf.Chapter (ChapterId)
+import LoneWolf.Chapter (ChapterId, FightDetails (..))
 import LoneWolf.Character
+import LoneWolf.Combat (expectedEndurance, winchance)
 import LoneWolf.Data
 import LoneWolf.Rules (NextStep (..))
 import LoneWolf.Solve (orderChapters, solveLWs, step)
@@ -27,25 +28,6 @@ import SimpleSolver
 import Solver (Probably)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
-
-discnames :: M.Map Discipline String
-discnames =
-  M.fromList
-    [ (Camouflage, "CA"),
-      (Hunting, "HU"),
-      (SixthSense, "6S"),
-      (Tracking, "TR"),
-      (Healing, "HL"),
-      (WeaponSkill Spear, "SP"),
-      (WeaponSkill ShortSword, "SS"),
-      (MindShield, "MS"),
-      (MindBlast, "MB"),
-      (AnimalKinship, "AK"),
-      (MindOverMatter, "MO")
-    ]
-
-rdiscnames :: M.Map String Discipline
-rdiscnames = M.fromList $ map swap $ M.toList discnames
 
 simpleSol :: CharacterConstant -> CharacterVariable -> [Int] -> (Rational, HM.HashMap NextStep (Solution NextStep String))
 simpleSol ccst cvar target =
@@ -58,17 +40,27 @@ data Opts = Opts
   }
 
 data DumpMode = Json | CBor
+  deriving (Eq)
 
 data Command
   = Explore SolDesc (Maybe (Log Selector))
   | ExploreFile FilePath (Maybe (Log Selector))
   | ShowStates SolDesc ChapterId
   | SolDump DumpMode SolDesc (Maybe FilePath)
-  | Standard SolDesc
   | MultiStats [Discipline] CVarState
+  | ExtractFile FilePath (Log Selector)
+  | DecisionTracker FilePath FightDetails (Log Selector)
 
 options :: Parser Opts
 options = Opts <$> switch (long "debug" <> help "Verbose execution") <*> scommand
+
+fightdetails :: Parser FightDetails
+fightdetails =
+  FightDetails
+    <$> strOption (long "opponent" <> metavar "NAME" <> help "Opponent name" <> showDefault <> value "dummy")
+    <*> fmap CombatSkill (option auto (long "oskill" <> help "Opponent combat skill" <> value 10 <> showDefault))
+    <*> fmap Endurance (option auto (long "oendurance" <> help "Opponent endurance" <> value 15 <> showDefault))
+    <*> pure []
 
 cconstant :: Parser CharacterConstant
 cconstant =
@@ -96,8 +88,8 @@ soldesc =
     <*> cconstant
     <*> cvariable
 
-charfilter :: Parser (Maybe (Log Selector))
-charfilter = optional (option (eitherReader parseSelector) (long "filter" <> help "Character filter"))
+charfilter :: Parser (Log Selector)
+charfilter = option (eitherReader parseSelector) (long "filter" <> help "Character filter")
 
 scommand :: Parser Command
 scommand =
@@ -105,13 +97,13 @@ scommand =
     ( command
         "explore"
         ( info
-            (Explore <$> soldesc <*> charfilter)
+            (Explore <$> soldesc <*> optional charfilter)
             (progDesc "Explore the solution")
         )
         <> command
           "explorefrom"
           ( info
-              (ExploreFile <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> charfilter)
+              (ExploreFile <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> optional charfilter)
               (progDesc "Explore the solution from a saved file")
           )
         <> command
@@ -121,7 +113,6 @@ scommand =
               )
               (progDesc "Dump a solution")
           )
-        <> command "standard" (info (Standard <$> soldesc) (progDesc "Just display statistics"))
         <> command
           "multistats"
           ( info
@@ -132,6 +123,8 @@ scommand =
               (progDesc "Multi stats")
           )
         <> command "showstates" (info (ShowStates <$> soldesc <*> argument auto (metavar "CHAPTERID" <> help "Chapter with states to explore")) (progDesc "Show states"))
+        <> command "extract" (info (ExtractFile <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> charfilter) (progDesc "Extract solution data from a file"))
+        <> command "decisiontracker" (info (DecisionTracker <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> fightdetails <*> charfilter) (progDesc "Displays stats about how a decision is taken"))
     )
 
 programOpts :: ParserInfo Opts
@@ -176,13 +169,6 @@ getSol (SolDesc fchapters ccst ccvar) =
         [] -> [350]
         fc -> fc
    in simpleSol ccst cvar finalchapters
-
-showRecap :: Foldable t => SolDesc -> Rational -> t a -> IO ()
-showRecap (SolDesc _ ccst cvar) score solmap = do
-  putStrLn ("CONSTANT: " ++ show ccst)
-  putStrLn ("VARIABLE: " ++ show (mkchar ccst cvar))
-  putStrLn ("STATES:   " ++ show (length solmap))
-  putStrLn ("WIN:      " ++ show (fromRational score :: Double))
 
 shortSolstate :: Solution NextStep String -> String
 shortSolstate s = case s of
@@ -252,13 +238,38 @@ exploreChopped mp cc = go
             CNode sc os -> advance sc (map (first (fromMaybe (HasLost 0))) os)
             CJump sc ns' -> advance sc [(ns', 1)]
 
+ctarget :: NextStep -> ChoppedSolution NextStep -> Maybe (CharacterVariable, ChapterId)
+ctarget (NewChapter _ cv _) (CNode _ ((Just (NewChapter tgt _ _), _) : _)) = Just (cv, tgt)
+ctarget (NewChapter _ cv _) (CJump _ (NewChapter tgt _ _)) = Just (cv, tgt)
+ctarget _ _ = Nothing
+
+getStats :: FightDetails -> CharacterConstant -> [(NextStep, ChoppedSolution NextStep)] -> M.Map ChapterId DecisionStat
+getStats fdetails ccst = foldl' mkhistogram mempty . map extract
+  where
+    add cv tgt =
+      ( tgt,
+        DecisionStat
+          (singletonbag (cv ^. curendurance))
+          (singletonbag gld)
+          (singletonbag een)
+          (singletonbag (GoldWin gld wc))
+          (singletonbag (cv ^. equipment))
+      )
+      where
+        wc = truncate (winchance ccst cv fdetails * 10)
+        een = truncate (expectedEndurance ccst cv fdetails)
+        gld = cv ^. equipment . gold
+    extract :: (NextStep, ChoppedSolution NextStep) -> Maybe (ChapterId, DecisionStat)
+    extract (ns, cs) = fmap (uncurry add) (ctarget ns cs)
+
+mkhistogram :: M.Map ChapterId DecisionStat -> Maybe (ChapterId, DecisionStat) -> M.Map ChapterId DecisionStat
+mkhistogram curmp Nothing = curmp
+mkhistogram mp (Just (cid, ds)) = M.unionWith (<>) (M.singleton cid ds) mp
+
 main :: IO ()
 main = do
   Opts debug cmd <- execParser programOpts
   case cmd of
-    Standard sd -> do
-      let (r, solmap) = getSol sd
-      showRecap sd r solmap
     SolDump dmode sd mtarget -> do
       let (_, solmap) = getSol sd
           dmap = SolutionDump sd (HM.toList (fmap chopSolution solmap))
@@ -266,7 +277,9 @@ main = do
             Json -> encode dmap
             CBor -> compress 3 (S.serialise dmap)
       case mtarget of
-        Just pth -> BSL.writeFile pth todump
+        Just pth -> do
+          BSL.writeFile pth todump
+          when (dmode == CBor) $ encodeFile (pth ++ ".json") (soldumpSummary dmap)
         Nothing -> BSL.putStr todump
     ExploreFile pth mselector -> do
       cnt <- decompress <$> BSL.readFile pth
@@ -314,3 +327,14 @@ main = do
               _ -> shortSolstate v
         putStrLn (shortState k)
         putStrLn (" -> " ++ l2)
+    ExtractFile pth sel -> do
+      cnt <- decompress <$> BSL.readFile pth
+      let SolutionDump _ res = S.deserialise cnt
+          startStates = filter (selectChar sel . fst) res
+      BSL.putStr (encode startStates)
+    DecisionTracker pth fdetails sel -> do
+      cnt <- decompress <$> BSL.readFile pth
+      let SolutionDump (SolDesc _ ccst _) res = S.deserialise cnt
+          startStates = filter (selectChar sel . fst) res
+          stats = getStats fdetails ccst startStates
+      BSL.putStr (encode stats)

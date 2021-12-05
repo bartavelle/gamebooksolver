@@ -5,19 +5,25 @@ TARGETSHIGH = $(patsubst %, data/2919%.cbor, $(DISCS))
 TARGETSMEDIUM = $(patsubst %, data/2515%.cbor, $(DISCS))
 TARGETSLOW = $(patsubst %, data/2010%.cbor, $(DISCS))
 
+ALLCOMBS = 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2110 2111 2112 2113 2114 2115 2116 2117 2118 2119 2210 2211 2212 2213 2214 2215 2216 2217 2218 2219 2310 2311 2312 2313 2314 2315 2316 2317 2318 2319 2410 2411 2412 2413 2414 2415 2416 2417 2418 2419 2510 2511 2512 2513 2514 2515 2516 2517 2518 2519 2610 2611 2612 2613 2614 2615 2616 2617 2618 2619 2710 2711 2712 2713 2714 2715 2716 2717 2718 2719 2810 2811 2812 2813 2814 2815 2816 2817 2818 2819 2910 2911 2912 2913 2914 2915 2916 2917 2918 2919
+TARGETSAKMB = $(patsubst %, data/%AK.MB.cbor, $(ALLCOMBS))
+
 .PHONY: all low medium high
 
-all: low medium high
+all: low medium high akmb
 	echo ok
 
 low: $(TARGETSLOW)
-	echo "low done"
+	echo
 
 medium: $(TARGETSMEDIUM)
-	echo "medium done"
+	echo
 
 high: $(TARGETSHIGH)
-	echo "high done"
+	echo
+
+akmb: $(TARGETSAKMB)
+	echo $(TARGETSAKMB)
 
 data/%.cbor: dist/gamebooksolver-solvebook02 buildsol.py
 	python3 buildsol.py $@

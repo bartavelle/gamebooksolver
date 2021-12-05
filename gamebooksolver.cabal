@@ -59,6 +59,7 @@ library
                      , serialise
                      , megaparsec
                      , parser-combinators
+                     , text
   default-language:    Haskell2010
 
 executable gamebooksolver-genchapters
@@ -111,6 +112,7 @@ executable gamebooksolver-blogpost
                      , lens
                      , text
                      , optparse-applicative
+                     , bytestring
   default-language:    Haskell2010
 
 test-suite gamebooksolver-test
@@ -124,6 +126,7 @@ test-suite gamebooksolver-test
                      , QuickCheck
                      , lens
                      , containers
+                     , aeson
   ghc-options:         -threaded -rtsopts -Wall
   default-language:    Haskell2010
 

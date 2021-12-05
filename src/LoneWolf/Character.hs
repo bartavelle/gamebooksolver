@@ -80,7 +80,7 @@ equipment f (CharacterVariable w) = (\(Inventory ng) -> CharacterVariable ((w .&
 {-# INLINE equipment #-}
 
 newtype Inventory = Inventory {getInventory :: Word64}
-  deriving (Generic, Eq, Bits)
+  deriving (Generic, Eq, Bits, Ord, Num)
 
 instance Show Inventory where
   show i = "(inventoryFromList " ++ show (items i) ++ ")"
@@ -259,6 +259,13 @@ hasItem i inv =
     Gold -> inv ^. gold > 0
     Meal -> inv ^. meals > 0
     _ -> testBit (inv ^. singleItems) (fromEnum i)
+
+itemCount :: Item -> Inventory -> Int
+itemCount i inv =
+  case i of
+    Gold -> inv ^. gold
+    Meal -> inv ^. meals
+    _ -> if testBit (inv ^. singleItems) (fromEnum i) then 1 else 0
 
 addItem :: Item -> Int -> Inventory -> Inventory
 addItem i count inv

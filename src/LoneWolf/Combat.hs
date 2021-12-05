@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE RankNTypes #-}
 
-module LoneWolf.Combat (fight, getRatio, Escaped (..)) where
+module LoneWolf.Combat (fight, getRatio, Escaped (..), winchance, expectedEndurance) where
 
 import Control.Lens
 import Data.Maybe (mapMaybe)
@@ -79,6 +79,20 @@ fight cconstant cvariable fdetails
           | otherwise = fightVanillaM
     ((php, _), p) <- ftype ratio (cvariable ^. curendurance) ohp
     return (NotEscaped (max 0 php), p)
+
+winchance :: CharacterConstant -> CharacterVariable -> FightDetails -> Rational
+winchance cc cv fd = sum $ do
+  (end, p) <- fight cc cv fd
+  pure $ case end of
+    HasEscaped _ _ -> p
+    NotEscaped hp -> if hp > 0 then p else 0
+
+expectedEndurance :: CharacterConstant -> CharacterVariable -> FightDetails -> Rational
+expectedEndurance cc cv fd = sum $ do
+  (end, p) <- fight cc cv fd
+  pure $ case end of
+    HasEscaped _ hp -> fromIntegral hp * p
+    NotEscaped hp -> fromIntegral hp * p
 
 fightVanillaM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
 fightVanillaM = Memo.memo3 Memo.bits Memo.bits Memo.bits fightVanilla

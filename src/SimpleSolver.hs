@@ -40,6 +40,14 @@ data ChoppedSolution state
   | CLeaf Rational
   deriving (Show, Eq, Generic)
 
+choppedScore :: ChoppedSolution state -> Rational
+choppedScore cs =
+  case cs of
+    CNode s _ -> s
+    CJump s _ -> s
+    CLeafLost -> 0
+    CLeaf s -> s
+
 instance (Serialise state) => Serialise (ChoppedSolution state)
 
 choppedSolutionOptions :: Options

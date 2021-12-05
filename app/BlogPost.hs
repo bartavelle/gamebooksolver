@@ -1,16 +1,23 @@
+{-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
 import Control.Lens
-import Control.Monad (forM_, guard)
+import Control.Monad (forM_, guard, unless)
 import Data.Aeson (eitherDecodeFileStrict)
+import Data.Bifunctor (first)
 import Data.List (isSuffixOf, sortOn)
 import qualified Data.Map.Strict as M
+import qualified Data.Set as S
 import Data.String (fromString)
 import Data.Text (Text)
+import Debug.Trace (traceM)
+import LoneWolf.Chapter (ChapterId)
 import LoneWolf.Character
 import LoneWolf.Data
 import Lucid
@@ -19,12 +26,18 @@ import Options.Applicative
 import System.Directory (getDirectoryContents)
 import Text.Printf (printf)
 
-newtype Opts = Opts
-  { _cvariable :: CVarState
-  }
+data Opts
+  = Generalstats CVarState
+  | Heatmap CVarState
+  | Histo FilePath
 
 options :: Parser Opts
-options = Opts <$> cvariable
+options =
+  subparser
+    ( command "general" (info (Generalstats <$> cvariable) (progDesc "General stats"))
+        <> command "heatmap" (info (Heatmap <$> cvariable) (progDesc "Skill/endurance heatmap"))
+        <> command "histo" (info (Histo <$> strArgument (metavar "PATH")) (progDesc "Histograms from stats"))
+    )
 
 programOpts :: ParserInfo Opts
 programOpts =
@@ -46,14 +59,18 @@ disciplines = [Camouflage, Hunting, SixthSense, Tracking, Healing, WeaponSkill S
 dpairs :: [(Discipline, Discipline)]
 dpairs = disciplines >>= \d1 -> disciplines >>= \d2 -> (d1, d2) <$ guard (d1 < d2)
 
+loadContent :: FilePath -> IO (Either String Multistat)
+loadContent = eitherDecodeFileStrict
+
 loadData :: CVarState -> IO [Multistat]
 loadData cvar = do
   allfiles <- map ("data/" <>) . filter (isSuffixOf ".json") <$> getDirectoryContents "data"
-  allcontent <- mapM eitherDecodeFileStrict allfiles
+  allcontent <- mapM loadContent allfiles
+  mapM_ traceM (allcontent ^.. traverse . _Left)
   let keepitems m@(Multistat _ rcvar _) =
         let nrcvar = rcvar & cvitems %~ \i -> if null i then defaultItems else i
          in (m & variable .~ nrcvar) <$ guard (eqcvarstate nrcvar cvar)
-  pure ((allcontent ^.. traverse . _Right) >>= keepitems)
+  pure $! ((allcontent ^.. traverse . _Right) >>= keepitems)
 
 type MSMap = M.Map (Discipline, Discipline) (M.Map (Endurance, CombatSkill) (Rational, Int))
 
@@ -61,17 +78,17 @@ percent :: Double -> String
 percent = printf "%.2f%%" . (* 100)
 
 msmap :: [Multistat] -> MSMap
-msmap lst = M.fromList $ do
+msmap lst = M.fromListWith M.union $ do
   Multistat discs _ entries <- lst
   let emap = M.fromList $ do
         MultistatEntry e c _ score stts <- entries
         pure ((e, c), (score, stts))
-      key = case discs of
+      (k1, k2) = case discs of
         [d1, d2] -> (d1, d2)
         [d1] -> (d1, d1)
         _ -> error ("Invalid amount of disciplines: " ++ show discs)
-
-  pure (key, emap)
+  mkey <- [(k1, k2), (k2, k1)]
+  pure (mkey, emap)
 
 rowStyleRG :: TermRaw Text arg => Double -> arg
 rowStyleRG d =
@@ -144,9 +161,9 @@ scoreTableMax cmsmap = disciplineMap rowStyleGreen scorer
 scoreTableAvg :: MSMap -> Html ()
 scoreTableAvg cmsmap = disciplineMap rowStyleGreen scorer
   where
-    maxmap = fmap extractMax cmsmap
-    extractMax mp = case M.lookup (25, 15) mp of
-      Nothing -> error "uncalculated"
+    maxmap = M.mapWithKey extractMax cmsmap
+    extractMax k mp = case M.lookup (25, 15) mp of
+      Nothing -> error ("uncalculated for key " ++ show k)
       Just (r, _) -> fromRational r :: Double
     scorer d1 d2 = do
       let rd1 = min d1 d2
@@ -161,11 +178,31 @@ post1 cstt = do
   print (stateTable mcontent)
   print (scoreTableMax mcontent)
   print (scoreTableAvg mcontent)
-  putStrLn ""
-  let best = mcontent M.! (Hunting, AnimalKinship)
+
+post2 :: CVarState -> IO ()
+post2 cstt = do
+  content <- loadData cstt
+  let mcontent = msmap content
+      best = mcontent M.! (MindBlast, AnimalKinship)
   print (skemap (\e s -> fmap (\(score, _) -> (percent (fromRational score), fromRational score)) (M.lookup (e, s) best)))
+
+data P x = P x x deriving (Show, Eq, Ord, Functor, Foldable)
+
+instance Traversable P where
+  traverse f (P a b) = P <$> f a <*> f b
+
+rebagWithItems :: (Ord a) => (Inventory -> a) -> Bagged Inventory -> Bagged a
+rebagWithItems selector = Bagged . M.fromListWith (+) . map (first selector) . M.toList . getBag
+
+histo :: FilePath -> IO ()
+histo fp = do
+  r <- either (error . show) id <$> eitherDecodeFileStrict fp :: IO (M.Map ChapterId DecisionStat)
+  print r
 
 main :: IO ()
 main = do
-  Opts cvar <- execParser programOpts
-  post1 cvar
+  mode <- execParser programOpts
+  case mode of
+    Generalstats cv -> post1 cv
+    Heatmap cv -> post2 cv
+    Histo fp -> histo fp

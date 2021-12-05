@@ -2,6 +2,7 @@ module Main where
 
 import Control.Lens hiding (elements)
 import Control.Monad
+import Data.Aeson (decode, encode)
 import qualified Data.IntMap.Strict as IM
 import Data.Ratio
 import LoneWolf.Book02 (chapters)
@@ -9,6 +10,7 @@ import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.Choices (flattenDecision)
 import LoneWolf.Combat
+import LoneWolf.Data
 import LoneWolf.Rules (HadCombat (..), NextStep (..))
 import LoneWolf.Simplify (extractMultiFight)
 import LoneWolf.Solve
@@ -193,4 +195,9 @@ main = hspec $ do
       case filter ((== "evasion") . fst) r of
         [x] -> x `shouldBe` ("evasion", expectedResult)
         _ -> fail "no evasion?"
+  describe "Histostats" $ do
+    it "Encode/decode" $ do
+      let d1 :: DecisionStat
+          d1 = DecisionStat (singletonbag 45) (singletonbag 3) (singletonbag 8) (singletonbag 42)
+      decode (encode d1) `shouldBe` Just d1
   SimplifierSpec.tests

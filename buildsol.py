@@ -10,9 +10,9 @@ m = PTRN.match(sys.argv[1])
 cmdline = ["./dist/gamebooksolver-solvebook02", "soldump", "--mode", "cbor", "-e", e, "-s", s, "-d", d1]
 if d2:
     cmdline += ["-d", d2]
-cmdline += [sys.argv[1], "+RTS", "-N1"]
+cmdline += [sys.argv[1], "+RTS", "-N1", "-t"]
 r = subprocess.run(cmdline, check=True, capture_output=True)
 if r.stdout:
-    print(r.stdout.decode("utf-8"))
+    print("e:%s s:%s d1:%s d2:%s r:%s" % (e, s, d1, d2, r.stdout.decode("utf-8").strip()))
 if r.stderr:
-    print(r.stderr.decode("utf-8"))
+    print("e:%s s:%s d1:%s d2:%s r:%s" % (e, s, d1, d2, r.stderr.decode("utf-8").strip()))
