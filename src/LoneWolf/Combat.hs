@@ -53,7 +53,12 @@ data Escaped a = HasEscaped Int a | NotEscaped a
 
 fight :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Escaped Endurance)
 fight cconstant cvariable fdetails
-  | Just ecid <- fdetails ^? fightMod . traverse . _Evaded = certain (HasEscaped ecid (cvariable ^. curendurance))
+  | Just ecid <- fdetails ^? fightMod . traverse . _Evaded = regroup $ do
+    ((hpLW, _), p) <- fightRound cconstant cvariable fdetails
+    pure $
+      if hpLW <= 0
+        then (NotEscaped 0, p)
+        else (HasEscaped ecid hpLW, p)
   | has (fightMod . traverse . _Timed) fdetails = regroup $ do
     ((hpLW, hpOpponent), p) <- fightRound cconstant cvariable fdetails
     let outcome
