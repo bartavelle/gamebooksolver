@@ -17,9 +17,9 @@ pchapters = map patch (extractMultiFight chapters)
           t
           d
           ( Decisions
-              [ ( "If you wish to attack the merchant called Halvorc, turn to 60.", NoDecision (Goto 60)),
-                ( "If you wish to attack the adventuress called Viveka, turn to 85.", NoDecision (Goto 85)),
-                ( "If you wish to attack the priest called Parsion, turn to 158.", NoDecision (Goto 158))
+              [ ("If you wish to attack the merchant called Halvorc, turn to 60.", NoDecision (Goto 60)),
+                ("If you wish to attack the adventuress called Viveka, turn to 85.", NoDecision (Goto 85)),
+                ("If you wish to attack the priest called Parsion, turn to 158.", NoDecision (Goto 158))
               ]
           )
       )
@@ -160,7 +160,7 @@ chapters =
         "10"
         "You pocket the ticket (mark this as a Special Item on your Action Chart) and the man takes you to a coach that is waiting near the east gate of the seaport. It is empty and you take a seat near one of its circular windows. You are relieved to find that the seat is quite comfortable, for the journey to Port Bax will take seven days.\nStowing your equipment beneath the seat, you settle back in comfort and doze off.\nWhen you awake, there are five other passengers and the journey to Durenor has already begun.\nPick a number from the Random Number Table.\n"
         ( CanTake
-            TicketVol2
+            ticketVol2
             1
             ( NoDecision
                 ( Randomly
@@ -224,22 +224,18 @@ chapters =
             Backpack
             1
             ( CanTake
-                PasswordVol2
+                (Weapon BroadSword)
                 1
                 ( CanTake
-                    (Weapon BroadSword)
+                    (Weapon Mace)
                     1
                     ( CanTake
-                        (Weapon Mace)
+                        (Weapon Quarterstaff)
                         1
                         ( CanTake
-                            (Weapon Quarterstaff)
+                            Potion4Hp
                             1
-                            ( CanTake
-                                HealingPotion
-                                1
-                                (CanTake Meal 3 (CanTake Gold 12 (NoDecision (Goto 244))))
-                            )
+                            (CanTake Meal 3 (CanTake Gold 12 (NoDecision (Simple [SetFlag passwordVol2] (Goto 244)))))
                         )
                     )
                 )
@@ -552,7 +548,7 @@ chapters =
         "At dusk the coach stops at an inn on the coast road to Port Bax. The cost of a room for the night is 1 Gold Crown for coach passengers and 3 Gold Crowns for anyone else. As you are about to enter, the coach driver demands to see your ticket.\n"
         ( NoDecision
             ( Conditionally
-                [(HasItem TicketVol2 1, Goto 346), (Always True, Goto 156)]
+                [(HasItem ticketVol2 1, Goto 346), (Always True, Goto 156)]
             )
         )
     ),
@@ -562,7 +558,7 @@ chapters =
         "The muster of the army and the preparation of the Durenese fleet takes fourteen days to complete, during which time you remain as a guest of the king in Hammerdal. As each day passes, you despair for your besieged countrymen of Holmgard and pray that they have enough strength to resist the Darklords until you return.\nEvery day of your reluctant exile you devote long periods to exercise and meditation. You are also visited by a Durenese herbwarden called Madin Rendalim, who is famous throughout the Lastlands for his knowledge and skill in the healing arts. He restores all the ENDURANCE points you may have lost so far on your adventure, and he gives you a potent Laumspur potion that will restore 5 ENDURANCE points if swallowed after combat. (Mark this under Backpack Items on your Action Chart.)\nHe is also the bearer of some sad news. The body of Lord-lieutenant Rhygar was found in the forest near to the entrance to Tarnalin. He was killed by Helghast.\n"
         ( NoDecision
             ( Simple
-                [FullHeal, GainItem PotentPotion 1]
+                [FullHeal, GainItem Potion5Hp 1]
                 ( Conditionally
                     [(HasDiscipline SixthSense, Goto 97), (Always True, Goto 242)]
                 )
@@ -628,7 +624,7 @@ chapters =
         "The soldiers quickly descend from the roof of the hut and grab their spears. They advance towards you and one of them shouts, \"Password, stranger!\"\n"
         ( NoDecision
             ( Conditionally
-                [(HasItem PasswordVol2 1, Goto 111), (Always True, Goto 307)]
+                [(HasFlag passwordVol2, Goto 111), (Always True, Goto 307)]
             )
         )
     ),
@@ -878,7 +874,7 @@ chapters =
       Chapter
         "70"
         "You gasp with pain as the serpent's fangs sink deeply into your arm. Grabbing the snake behind its ugly head, you rip away the thrashing creature and hurl it into the long grass. But your wound is deep and inflamed by venom.\n"
-        (NoDecision (Conditionally [(HasItem CrystalStarPendantVol1 1, Goto 219), (Always True, Goto 44)]))
+        (NoDecision (Conditionally [(HasItem crystalStarPendantB02 1, Goto 219), (Always True, Goto 44)]))
     ),
     ( 71,
       Chapter
@@ -972,7 +968,7 @@ chapters =
         "The knight sheathes his broadsword and ushers you inside the tower. You follow him to a large room at the top of a flight of stone steps, where a log fire blazes warmly.\n\"If you are who you claim to be, you must be in possession of the Seal of Hammerdal. Show it to me,\" he orders.\n"
         ( Decisions
             [ ( "If you wish to show him the Seal, turn to 15.",
-                Conditional (HasItem SealHammerdalVol2 1) (NoDecision (Goto 15))
+                Conditional (HasItem sealHammerdalVol2 1) (NoDecision (Goto 15))
               ),
               ( "If you do not have the Seal or do not wish to show it, turn to 189.",
                 NoDecision (Goto 189)
@@ -1701,7 +1697,7 @@ chapters =
         "You can sense that this guard is a loyal Durenese soldier. If you were to attempt to bribe him, he would be likely to consider it a grave insult and attack you.\n"
         ( Decisions
             [ ( "If you wish to show him the Seal of Hammerdal, turn to 223.",
-                Conditional (HasItem SealHammerdalVol2 1) (NoDecision (Goto 223))
+                Conditional (HasItem sealHammerdalVol2 1) (NoDecision (Goto 223))
               ),
               ( "If you would prefer not to show it, if you do not have it, or if you wish to pretend to be a merchant on your way to Port Bax, turn to 250.",
                 NoDecision (Goto 250)
@@ -1855,7 +1851,7 @@ chapters =
       Chapter
         "165"
         "Placing the gold in your pouch, you remove the Seal and hand it to her. She snatches it and examines it closely. As you leave the shop, you hear her sniggering quietly to herself, and you wonder if you have done the right thing.\n"
-        (NoDecision (Simple [LoseItem SealHammerdalVol2 1] (Goto 186)))
+        (NoDecision (Simple [LoseItem sealHammerdalVol2 1] (Goto 186)))
     ),
     ( 166,
       Chapter
@@ -2188,7 +2184,7 @@ chapters =
         "King Alin IV sits alone in his domed tower, viewing his mountain domain through one of the many portals of tinted glass. You and Lord Axim are formally announced as you enter the chamber, and you respectfully bow to his Majesty. Then, Lord Axim removes the Seal of Hammerdal from your finger and walks over to the King's side. (Remember to erase the Seal of Hammerdal from your Action Chart.) For nearly an hour they talk, their sombre faces reflecting the seriousness of the situation. There is a short pause of silent meditation, and King Alin suddenly rises from his throne and addresses you for the first time.\n\"Alas, the Darklords have woken once more, and once more does Sommerlund come in search of our aid. I had prayed that my reign would be remembered as a time of peace and fulfilment, but in my heart I knew it was to be otherwise.\"\nThe King removes a golden key from the pocket of his white robe and inserts it in a marble dais standing in the centre of the chamber. A gentle humming fills the room, as the stone cover slides back to reveal the hilt of a golden sword.\n\"Take the sword, Lone Wolf. It is foretold that only a true son of Sommerlund can release the powers that lie within its blade.\"\nAs you grasp the glowing hilt, a tingling sensation runs up your arm and radiates throughout your body.\n"
         ( NoDecision
             ( Simple
-                [LoseItem SealHammerdalVol2 1]
+                [LoseItem sealHammerdalVol2 1]
                 ( Conditionally
                     [(HasDiscipline SixthSense, Goto 79), (Always True, Goto 123)]
                 )
@@ -2506,7 +2502,7 @@ chapters =
                 Gold
                 5
                 ( CanTake
-                    SealHammerdalVol2
+                    sealHammerdalVol2
                     1
                     ( Decisions
                         [ ( "If you have the Kai Discipline of Tracking, turn to 182.",
@@ -2555,7 +2551,7 @@ chapters =
                 NoDecision (Goto 68)
               ),
               ( "If you want to show him the Seal of Hammerdal (if you still have it), turn to 223.",
-                Conditional (HasItem SealHammerdalVol2 1) (NoDecision (Goto 223))
+                Conditional (HasItem sealHammerdalVol2 1) (NoDecision (Goto 223))
               )
             ]
         )
@@ -2770,7 +2766,7 @@ chapters =
                 NoDecision (Goto 68)
               ),
               ( "If you choose to reveal the Seal of Hammerdal (if you still possess it), turn to 223.",
-                Conditional (HasItem SealHammerdalVol2 1) (NoDecision (Goto 223))
+                Conditional (HasItem sealHammerdalVol2 1) (NoDecision (Goto 223))
               )
             ]
         )
@@ -2924,7 +2920,7 @@ chapters =
         -- patched
         ( NoDecision
             ( Conditionally
-                [ (HasItem SealHammerdalVol2 1, Goto 202),
+                [ (HasItem sealHammerdalVol2 1, Goto 202),
                   (Always True, Simple [LoseItem Gold 6] (Goto 202))
                 ]
             )
@@ -3250,7 +3246,7 @@ chapters =
             [ ( "If you wish to accept her offer, turn to 165.",
                 NoDecision
                   ( Simple
-                      [LoseItem SealHammerdalVol2 1, GainItem Gold 40]
+                      [LoseItem sealHammerdalVol2 1, GainItem Gold 40]
                       (Goto 165)
                   )
               ),
@@ -3394,7 +3390,7 @@ chapters =
       Chapter
         "302"
         "Stepping over the body, you set about a quick search of these living quarters. You find:\n * Mace\n * Broadsword\n * Quarterstaff\n * Healing Potion (restores 3  *  *  points)\n * Enough Food for 3 Meals\n * Backpack\n * 12 Gold Crowns\nTake whatever items you wish and quickly leave the watchtower in case someone discovers you.\nYou realize that the forest is very thick in this area and you will have to abandon your horse and continue on foot.\n"
-        (canTakeItems [(Backpack, 1), (Gold, 12), (Weapon Mace, 1), (HealingPotion, 1), (Weapon BroadSword, 1), (Weapon Quarterstaff, 1), (Meal, 3)] (NoDecision (Goto 15)))
+        (canTakeItems [(Backpack, 1), (Gold, 12), (Weapon Mace, 1), (Potion4Hp, 1), (Weapon BroadSword, 1), (Weapon Quarterstaff, 1), (Meal, 3)] (NoDecision (Goto 15)))
     ),
     ( 303,
       Chapter
@@ -3448,7 +3444,7 @@ chapters =
                 NoDecision (Goto 57)
               ),
               ( "If you decide to show them the Seal of Hammerdal (if you still have it), turn to 140.",
-                Conditional (HasItem SealHammerdalVol2 1) (NoDecision (Goto 140))
+                Conditional (HasItem sealHammerdalVol2 1) (NoDecision (Goto 140))
               ),
               ( "If you think it is safer to draw your weapon and attack, turn to 282.",
                 NoDecision (Goto 282)
@@ -3687,7 +3683,7 @@ chapters =
         "Two zombies try to block your passage but you cleave them in half with one sweep of the Sommerswerd. You are at the foot of the tower and you can now see a hunchbacked man in crimson robes above you. He wears a tall, curved tokmor, a magician's head-dress. It bears the emblem of a serpent. In his right hand is a black staff.\n"
         ( Decisions
             [ ( "If you have ever been given a Crystal Star Pendant, turn immediately to 113.",
-                Conditional (HasItem CrystalStarPendantVol1 1) (NoDecision (Goto 113))
+                Conditional (HasItem crystalStarPendantB02 1) (NoDecision (Goto 113))
               ),
               ( "If you have the Kai Discipline of Tracking, turn to 204.",
                 Conditional (HasDiscipline Tracking) (NoDecision (Goto 204))

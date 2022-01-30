@@ -42,7 +42,7 @@ selectChar sel ns = matcher m sel
     (cid, cvar) = case ns of
       HasLost c -> (Just c, Nothing)
       HasWon v -> (Nothing, Just v)
-      NewChapter c v _ -> (Just c, Just v)
+      NewChapter c v -> (Just c, Just v)
     inv = cvar ^? _Just . equipment
     end = cvar ^? _Just . curendurance
     m (HasItem i) = maybe False (hasItem i) inv
@@ -57,6 +57,11 @@ selector = try $ do
   case s of
     "hp" -> WithHp <$> lx ordering <*> lx decimal
     "chapter" -> InChapter <$> lx decimal
+    "vordakgem" -> pure (HasItem vordakGem)
+    "ticketvol2" -> pure (HasItem ticketVol2)
+    "goldenkey" -> pure (HasItem goldenKey)
+    "special" -> HasItem . GenSpecial <$> lx decimal
+    "backpack" -> HasItem . GenBackpack <$> lx decimal
     _ | Just itm <- readMaybe s -> pure (HasItem itm)
     _ | Just w <- readMaybe s -> pure (HasItem (Weapon w))
     _ -> fail ("Unknown keyword " ++ s)

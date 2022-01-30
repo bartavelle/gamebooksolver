@@ -14,13 +14,12 @@ series: Game book solver
 module Solver where
 
 import Control.Lens (Bifunctor (bimap))
-import Control.Parallel.Strategies (parMap, rseq)
 import Data.Bifunctor (first)
 import Data.Function (on)
-import Data.List (foldl', maximumBy, sortBy)
+import Data.List (foldl', maximumBy, sortOn)
 import qualified Data.Map.Strict as M
 import qualified Data.MemoCombinators as Memo
-import Data.Ord (comparing)
+import Data.Ord (Down (Down))
 import GHC.Generics (Generic)
 
 type Proba = Rational
@@ -115,7 +114,7 @@ winStates :: Ord state => Solution state description -> Probably state
 winStates s = case s of
   LeafLost -> []
   Leaf _ st -> certain st
-  Node _ _ _ ps -> regroup $ concat $ parMap rseq (\(o, p) -> fmap (* p) <$> winStates o) ps
+  Node _ _ _ ps -> regroup $ concatMap (\(o, p) -> fmap (* p) <$> winStates o) ps
 {-# INLINE winStates #-}
 
 getSolScore :: Solution state description -> Rational
@@ -144,16 +143,16 @@ solve memo maxScore getChoice score = go
             else maximumBy (scoreCompare maxScore `on` _score) scored
       where
         choices = getChoice stt
-        scored = parMap rseq scoreTree choices
+        scored = map scoreTree choices
         scoreTree (cdesc, pstates) =
-          let ptrees = map (\(o, p) -> (go o, p)) pstates
+          let ptrees = map (first go) pstates
            in Node cdesc stt (mkPScore ptrees) ptrees
 {-# INLINEABLE solve #-}
 
 -- This works on the assumption the states are grouped!
 
 mkPScore :: [(Solution state description, Proba)] -> PScore
-mkPScore = go 0 0 . sortBy (flip (comparing snd))
+mkPScore = go 0 0 . sortOn (Down . snd)
   where
     go curproba curscore lst =
       case lst of

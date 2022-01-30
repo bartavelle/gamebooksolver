@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-
 ---
 title: "Solving a gamebook : chapters"
@@ -27,10 +28,13 @@ Clearly not the best part :)
 module LoneWolf.Chapter where
 
 import Control.Lens
+import Data.Aeson
 import Data.Data
 import Data.Data.Lens
+import GHC.Generics (Generic)
 import LoneWolf.Character
 import Solver
+import qualified Data.Function.Memoize as M
 
 {-
 Basic types
@@ -60,7 +64,10 @@ data Chapter = Chapter
     _desc :: String,
     _pchoice :: Decision
   }
-  deriving (Show, Eq)
+  deriving (Show, Eq, Generic)
+
+instance ToJSON Chapter where
+  toJSON = genericToJSON jsonOptions
 
 {-
 Here is what an actual chapter looks like:
@@ -92,6 +99,7 @@ In details, the `Decision` types has the following constructors:
 
 data Decision
   = Decisions [(String, Decision)]
+  | RetrieveEquipment Decision
   | CanTake Item Int Decision
   | Canbuy Item Price Decision
   | Cansell Item Price Decision
@@ -100,12 +108,23 @@ data Decision
   | NoDecision ChapterOutcome
   | EvadeFight Rounds ChapterId FightDetails ChapterOutcome
   | AfterCombat Decision
-  deriving (Show, Eq, Typeable, Data)
+  | RemoveItemFrom Slot Int Decision -- must have that least that many items
+  | LoseItemFrom Slot Int Decision -- always succeeds
+  deriving (Show, Eq, Typeable, Data, Generic)
+
+instance ToJSON Decision where
+  toJSON = genericToJSON jsonOptions
 
 data SpecialChapter
   = Cartwheel
   | Portholes
-  deriving (Show, Eq, Typeable, Data)
+  | B03S088
+  | B05S127
+  | B05S357
+  deriving (Show, Eq, Typeable, Data, Generic)
+
+instance ToJSON SpecialChapter where
+  toJSON = genericToJSON jsonOptions
 
 {-
  * The `Decisions` constructor represents a list of possible choices for the player, with, for each case, a textual and programmatic description.
@@ -161,13 +180,18 @@ A `ChapterOutcome` describe what happens to the player once he has made a decisi
 
 data ChapterOutcome
   = Fight FightDetails ChapterOutcome
+  | -- | lw loss, equal, lw win
+    OneRound FightDetails ChapterOutcome ChapterOutcome ChapterOutcome
   | Randomly [(Proba, ChapterOutcome)]
   | Conditionally [(BoolCond, ChapterOutcome)]
   | Simple [SimpleOutcome] ChapterOutcome
   | Goto ChapterId
   | GameLost
   | GameWon
-  deriving (Show, Eq, Typeable, Data)
+  deriving (Show, Eq, Typeable, Data, Generic)
+
+instance ToJSON ChapterOutcome where
+  toJSON = genericToJSON jsonOptions
 
 data SimpleOutcome
   = DamagePlayer Endurance
@@ -178,7 +202,25 @@ data SimpleOutcome
   | LoseItem Item Int
   | LoseItemKind [Slot]
   | MustEat CanHunt
-  deriving (Show, Eq, Typeable, Data)
+  | StoreEquipment -- drop all equipment, saving it in case we find it again
+  | SetFlag Flag
+  | ClearFlag Flag
+  deriving (Show, Eq, Typeable, Data, Generic)
+
+instance ToJSON SimpleOutcome where
+  toJSON = genericToJSON jsonOptions
+
+hasCombat :: ChapterOutcome -> Bool
+hasCombat o =
+  case o of
+    Fight _ _ -> True
+    OneRound {} -> True
+    Randomly probs -> any (hasCombat . snd) probs
+    Conditionally choices -> any (hasCombat . snd) choices
+    Simple _ o' -> hasCombat o'
+    Goto _ -> False
+    GameLost -> False
+    GameWon -> False
 
 {-
 A constructor of interest is the `MustEat` constructor.
@@ -203,7 +245,10 @@ botherwise :: BoolCond
 botherwise = Always True
 
 data CanHunt = Hunt | NoHunt
-  deriving (Show, Eq, Typeable, Data)
+  deriving (Show, Eq, Typeable, Data, Generic)
+
+instance ToJSON CanHunt where
+  toJSON = genericToJSON jsonOptions
 
 data BoolCond
   = HasDiscipline Discipline
@@ -212,7 +257,12 @@ data BoolCond
   | CAnd BoolCond BoolCond
   | HasItem Item Int
   | Always Bool
-  deriving (Show, Eq, Typeable, Data)
+  | HasEndurance Endurance
+  | HasFlag Flag
+  deriving (Show, Eq, Typeable, Data, Generic)
+
+instance ToJSON BoolCond where
+  toJSON = genericToJSON jsonOptions
 
 (.&&.) :: BoolCond -> BoolCond -> BoolCond
 (.&&.) = CAnd
@@ -234,7 +284,10 @@ data FightDetails = FightDetails
     _fendurance :: Endurance,
     _fightMod :: [FightModifier]
   }
-  deriving (Show, Eq, Typeable, Data)
+  deriving (Show, Eq, Typeable, Data, Generic)
+
+instance ToJSON FightDetails where
+  toJSON = genericToJSON jsonOptions
 
 data FightModifier
   = Undead
@@ -244,10 +297,22 @@ data FightModifier
   | BareHanded
   | FakeFight ChapterId
   | EnemyMindblast
+  | ForceEMindblast -- forced loss of 2 pts/turn
   | PlayerInvulnerable
   | DoubleDamage -- chapter 306
   | Evaded ChapterId
-  deriving (Show, Eq, Typeable, Data)
+  | OnDamage ChapterId
+  | OnNotYetWon ChapterId -- if won in less than that amount of rounds
+  | MultiFight -- set when this is only part of a single chapter fight
+  | EnemyInvulnerable -- rounds during which the enemy is invulnerable
+  | OnLose ChapterId -- if the fight is lost, do not die, but jump
+  | StopFight ChapterId -- immediately stop the fight and jump
+  | DPR Endurance -- damage per round inflicted to the opponent
+  | NoPotion -- can't take a potion for this fight
+  deriving (Show, Eq, Typeable, Data, Generic, Ord)
+
+instance ToJSON FightModifier where
+  toJSON = genericToJSON jsonOptions
 
 {-
  * `Undead`: undead creatures take double damage from the `Sommerswerd`.
@@ -259,7 +324,19 @@ data FightModifier
  * `PlayerInvulnerable` the player cannot be harmed.
  * `DoubleDamage`: happens in [chapter 306](https://www.projectaon.org/en/xhtml/lw/02fotw/sect306.htm), where the player inflicts double damage.
  * `Timed`: the effect only lasts a given number of rounds.
+-}
 
+jsonOptions :: Options
+jsonOptions =
+  defaultOptions
+    { fieldLabelModifier = dropWhile (== '_'),
+      allNullaryToStringTag = True,
+      unwrapUnaryRecords = True,
+      tagSingleConstructors = True,
+      sumEncoding = ObjectWithSingleField
+    }
+
+{-
 Lenses, plates and utilities
 ----------------------------
 -}
@@ -276,6 +353,9 @@ moneyCond price = Conditional (HasItem Gold price) . NoDecision . Simple [LoseIt
 
 outcomePlate :: Traversal' Decision ChapterOutcome
 outcomePlate = biplate
+
+_Outcome :: Traversal' Decision ChapterOutcome
+_Outcome = outcomePlate
 
 {-
 All of these are mainly useful in the `LoneWolf.XML` module.
@@ -303,3 +383,5 @@ I also realized my previous encoding was imperfect in parts (I never realized th
 Next time will have actual code, with a rules interpreter!
 
 -}
+
+M.deriveMemoizable ''FightModifier

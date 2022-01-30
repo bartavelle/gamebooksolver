@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module SolverHashable where
@@ -7,15 +6,14 @@ module SolverHashable where
 
 import Control.Monad (forM_)
 import qualified Control.Monad.ST as ST
-import qualified Data.HashMap.Strict as HM
 import qualified Data.HashTable.Class as STC
 import qualified Data.HashTable.ST.Basic as ST
 import Data.Hashable (Hashable)
-import Data.List
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import SimpleSolver
 import Solver (Choice, Proba, Probably, Score (..))
+import Data.Foldable (maximumBy)
 
 data SearchNode state description
   = OK !(Solution state description)
@@ -35,9 +33,9 @@ solveHST ::
   (state -> [Choice state description]) ->
   (state -> Score) ->
   state ->
-  (Solution state description, HM.HashMap state (Solution state description))
+  (Solution state description, [(state, Solution state description)])
 solveHST getChoice score start = ST.runST $ do
-  visited <- ST.newSized 10000000
+  visited <- ST.newSized 50000000
   let go [] = pure ()
       go (stt : q') = do
         mknown <- ST.lookup visited stt
@@ -86,7 +84,7 @@ solveHST getChoice score start = ST.runST $ do
   s <- ST.lookup visited start
   let filterSolution (_, SS _) = Nothing
       filterSolution (k, OK sl) = Just (k, sl)
-  solmap <- HM.fromList . mapMaybe filterSolution <$> STC.toList visited
+  solmap <- mapMaybe filterSolution <$> STC.toList visited
   case s of
     Nothing -> error "??"
     Just (SS _) -> error ":("

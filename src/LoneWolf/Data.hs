@@ -9,14 +9,18 @@
 module LoneWolf.Data where
 
 import Codec.Serialise (Serialise)
-import Control.Lens (makeLenses, to, view, (^.))
+import Control.Lens
 import Data.Aeson
 import qualified Data.Aeson.Types as A
 import Data.Bifunctor (first)
-import Data.List (intercalate)
+import Data.Char (toLower)
+import Data.List (foldl', intercalate)
 import qualified Data.Map.Strict as M
+import Data.Maybe (fromMaybe)
+import Data.Ratio ((%))
 import qualified Data.Set as S
 import Data.Text (Text)
+import qualified Data.Text as T
 import Data.Tuple (swap)
 import Data.Word (Word64)
 import GHC.Generics (Generic)
@@ -24,11 +28,39 @@ import LoneWolf.Chapter (ChapterId, FightDetails)
 import LoneWolf.Character
 import LoneWolf.Combat (expectedEndurance, winchance)
 import LoneWolf.Rules (NextStep (NewChapter))
+import Numeric (readDec, readHex)
 import Options.Applicative
 import SimpleSolver (ChoppedSolution, choppedScore)
+import Text.Read (readMaybe)
+
+newtype ERatio = ERatio {getERatio :: Rational}
+
+instance FromJSON ERatio where
+  parseJSON = withObject "Ratio" $ \m -> haskellratio m <|> radixed m
+    where
+      haskellratio m = do
+        n <- m .: "numerator"
+        d <- m .: "denominator"
+        pure (ERatio (n % d))
+      radixed m = do
+        radix <- m .: "radix"
+        let readfunction = case (radix :: Int) of
+              10 -> readDec
+              16 -> readHex
+              _ -> error ("invalid base " ++ show radix)
+        let rd s = case readfunction (T.unpack s) of
+              [(n, "")] -> n
+              _ -> error ("Can't parse value " ++ show s)
+        vl <- m .: "value"
+        let (n, d) = case T.splitOn "/" vl of
+              [x] -> (rd x, 1)
+              [n', d'] -> (rd n', rd d')
+              _ -> error ("invalid value " ++ show vl)
+        pure (ERatio (n % d))
 
 data Multistat = Multistat
-  { _msdisciplines :: [Discipline],
+  { _mbook :: Book,
+    _msdisciplines :: [Discipline],
     _variable :: CVarState,
     _msentries :: [MultistatEntry]
   }
@@ -52,18 +84,29 @@ instance ToJSON MultistatEntry
 instance FromJSON MultistatEntry
 
 data CVarState = CVarState
-  { _cvitems :: [(Item, Int)],
+  { _cvitems :: Maybe [(Item, Int)],
     _cvgold :: Int,
-    _cvmeals :: Int
+    _cvflags :: [Flag]
   }
   deriving (Generic, Show, Eq)
 
 instance Serialise CVarState
 
-mkchar :: CharacterConstant -> CVarState -> CharacterVariable
-mkchar cst (CVarState sitems gld cmeals) = mkCharacter (_maxendurance cst) (inventoryFromList allitems)
+mkchar :: Bool -> CharacterConstant -> CVarState -> CharacterVariable
+mkchar autoweapon cst (CVarState sitems gld flgs) = foldl' (\c f -> c & LoneWolf.Character.flag f .~ True) chr flgs
   where
-    allitems = sitems ++ [(Gold, gld), (Meal, cmeals)]
+    chr = mkCharacter (_maxendurance cst) (inventoryFromList allitems)
+    allitems_pre = fromMaybe (defaultItems (_bookid cst)) sitems ++ [(Gold, gld)]
+    allitems
+      | autoweapon && notElem (Weapon Sommerswerd) (map fst allitems_pre) =
+        case specialties of
+          Nothing -> allitems_pre
+          Just w -> (Weapon w, 1) : filter (not . isWeapon . fst) allitems_pre
+      | otherwise = allitems_pre
+    specialties = cst ^? discipline . traverse . _WeaponSkill
+    isWeapon i = case i of
+      Weapon _ -> True
+      _ -> False
 
 instance ToJSON CVarState
 
@@ -72,26 +115,74 @@ instance FromJSON CVarState where
     CVarState
       <$> (o .: "_cvitems" <|> o .: "_items")
       <*> (o .: "_cvgold" <|> o .: "_gold")
-      <*> (o .: "_cvmeals" <|> o .: "_meals")
+      <*> (o .: "_cvflags" <|> o .: "flags")
 
-defaultItems :: [(Item, Int)]
-defaultItems = [(Weapon ShortSword, 1), (SealHammerdalVol2, 1), (Shield, 1)]
+defaultItems :: Book -> [(Item, Int)]
+defaultItems Book01 = [(Weapon ShortSword, 1), (Shield, 1)]
+defaultItems Book02 = [(Weapon ShortSword, 1), (sealHammerdalVol2, 1), (Shield, 1)]
+defaultItems Book03 = [(Weapon Sommerswerd, 1), (Laumspur, 1), (Meal, 1)]
+defaultItems Book04 = [(Weapon Sommerswerd, 1), (Laumspur, 1), (Meal, 4), (Shield, 1)] -- non obvious which is best
+defaultItems Book05 = [(Weapon Sommerswerd, 1), (Laumspur, 1), (Shield, 1), (Meal, 2)]
 
 defaultCVarState :: CVarState
-defaultCVarState = CVarState defaultItems 15 0
+defaultCVarState = CVarState Nothing 15 []
+
+pbook :: Parser Book
+pbook = option (eitherReader bookreader) (long "book" <> help "Book")
+  where
+    bookreader s = case map toLower s of
+      "1" -> Right Book01
+      "01" -> Right Book01
+      "book1" -> Right Book01
+      "book01" -> Right Book01
+      "2" -> Right Book02
+      "02" -> Right Book02
+      "book2" -> Right Book02
+      "book02" -> Right Book02
+      "3" -> Right Book03
+      "03" -> Right Book03
+      "book3" -> Right Book03
+      "book03" -> Right Book03
+      "4" -> Right Book04
+      "04" -> Right Book04
+      "book4" -> Right Book04
+      "book04" -> Right Book04
+      "5" -> Right Book05
+      "05" -> Right Book05
+      "book5" -> Right Book05
+      "book05" -> Right Book05
+      _ -> Left ("Unrecognized book " ++ s)
 
 cvariable :: Parser CVarState
 cvariable =
   CVarState
-    <$> fmap (cdefaultItems . M.toList . M.fromListWith (+) . map (,1)) (many (option auto (long "item" <> short 'i' <> help "Starting items (default items if empty)")))
-    <*> option auto (long "gold" <> help "Starting gold" <> value (_cvgold defaultCVarState))
-    <*> option auto (long "meals" <> help "Starting meals" <> value (_cvmeals defaultCVarState))
+    <$> fmap (cdefaultItems . M.toList . M.fromListWith (+) . map (,1)) (many (option (eitherReader readItem) (long "item" <> short 'i' <> help "Starting items (default items if empty)")))
+    <*> option auto (long "gold" <> help "Starting gold" <> value 15)
+    <*> many (option auto (long "flag" <> help "Starting flags"))
   where
-    cdefaultItems [] = _cvitems defaultCVarState
-    cdefaultItems itms = itms
+    cdefaultItems [] = Nothing
+    cdefaultItems itms = Just itms
 
-eqcvarstate :: CVarState -> CVarState -> Bool
-eqcvarstate (CVarState i1 g1 m1) (CVarState i2 g2 m2) = g1 == g2 && m1 == m2 && M.fromListWith (+) i1 == M.fromListWith (+) i2
+readItem :: String -> Either String Item
+readItem s = case readMaybe s of
+  Just x -> pure x
+  Nothing -> case s of
+    "ropeB04" -> pure ropeB04
+    "FireSphereB04" -> pure fireSphereB04
+    "ropeB05" -> pure ropeB05
+    "FireSphereB05" -> pure fireSphereB05
+    "prismB05" -> pure prismB05
+    "Sommerswerd" -> pure $ Weapon Sommerswerd
+    "onyxmedallion5" -> pure onyxMedallion
+    _ -> case readMaybe s of
+      Just w -> pure (Weapon w)
+      _ -> Left ("Unknown item: " ++ s)
+
+eqcvarstate :: Book -> CVarState -> CVarState -> Bool
+eqcvarstate book (CVarState i1 g1 f1) (CVarState i2 g2 f2) = g1 == g2 && f1 == f2 && M.fromListWith (+) itms1 == M.fromListWith (+) itms2
+  where
+    itms1 = fromMaybe (defaultItems book) i1
+    itms2 = fromMaybe (defaultItems book) i2
 
 makeLenses ''Multistat
 makeLenses ''MultistatEntry
@@ -127,12 +218,18 @@ discnames =
       (SixthSense, "6S"),
       (Tracking, "TR"),
       (Healing, "HL"),
-      (WeaponSkill Spear, "SP"),
-      (WeaponSkill ShortSword, "SS"),
       (MindShield, "MS"),
       (MindBlast, "MB"),
       (AnimalKinship, "AK"),
-      (MindOverMatter, "MO")
+      (MindOverMatter, "MO"),
+      (WeaponSkill Dagger, "DA"),
+      (WeaponSkill Spear, "SP"),
+      (WeaponSkill Mace, "MA"),
+      (WeaponSkill Warhammer, "WH"),
+      (WeaponSkill Sword, "SW"),
+      (WeaponSkill Axe, "AX"),
+      (WeaponSkill Quarterstaff, "QS"),
+      (WeaponSkill ShortSword, "SS")
     ]
 
 rdiscnames :: M.Map String Discipline
@@ -142,13 +239,14 @@ soldumpSummary :: SolutionDump -> Multistat
 soldumpSummary (SolutionDump (SolDesc _ ccst cvar) sol) =
   let nstates = length sol
       firstChapter ns = case ns of
-        NewChapter 1 _ _ -> True
+        NewChapter 1 _ -> True
         _ -> False
       (_, csol) = case filter (firstChapter . fst) sol of
         x : _ -> x
         _ -> error "More than one first chapter?"
       score = choppedScore csol
-   in Multistat (_discipline ccst) cvar [MultistatEntry (_maxendurance ccst) (_combatSkill ccst) (fromRational score) score nstates]
+      book = _bookid ccst
+   in Multistat book (_discipline ccst) cvar [MultistatEntry (_maxendurance ccst) (_combatSkill ccst) (fromRational score) score nstates]
 
 data GoldWin = GoldWin
   { _gold :: Int,
@@ -187,14 +285,14 @@ singletonbag k = Bagged (M.singleton k 1)
 instance ToJSON DecisionStat where
   toJSON (DecisionStat chp cgold cwin cgwin citems) =
     object
-      [ ("hp", enc fromIntegral chp),
-        ("gold", enc fromIntegral cgold),
-        ("winning", enc fromIntegral cwin),
+      [ ("hp", enc (fromIntegral @Endurance @Word64) chp),
+        ("gold", enc id cgold),
+        ("winning", enc (fromIntegral @Endurance @Word64) cwin),
         ("goldwin", enc fromGW cgwin),
-        ("items", enc getInventory citems)
+        ("items", enc items citems)
       ]
     where
-      enc :: (k1 -> Word64) -> Bagged k1 -> Value
+      enc :: (ToJSONKey x, Ord x) => (k1 -> x) -> Bagged k1 -> Value
       enc f = toJSON . M.fromList . map (first f) . M.toList . getBag
 
 instance FromJSON DecisionStat where

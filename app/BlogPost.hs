@@ -8,12 +8,11 @@
 module Main where
 
 import Control.Lens
-import Control.Monad (forM_, guard, unless)
+import Control.Monad (forM_, guard)
 import Data.Aeson (eitherDecodeFileStrict)
 import Data.Bifunctor (first)
 import Data.List (isSuffixOf, sortOn)
 import qualified Data.Map.Strict as M
-import qualified Data.Set as S
 import Data.String (fromString)
 import Data.Text (Text)
 import Debug.Trace (traceM)
@@ -26,18 +25,23 @@ import Options.Applicative
 import System.Directory (getDirectoryContents)
 import Text.Printf (printf)
 
-data Opts
+data Opts = Opts Book Mode
+
+data Mode
   = Generalstats CVarState
   | Heatmap CVarState
   | Histo FilePath
 
-options :: Parser Opts
-options =
+mode :: Parser Mode
+mode =
   subparser
     ( command "general" (info (Generalstats <$> cvariable) (progDesc "General stats"))
         <> command "heatmap" (info (Heatmap <$> cvariable) (progDesc "Skill/endurance heatmap"))
         <> command "histo" (info (Histo <$> strArgument (metavar "PATH")) (progDesc "Histograms from stats"))
     )
+
+options :: Parser Opts
+options = Opts <$> pbook <*> mode
 
 programOpts :: ParserInfo Opts
 programOpts =
@@ -62,24 +66,25 @@ dpairs = disciplines >>= \d1 -> disciplines >>= \d2 -> (d1, d2) <$ guard (d1 < d
 loadContent :: FilePath -> IO (Either String Multistat)
 loadContent = eitherDecodeFileStrict
 
-loadData :: CVarState -> IO [Multistat]
-loadData cvar = do
-  allfiles <- map ("data/" <>) . filter (isSuffixOf ".json") <$> getDirectoryContents "data"
+loadData :: Book -> CVarState -> IO [Multistat]
+loadData book cvar = do
+  let bookdir = case book of
+        Book01 -> "data/B01/"
+        Book02 -> "data/B02/"
+  allfiles <- map (bookdir <>) . filter (isSuffixOf ".json") <$> getDirectoryContents bookdir
   allcontent <- mapM loadContent allfiles
   mapM_ traceM (allcontent ^.. traverse . _Left)
-  let keepitems m@(Multistat _ rcvar _) =
-        let nrcvar = rcvar & cvitems %~ \i -> if null i then defaultItems else i
-         in (m & variable .~ nrcvar) <$ guard (eqcvarstate nrcvar cvar)
+  let keepitems m@(Multistat bk _ rcvar _) = (m & variable .~ rcvar) <$ guard (bk == book && eqcvarstate book rcvar cvar)
   pure $! ((allcontent ^.. traverse . _Right) >>= keepitems)
 
-type MSMap = M.Map (Discipline, Discipline) (M.Map (Endurance, CombatSkill) (Rational, Int))
+type MSMap = M.Map (Book, Discipline, Discipline) (M.Map (Endurance, CombatSkill) (Rational, Int))
 
 percent :: Double -> String
 percent = printf "%.2f%%" . (* 100)
 
 msmap :: [Multistat] -> MSMap
 msmap lst = M.fromListWith M.union $ do
-  Multistat discs _ entries <- lst
+  Multistat book discs _ entries <- lst
   let emap = M.fromList $ do
         MultistatEntry e c _ score stts <- entries
         pure ((e, c), (score, stts))
@@ -87,7 +92,7 @@ msmap lst = M.fromListWith M.union $ do
         [d1, d2] -> (d1, d2)
         [d1] -> (d1, d1)
         _ -> error ("Invalid amount of disciplines: " ++ show discs)
-  mkey <- [(k1, k2), (k2, k1)]
+  mkey <- [(book, k1, k2), (book, k2, k1)]
   pure (mkey, emap)
 
 rowStyleRG :: TermRaw Text arg => Double -> arg
@@ -128,13 +133,13 @@ disciplineMap rowStyle scorer =
   let sdiscs = sortOn (\d -> fmap (negate . snd) (scorer d d)) disciplines
    in heatmap rowStyle sdiscs sdiscs showDisc showDisc scorer
 
-stateTable :: MSMap -> Html ()
-stateTable cmsmap = disciplineMap rowStyleRG scorer
+stateTable :: Book -> MSMap -> Html ()
+stateTable book cmsmap = disciplineMap rowStyleRG scorer
   where
     scorer d1 d2 = do
       let rd1 = min d1 d2
           rd2 = max d1 d2
-      stts <- M.lookup (rd1, rd2) maxmap
+      stts <- M.lookup (book, rd1, rd2) maxmap
       pure (show stts, sratio stts)
     maxmap = fmap extractMax cmsmap
     extractMax mp = maximum $ do
@@ -145,45 +150,34 @@ stateTable cmsmap = disciplineMap rowStyleRG scorer
     sratio :: Int -> Double
     sratio st = fromIntegral (maxstate - st) / fromIntegral (maxstate - minstate)
 
-scoreTableMax :: MSMap -> Html ()
-scoreTableMax cmsmap = disciplineMap rowStyleGreen scorer
-  where
-    maxmap = fmap extractMax cmsmap
-    extractMax mp = maximum $ do
-      (_, (score, _)) <- M.toList mp
-      pure (fromRational score)
-    scorer d1 d2 = do
-      let rd1 = min d1 d2
-          rd2 = max d1 d2
-      score <- M.lookup (rd1, rd2) maxmap
-      pure (percent score, score)
-
-scoreTableAvg :: MSMap -> Html ()
-scoreTableAvg cmsmap = disciplineMap rowStyleGreen scorer
+scoreTableAt :: (Endurance, CombatSkill) -> Book -> MSMap -> Html ()
+scoreTableAt stats book cmsmap = disciplineMap rowStyleGreen scorer
   where
     maxmap = M.mapWithKey extractMax cmsmap
-    extractMax k mp = case M.lookup (25, 15) mp of
+    extractMax k mp = case M.lookup stats mp of
       Nothing -> error ("uncalculated for key " ++ show k)
       Just (r, _) -> fromRational r :: Double
     scorer d1 d2 = do
       let rd1 = min d1 d2
           rd2 = max d1 d2
-      score <- M.lookup (rd1, rd2) maxmap
+      score <- M.lookup (book, rd1, rd2) maxmap
       pure (percent score, score)
 
-post1 :: CVarState -> IO ()
-post1 cstt = do
-  content <- loadData cstt
-  let mcontent = msmap content
-  print (stateTable mcontent)
-  print (scoreTableMax mcontent)
-  print (scoreTableAvg mcontent)
 
-post2 :: CVarState -> IO ()
-post2 cstt = do
-  content <- loadData cstt
+post1 :: Book -> CVarState -> IO ()
+post1 book cstt = do
+  content <- loadData book cstt
   let mcontent = msmap content
-      best = mcontent M.! (MindBlast, AnimalKinship)
+  print (stateTable book mcontent)
+  print (scoreTableAt (29,19) book mcontent)
+  print (scoreTableAt (25,15) book mcontent)
+  print (scoreTableAt (20,10) book mcontent)
+
+post2 :: Book -> CVarState -> IO ()
+post2 book cstt = do
+  content <- loadData book cstt
+  let mcontent = msmap content
+      best = mcontent M.! (book, MindBlast, AnimalKinship)
   print (skemap (\e s -> fmap (\(score, _) -> (percent (fromRational score), fromRational score)) (M.lookup (e, s) best)))
 
 data P x = P x x deriving (Show, Eq, Ord, Functor, Foldable)
@@ -201,8 +195,8 @@ histo fp = do
 
 main :: IO ()
 main = do
-  mode <- execParser programOpts
-  case mode of
-    Generalstats cv -> post1 cv
-    Heatmap cv -> post2 cv
+  Opts book mde <- execParser programOpts
+  case mde of
+    Generalstats cv -> post1 book cv
+    Heatmap cv -> post2 book cv
     Histo fp -> histo fp

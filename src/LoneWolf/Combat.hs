@@ -1,31 +1,34 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module LoneWolf.Combat (fight, getRatio, Escaped (..), winchance, expectedEndurance) where
+module LoneWolf.Combat (fight, getRatio, Escaped (..), winchance, expectedEndurance, fightRound) where
 
 import Control.Lens
+import qualified Data.Function.Memoize as M
 import Data.Maybe (mapMaybe)
 import qualified Data.MemoCombinators as Memo
+import Data.Monoid (Sum (Sum, getSum))
+import qualified Data.Set as S
 import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.CombatChart (hits)
 import Solver (Probably, certain, regroup)
 
-fightRound :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Endurance, Endurance)
-fightRound cconstant cvariable fdetails = regroup $ do
-  let ratio = getRatio cconstant cvariable fdetails
-      modifiers = map getTimed (fdetails ^. fightMod)
-  (odmgOpponent, odmgLoneWolf) <- hits ratio
-  let dmgLoneWolf
-        | PlayerInvulnerable `elem` modifiers = 0
-        | EnemyMindblast `elem` modifiers && hasn't (discipline . traverse . _MindShield) cconstant = odmgLoneWolf + 2
-        | otherwise = odmgLoneWolf
-      dmgOpponent
-        | DoubleDamage `elem` modifiers = odmgOpponent * 2
-        | hasItem (Weapon Sommerswerd) (cvariable ^. equipment) && Undead `elem` modifiers = odmgOpponent * 2
-        | otherwise = odmgOpponent
-      changeHp dmg curhp = max 0 (curhp - dmg)
-  return ((changeHp dmgLoneWolf (cvariable ^. curendurance), changeHp dmgOpponent (fdetails ^. fendurance)), 1 / 10)
+data CombatInfo = CombatInfo
+  { _skilldiff :: CombatSkill,
+    _specialization :: Maybe Weapon,
+    _weapons :: [Weapon],
+    _modifiers :: [FightModifier],
+    _discs :: [Discipline],
+    _cflags :: [Flag],
+    _shield :: Bool,
+    _silverhelm :: Bool,
+    _lwendurance :: Endurance,
+    _opendurance :: Endurance
+  }
+
+M.deriveMemoizable ''CombatInfo
 
 decrementTimed :: FightModifier -> Maybe FightModifier
 decrementTimed m = case m of
@@ -34,6 +37,8 @@ decrementTimed m = case m of
       then Just (Timed (n - 1) x)
       else case x of
         Evaded _ -> Just x
+        OnNotYetWon _ -> Just x
+        ForceEMindblast -> Just x
         _ -> Nothing
   _ -> Just m
 
@@ -48,56 +53,28 @@ data FightType
   | Mindblasted
   deriving (Show, Eq, Enum, Bounded)
 
-data Escaped a = HasEscaped Int a | NotEscaped a
+data Escaped a = HasEscaped Int a | NotEscaped a | LateWin Int a | Lost ChapterId | Stopped ChapterId a
   deriving (Functor, Eq, Ord, Show)
-
-fight :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Escaped Endurance)
-fight cconstant cvariable fdetails
-  | Just ecid <- fdetails ^? fightMod . traverse . _Evaded = regroup $ do
-    ((hpLW, _), p) <- fightRound cconstant cvariable fdetails
-    pure $
-      if hpLW <= 0
-        then (NotEscaped 0, p)
-        else (HasEscaped ecid hpLW, p)
-  | has (fightMod . traverse . _Timed) fdetails = regroup $ do
-    ((hpLW, hpOpponent), p) <- fightRound cconstant cvariable fdetails
-    let outcome
-          | hpLW <= 0 = return (NotEscaped 0, p)
-          | hpOpponent <= 0 = return (NotEscaped hpLW, p)
-          | otherwise =
-            let nvariable = cvariable & curendurance .~ hpLW
-                ndetails =
-                  fdetails & fendurance .~ hpOpponent
-                    & fightMod %~ mapMaybe decrementTimed
-             in fmap (* p) <$> fight cconstant nvariable ndetails
-    outcome
-  | otherwise = regroup $ do
-    let ratio = getRatio cconstant cvariable fdetails
-        modifiers = fdetails ^. fightMod
-        ohp =
-          if DoubleDamage `elem` modifiers || (hasItem (Weapon Sommerswerd) (cvariable ^. equipment) && Undead `elem` modifiers)
-            then (fdetails ^. fendurance + 1) `div` 2
-            else fdetails ^. fendurance
-        ftype
-          | PlayerInvulnerable `elem` modifiers = error "PlayerInvulnerable is only a timed effect"
-          | EnemyMindblast `elem` modifiers && hasn't (discipline . traverse . _MindShield) cconstant = fightMindBlastedM
-          | otherwise = fightVanillaM
-    ((php, _), p) <- ftype ratio (cvariable ^. curendurance) ohp
-    return (NotEscaped (max 0 php), p)
 
 winchance :: CharacterConstant -> CharacterVariable -> FightDetails -> Rational
 winchance cc cv fd = sum $ do
   (end, p) <- fight cc cv fd
   pure $ case end of
-    HasEscaped _ _ -> p
     NotEscaped hp -> if hp > 0 then p else 0
+    HasEscaped _ _ -> p
+    LateWin _ _ -> p
+    Stopped _ hp -> if hp > 0 then p else 0
+    Lost _ -> 0
 
 expectedEndurance :: CharacterConstant -> CharacterVariable -> FightDetails -> Rational
 expectedEndurance cc cv fd = sum $ do
   (end, p) <- fight cc cv fd
   pure $ case end of
     HasEscaped _ hp -> fromIntegral hp * p
+    LateWin _ hp -> fromIntegral hp * p
     NotEscaped hp -> fromIntegral hp * p
+    Stopped _ hp -> fromIntegral hp * p
+    Lost _ -> 0
 
 fightVanillaM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
 fightVanillaM = Memo.memo3 Memo.bits Memo.bits Memo.bits fightVanilla
@@ -119,31 +96,142 @@ fightMindBlasted ratio php ohp
     (odmg, pdmg) <- hits ratio
     fmap (/ 10) <$> fightMindBlastedM ratio (php - pdmg - 2) (ohp - odmg)
 
-getRatio :: CharacterConstant -> CharacterVariable -> FightDetails -> CombatSkill
-getRatio cconstant cvariable fdetails =
-  baseSkill + weaponModifier + mindblastBonus + combatBonus + shieldBonus
-    - fdetails ^. fcombatSkill
+cmodifiers :: Lens' CombatInfo [FightModifier]
+cmodifiers f cinfo = (\m' -> cinfo {_modifiers = m'}) <$> f (_modifiers cinfo)
+
+lwendurance :: Lens' CombatInfo Endurance
+lwendurance f cinfo = (\m' -> cinfo {_lwendurance = m'}) <$> f (_lwendurance cinfo)
+
+opendurance :: Lens' CombatInfo Endurance
+opendurance f cinfo = (\m' -> cinfo {_opendurance = m'}) <$> f (_opendurance cinfo)
+
+relevantDiscs :: S.Set Discipline
+relevantDiscs = S.fromList [MindBlast, MindShield]
+
+relevantFlags :: S.Set Flag
+relevantFlags = S.fromList [LimbDeath, PermanentSkillReduction, PermanentSkillReduction2, StrengthPotionActive]
+
+mkCombatInfo :: CharacterConstant -> CharacterVariable -> FightDetails -> CombatInfo
+mkCombatInfo cconstant cvariable fdetails = CombatInfo skill specialization weapons modifiers discs cflags shield silverhelm nlwendurance nopendurance
   where
-    baseSkill = cconstant ^. combatSkill
-    combatBonus = sumOf (traverse . _CombatBonus) modifiers
-    modifiers = map getTimed (fdetails ^. fightMod)
+    skill = cconstant ^. combatSkill - fdetails ^. fcombatSkill
+    specialization = cconstant ^? discipline . traverse . _WeaponSkill
     weapons = getWeapons (cvariable ^. equipment)
-    disciplines = cconstant ^. discipline
+    modifiers = S.toList $ S.fromList (fdetails ^. fightMod)
+    discs = S.toList $ S.fromList (cconstant ^. discipline) `S.intersection` relevantDiscs
+    cflags = S.toList $ S.fromList (allFlags cvariable) `S.intersection` relevantFlags
+    shield = hasItem Shield (cvariable ^. equipment)
+    silverhelm = hasItem SilverHelm (cvariable ^. equipment)
+    nlwendurance = cvariable ^. curendurance
+    nopendurance = fdetails ^. fendurance
+
+getRatio' :: CombatInfo -> CombatSkill
+getRatio' cinfo =
+  _skilldiff cinfo
+    + weaponModifier
+    + mindblastBonus
+    + combatBonus
+    + shieldBonus
+    + onflag PermanentSkillReduction (-1)
+    + onflag PermanentSkillReduction2 (-2)
+    + onflag StrengthPotionActive 2
+    + onflag LimbDeath (-3)
+    + helmBonus
+  where
+    flgs = _cflags cinfo
+    onflag f r = if f `elem` flgs then r else 0
+    combatBonus = sumOf (traverse . _CombatBonus) modifiers
+    modifiers = map getTimed (_modifiers cinfo)
+    weapons = _weapons cinfo
+    disciplines = _discs cinfo
+    wskill = _specialization cinfo
     weaponModifier
       | BareHanded `elem` modifiers = -4
       | null weapons = -4
+      | Sommerswerd `elem` weapons =
+        if wskill `elem` [Just ShortSword, Just BroadSword, Just Sword]
+          then 10
+          else 8
       | MagicSpear `elem` weapons =
-        if WeaponSkill Spear `elem` disciplines
+        if wskill == Just Spear
           then 2
           else 0
-      | Sommerswerd `elem` weapons =
-        if any ((`elem` disciplines) . WeaponSkill) [ShortSword, BroadSword, Sword]
-          then 12
-          else 10
-      | any ((`elem` disciplines) . WeaponSkill) weapons = 2
+      | Just sk <- wskill, sk `elem` weapons = 2
       | otherwise = 0
     mindblastBonus =
       if MindBlast `elem` disciplines && notElem MindblastImmune modifiers
         then 2
         else 0
-    shieldBonus = if hasItem Shield (cvariable ^. equipment) then 2 else 0
+    shieldBonus = if _shield cinfo && LimbDeath `notElem` flgs then 2 else 0
+    helmBonus = if _silverhelm cinfo then 2 else 0
+
+fightRound' :: CombatInfo -> Probably (Endurance, Endurance)
+fightRound' cinfo = regroup $ do
+  let ratio = getRatio' cinfo
+      modifiers = map getTimed (_modifiers cinfo)
+  (rdmgOpponent, odmgLoneWolf) <- hits ratio
+  let odmgOpponent = rdmgOpponent + getSum (cinfo ^. cmodifiers . folded . _DPR . to Sum)
+  let dmgLoneWolf
+        | PlayerInvulnerable `elem` modifiers = 0
+        | (EnemyMindblast `elem` modifiers && MindShield `notElem` _discs cinfo) || ForceEMindblast `elem` modifiers = odmgLoneWolf + 2
+        | otherwise = odmgLoneWolf
+      dmgOpponent
+        | EnemyInvulnerable `elem` modifiers = 0
+        | DoubleDamage `elem` modifiers = odmgOpponent * 2
+        | Sommerswerd `elem` _weapons cinfo && Undead `elem` modifiers = odmgOpponent * 2
+        | otherwise = odmgOpponent
+      changeHp dmg curhp = max 0 (curhp - dmg)
+  return ((changeHp dmgLoneWolf (_lwendurance cinfo), changeHp dmgOpponent (_opendurance cinfo)), 1 / 10)
+
+fightM :: CombatInfo -> Probably (Escaped Endurance)
+fightM = M.memoize fight'
+
+fight' :: CombatInfo -> Probably (Escaped Endurance)
+fight' cinfo
+  | Just ecid <- cinfo ^? cmodifiers . folded . _StopFight = certain (Stopped ecid (cinfo ^. lwendurance))
+  | Just ecid <- cinfo ^? cmodifiers . folded . _Evaded = regroup $ do
+    ((hpLW, _), p) <- fightRound' cinfo
+    pure $
+      if hpLW <= 0
+        then (lost, p)
+        else (HasEscaped ecid hpLW, p)
+  -- we can't run the optimized combat if there are still timed effects, or DPR effects
+  | has (cmodifiers . folded . _Timed) cinfo || has (cmodifiers . folded . _DPR) cinfo = regroup $ do
+    ((hpLW, hpOpponent), p) <- fightRound' cinfo
+    let outcome
+          | hpLW <= 0 = return (lost, p)
+          | hpOpponent <= 0 = return (NotEscaped hpLW, p)
+          | otherwise =
+            let ncinfo = cinfo & lwendurance .~ hpLW & opendurance .~ hpOpponent & cmodifiers %~ mapMaybe decrementTimed
+             in fmap (* p) <$> fight' ncinfo
+    outcome
+  | otherwise = regroup $ do
+    let ratio = getRatio' cinfo
+        modifiers = cinfo ^. cmodifiers
+        ohp =
+          if DoubleDamage `elem` modifiers || (Sommerswerd `elem` _weapons cinfo && Undead `elem` modifiers)
+            then (cinfo ^. opendurance + 1) `div` 2
+            else cinfo ^. opendurance
+        ftype
+          | PlayerInvulnerable `elem` modifiers = error "PlayerInvulnerable is only a timed effect"
+          | (EnemyMindblast `elem` modifiers && MindShield `notElem` _discs cinfo) || ForceEMindblast `elem` modifiers = fightMindBlastedM
+          | otherwise = fightVanillaM
+    ((php, _), p) <- ftype ratio (cinfo ^. lwendurance) ohp
+    let constr = maybe NotEscaped LateWin (cinfo ^? cmodifiers . folded . _OnNotYetWon)
+    pure $
+      if php <= 0
+        then (lost, p)
+        else (constr (max 0 php), p)
+  where
+    lost = case cinfo ^? cmodifiers . folded . _OnLose of
+      Nothing -> NotEscaped 0
+      Just tid -> Lost tid
+
+fight :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Escaped Endurance)
+fight cconstant cvariable fdetails = fightM (mkCombatInfo cconstant cvariable fdetails)
+
+getRatio :: CharacterConstant -> CharacterVariable -> FightDetails -> CombatSkill
+getRatio cconstant cvariable fdetails = getRatio' (mkCombatInfo cconstant cvariable fdetails)
+
+fightRound :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Endurance, Endurance)
+fightRound cconstant cvariable fdetails = fightRound' (mkCombatInfo cconstant cvariable fdetails)

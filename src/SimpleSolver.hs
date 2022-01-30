@@ -7,7 +7,6 @@ module SimpleSolver where
 
 import Codec.Serialise (Serialise)
 import Control.Lens (Bifunctor (bimap))
-import Control.Parallel.Strategies (NFData, parMap, rseq)
 import Data.Aeson (FromJSON (..), Options (..), SumEncoding (ObjectWithSingleField), ToJSON (..), defaultOptions, genericParseJSON, genericToEncoding, genericToJSON)
 import Data.Bifunctor (first)
 import Data.List (foldl', maximumBy)
@@ -16,6 +15,7 @@ import qualified Data.MemoCombinators as Memo
 import Data.Ord (comparing)
 import GHC.Generics (Generic)
 import Solver (Choice, Probably, Score (..), SolMap, certain, mapProbably, regroup)
+import Control.DeepSeq (NFData)
 
 data Solution state description
   = Node
@@ -35,9 +35,9 @@ data ChoppedSolution state
       { _cscore :: Rational,
         _coutcome :: Probably (Maybe state)
       }
-  | CJump Rational state
+  | CJump !Rational state
   | CLeafLost
-  | CLeaf Rational
+  | CLeaf !Rational
   deriving (Show, Eq, Generic)
 
 choppedScore :: ChoppedSolution state -> Rational
@@ -83,19 +83,20 @@ toSolMap loststate = go 1 M.empty
   where
     go :: Rational -> SolMap state -> Solution state description -> SolMap state
     go curp mp n = case n of
-      LeafLost -> insertTuple loststate (curp, []) mp
-      Leaf r stt -> insertTuple stt (r * curp, []) mp
+      LeafLost -> insertTuple loststate (curp, mempty) mp
+      Leaf r stt -> insertTuple stt (r * curp, mempty) mp
       Node _ stt sc outcome ->
         let outcomemap = foldl' (\cmp (sol, p) -> go (curp * p) cmp sol) mp outcome
          in insertTuple stt (sc * curp, map (bimap extractState (* curp)) outcome) outcomemap
     insertTuple :: state -> (Rational, Probably state) -> SolMap state -> SolMap state
     insertTuple = M.insertWith combine
-    combine (np, nps) (op, ops) = (np + op, regroup (nps ++ ops))
+    combine (np, nps) (op, ops) = (np + op, regroup (nps <> ops))
     extractState :: Solution state description -> state
     extractState s = case s of
       LeafLost -> loststate
       Leaf _ stt -> stt
       Node _ stt _ _ -> stt
+{-# INLINEABLE toSolMap #-}
 
 lmapSol :: (s1 -> s2) -> Solution s1 desc -> Solution s2 desc
 lmapSol f s =
@@ -112,9 +113,9 @@ getSolScore s = case s of
 
 winStates :: Ord state => Solution state description -> Probably state
 winStates s = case s of
-  LeafLost -> []
+  LeafLost -> mempty
   Leaf _ st -> certain st
-  Node _ _ _ ps -> regroup $ concat $ parMap rseq (\(o, p) -> fmap (* p) <$> winStates o) ps
+  Node _ _ _ ps -> regroup $ concatMap (\(o, p) -> fmap (* p) <$> winStates o) ps
 
 solve ::
   Memo.Memo state ->
@@ -134,7 +135,8 @@ solve memo getChoice score = go
             else maximumBy (comparing getSolScore) scored
       where
         choices = getChoice stt
-        scored = parMap rseq scoreTree choices
+        scored = fmap scoreTree choices
         scoreTree (cdesc, pstates) =
-          let ptrees = map (first go) pstates
-           in Node cdesc stt (sum (map (\(o, p) -> p * getSolScore o) ptrees)) ptrees
+          let ptrees = fmap (first go) pstates
+           in Node cdesc stt (sum (fmap (\(o, p) -> p * getSolScore o) ptrees)) ptrees
+{-# INLINEABLE solve #-}
