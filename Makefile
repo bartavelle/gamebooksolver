@@ -1,20 +1,18 @@
-SDISCS = CA HU 6S TR HL MS MB AK MO
+DISCS1 = CA HU 6S TR HL MS MB AK MO
 DISCS2 = CA.HU CA.TR CA.HL CA.SP CA.MS CA.MB CA.MO HU.TR HU.SP HU.MS HU.MB HU.MO 6S.CA 6S.HU 6S.TR 6S.HL 6S.SP 6S.MS 6S.MB 6S.AK 6S.MO HL.HU HL.TR HL.SP HL.MS HL.MB HL.MO SP.TR MS.TR MS.SP MB.TR MB.SP MB.MS MB.MO AK.CA AK.HU AK.TR AK.HL AK.SP AK.MS AK.MB AK.MO MO.TR MO.SP MO.MS
 
 TARGETSLOWB03simple = $(patsubst %, data/B03/2010SW.%.cbor, $(DISCS2))
 TARGETSLOWB03 = $(TARGETSLOWB03simple)
 
-TARGETSLOWB04simple = $(patsubst %, data/B04/2010SW.%.cbor, $(SDISCS))
-TARGETSLOWB04sw = $(patsubst %, data/B04/2010SW.%-Sword-Laumspur-Shield-Meal-Meal-Meal-Meal.cbor, $(SDISCS))
-TARGETSLOWB04helm = $(patsubst %, data/B04/2010SW.%-Sommerswerd-SilverHelm-Laumspur-Shield-Meal-Meal-Meal-Meal.cbor, $(SDISCS))
-TARGETSLOWB04helmsw = $(patsubst %, data/B04/2010SW.%-Sword-SilverHelm-Laumspur-Shield-Meal-Meal-Meal-Meal.cbor, $(SDISCS))
+TARGETSLOWB04simple = $(patsubst %, data/B04/2010SW.%.cbor, $(DISCS2))
+TARGETSLOWB04sw = $(patsubst %, data/B04/2010SW.%-Sword-Laumspur-Shield-Meal-Meal-Meal-Meal.cbor, $(DISCS2))
+TARGETSLOWB04helm = $(patsubst %, data/B04/2010SW.%-Sommerswerd-SilverHelm-Laumspur-Shield-Meal-Meal-Meal-Meal.cbor, $(DISCS2))
+TARGETSLOWB04helmsw = $(patsubst %, data/B04/2010SW.%-Sword-SilverHelm-Laumspur-Shield-Meal-Meal-Meal-Meal.cbor, $(DISCS2))
 TARGETSLOWB04 = $(TARGETSLOWB04simple) $(TARGETSLOWB04sw) $(TARGETSLOWB04helm) $(TARGETSLOWB04helmsw)
 
-TARGETSLOWB05 = data/B05/2010SW.cbor data/B05/2010SW-FLGFoughtElix.cbor data/B05/2010SW-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor
+TARGETSLOWB05 = data/B05/2010SW.CA.cbor data/B05/2010SW.HU.cbor data/B05/2010SW.6S.cbor data/B05/2010SW.TR.cbor data/B05/2010SW.HL.cbor data/B05/2010SW.MS.cbor data/B05/2010SW.MB.cbor data/B05/2010SW.AK.cbor data/B05/2010SW.MO.cbor data/B05/2010SW.CA-FLGFoughtElix.cbor data/B05/2010SW.HU-FLGFoughtElix.cbor data/B05/2010SW.6S-FLGFoughtElix.cbor data/B05/2010SW.TR-FLGFoughtElix.cbor data/B05/2010SW.HL-FLGFoughtElix.cbor data/B05/2010SW.MS-FLGFoughtElix.cbor data/B05/2010SW.MB-FLGFoughtElix.cbor data/B05/2010SW.AK-FLGFoughtElix.cbor data/B05/2010SW.MO-FLGFoughtElix.cbor data/B05/2010SW.CA-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.HU-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.6S-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.TR-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.HL-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.MS-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.MB-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.AK-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.MO-Sword-Meal-Meal-Shield-Laumspur.cbor data/B05/2010SW.CA-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.HU-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.6S-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.TR-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.HL-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.MS-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.MB-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.AK-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.MO-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix.cbor data/B05/2010SW.CA-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.HU-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.6S-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.TR-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.HL-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.MS-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.MB-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.AK-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.MO-Sommerswerd-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.CA-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.HU-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.6S-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.TR-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.HL-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.MS-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.MB-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.AK-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.MO-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.CA-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.HU-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.6S-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.TR-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.HL-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.MS-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.MB-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.AK-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.MO-Sword-Meal-Meal-Shield-Laumspur-SilverHelm.cbor data/B05/2010SW.CA-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.HU-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.6S-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.TR-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.HL-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.MS-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.MB-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.AK-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor data/B05/2010SW.MO-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-SilverHelm.cbor
 
-ALLCOMBS = 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2110 2111 2112 2113 2114 2115 2116 2117 2118 2119 2210 2211 2212 2213 2214 2215 2216 2217 2218 2219 2310 2311 2312 2313 2314 2315 2316 2317 2318 2319 2410 2411 2412 2413 2414 2415 2416 2417 2418 2419 2510 2511 2512 2513 2514 2515 2516 2517 2518 2519 2610 2611 2612 2613 2614 2615 2616 2617 2618 2619 2710 2711 2712 2713 2714 2715 2716 2717 2718 2719 2810 2811 2812 2813 2814 2815 2816 2817 2818 2819 2910 2911 2912 2913 2914 2915 2916 2917 2918 2919
-
-.PHONY: all low01 medium01 high01 book01 low05 book05 low05c
+.PHONY: all low01 medium01 high01 book01 low05 book05 low04 book04 
 
 all: book05 book04
 	echo ok
@@ -43,12 +41,16 @@ low05: data/B05 $(patsubst %, %.svg, $(TARGETSLOWB05))
 
 book04: low04c low04j low04d low04
 
-low04c: low05c data/B04 $(TARGETSLOWB04) data/B04/2010SW.6S-Sword-Laumspur-Shield-Meal-Meal-Meal-Meal-FireSphereB04.cbor data/B04/2010SW.6S-Sword-Laumspur-Shield-Meal-Meal-Meal-Meal-ropeB04.cbor data/B04/2010SW.6Sg10.cbor data/B04/2010SW.6Sg50.cbor
+# data/B04/2010SW.6S-Sword-Laumspur-Shield-Meal-Meal-Meal-Meal-FireSphereB04.cbor
+# data/B04/2010SW.6S-Sword-Laumspur-Shield-Meal-Meal-Meal-Meal-ropeB04.cbor
+# data/B04/2010SW.6Sg10.cbor
+# data/B04/2010SW.6Sg50.cbor
+low04c: low05j data/B04 $(TARGETSLOWB04)
 low04j: data/B04 $(patsubst %, %.jot, $(TARGETSLOWB04))
 low04d: data/B04 $(patsubst %, %.dot, $(TARGETSLOWB04))
 low04: data/B04 $(patsubst %, %.svg, $(TARGETSLOWB04))
 
-low03c: low04c data/B03 $(TARGETSLOWB03)
+low03c: low04j data/B03 $(TARGETSLOWB03)
 low03j: data/B03 $(patsubst %, %.jot, $(TARGETSLOWB03))
 low03d: data/B03 $(patsubst %, %.dot, $(TARGETSLOWB03))
 low03: data/B03 $(patsubst %, %.svg, $(TARGETSLOWB03))
@@ -58,7 +60,7 @@ data/%.cbor:
 	time python3 buildsol.py $@
 
 data/%.cbor.jot: data/%.cbor gamebooksolver-explorer
-	time ./gamebooksolver-explorer/target/release/gamebooksolver-explorer --solpath $< > $@
+	time ./gamebooksolver-explorer/target/release/gamebooksolver-explorer --solpath $< --alternate > $@
 
 data/%.dot: data/%.jot
 	./dist/gamebooksolver-solvebook dot $< > $@

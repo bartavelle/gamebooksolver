@@ -25,7 +25,22 @@ book04gen cid _ computedDecision =
             ]
         )
     26 -> Just (computedDecision & _Outcome . _Fight . _1 . fightMod .~ [MindblastImmune])
-    35 -> Just (NoDecision (Randomly [(1 % 2, Goto 147), (1 % 2, Goto 231)]))
+    35 ->
+      Just
+        ( NoDecision
+            ( Conditionally
+                [ (COr (HasDiscipline Hunting) (HasLevel Guardian), Randomly [(1 % 2, Goto 147), (1 % 2, Goto 231)]),
+                  (Always True, Randomly [(8 % 10, Goto 147), (2 % 10, Goto 231)])
+                ]
+            )
+        )
+    40 ->
+      Just
+        ( Decisions
+            [ ("If you have the Kai Discipline of Tracking, and if you have reached the Kai rank of Aspirant or higher, turn to 349.", Conditional (CAnd (HasDiscipline Tracking) (HasLevel Aspirant)) (NoDecision (Goto 349))),
+              ("otherwise", Conditional (Not (HasDiscipline Tracking)) (Decisions [("If you wish to follow the wagon track into the west tunnel, turn to 55.", NoDecision (Goto 55)), ("If you wish to climb the stairs to the balcony and explore the passage, turn to 291.", NoDecision (Goto 291))]))
+            ]
+        )
     43 ->
       Just
         ( NoDecision
@@ -39,6 +54,13 @@ book04gen cid _ computedDecision =
         )
     44 -> takeItems [(Gold, 12), (Meal, 2)] computedDecision
     52 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
+    54 ->
+      Just
+        ( Decisions
+            [ ("If you have the Kai Discipline of Healing and you have reached the Kai rank of Warmarn, turn to 4.", Conditional (CAnd (HasDiscipline Healing) (HasLevel Warmarn)) (NoDecision (Goto 4))),
+              ("otherwise", Conditional (Not (HasDiscipline Healing)) (Decisions [("If you do not have this skill, or if you have yet to reach the rank of Kai Warmarn, you can risk walking through the fungi by turning to 65.", NoDecision (Goto 65)), ("Alternatively, if you wish, you may eat some of the fungi by turning to 201.", NoDecision (Goto 201))]))
+            ]
+        )
     57 -> Just (NoDecision (Conditionally [(CAnd (HasItem (Weapon Sword) 1) (HasFlag captainDvalSword), Goto 327), (Always True, Goto 289)]))
     62 -> Just (computedDecision & _Outcome . _Fight . _1 . fightMod .~ [Timed 3 (CombatBonus (-2))])
     67 ->
@@ -59,7 +81,7 @@ book04gen cid _ computedDecision =
         ( NoDecision
             ( Conditionally
                 [ (HasItem onyxMedallion 1, Goto 305),
-                  (HasDiscipline Camouflage, Goto 49),
+                  (CAnd (HasDiscipline Camouflage) (HasLevel Guardian), Goto 49),
                   (Always True, Goto 159)
                 ]
             )
@@ -96,7 +118,22 @@ book04gen cid _ computedDecision =
                 ]
             )
         )
-    113 -> Just (NoDecision (Goto 166)) -- todo remove orphans
+    113 ->
+      Just
+        ( Decisions
+            [ ("If you have reached the Kai rank of Warmarn, turn to 166.", Conditional (HasLevel Warmarn) (NoDecision (Goto 166))),
+              ( "Otherwise.",
+                Conditional
+                  (Not (HasLevel Warmarn))
+                  ( Decisions
+                      [ ("If you have yet to reach this level of Kai training, you can launch a surprise attack on the bandits and turn to 14.", NoDecision (Goto 14)),
+                        ("If you would rather try to sneak across the river under the cover of the many large boulders that divert the watercourse, turn to 316.", NoDecision (Goto 316)),
+                        ("If you would rather avoid crossing here and head back the way you have just come, turn to 232.", NoDecision (Goto 232))
+                      ]
+                  )
+              )
+            ]
+        )
     133 -> Just (EvadeFight 0 307 (FightDetails "Bandit Patrol" 18 35 [OnDamage 17]) (Goto 265))
     117 ->
       Just
@@ -208,7 +245,7 @@ book04gen cid _ computedDecision =
                 ]
             )
         )
-    209 -> Just (NoDecision (Goto 111))
+    209 -> Just (NoDecision (Conditionally [(HasLevel Aspirant, Goto 111), (Always True, Goto 43)]))
     213 -> takeItems [(tinderBoxB04, 1), (torchB04, 1), (pickAB04, 1), (pickBB04, 1), (Weapon Axe, 1)] computedDecision
     222 -> Just (CanTake (Weapon Sword) 1 (NoDecision (Simple [SetFlag captainDvalSword] (Goto 165))))
     230 -> takeItems [(Gold, 9), (Meal, 2), (Weapon Sword, 1), (Weapon Dagger, 1)] computedDecision
@@ -237,9 +274,22 @@ book04gen cid _ computedDecision =
                 ]
             )
         )
-    253 -> Just (NoDecision (Conditionally [(Always True, Goto 72), (Always False, Goto 135)]))
-    260 -> Just (computedDecision & _Outcome . _Fight . _1 . fightMod .~ [Timed 3 (StopFight 311)])
-    261 -> takeItems [(Gold, 8), (Meal, 1)] computedDecision
+    253 -> Just (NoDecision (Conditionally [(HasLevel Warmarn, Goto 72), (Always True, Goto 135)]))
+    258 ->
+      Just
+        ( Decisions
+            [ ("If you possess an Onyx Medallion, turn to 305.", Conditional (HasItem (GenSpecial (GenCounter 11)) 1) (NoDecision (Goto 305))),
+              ( "otherwise",
+                Conditional
+                  (Not (HasItem (GenSpecial (GenCounter 11)) 1))
+                  ( Decisions
+                      [ ("If you have the Kai Discipline of Camouflage and you have reached the Kai Rank of Guardian or higher, turn to 49.", Conditional (CAnd (HasDiscipline Camouflage) (HasLevel Guardian)) (NoDecision (Goto 49))),
+                        ("otherwise", Conditional (Not (HasDiscipline Camouflage)) (Decisions [("If you do not have this Special Item or this Discipline and Kai Rank, dive into the tall crops and hide by turning to 159.", NoDecision (Goto 159))]))
+                      ]
+                  )
+              )
+            ]
+        )
     263 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 4])
     268 -> takeItems [(Gold, 4), (Meal, 2), (Weapon Spear, 1), (Weapon BroadSword, 1), (ironKeyB04, 1), (brassKeyB04, 1), (Laumspur, 1)] computedDecision
     269 -> Just (computedDecision & _Outcome %~ Simple [MustEat NoHunt])
@@ -268,7 +318,14 @@ book04gen cid _ computedDecision =
     280 -> Just (NoDecision (Goto 231)) -- same chapter
     283 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 3])
     284 -> Just (NoDecision (Simple [DamagePlayer 3] (Goto 362)))
-    289 -> Just (NoDecision (Conditionally [(Always True, Goto 255), (Always False, Goto 5), (Always False, Goto 86)]))
+    289 ->
+      Just
+        ( Decisions
+            [ ("If you have reached the Kai rank of Warmarn (you possess 8 Kai Disciplines), turn to 255.", Conditional (HasLevel Warmarn) (NoDecision (Goto 255))),
+              ("If you wish to help the captain, turn to 5.", Conditional (Not (HasLevel Warmarn)) (NoDecision (Goto 5))),
+              ("If you wish to rally the defenders before the enemy reach the barricade, turn to 86.", Conditional (Not (HasLevel Warmarn)) (NoDecision (Goto 86)))
+            ]
+        )
     302 -> takeItems [(Laumspur, 2), (StrengthPotion, 1), (flaskHolyWaterB04, 1)] computedDecision
     303 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 2])
     309 ->
@@ -298,7 +355,7 @@ book04gen cid _ computedDecision =
                 ]
             )
         )
-    344 -> Just (NoDecision (Conditionally [(Always True, Goto 111), (Always False, Goto 43)]))
+    344 -> Just (NoDecision (Conditionally [(HasLevel Aspirant, Goto 111), (Always True, Goto 43)]))
     350 -> Just (NoDecision GameWon)
     _ -> Just computedDecision
 

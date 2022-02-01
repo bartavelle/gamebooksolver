@@ -6,7 +6,6 @@ import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.XML.Gen
 
-
 book05gen :: ChapterId -> [AC] -> Decision -> Maybe Decision
 book05gen cid _ computedDecision =
   case cid of
@@ -29,7 +28,15 @@ book05gen cid _ computedDecision =
         )
     12 -> Just (computedDecision & _Outcome . _Fight . _1 . fightMod .~ [MindblastImmune, CombatBonus (-2)])
     14 -> Just (RetrieveEquipment computedDecision)
-    15 -> Just (NoDecision (Randomly [(9 % 10, Goto 151), (1 % 10, Goto 175)]))
+    15 ->
+      Just
+        ( NoDecision
+            ( Conditionally
+                [ (HasLevel Guardian, Randomly [(9 % 10, Goto 151), (1 % 10, Goto 175)]),
+                  (Always True, Randomly [(8 % 10, Goto 151), (2 % 10, Goto 175)])
+                ]
+            )
+        )
     19 ->
       Just
         ( Decisions
@@ -62,19 +69,43 @@ book05gen cid _ computedDecision =
             )
         )
     27 -> Just (Canbuy Potion6Hp 7 (Canbuy Laumspur 5 (Canbuy Potion2Hp 3 computedDecision)))
-    30 -> Just (NoDecision (Goto 62))
+    30 ->
+      Just
+        ( Decisions
+            [ ("If you have reached the Kai rank of Guardian or higher, turn to 62.", Conditional (HasLevel Guardian) (NoDecision (Goto 62))),
+              ( "Otherwise",
+                Conditional
+                  (Not (HasLevel Guardian))
+                  ( Decisions
+                      [ ("If you wish to hide outside on the narrow ledge that runs round the palace wall, turn to 152.", NoDecision (Goto 152)),
+                        ("If you wish to attack the guards as they march past, turn to 124.", NoDecision (Goto 124))
+                      ]
+                  )
+              )
+            ]
+        )
     31 -> Just (NoDecision (Conditionally [(HasItem fireSphereB05 1, Goto 143), (Always True, Goto 183)]))
     34 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
     35 -> takeItems [(Weapon Mace, 1), (copperKeyB05, 1)] (computedDecision & _Outcome %~ Simple [SetFlag jewelledMaceB05])
     38 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
     40 -> Just (LoseItemFrom BackpackSlot 1 (NoDecision (Simple [DamagePlayer 2, LoseItemKind [PouchSlot]] (Goto 17))))
-    48 -> Just (NoDecision (Randomly [(2 % 10, Goto 34), (8 % 10, Goto 80)]))
+    48 ->
+      Just
+        ( NoDecision
+            ( Conditionally
+                [ (HasLevel Guardian, Randomly [(2 % 10, Goto 34), (8 % 10, Goto 80)]),
+                  (Always True, Randomly [(5 % 10, Goto 34), (5 % 10, Goto 80)])
+                ]
+            )
+        )
     49 ->
       Just
         ( NoDecision
             ( Conditionally
-                [ (HasDiscipline Hunting, Randomly [(1 % 10, Goto 106), (9 % 10, Goto 189)]),
-                  (Always True, Randomly [(2 % 10, Goto 106), (8 % 10, Goto 189)])
+                [ (CAnd (HasLevel Guardian) (HasDiscipline Hunting), Randomly [(2 % 10, Goto 106), (8 % 10, Goto 189)]),
+                  (HasLevel Guardian, Randomly [(3 % 10, Goto 106), (7 % 10, Goto 189)]),
+                  (HasDiscipline Hunting, Randomly [(5 % 10, Goto 106), (5 % 10, Goto 189)]),
+                  (Always True, Randomly [(6 % 10, Goto 106), (4 % 10, Goto 189)])
                 ]
             )
         )
@@ -180,8 +211,10 @@ book05gen cid _ computedDecision =
       Just
         ( NoDecision
             ( Conditionally
-                [ (HasDiscipline Hunting, Randomly [(1 % 10, Goto 89), (9 % 10, Goto 21)]),
-                  (Always True, Randomly [(2 % 10, Goto 89), (8 % 10, Goto 21)])
+                [ (CAnd (HasDiscipline Hunting) (HasLevel Warmarn), Randomly [(1 % 10, Goto 89), (9 % 10, Goto 21)]),
+                  (HasLevel Warmarn, Randomly [(2 % 10, Goto 89), (8 % 10, Goto 21)]),
+                  (HasDiscipline Hunting, Randomly [(3 % 10, Goto 89), (7 % 10, Goto 21)]),
+                  (Always True, Randomly [(4 % 10, Goto 89), (6 % 10, Goto 21)])
                 ]
             )
         )
@@ -213,8 +246,9 @@ book05gen cid _ computedDecision =
       Just
         ( NoDecision
             ( Conditionally
-                [ (HasDiscipline Hunting, Randomly [(1 % 2, Goto 38), (1 % 2, Goto 87)]),
-                  (Always True, Randomly [(1 % 10, Goto 5), (6 % 10, Goto 38), (3 % 10, Goto 87)])
+                [ (CAnd (HasDiscipline Hunting) (HasLevel Savant), Randomly [(1 % 2, Goto 38), (1 % 2, Goto 87)]),
+                  (COr (HasLevel Savant) (HasDiscipline Hunting), Randomly [(1 % 10, Goto 5), (6 % 10, Goto 38), (3 % 10, Goto 87)]),
+                  (Always True, Randomly [(3 % 10, Goto 5), (6 % 10, Goto 38), (1 % 10, Goto 87)])
                 ]
             )
         )
@@ -282,13 +316,8 @@ book05gen cid _ computedDecision =
             ( Conditionally
                 [ (HasDiscipline AnimalKinship, Goto 308),
                   (HasItem onyxMedallion 1, Goto 319),
-                  ( Always True,
-                    Randomly
-                      [ (2 % 10, Goto 370),
-                        (4 % 10, Goto 240),
-                        (4 % 10, Goto 287)
-                      ]
-                  )
+                  (HasLevel Aspirant, Randomly [(2 % 10, Goto 370), (4 % 10, Goto 240), (4 % 10, Goto 287)]),
+                  (Always True, Randomly [(3 % 10, Goto 370), (4 % 10, Goto 240), (2 % 10, Goto 287), (1 % 10, Goto 257)])
                 ]
             )
         )
@@ -305,15 +334,18 @@ book05gen cid _ computedDecision =
     237 -> Just (computedDecision & _Outcome %~ Simple [HealPlayer 1])
     238 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
     239 ->
-      Just
-        ( NoDecision
-            ( Conditionally
-                [ (HasItem tinctureGraveweed 1, Goto 260),
-                  (foldl1 CAnd [HasDiscipline d | d <- [Hunting, Tracking, Camouflage]], Goto 303),
-                  (Always True, Randomly [(2 % 10, Goto 324), (8 % 10, Goto 303)])
-                ]
+      let tdiscs = foldl1 CAnd [HasDiscipline d | d <- [Hunting, Tracking, Camouflage]]
+       in Just
+            ( NoDecision
+                ( Conditionally
+                    [ (HasItem tinctureGraveweed 1, Goto 260),
+                      (CAnd (HasLevel Guardian) tdiscs, Goto 303),
+                      (tdiscs, Randomly [(3 % 10, Goto 324), (7 % 10, Goto 303)]),
+                      (HasLevel Guardian, Randomly [(2 % 10, Goto 324), (8 % 10, Goto 303)]),
+                      (Always True, Randomly [(5 % 10, Goto 324), (5 % 10, Goto 303)])
+                    ]
+                )
             )
-        )
     240 -> Just (computedDecision & _Outcome . _Fight . _1 . fightMod .~ [DoubleDamage])
     242 ->
       Just
@@ -350,7 +382,9 @@ book05gen cid _ computedDecision =
                 )
             )
     254 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 2])
-    255 -> takeItems [(blackCubeB05, 1)] computedDecision
+    255 -> do
+      takng <- takeItems [(blackCubeB05, 1)] computedDecision
+      pure $ Decisions [("take cube", takng), ("don't", computedDecision)]
     257 -> Nothing
     264 -> Just (computedDecision & _Outcome %~ \o -> Conditionally [(HasDiscipline MindBlast, o), (Always True, Simple [DamagePlayer 2] o)])
     265 -> Just (computedDecision & _Decisions . ix 0 . _2 .~ Conditional (HasItem Gold 1) (NoDecision (Simple [LoseItem Gold 1] (Goto 397))))
@@ -365,8 +399,10 @@ book05gen cid _ computedDecision =
         ( NoDecision
             ( Conditionally
                 [ (HasDiscipline MindOverMatter, Goto 295),
-                  (COr (HasDiscipline Camouflage) (HasDiscipline Hunting), Randomly [(5 % 10, Goto 389), (5 % 10, Goto 236)]),
-                  (Always True, Randomly [(2 % 10, Goto 357), (5 % 10, Goto 389), (3 % 10, Goto 236)])
+                  (CAnd (HasLevel Warmarn) (COr (HasDiscipline Camouflage) (HasDiscipline Hunting)), Randomly [(5 % 10, Goto 389), (5 % 10, Goto 236)]),
+                  (COr (HasDiscipline Camouflage) (HasDiscipline Hunting), Randomly [(3 % 10, Goto 357), (5 % 10, Goto 389), (2 % 10, Goto 236)]),
+                  (HasLevel Warmarn, Randomly [(2 % 10, Goto 357), (5 % 10, Goto 389), (3 % 10, Goto 236)]),
+                  (Always True, Randomly [(5 % 10, Goto 357), (5 % 10, Goto 389), (0 % 10, Goto 236)])
                 ]
             )
         )
@@ -382,15 +418,19 @@ book05gen cid _ computedDecision =
                 ]
             )
         )
-    290 -> takeItems [(blackCubeB05, 1)] computedDecision
+    290 -> do
+      takng <- takeItems [(blackCubeB05, 1)] computedDecision
+      pure $ Decisions [("take cube", takng), ("don't", computedDecision)]
     297 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 4])
     299 -> Just (computedDecision & _NoDecision . _Fight . _1 . fightMod .~ [EnemyMindblast, MindblastImmune])
     301 ->
       Just
         ( NoDecision
             ( Conditionally
-                [ (HasDiscipline Hunting, Randomly [(8 % 10, Goto 363), (2 % 10, Goto 259)]),
-                  (Always True, Randomly [(7 % 10, Goto 363), (3 % 10, Goto 259)])
+                [ (CAnd (HasLevel Guardian) (HasDiscipline Hunting), Randomly [(8 % 10, Goto 363), (2 % 10, Goto 259)]),
+                  (HasLevel Guardian, Randomly [(7 % 10, Goto 363), (3 % 10, Goto 259)]),
+                  (HasDiscipline Hunting, Randomly [(6 % 10, Goto 363), (4 % 10, Goto 259)]),
+                  (Always True, Randomly [(5 % 10, Goto 363), (5 % 10, Goto 259)])
                 ]
             )
         )
@@ -452,7 +492,8 @@ book05gen cid _ computedDecision =
                 [DamagePlayer 1]
                 ( Conditionally
                     [ (HasDiscipline MindOverMatter, Goto 269),
-                      (Always True, Randomly [(2 % 10, Goto 366), (8 % 10, Goto 277)])
+                      (HasLevel Aspirant, Randomly [(2 % 10, Goto 366), (8 % 10, Goto 277)]),
+                      (Always True, Randomly [(4 % 10, Goto 366), (6 % 10, Goto 277)])
                     ]
                 )
             )
@@ -474,14 +515,27 @@ book05gen cid _ computedDecision =
     387 -> Just (EvadeFight 0 205 (FightDetails "Drakkarim" 17 35 []) (Goto 341))
     388 -> Just (Canbuy (Weapon Sword) 5 (Canbuy (Weapon BroadSword) 9 (Canbuy (Weapon Dagger) 3 computedDecision)))
     389 -> Just (NoDecision (Fight (FightDetails "Sentry" 15 23 []) (Goto 404)))
-    391 -> Just (NoDecision (Goto 242))
+    391 ->
+      Just
+        ( NoDecision
+            ( Conditionally
+                [ (HasLevel Warmarn, Goto 242),
+                  (Always True, Goto 222)
+                ]
+            )
+        )
     392 ->
       Just
         ( NoDecision
             ( Conditionally
-                [ (HasEndurance 26, Randomly [(3 % 10, Goto 364), (7 % 10, Goto 218)]),
-                  (HasEndurance 15, Randomly [(1 % 2, Goto 364), (1 % 2, Goto 218)]),
-                  (Always True, Randomly [(7 % 10, Goto 364), (3 % 10, Goto 218)])
+                [ (CAnd (HasLevel Savant) (HasEndurance 26), Randomly [(2 % 10, Goto 364), (8 % 10, Goto 218)]),
+                  (CAnd (HasLevel Savant) (HasEndurance 15), Randomly [(4 % 10, Goto 364), (6 % 10, Goto 218)]),
+
+                  (HasLevel Savant, Randomly [(6 % 10, Goto 364), (4 % 10, Goto 218)]),
+
+                  (HasEndurance 26, Randomly [(5 % 10, Goto 364), (5 % 10, Goto 218)]),
+                  (HasEndurance 15, Randomly [(7 % 10, Goto 364), (3 % 10, Goto 218)]),
+                  (Always True, Randomly [(9 % 10, Goto 364), (1 % 10, Goto 218)])
                 ]
             )
         )

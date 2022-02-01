@@ -18,6 +18,9 @@ struct Opt {
     /// Path to the solution file
     #[structopt(short, long)]
     solpath: String,
+    /// Alternate algorithm
+    #[structopt(short, long)]
+    alternate: bool,
 }
 
 fn mksol(
@@ -88,6 +91,104 @@ fn mksol(
     }
 }
 
+fn mksola(
+    ini: NextStep,
+    sttmap: HashMap<NextStep, ChoppedSolution<NextStep>>,
+) -> (
+    HashMap<u16, HashMap<u16, Rational>>,
+    HashMap<u16, (Rational, Rational)>,
+) {
+    type ENTRY = HashMap<u16, (HashMap<u16, Rational>, Rational, Rational)>;
+    type IMAP = HashMap<NextStep, ENTRY>;
+    let mut memo: IMAP = HashMap::new();
+
+    fn go(
+        curmap: &mut IMAP,
+        searchmap: &HashMap<NextStep, ChoppedSolution<NextStep>>,
+        curstt: &NextStep,
+    ) -> ENTRY {
+        if let Some(e) = curmap.get(curstt) {
+            return e.clone();
+        }
+        let cs = match searchmap.get(curstt) {
+            None => return HashMap::new(),
+            Some(x) => x,
+        };
+        let src = match curstt.chapter() {
+            Some(cid) => cid,
+            None => return HashMap::new(),
+        };
+        let ee = match &curstt {
+            NextStep::HasLost(_) => Rational::from(0),
+            NextStep::HasWon(_) => Rational::from(0),
+            NextStep::NewChapter(_, stt) => Rational::from(stt.curendurance),
+        };
+        let mut entry = HashMap::new();
+        entry.insert(src, (HashMap::new(), Rational::from(1), ee));
+
+        fn update_score(src: u16, sc: Rational, entry: &mut ENTRY) {
+            entry.entry(src).and_modify(|x| x.1 = sc);
+        }
+
+        fn update_choice(
+            curmap: &mut IMAP,
+            searchmap: &HashMap<NextStep, ChoppedSolution<NextStep>>,
+            src: u16,
+            p: Rational,
+            cstt: &NextStep,
+            entry: &mut ENTRY,
+        ) {
+            let thisentry = go(curmap, searchmap, cstt);
+            for (k1, (mp, csc, cen)) in thisentry.into_iter() {
+                let e = entry
+                    .entry(k1)
+                    .or_insert_with(|| (HashMap::new(), Rational::from(0), Rational::from(0)));
+                e.1 += csc * &p;
+                e.2 += cen * &p;
+                for (k2, tscore) in mp.into_iter() {
+                    let e2 = e.0.entry(k2).or_insert_with(|| Rational::from(0));
+                    *e2 += tscore * &p;
+                }
+            }
+            if let Some(dst) = cstt.chapter() {
+                let e = entry
+                    .entry(src)
+                    .or_insert_with(|| (HashMap::new(), Rational::from(0), Rational::from(0)));
+                let e2 = e.0.entry(dst).or_insert_with(|| Rational::from(0));
+                *e2 += &p;
+            }
+        }
+
+        match cs {
+            ChoppedSolution::CLeafLost => (),
+            ChoppedSolution::CLeaf(sc) => update_score(src, sc.clone(), &mut entry),
+            ChoppedSolution::CJump(_, stt) => {
+                update_choice(curmap, searchmap, src, Rational::from(1), stt, &mut entry);
+                update_score(src, Rational::from(1), &mut entry);
+            }
+            ChoppedSolution::CNode(_, pms) => {
+                update_score(src, Rational::from(1), &mut entry);
+                for (mstt, sc) in pms.iter() {
+                    if let Some(stt) = mstt {
+                        update_choice(curmap, searchmap, src, sc.clone(), stt, &mut entry);
+                    }
+                }
+            }
+        }
+        curmap.insert(curstt.clone(), entry.clone());
+        entry
+    }
+
+    let mp = go(&mut memo, &sttmap, &ini);
+    let mut transitions = HashMap::new();
+    let mut scores = HashMap::new();
+    for (k, (m, s1, s2)) in mp.into_iter() {
+        transitions.insert(k, m);
+        scores.insert(k, (s1, s2));
+    }
+    (transitions, scores)
+}
+
 fn default_items(book: Book) -> Vec<(Item, i64)> {
     use mini::Weapon::{ShortSword, Sommerswerd};
     use Book::*;
@@ -147,21 +248,21 @@ fn decode_buffer<R: std::io::Read>(r: &mut R) -> mini::SolutionDump {
 fn main() {
     let opt = Opt::from_args();
 
-    let file = File::open(opt.solpath).unwrap();
+    let file = File::open(opt.solpath.clone()).unwrap();
     let mut dec = zstd::Decoder::new(file).unwrap();
-
-    // let mut d = cbor::Decoder::from_reader(dec);
-    // let cbor = d.items().next().unwrap().unwrap();
-    // let soldump = soldump_from_cbor(cbor).unwrap();
-
     let soldump = decode_buffer(&mut dec);
 
     let sttmap = count_states(&soldump.content);
     let bookid = soldump.soldesc.ccst.bookid;
-    let (transitions, scores) = mksol(
-        NextStep::NewChapter(1, mkchar(soldump.soldesc.ccst, soldump.soldesc.cvar)),
-        soldump.content.into_iter().collect(),
-    );
+    let ini = NextStep::NewChapter(1, mkchar(soldump.soldesc.ccst, soldump.soldesc.cvar));
+    let searchmap: HashMap<NextStep, ChoppedSolution<NextStep>> =
+        soldump.content.into_iter().collect();
+    eprintln!("{} : {} states", opt.solpath, searchmap.len());
+    let (transitions, scores) = if opt.alternate {
+        mksola(ini, searchmap)
+    } else {
+        mksol(ini, searchmap)
+    };
     let x = serde_json::to_string(&(format!("{:?}", bookid), scores, transitions, sttmap)).unwrap();
     println!("{}", x);
 }

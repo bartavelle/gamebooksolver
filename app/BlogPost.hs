@@ -4,6 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Main where
 
@@ -13,8 +14,12 @@ import Data.Aeson (eitherDecodeFileStrict)
 import Data.Bifunctor (first)
 import Data.List (isSuffixOf, sortOn)
 import qualified Data.Map.Strict as M
+import Data.Maybe (fromMaybe)
+import qualified Data.Set as S
 import Data.String (fromString)
 import Data.Text (Text)
+import qualified Data.Text as T
+import Data.Word
 import Debug.Trace (traceM)
 import LoneWolf.Chapter (ChapterId)
 import LoneWolf.Character
@@ -28,16 +33,12 @@ import Text.Printf (printf)
 data Opts = Opts Book Mode
 
 data Mode
-  = Generalstats CVarState
-  | Heatmap CVarState
-  | Histo FilePath
+  = ChapterStats
 
 mode :: Parser Mode
 mode =
   subparser
-    ( command "general" (info (Generalstats <$> cvariable) (progDesc "General stats"))
-        <> command "heatmap" (info (Heatmap <$> cvariable) (progDesc "Skill/endurance heatmap"))
-        <> command "histo" (info (Histo <$> strArgument (metavar "PATH")) (progDesc "Histograms from stats"))
+    ( command "chapterstats" (info (pure ChapterStats) (progDesc "Stats for chapter"))
     )
 
 options :: Parser Opts
@@ -63,37 +64,51 @@ disciplines = [Camouflage, Hunting, SixthSense, Tracking, Healing, WeaponSkill S
 dpairs :: [(Discipline, Discipline)]
 dpairs = disciplines >>= \d1 -> disciplines >>= \d2 -> (d1, d2) <$ guard (d1 < d2)
 
-loadContent :: FilePath -> IO (Either String Multistat)
-loadContent = eitherDecodeFileStrict
+type SttsG r = (Book, M.Map ChapterId (r, r), M.Map ChapterId (M.Map ChapterId r), M.Map ChapterId Word64)
 
-loadData :: Book -> CVarState -> IO [Multistat]
-loadData book cvar = do
+type Stts = SttsG Rational
+
+data Stats = Stats
+  { _fp :: FilePath,
+    _sbook :: Book,
+    _sdisciplines :: [Discipline],
+    _svariable :: CVarState,
+    _sentry :: MultistatEntry,
+    _scores :: M.Map ChapterId (Rational, Rational),
+    _transitions :: M.Map ChapterId (M.Map ChapterId Rational),
+    _states :: M.Map ChapterId Word64
+  }
+  deriving (Show)
+
+loadContent :: FilePath -> IO (Either String (FilePath, SttsG ERatio, Multistat))
+loadContent jotpath = do
+  let basepath = reverse (drop 4 (reverse jotpath))
+  a1 <- eitherDecodeFileStrict jotpath
+  a2 <- eitherDecodeFileStrict (basepath ++ ".json")
+  pure ((,,) basepath <$> a1 <*> a2)
+
+loadData :: Book -> IO [Stats]
+loadData book = do
   let bookdir = case book of
         Book01 -> "data/B01/"
         Book02 -> "data/B02/"
-  allfiles <- map (bookdir <>) . filter (isSuffixOf ".json") <$> getDirectoryContents bookdir
+        Book03 -> "data/B03/"
+        Book04 -> "data/B04/"
+        Book05 -> "data/B05/"
+  allfiles <- map (bookdir <>) . filter (isSuffixOf ".jot") <$> getDirectoryContents bookdir
   allcontent <- mapM loadContent allfiles
   mapM_ traceM (allcontent ^.. traverse . _Left)
-  let keepitems m@(Multistat bk _ rcvar _) = (m & variable .~ rcvar) <$ guard (bk == book && eqcvarstate book rcvar cvar)
-  pure $! ((allcontent ^.. traverse . _Right) >>= keepitems)
-
-type MSMap = M.Map (Book, Discipline, Discipline) (M.Map (Endurance, CombatSkill) (Rational, Int))
+  let convert :: (FilePath, SttsG ERatio, Multistat) -> Stats
+      convert (fp, (bk, scores, transitions, sttmap), ms) =
+        let Multistat _ discs varstt [entry] = ms
+         in Stats fp bk discs varstt entry (fmap (bimap getERatio getERatio) scores) (fmap (fmap getERatio) transitions) sttmap
+  pure $! (allcontent ^.. traverse . _Right . to convert)
 
 percent :: Double -> String
-percent = printf "%.2f%%" . (* 100)
+percent = printf "%.3f%%" . (* 100)
 
-msmap :: [Multistat] -> MSMap
-msmap lst = M.fromListWith M.union $ do
-  Multistat book discs _ entries <- lst
-  let emap = M.fromList $ do
-        MultistatEntry e c _ score stts <- entries
-        pure ((e, c), (score, stts))
-      (k1, k2) = case discs of
-        [d1, d2] -> (d1, d2)
-        [d1] -> (d1, d1)
-        _ -> error ("Invalid amount of disciplines: " ++ show discs)
-  mkey <- [(book, k1, k2), (book, k2, k1)]
-  pure (mkey, emap)
+rpercent :: Rational -> String
+rpercent = printf "%.3f%%" . (* 100) . fromRational @Double
 
 rowStyleRG :: TermRaw Text arg => Double -> arg
 rowStyleRG d =
@@ -110,11 +125,11 @@ rowStyleGreen d =
           else "#fff"
    in style_ (fromString (printf "background-color: #00%02x00; color: %s;" color textcolor))
 
-heatmap :: (forall arg. TermRaw Text arg => Double -> arg) -> [xs] -> [ys] -> (xs -> String) -> (ys -> String) -> (ys -> xs -> Maybe (String, Double)) -> Html ()
-heatmap rowStyle xs ys showX showY scorer = table_ [class_ "pure-table"] $ do
+heatmap :: (forall arg. TermRaw Text arg => Double -> arg) -> Maybe String -> [xs] -> [ys] -> (xs -> String) -> (ys -> String) -> (ys -> xs -> Maybe (Html (), Double)) -> Html ()
+heatmap rowStyle mname xs ys showX showY scorer = table_ [class_ "pure-table"] $ do
   thead_ $
     tr_ $ do
-      th_ ""
+      th_ (maybe "" fromString mname)
       mapM_ (th_ . div_ . span_ . fromString . showX) xs
   tbody_ $
     forM_ ys $ \d1 -> tr_ $ do
@@ -123,62 +138,15 @@ heatmap rowStyle xs ys showX showY scorer = table_ [class_ "pure-table"] $ do
         case scorer d1 d2 of
           Nothing -> td_ "?"
           Just (txt, score) -> td_ [rowStyle score] $ do
-            strong_ (toHtml txt)
+            strong_ txt
 
-skemap :: (Endurance -> CombatSkill -> Maybe (String, Double)) -> Html ()
-skemap = heatmap rowStyleGreen [10 .. 19] [20 .. 29] (show . getCombatSkill) (show . getEndurance)
+skemap :: (Endurance -> CombatSkill -> Maybe (Html (), Double)) -> Html ()
+skemap = heatmap rowStyleGreen Nothing [10 .. 19] [20 .. 29] (show . getCombatSkill) (show . getEndurance)
 
-disciplineMap :: (forall arg. TermRaw Text arg => Double -> arg) -> (Discipline -> Discipline -> Maybe (String, Double)) -> Html ()
+disciplineMap :: (forall arg. TermRaw Text arg => Double -> arg) -> (Discipline -> Discipline -> Maybe (Html (), Double)) -> Html ()
 disciplineMap rowStyle scorer =
   let sdiscs = sortOn (\d -> fmap (negate . snd) (scorer d d)) disciplines
-   in heatmap rowStyle sdiscs sdiscs showDisc showDisc scorer
-
-stateTable :: Book -> MSMap -> Html ()
-stateTable book cmsmap = disciplineMap rowStyleRG scorer
-  where
-    scorer d1 d2 = do
-      let rd1 = min d1 d2
-          rd2 = max d1 d2
-      stts <- M.lookup (book, rd1, rd2) maxmap
-      pure (show stts, sratio stts)
-    maxmap = fmap extractMax cmsmap
-    extractMax mp = maximum $ do
-      (_, (_, stts)) <- M.toList mp
-      pure stts
-    minstate = minimum maxmap
-    maxstate = maximum maxmap
-    sratio :: Int -> Double
-    sratio st = fromIntegral (maxstate - st) / fromIntegral (maxstate - minstate)
-
-scoreTableAt :: (Endurance, CombatSkill) -> Book -> MSMap -> Html ()
-scoreTableAt stats book cmsmap = disciplineMap rowStyleGreen scorer
-  where
-    maxmap = M.mapWithKey extractMax cmsmap
-    extractMax k mp = case M.lookup stats mp of
-      Nothing -> error ("uncalculated for key " ++ show k)
-      Just (r, _) -> fromRational r :: Double
-    scorer d1 d2 = do
-      let rd1 = min d1 d2
-          rd2 = max d1 d2
-      score <- M.lookup (book, rd1, rd2) maxmap
-      pure (percent score, score)
-
-
-post1 :: Book -> CVarState -> IO ()
-post1 book cstt = do
-  content <- loadData book cstt
-  let mcontent = msmap content
-  print (stateTable book mcontent)
-  print (scoreTableAt (29,19) book mcontent)
-  print (scoreTableAt (25,15) book mcontent)
-  print (scoreTableAt (20,10) book mcontent)
-
-post2 :: Book -> CVarState -> IO ()
-post2 book cstt = do
-  content <- loadData book cstt
-  let mcontent = msmap content
-      best = mcontent M.! (book, MindBlast, AnimalKinship)
-  print (skemap (\e s -> fmap (\(score, _) -> (percent (fromRational score), fromRational score)) (M.lookup (e, s) best)))
+   in heatmap rowStyle Nothing sdiscs sdiscs showDisc showDisc scorer
 
 data P x = P x x deriving (Show, Eq, Ord, Functor, Foldable)
 
@@ -188,15 +156,65 @@ instance Traversable P where
 rebagWithItems :: (Ord a) => (Inventory -> a) -> Bagged Inventory -> Bagged a
 rebagWithItems selector = Bagged . M.fromListWith (+) . map (first selector) . M.toList . getBag
 
-histo :: FilePath -> IO ()
-histo fp = do
-  r <- either (error . show) id <$> eitherDecodeFileStrict fp :: IO (M.Map ChapterId DecisionStat)
-  print r
-
 main :: IO ()
 main = do
   Opts book mde <- execParser programOpts
+  dt <- loadData book
   case mde of
-    Generalstats cv -> post1 book cv
-    Heatmap cv -> post2 book cv
-    Histo fp -> histo fp
+    ChapterStats -> case book of
+      Book05 -> print (b05stats dt)
+      _ -> error ("unsupported book stats for " ++ show book)
+
+winrate :: Stats -> Rational
+winrate = _mratio . _sentry
+
+visitrate :: ChapterId -> Stats -> Rational
+visitrate cid stts = M.findWithDefault 0 cid (fmap fst (_scores stts))
+
+linkrate :: ChapterId -> ChapterId -> Stats -> Rational
+linkrate src dst stts = fromMaybe 0 $ do
+  tmap <- M.lookup src (_transitions stts)
+  let allprobs = sum tmap
+  guard (allprobs > 0)
+  (/ allprobs) <$> M.lookup dst tmap
+
+normalDiscs :: S.Set Discipline
+normalDiscs = S.fromList [Camouflage, Hunting, SixthSense, Tracking, Healing, MindShield, MindBlast, AnimalKinship, MindOverMatter]
+
+missingdiscs :: Stats -> S.Set Discipline
+missingdiscs stats =
+  let discs = S.fromList (_sdisciplines stats)
+   in S.difference normalDiscs discs
+
+b05stats :: [Stats] -> Html ()
+b05stats astts = heatmap rowStyleGreen (Just "Missing disc") (map fst cols) (map _fp ordered) id (\n -> mdiscname (mpo M.! n)) getentry
+  where
+    b c = if c then (fromString "yes", 1) else (fromString "no", 0)
+    r c = if c == 0 then (fromString "-", 0) else (fromString (rpercent c), fromRational c)
+    bl = b . (== 1)
+    cols =
+      [ ("Win rate", r . winrate),
+        ("Sommerswerd", b . not . hasitem (Weapon Sword)),
+        ("Silver Helm", b . hasitem SilverHelm),
+        ("Fought Elix", b . hasflag FoughtElix),
+        ("Imprisonment", r . visitrate 69),
+        ("Offer Oede", r . visitrate 344),
+        ("Sober", r . linkrate 302 283),
+        ("Surrender", bl . linkrate 1 176),
+        ("Blowpipe & steel dart", r . linkrate 313 325),
+        ("Visualization", \e -> (a_ [href_ (T.pack ("/home/bartavelle/gits/misc/gamebooksolver/" ++ _fp e ++ ".svg"))] (fromString "link"), 1))
+      ]
+    hasitem i = maybe False (elem i . map fst) . _cvitems . _svariable
+    hasflag f = elem f . _cvflags . _svariable
+    cmap = M.fromList cols
+    ordered :: [Stats]
+    ordered = sortOn (negate . winrate) astts
+    mdiscname = unwords . map show . S.toList . missingdiscs
+    mpo = M.fromList [(_fp e, e) | e <- ordered]
+    getentry :: String -> String -> Maybe (Html (), Double)
+    getentry entry col =
+      let Just e = M.lookup entry mpo
+          fn = case M.lookup col cmap of
+            Just f -> f
+            _ -> error col
+       in Just (fn e)

@@ -43,6 +43,7 @@ check cconstant cvariable cond =
     Not c -> not (check cconstant cvariable c)
     COr c1 c2 -> check cconstant cvariable c1 || check cconstant cvariable c2
     CAnd c1 c2 -> check cconstant cvariable c1 && check cconstant cvariable c2
+    HasLevel lvl -> getLevel cconstant >= lvl
     HasItem i n -> case i of
       Gold -> cvariable ^. equipment . gold >= n
       Meal -> cvariable ^. equipment . meals >= n

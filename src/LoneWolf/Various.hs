@@ -39,7 +39,6 @@ getDestinations book d =
       Portholes -> [(197, [])]
       B05S127 -> [(159, []), (93, [])]
       B05S357 -> [(293, []), (207, []), (224, [])]
-      B03S088 -> [(269, [])]
     NoDecision co -> getDestinationsO co
     RetrieveEquipment d' -> getDestinations book d'
     RemoveItemFrom _ _ d' -> getDestinations book d'
@@ -59,6 +58,7 @@ getDestinations book d =
       COr a b -> condDesc a ++ "||" ++ condDesc b
       CAnd a b -> condDesc a ++ "&&" ++ condDesc b
       HasEndurance e -> "endurance > " ++ show e
+      HasLevel lvl -> "lvl " ++ show lvl
       HasDiscipline di ->
         '?' : case di of
           SixthSense -> "6th"
@@ -91,7 +91,6 @@ getDestinations book d =
             stopfight = fd ^.. fightMod . traverse . _StopFight . to (,["stopped fight"])
             lose = fd ^.. fightMod . traverse . _OnLose . to (,["lost"])
             evaded = fd ^.. fightMod . traverse . _Evaded . to (,["evaded"]) -- should not happen
-
          in fake ++ ondamage ++ stopfight ++ lose ++ slow ++ evaded ++ getDestinationsO co'
       Randomly lst -> concatMap (\(p, o) -> append ("r(" ++ show (numerator p) ++ "/" ++ show (denominator p) ++ ")") (getDestinationsO o)) lst
       Conditionally lst -> concatMap (\(c, o) -> append (condDesc c) $ getDestinationsO o) lst

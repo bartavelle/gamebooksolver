@@ -12,39 +12,24 @@ book03gen cid _ computedDecision =
     4 -> takeItems [(Weapon Sword, 1), (blueStoneDiscB03, 1)] computedDecision
     8 -> Just (computedDecision & _Outcome %~ Simple [SetFlag baknarOilB03])
     10 ->
-      -- put all that part into a single chapter, phew
-      let corange = COr anyweaponskill (HasDiscipline SixthSense)
-          cred = HasDiscipline Healing
-          breakGW = Simple [DamagePlayer 1] (Goto 126)
-          getGW = Simple [GainItem graveWeedB03 1] (Goto 126)
+      let breakGW = Simple [DamagePlayer 1] (Goto 368)
+          getGW = Simple [GainItem graveWeedB03 1] (Goto 368)
           nxt =
-            CanTake
-              gallowBrushB03
-              1
-              ( Decisions
-                  [ ( "try graveweed",
-                      Conditional
-                        (HasFlag visitedGraveyardAncientsB03)
-                        ( NoDecision
-                            ( Conditionally
-                                [ (COr (HasDiscipline MindOverMatter) (HasDiscipline MindBlast), Randomly [(2 % 10, breakGW), (8 % 10, getGW)]),
-                                  (Always True, Randomly [(1 % 2, breakGW), (1 % 2, getGW)])
-                                ]
-                            )
+            Decisions
+              [ ( "try graveweed",
+                  Conditional
+                    (HasFlag visitedGraveyardAncientsB03)
+                    ( NoDecision
+                        ( Conditionally
+                            [ (COr (HasDiscipline MindOverMatter) (HasDiscipline MindBlast), Randomly [(2 % 10, breakGW), (8 % 10, getGW)]),
+                              (Always True, Randomly [(1 % 2, breakGW), (1 % 2, getGW)])
+                            ]
                         )
-                    ),
-                    ("don't try graveweed", NoDecision (Goto 126))
-                  ]
-              )
-       in takeItems
-            [(Backpack, 1)]
-            ( Decisions
-                [ ("can take all", Conditional (CAnd corange cred) (CanTake Potion5Hp 1 (CanTake StrengthPotion 2 nxt))),
-                  ("can take red", Conditional (CAnd (Not corange) cred) (CanTake Potion5Hp 1 nxt)),
-                  ("can take orange", Conditional (CAnd corange (Not cred)) (CanTake Potion5Hp 1 nxt)),
-                  ("can take none", Conditional (CAnd (Not corange) (Not cred)) nxt)
-                ]
-            )
+                    )
+                ),
+                ("don't try graveweed", NoDecision (Goto 368))
+              ]
+       in takeItems [(Backpack, 1)] nxt
     12 -> takeItems [(Meal, 3), (ropeB03, 1)] (computedDecision & _Outcome %~ Simple [MustEat NoHunt])
     15 ->
       Just
@@ -82,7 +67,7 @@ book03gen cid _ computedDecision =
             )
         )
     33 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
-    36 -> Just (NoDecision (Conditionally [(HasDiscipline SixthSense, Goto 341), (Always True, Goto 264), (Always False, Goto 124)]))
+    36 -> Just (NoDecision (Conditionally [(CAnd (HasDiscipline SixthSense) (HasLevel Guardian), Goto 341), (HasDiscipline SixthSense, Goto 264), (Always True, Goto 124)]))
     38 -> takeItems [(Backpack, 1), (ropeB03, 1)] computedDecision
     43 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
     49 -> Just (computedDecision & _Outcome %~ Simple [LoseItemKind [BackpackSlot], LoseItem Backpack 1])
@@ -107,7 +92,7 @@ book03gen cid _ computedDecision =
                 ]
             )
         )
-    88 -> Just (Special B03S088)
+    88 -> Just (computedDecision & _Outcome . _Fight . _1 . fightMod .~ [Poisonous (1 % 10)])
     90 -> Nothing
     91 -> Just (computedDecision & _Outcome %~ Simple [SetFlag baknarOilB03])
     92 -> Just (Decisions [("use rope", Conditional (HasItem ropeB03 1) (NoDecision (Goto 133))), ("don't use rope", NoDecision (Goto 297))])
@@ -304,6 +289,16 @@ book03gen cid _ computedDecision =
             )
         )
     289 -> Nothing
+    290 ->
+      Just
+        ( NoDecision
+            ( Conditionally
+                [ (COr (HasDiscipline SixthSense) (HasLevel Aspirant), Goto 341),
+                  (HasDiscipline SixthSense, Goto 124),
+                  (Always True, Goto 264)
+                ]
+            )
+        )
     294 -> Just (computedDecision & _Outcome %~ Simple [MustEat NoHunt, MustEat NoHunt])
     295 -> takeItems [(fireSphereB03, 1)] computedDecision
     298 -> takeItems [(blueStoneTriangleB03, 1)] computedDecision
@@ -406,5 +401,18 @@ extraChapters03 =
               ("If you wish to try to escape into the distant archway, turn to 211.", NoDecision (Goto 211))
             ]
         )
-    )
+    ),
+    (368, takepotion "red" (HasDiscipline Healing) Potion5Hp 1 369),
+    (369, takepotion "orange" (COr (HasDiscipline Healing) (HasDiscipline SixthSense)) StrengthPotion 2 370),
+    (370, takepotion "green" (COr (HasDiscipline AnimalKinship) (HasLevel Aspirant)) gallowBrushB03 1 126)
   ]
+  where
+    takepotion nm cnd i q nxt =
+      Chapter
+        "10b"
+        ("try to take " ++ nm ++ " potion")
+        ( Decisions
+            [ ("try to take the " ++ nm ++ " potion", Conditional cnd (CanTake i q (NoDecision (Goto nxt)))),
+              ("don't try", Conditional (Not cnd) (NoDecision (Goto nxt)))
+            ]
+        )

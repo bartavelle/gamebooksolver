@@ -195,6 +195,27 @@ fight' cinfo
       if hpLW <= 0
         then (lost, p)
         else (HasEscaped ecid hpLW, p)
+  | Just instakill <- preview (cmodifiers . folded . _Poisonous) cinfo = regroup $ do
+    let prevlwhp = _lwendurance cinfo
+        prevophp = _opendurance cinfo
+    -- bullshit fight :( there can be cases where nothing happens, so it's looping :(
+    let roundresults = regroup $ do
+          ((lwhp, ophp), p) <- fightRound' cinfo
+          if lwhp < prevlwhp
+            then [((True, 1), p * instakill), ((False, ophp), p * (1 - instakill))]
+            else [((False, ophp), p)]
+
+        useful = filter ((/= (False, prevophp)) . fst) roundresults
+        usefulproba = sum (map snd useful)
+    ((instadeath, ophp), rp) <- useful
+    let p = rp / usefulproba
+    let outcome
+          | instadeath = pure (lost, p)
+          | ophp <= 0 = pure (NotEscaped prevlwhp, p)
+          | otherwise =
+            let ncinfo = cinfo & opendurance .~ ophp & cmodifiers %~ mapMaybe decrementTimed
+             in fmap (* p) <$> fightM ncinfo
+    outcome
   -- we can't run the optimized combat if there are still timed effects, or DPR effects
   | has (cmodifiers . folded . _Timed) cinfo || has (cmodifiers . folded . _DPR) cinfo = regroup $ do
     ((hpLW, hpOpponent), p) <- fightRound' cinfo
@@ -203,7 +224,7 @@ fight' cinfo
           | hpOpponent <= 0 = return (NotEscaped hpLW, p)
           | otherwise =
             let ncinfo = cinfo & lwendurance .~ hpLW & opendurance .~ hpOpponent & cmodifiers %~ mapMaybe decrementTimed
-             in fmap (* p) <$> fight' ncinfo
+             in fmap (* p) <$> fightM ncinfo
     outcome
   | otherwise = regroup $ do
     let ratio = getRatio' cinfo

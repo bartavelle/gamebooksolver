@@ -52,9 +52,10 @@ pchapters book = case book of
 
 getBoundary :: Book -> Maybe (S.Set Item, S.Set Flag)
 getBoundary b = case b of
-  Book02 -> Just (S.fromList [Weapon Sommerswerd], S.empty)
-  Book03 -> Just (S.fromList [Weapon Sommerswerd, SilverHelm], S.empty)
-  Book04 -> Just (S.fromList [Weapon Sommerswerd, SilverHelm], S.singleton FoughtElix)
+  Book01 -> Just (S.singleton Gold, S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
+  Book02 -> Just (S.empty, S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
+  Book03 -> Just (S.fromList [Weapon Sommerswerd, SilverHelm], S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
+  Book04 -> Just (S.fromList [Weapon Sommerswerd, SilverHelm], S.fromList [FoughtElix, PermanentSkillReduction, PermanentSkillReduction2])
   _ -> Nothing
 
 simpleSol :: M.Map (S.Set Item, S.Set Flag) Rational -> Book -> CharacterConstant -> CharacterVariable -> [Int] -> (Rational, [(NextStep, Solution NextStep String)])
@@ -194,12 +195,19 @@ todot book soltransitions scores sttmap = do
         where
           color = "color=" ++ if isJust mweight then "black" else "darkgrey"
           label = "label=\"" ++ filter (/= '"') (unwords (maybe "" percent mweight : getedgedesc src dst)) ++ "\""
+      urlpart = case book of
+        Book01 -> "01fftd"
+        Book02 -> "02fotw"
+        Book03 -> "03tcok"
+        Book04 -> "04tcod"
+        Book05 -> "05sots"
   putStrLn "digraph g {"
   forM_ chapters $ \(cid, chapter) ->
     let cdesc = _pchoice chapter
         combat = has (outcomePlate . biplate . _Fight) cdesc || has (biplate . _EvadeFight) cdesc
         eating = preview (outcomePlate . biplate . _MustEat) cdesc
         solscore = M.lookup cid scores
+        ctitle = _title chapter
         (sscore, expendurance) = maybe ("na", Nothing) (\(sc, e) -> (percent sc, Just (fromRational @Double (if sc > 0 then e / sc else e)))) solscore
         nodestyle
           | eating == Just NoHunt = "color=yellow style=filled"
@@ -218,7 +226,14 @@ todot book soltransitions scores sttmap = do
           | otherwise = case expendurance of
             Nothing -> "white"
             Just e -> printf "#%02x%02x%02x" (truncate @Double @Word8 (255 * (20 - e) / 20)) (255 :: Word8) (255 :: Word8)
-     in putStrLn ("  \"A" ++ show cid ++ "\" [style=filled fillcolor=\"" ++ nodecolor ++ "\"label=\"" ++ show cid ++ " " ++ sscore ++ hp ++ nstates ++ "\" " ++ nodestyle ++ "];")
+     in putStrLn
+          ( "  \"A" ++ ctitle ++ "\" [style=filled fillcolor=\"" ++ nodecolor ++ "\"label=\"" ++ show cid ++ " " ++ sscore ++ hp ++ nstates ++ "\" " ++ nodestyle
+              ++ " URL=\"https://www.projectaon.org/en/xhtml/lw/"
+              ++ urlpart
+              ++ "/sect"
+              ++ ctitle
+              ++ ".htm\"];"
+          )
   let srcdst s = S.fromList $ do
         (src, dsts) <- M.toList s
         dst <- M.keys dsts

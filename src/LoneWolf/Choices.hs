@@ -27,6 +27,10 @@ importantItem i cconstant cvariable =
       WithoutSkill _ -> WeaponSkill w `elem` cconstant ^. discipline
     _ -> True
 
+-- some items will force branches (particularly in book05, with the black crystal cube, and should not always be picked up)
+potentiallybad :: Item -> Bool
+potentiallybad i = i == blackCubeB05
+
 data CanTake
   = SpaceAvailable Int
   | Mustdrop [Item]

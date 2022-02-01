@@ -31,10 +31,10 @@ import Control.Lens
 import Data.Aeson
 import Data.Data
 import Data.Data.Lens
+import qualified Data.Function.Memoize as M
 import GHC.Generics (Generic)
 import LoneWolf.Character
 import Solver
-import qualified Data.Function.Memoize as M
 
 {-
 Basic types
@@ -118,7 +118,6 @@ instance ToJSON Decision where
 data SpecialChapter
   = Cartwheel
   | Portholes
-  | B03S088
   | B05S127
   | B05S357
   deriving (Show, Eq, Typeable, Data, Generic)
@@ -259,6 +258,7 @@ data BoolCond
   | Always Bool
   | HasEndurance Endurance
   | HasFlag Flag
+  | HasLevel KaiLevel
   deriving (Show, Eq, Typeable, Data, Generic)
 
 instance ToJSON BoolCond where
@@ -309,7 +309,38 @@ data FightModifier
   | StopFight ChapterId -- immediately stop the fight and jump
   | DPR Endurance -- damage per round inflicted to the opponent
   | NoPotion -- can't take a potion for this fight
+  | Poisonous Proba -- opponent doesn't damage, but can instakill on damage (cf b03s088)
   deriving (Show, Eq, Typeable, Data, Generic, Ord)
+
+data KaiLevel
+  = Novice
+  | Intuite
+  | Doan
+  | Acolyte
+  | Initiate
+  | Aspirant
+  | Guardian
+  | Warmarn
+  | Savant
+  | Master
+  deriving (Show, Eq, Ord, Enum, Bounded, Data, Generic)
+
+instance ToJSON KaiLevel where
+  toJSON = genericToJSON jsonOptions
+
+getLevel :: CharacterConstant -> KaiLevel
+getLevel ccst = case length (_discipline ccst) of
+  1 -> Novice
+  2 -> Intuite
+  3 -> Doan
+  4 -> Acolyte
+  5 -> Initiate
+  6 -> Aspirant
+  7 -> Guardian
+  8 -> Warmarn
+  9 -> Savant
+  10 -> Master
+  _ -> error ("invalid amount of disciplines: " ++ show (_discipline ccst))
 
 instance ToJSON FightModifier where
   toJSON = genericToJSON jsonOptions
