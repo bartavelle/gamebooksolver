@@ -12,14 +12,14 @@ import Control.Lens
 import Control.Monad (forM_, guard)
 import Data.Aeson (eitherDecodeFileStrict)
 import Data.Bifunctor (first)
-import Data.List (isSuffixOf, sortOn)
+import Data.Bits.Lens (bitAt)
+import Data.List (intercalate, isSuffixOf, sortOn)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe)
 import qualified Data.Set as S
 import Data.String (fromString)
 import Data.Text (Text)
 import qualified Data.Text as T
-import Data.Word
 import Debug.Trace (traceM)
 import LoneWolf.Chapter (ChapterId)
 import LoneWolf.Character
@@ -27,6 +27,17 @@ import LoneWolf.Data
 import Lucid
 import Lucid.Base (TermRaw)
 import Options.Applicative
+  ( Parser,
+    ParserInfo,
+    command,
+    execParser,
+    fullDesc,
+    helper,
+    info,
+    progDesc,
+    subparser,
+    (<**>),
+  )
 import System.Directory (getDirectoryContents)
 import Text.Printf (printf)
 
@@ -64,23 +75,16 @@ disciplines = [Camouflage, Hunting, SixthSense, Tracking, Healing, WeaponSkill S
 dpairs :: [(Discipline, Discipline)]
 dpairs = disciplines >>= \d1 -> disciplines >>= \d2 -> (d1, d2) <$ guard (d1 < d2)
 
-type SttsG r = (Book, M.Map ChapterId (r, r), M.Map ChapterId (M.Map ChapterId r), M.Map ChapterId Word64)
-
-type Stts = SttsG Rational
-
 data Stats = Stats
   { _fp :: FilePath,
-    _sbook :: Book,
     _sdisciplines :: [Discipline],
     _svariable :: CVarState,
     _sentry :: MultistatEntry,
-    _scores :: M.Map ChapterId (Rational, Rational),
-    _transitions :: M.Map ChapterId (M.Map ChapterId Rational),
-    _states :: M.Map ChapterId Word64
+    _sdecisions :: DecisionStats Rational
   }
   deriving (Show)
 
-loadContent :: FilePath -> IO (Either String (FilePath, SttsG ERatio, Multistat))
+loadContent :: FilePath -> IO (Either String (FilePath, DecisionStats ERatio, Multistat))
 loadContent jotpath = do
   let basepath = reverse (drop 4 (reverse jotpath))
   a1 <- eitherDecodeFileStrict jotpath
@@ -98,11 +102,17 @@ loadData book = do
   allfiles <- map (bookdir <>) . filter (isSuffixOf ".jot") <$> getDirectoryContents bookdir
   allcontent <- mapM loadContent allfiles
   mapM_ traceM (allcontent ^.. traverse . _Left)
-  let convert :: (FilePath, SttsG ERatio, Multistat) -> Stats
-      convert (fp, (bk, scores, transitions, sttmap), ms) =
+  let convert :: (FilePath, DecisionStats ERatio, Multistat) -> Stats
+      convert (fp, stts, ms) =
         let Multistat _ discs varstt [entry] = ms
-         in Stats fp bk discs varstt entry (fmap (bimap getERatio getERatio) scores) (fmap (fmap getERatio) transitions) sttmap
+         in Stats fp discs varstt entry (fmap getERatio stts)
+
   pure $! (allcontent ^.. traverse . _Right . to convert)
+
+groupWinstates :: [(CharacterVariable, ERatio)] -> M.Map (M.Map Item Int, S.Set Flag) Rational
+groupWinstates = M.fromListWith (+) . map (bimap extractCV getERatio)
+  where
+    extractCV cv = (M.fromList (items (_cequipment cv)), S.fromList (allFlags cv))
 
 percent :: Double -> String
 percent = printf "%.3f%%" . (* 100)
@@ -162,6 +172,7 @@ main = do
   dt <- loadData book
   case mde of
     ChapterStats -> case book of
+      Book04 -> print (b04stats dt)
       Book05 -> print (b05stats dt)
       _ -> error ("unsupported book stats for " ++ show book)
 
@@ -169,11 +180,11 @@ winrate :: Stats -> Rational
 winrate = _mratio . _sentry
 
 visitrate :: ChapterId -> Stats -> Rational
-visitrate cid stts = M.findWithDefault 0 cid (fmap fst (_scores stts))
+visitrate cid stts = M.findWithDefault 0 cid (fmap _cscore (_dres (_sdecisions stts)))
 
 linkrate :: ChapterId -> ChapterId -> Stats -> Rational
 linkrate src dst stts = fromMaybe 0 $ do
-  tmap <- M.lookup src (_transitions stts)
+  tmap <- M.lookup src (fmap _ctransitions (_dres (_sdecisions stts)))
   let allprobs = sum tmap
   guard (allprobs > 0)
   (/ allprobs) <$> M.lookup dst tmap
@@ -186,35 +197,139 @@ missingdiscs stats =
   let discs = S.fromList (_sdisciplines stats)
    in S.difference normalDiscs discs
 
-b05stats :: [Stats] -> Html ()
-b05stats astts = heatmap rowStyleGreen (Just "Missing disc") (map fst cols) (map _fp ordered) id (\n -> mdiscname (mpo M.! n)) getentry
+mdiscname :: Stats -> String
+mdiscname = intercalate " / " . map show . S.toList . missingdiscs
+
+hasitem :: Item -> Stats -> Bool
+hasitem i = maybe False (elem i . map fst) . _cvitems . _svariable
+
+hasflag :: Flag -> Stats -> Bool
+hasflag f = elem f . _cvflags . _svariable
+
+finalChapter :: Stats -> ChapterId
+finalChapter stts = case _dbookid (_sdecisions stts) of
+  Book05 -> 400
+  _ -> 350
+
+finalStat :: Stats -> ChapterAggreg Rational
+finalStat stts = _dres (_sdecisions stts) M.! finalChapter stts
+
+finalItems :: Stats -> M.Map Inventory Rational
+finalItems = _citems . finalStat
+
+finalFlags :: Stats -> M.Map Flags Rational
+finalFlags = _cflags . finalStat
+
+finalFlag :: Flag -> Stats -> Rational
+finalFlag f stts = sum (M.filterWithKey (const . view (bitAt (fromEnum f))) wstates) / rawrate
   where
-    b c = if c then (fromString "yes", 1) else (fromString "no", 0)
-    r c = if c == 0 then (fromString "-", 0) else (fromString (rpercent c), fromRational c)
-    bl = b . (== 1)
-    cols =
-      [ ("Win rate", r . winrate),
-        ("Sommerswerd", b . not . hasitem (Weapon Sword)),
-        ("Silver Helm", b . hasitem SilverHelm),
-        ("Fought Elix", b . hasflag FoughtElix),
-        ("Imprisonment", r . visitrate 69),
-        ("Offer Oede", r . visitrate 344),
-        ("Sober", r . linkrate 302 283),
-        ("Surrender", bl . linkrate 1 176),
-        ("Blowpipe & steel dart", r . linkrate 313 325),
-        ("Visualization", \e -> (a_ [href_ (T.pack ("/home/bartavelle/gits/misc/gamebooksolver/" ++ _fp e ++ ".svg"))] (fromString "link"), 1))
-      ]
-    hasitem i = maybe False (elem i . map fst) . _cvitems . _svariable
-    hasflag f = elem f . _cvflags . _svariable
+    wstates = finalFlags stts
+    rawrate = sum wstates
+
+finalItem :: Item -> Stats -> Rational
+finalItem i stts = rate / rawrate
+  where
+    wstates = finalItems stts
+    rawrate = sum wstates
+    rate = sum $ do
+      (inv, p) <- M.toList wstates
+      let cnt = itemCount i inv
+      pure (fromIntegral cnt * p)
+
+blogpostStats :: [Stats] -> [(String, Stats -> (Html (), Double))] -> Html ()
+blogpostStats astts cols = heatmap rowStyleGreen (Just "Missing disc") (map fst cols) (map _fp ordered) id (\n -> mdiscname (mpo M.! n)) getentry
+  where
+    mpo = M.fromList [(_fp x, x) | x <- ordered]
     cmap = M.fromList cols
-    ordered :: [Stats]
     ordered = sortOn (negate . winrate) astts
-    mdiscname = unwords . map show . S.toList . missingdiscs
-    mpo = M.fromList [(_fp e, e) | e <- ordered]
-    getentry :: String -> String -> Maybe (Html (), Double)
     getentry entry col =
       let Just e = M.lookup entry mpo
           fn = case M.lookup col cmap of
             Just f -> f
             _ -> error col
        in Just (fn e)
+
+fmtb :: Bool -> (Html (), Double)
+fmtb c = if c then (fromString "yes", 1) else (fromString "no", 0)
+
+fmtr :: Rational -> (Html (), Double)
+fmtr c = if c == 0 then (fromString "-", 0) else (fromString (rpercent c), fromRational c)
+
+fmtbl :: Rational -> (Html (), Double)
+fmtbl = fmtb . (== 1)
+
+fmtq :: Rational -> Rational -> (Html (), Double)
+fmtq mx q = (fromString (printf "%.2f" (fromRational @Double q)), fromRational (q / mx))
+
+getallflags :: Flags -> [Flag]
+getallflags flgs = filter (\f -> view (bitAt (fromEnum f)) flgs) [minBound .. maxBound]
+
+finalStateRecap :: [Stats] -> Html ()
+finalStateRecap = mapM_ showi
+  where
+    regroupFlags :: Stats -> M.Map Flag Rational
+    regroupFlags = M.fromListWith (+) . concatMap expandFlgs . M.toList . finalFlags
+      where
+        expandFlgs (flgs, p) = do
+          f <- getallflags flgs
+          pure (f, p)
+    regroupItems :: Stats -> M.Map Item Rational
+    regroupItems = M.fromListWith (+) . concatMap expandItms . M.toList . finalItems
+      where
+        expandItms (itms, p) = do
+          (i, q) <- items itms
+          pure (i, fromIntegral q * p)
+    showi :: Stats -> Html ()
+    showi stt = do
+      let rawrate = sum (finalFlags stt)
+      h2_ $ fromString (_fp stt ++ " end states")
+      ul_ $ do
+        forM_ (M.toList (regroupItems stt)) $ \(itm, p) -> li_ (fromString (showItem Book04 itm ++ " - " ++ rpercent (p / rawrate)))
+        forM_ (M.toList (regroupFlags stt)) $ \(flg, p) -> li_ (fromString (show flg ++ " - " ++ rpercent (p / rawrate)))
+
+finalStateRecap' :: Book -> [Stats] -> Html ()
+finalStateRecap' bk astts = blogpostStats astts cols
+  where
+    allitems = foldMap (S.fromList . map fst . concatMap items . M.keys . finalItems) astts
+    allflags :: S.Set Flag
+    allflags = foldMap (S.fromList . concatMap getallflags . M.keys . finalFlags) astts
+    itemcols = [(showItem bk i, fmtq (iq i) . finalItem i) | i <- S.toList allitems]
+    flagcols = [(show f, fmtr . finalFlag f) | f <- S.toList allflags]
+    cols = itemcols ++ flagcols
+    iq Meal = 6
+    iq Gold = 50
+    iq Laumspur = 5
+    iq _ = 1
+
+b04stats :: [Stats] -> Html ()
+b04stats astts = do
+  let cols =
+        [ ("Win rate", fmtr . winrate),
+          ("Raw rate", fmtr . _cscore . finalStat),
+          ("Sommerswerd", fmtb . not . hasitem (Weapon Sword)),
+          ("Silver Helm", fmtb . hasitem SilverHelm),
+          ("F Gold", fmtq 21 . finalItem Gold),
+          ("Fought Elix", fmtr . finalFlag FoughtElix),
+          ("End with Silver Helm", fmtr . finalItem SilverHelm),
+          ("Visualization", \e -> (a_ [href_ (T.pack ("/images/lonewolf/" ++ _fp e ++ ".svg"))] (fromString "link"), 1))
+        ]
+  blogpostStats astts cols
+  finalStateRecap' Book04 astts
+
+b05stats :: [Stats] -> Html ()
+b05stats astts = do
+  let cols =
+        [ ("Win rate", fmtr . winrate),
+          ("Starting Sommerswerd", fmtb . not . hasitem (Weapon Sword)),
+          ("Starting Silver Helm", fmtb . hasitem SilverHelm),
+          ("Previously fought the Elix", fmtb . hasflag FoughtElix),
+          ("Imprisoned", fmtr . visitrate 69),
+          ("Offer Oede", fmtr . visitrate 344),
+          ("Prism route", fmtr . finalItem prismB05),
+          ("Sash route", fmtr . finalItem sashB05),
+          ("Fight Dhorgaan", fmtr . visitrate 253),
+          ("End with Sommerswerd", fmtr . finalItem (Weapon Sommerswerd)),
+          ("Visualization", \e -> (a_ [href_ (T.pack ("/images/lonewolf/" ++ _fp e ++ ".svg"))] (fromString "link"), 1))
+        ]
+  blogpostStats astts cols
+  finalStateRecap' Book05 astts

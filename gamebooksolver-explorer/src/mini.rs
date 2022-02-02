@@ -1,6 +1,7 @@
 use minicbor::decode::{Decode, Decoder, Error};
 use rug::Integer;
 use rug::Rational;
+use serde::Serialize;
 
 pub type Probably<A> = Vec<(A, Rational)>;
 
@@ -227,9 +228,16 @@ impl NextStep {
       NextStep::NewChapter(c, _) => Some(*c),
     }
   }
+  pub fn cvar(&self) -> Option<&CharacterVariable> {
+    match self {
+      NextStep::HasLost(_) => None,
+      NextStep::HasWon(s) => Some(s),
+      NextStep::NewChapter(_, s) => Some(s),
+    }
+  }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize)]
 pub struct Equipment(pub u64);
 
 impl Equipment {
@@ -279,12 +287,12 @@ impl<'b> Decode<'b> for Equipment {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
 pub struct CharacterVariable {
   pub curendurance: i8,
-  flags: u32,
-  cequipment: Equipment,
-  cprevequipment: Equipment,
+  pub flags: u32,
+  pub cequipment: Equipment,
+  pub cprevequipment: Equipment,
 }
 
 impl CharacterVariable {

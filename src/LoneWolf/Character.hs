@@ -17,22 +17,21 @@ module LoneWolf.Character where
 import Codec.Serialise (Serialise)
 import Control.DeepSeq
 import Control.Lens
-import Data.Aeson (FromJSON, ToJSON (toJSON), withText, genericToJSON, defaultOptions)
+import Data.Aeson (FromJSON, FromJSONKey, Options (fieldLabelModifier), ToJSON (toJSON), ToJSONKey, defaultOptions, genericParseJSON, genericToJSON, withText)
 import Data.Aeson.Types (FromJSON (parseJSON))
 import Data.Bits
 import Data.Bits.Lens (bitAt)
 import Data.Data
+import qualified Data.Function.Memoize as M
 import Data.Hashable
 import Data.Int (Int16)
 import Data.List
 import qualified Data.Map.Strict as M
-import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Data.Tuple (swap)
 import Data.Word
 import GHC.Generics
 import Text.Read (readMaybe)
-import qualified Data.Function.Memoize as M
 
 {-
 Character sheet
@@ -63,7 +62,7 @@ newtype CombatSkill = CombatSkill {getCombatSkill :: Int}
   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise, M.Memoizable)
 
 newtype Endurance = Endurance {getEndurance :: Int16}
-  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise, Hashable, NFData, Bounded)
+  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise, Hashable, NFData, Bounded, FromJSONKey, ToJSONKey)
 
 instance M.Memoizable Endurance where
   memoize = M.memoizeFinite
@@ -98,14 +97,16 @@ instance Hashable CharacterVariable
 
 instance NFData CharacterVariable
 
-instance ToJSON CharacterVariable
+instance ToJSON CharacterVariable where
+  toJSON = genericToJSON defaultOptions {fieldLabelModifier = drop 1}
 
-instance FromJSON CharacterVariable
+instance FromJSON CharacterVariable where
+  parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 1}
 
 instance Serialise CharacterVariable
 
 {- Character flags as bits -}
-newtype Flags = Flags {getFlags :: Word32} deriving (Eq, Ord, Num, Bits, Hashable, NFData, ToJSON, FromJSON, Serialise)
+newtype Flags = Flags {getFlags :: Word32} deriving (Eq, Ord, Num, Bits, Hashable, NFData, ToJSON, FromJSON, Serialise, FromJSONKey, ToJSONKey)
 
 instance Show Flags where
   show flgs = show $ filter (\f -> view (bitAt (fromEnum f)) flgs) ([minBound .. maxBound] :: [Flag])
@@ -133,7 +134,7 @@ flags f (CharacterVariable e flgs i p) = (\flgs' -> CharacterVariable e flgs' i 
 {-# INLINE flags #-}
 
 newtype Inventory = Inventory {getInventory :: Word64}
-  deriving (Generic, Eq, Bits, Ord, Num, Hashable, NFData, ToJSON, FromJSON, Serialise)
+  deriving (Generic, Eq, Bits, Ord, Num, Hashable, NFData, ToJSON, FromJSON, Serialise, FromJSONKey, ToJSONKey)
 
 instance Show Inventory where
   show i = "(inventoryFromList " ++ show (items i) ++ ")"
@@ -290,7 +291,9 @@ itemNames =
             ("Flask of Holy Water", flaskHolyWaterB04),
             ("Iron Key", ironKeyB04),
             ("Scroll", scrollB04),
-            ("Rope", ropeB04)
+            ("Rope", ropeB04),
+            ("Torch", torchB04),
+            ("Tinderbox", tinderBoxB04)
           ]
       ),
       ( Book05,
@@ -320,7 +323,10 @@ itemIds = fmap rev itemNames
     rev = M.fromList . map swap . M.toList
 
 showItem :: Book -> Item -> String
-showItem bk i = fromMaybe (show i) (M.lookup bk itemIds >>= M.lookup i)
+showItem bk i = case (i, M.lookup bk itemIds >>= M.lookup i) of
+  (Weapon w, _) -> show w
+  (_, Just d) -> d
+  _ -> show i
 
 -- book 01
 vordakGem :: Item
@@ -484,13 +490,13 @@ oedeHerb = GenBackpack 2
 sashB05 :: Item -- this book
 sashB05 = GenSpecial 6
 
-brassWhistleB05 :: Item -- this book
+brassWhistleB05 :: Item -- this book, useless
 brassWhistleB05 = GenSpecial 7
 
 blackCubeB05 :: Item -- this book
 blackCubeB05 = GenSpecial 8
 
-blueStoneTriangleB05 :: Item -- from book 03
+blueStoneTriangleB05 :: Item -- from book 03, useless
 blueStoneTriangleB05 = GenSpecial 9
 
 onyxMedallion :: Item -- from book 04
@@ -703,7 +709,6 @@ usedWeapon cconstant cvariable
     inventory = cvariable ^. equipment
     wskills = cconstant ^.. discipline . traverse . _WeaponSkill
     weapons = getWeapons inventory
-
 
 M.deriveMemoizable ''Weapon
 M.deriveMemoizable ''Discipline

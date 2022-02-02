@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -91,6 +92,28 @@ data CVarState = CVarState
   deriving (Generic, Show, Eq)
 
 instance Serialise CVarState
+
+data ChapterAggreg g = ChapterAggreg
+  { _citems :: M.Map Inventory g,
+    _cflags :: M.Map Flags g,
+    _cendurance :: M.Map Endurance g,
+    _ctransitions :: M.Map ChapterId g,
+    _cscore :: g
+  }
+  deriving (Generic, Show, Eq, Functor)
+
+data DecisionStats g = DecisionStats
+  { _dbookid :: Book,
+    _dres :: M.Map ChapterId (ChapterAggreg g),
+    _dsttmap :: M.Map ChapterId Word64
+  }
+  deriving (Generic, Show, Eq, Functor)
+
+instance FromJSON g => FromJSON (ChapterAggreg g) where
+  parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 2}
+
+instance FromJSON g => FromJSON (DecisionStats g) where
+  parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 2}
 
 mkchar :: Bool -> CharacterConstant -> CVarState -> CharacterVariable
 mkchar autoweapon cst (CVarState sitems gld flgs) = foldl' (\c f -> c & LoneWolf.Character.flag f .~ True) chr flgs

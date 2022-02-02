@@ -60,7 +60,7 @@ data/%.cbor:
 	time python3 buildsol.py $@
 
 data/%.cbor.jot: data/%.cbor gamebooksolver-explorer
-	time ./gamebooksolver-explorer/target/release/gamebooksolver-explorer --solpath $< --alternate > $@
+	time ./gamebooksolver-explorer/target/release/gamebooksolver-explorer --solpath $< > $@
 
 data/%.dot: data/%.jot
 	./dist/gamebooksolver-solvebook dot $< > $@

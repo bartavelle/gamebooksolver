@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
@@ -9,19 +8,27 @@ import Codec.Compression.Zstd.Lazy (compress, decompress)
 import qualified Codec.Serialise as S
 import Control.Lens hiding (argument)
 import Control.Monad (forM_, guard, when)
-import Data.Aeson (decode, eitherDecodeFileStrict, encode, encodeFile)
+import Data.Aeson (eitherDecodeFileStrict, encode, encodeFile)
 import Data.Bifunctor (first)
+import Data.Bits.Lens (bitAt)
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.ByteString.Lazy.Char8 as BS8
 import Data.Data.Lens (biplate)
+import Data.GraphViz (toDot)
+import Data.GraphViz.Attributes (Shape (Record), color, filled, fontColor, shape, style, toLabel)
+import Data.GraphViz.Attributes.Colors.SVG (SVGColor (Black, Blue, DarkGray, Gray, Red, White, Yellow))
+import Data.GraphViz.Attributes.Complete (Attribute (RankDir, URL), RankDir (FromLeft, FromTop), RecordField (FieldLabel, FlipFields))
+import Data.GraphViz.Printing (renderDot)
+import Data.GraphViz.Types.Canonical
 import qualified Data.HashMap.Strict as HM
 import qualified Data.IntMap.Strict as IM
 import Data.List (foldl', intercalate, isSuffixOf)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, isJust, mapMaybe)
 import qualified Data.Set as S
-import Data.Word (Word64, Word8)
-import Debug.Trace (traceM)
+import qualified Data.Text.Lazy as T
+import qualified Data.Text.Lazy.IO as T
+import Data.Word (Word64)
 import qualified LoneWolf.Book01
 import qualified LoneWolf.Book02
 import qualified LoneWolf.Book03
@@ -36,6 +43,33 @@ import LoneWolf.Solve (orderChapters, solveLWs, step)
 import LoneWolf.StateSelector (Log (..), Selector (..), parseSelector, selectChar)
 import LoneWolf.Various (getDestinations)
 import Options.Applicative
+  ( Alternative (many, (<|>)),
+    Parser,
+    ParserInfo,
+    argument,
+    auto,
+    command,
+    eitherReader,
+    execParser,
+    fullDesc,
+    help,
+    helper,
+    info,
+    long,
+    maybeReader,
+    metavar,
+    option,
+    optional,
+    progDesc,
+    short,
+    showDefault,
+    strArgument,
+    strOption,
+    subparser,
+    switch,
+    value,
+    (<**>),
+  )
 import SimpleSolver
 import Solver (Probably)
 import System.Directory (getDirectoryContents)
@@ -82,7 +116,6 @@ data DumpMode = Json | Other
 
 data Command
   = ExploreFile FilePath (Maybe (Log Selector))
-  | DecisionGraph DumpMode FilePath
   | SolDump DumpMode SolDesc (Maybe FilePath) Bool
   | ExtractFile FilePath (Log Selector)
   | DecisionTracker FilePath FightDetails (Log Selector)
@@ -141,17 +174,11 @@ scommand :: Parser Command
 scommand =
   subparser
     ( command
-        "decisiongraph"
+        "explorefrom"
         ( info
-            (DecisionGraph <$> dumpmode <*> strArgument (metavar "PATH" <> help "saved cbor game"))
-            (progDesc "Generate a graphviz graph of decisions")
+            (ExploreFile <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> optional charfilter)
+            (progDesc "Explore the solution from a saved file")
         )
-        <> command
-          "explorefrom"
-          ( info
-              (ExploreFile <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> optional charfilter)
-              (progDesc "Explore the solution from a saved file")
-          )
         <> command
           "soldump"
           ( info
@@ -179,72 +206,92 @@ programOpts =
         <> progDesc "Solve and explore book02 solutions"
     )
 
-todot ::
-  Book ->
-  M.Map ChapterId (M.Map ChapterId Rational) ->
-  M.Map ChapterId (Rational, Rational) ->
-  M.Map ChapterId Word64 ->
-  IO ()
-todot book soltransitions scores sttmap = do
-  let chapters = pchapters book
-      alltransitions :: M.Map ChapterId (M.Map ChapterId [String])
-      alltransitions = M.fromList (fmap (fmap mkdestmap) chapters)
-      mkdestmap = M.fromList . getDestinations book . _pchoice
-      getedgedesc src dst = maybe [] (map show) (M.lookup src alltransitions >>= M.lookup dst)
-      showEdge mweight src dst = "  A" ++ show src ++ " -> A" ++ show dst ++ " [" ++ unwords [label, color] ++ "];"
-        where
-          color = "color=" ++ if isJust mweight then "black" else "darkgrey"
-          label = "label=\"" ++ filter (/= '"') (unwords (maybe "" percent mweight : getedgedesc src dst)) ++ "\""
-      urlpart = case book of
-        Book01 -> "01fftd"
-        Book02 -> "02fotw"
-        Book03 -> "03tcok"
-        Book04 -> "04tcod"
-        Book05 -> "05sots"
-  putStrLn "digraph g {"
-  forM_ chapters $ \(cid, chapter) ->
-    let cdesc = _pchoice chapter
-        combat = has (outcomePlate . biplate . _Fight) cdesc || has (biplate . _EvadeFight) cdesc
-        eating = preview (outcomePlate . biplate . _MustEat) cdesc
-        solscore = M.lookup cid scores
-        ctitle = _title chapter
-        (sscore, expendurance) = maybe ("na", Nothing) (\(sc, e) -> (percent sc, Just (fromRational @Double (if sc > 0 then e / sc else e)))) solscore
-        nodestyle
-          | eating == Just NoHunt = "color=yellow style=filled"
-          | eating == Just Hunt = "color=yellow"
-          | combat = "color=red"
-          | has (biplate . _GameLost) cdesc = "style=filled fontcolor=white"
-          | has _Special cdesc = "shape=square color=blue"
-          | has _Just solscore = "color=grey"
-          | otherwise = ""
-        hp = case expendurance of
-          Nothing -> ""
-          Just e -> printf " [e=%.2f]" e
-        nstates = printf " [stts=%d]" (M.findWithDefault 0 cid sttmap)
-        nodecolor
-          | has (biplate . _GameLost) cdesc = "black"
-          | otherwise = case expendurance of
-            Nothing -> "white"
-            Just e -> printf "#%02x%02x%02x" (truncate @Double @Word8 (255 * (20 - e) / 20)) (255 :: Word8) (255 :: Word8)
-     in putStrLn
-          ( "  \"A" ++ ctitle ++ "\" [style=filled fillcolor=\"" ++ nodecolor ++ "\"label=\"" ++ show cid ++ " " ++ sscore ++ hp ++ nstates ++ "\" " ++ nodestyle
-              ++ " URL=\"https://www.projectaon.org/en/xhtml/lw/"
-              ++ urlpart
-              ++ "/sect"
-              ++ ctitle
-              ++ ".htm\"];"
-          )
-  let srcdst s = S.fromList $ do
-        (src, dsts) <- M.toList s
-        dst <- M.keys dsts
-        pure (src, dst)
-      missingtransitions = S.difference (srcdst alltransitions) (srcdst soltransitions)
-  forM_ missingtransitions $ \(src, dst) -> putStrLn (showEdge Nothing src dst)
-  forM_ (M.toList soltransitions) $ \(src, dsts) -> do
-    let ttl = sum dsts
-        dsts' = if ttl > 0 then fmap (/ ttl) dsts else dsts
-    forM_ (M.toList dsts') $ \(dst, weight) -> putStrLn (showEdge (Just weight) src dst)
-  putStrLn "}"
+data DotInfo = DExpectedAmount Item | DHasItem Item | DHasFlag Flag
+
+bookDinfo :: Book -> [DotInfo]
+bookDinfo b = case b of
+  Book05 -> [DHasFlag LimbDeath]
+  _ -> []
+
+mkdot :: DecisionStats Rational -> DotGraph ChapterId
+mkdot (DecisionStats book res sttmap) =
+  DotGraph
+    { strictGraph = False,
+      directedGraph = True,
+      graphID = Just (Str "G"),
+      graphStatements = DotStmts {attrStmts = [], subGraphs = [], nodeStmts = nodes, edgeStmts = edges}
+    }
+  where
+    chapters = pchapters book
+    soltransitions = fmap _ctransitions res
+    alltransitions :: M.Map ChapterId (M.Map ChapterId [String])
+    alltransitions = M.fromList (fmap (fmap mkdestmap) chapters)
+    mkdestmap = M.fromList . getDestinations book . _pchoice
+    getedgedesc src dst = maybe [] (map show) (M.lookup src alltransitions >>= M.lookup dst)
+    urlpart = case book of
+      Book01 -> "01fftd"
+      Book02 -> "02fotw"
+      Book03 -> "03tcok"
+      Book04 -> "04tcod"
+      Book05 -> "05sots"
+    srcdst s = S.fromList $ do
+      (src, dsts) <- M.toList s
+      dst <- M.keys dsts
+      pure (src, dst)
+    missingtransitions = S.difference (srcdst alltransitions) (srcdst soltransitions)
+    nodes = do
+      (cid, chapter) <- chapters
+      let nodestyle
+            | eating == Just NoHunt = [style filled, color Yellow]
+            | eating == Just Hunt = [color Yellow]
+            | combat = [color Red]
+            | has (biplate . _GameLost) cdesc = [style filled, fontColor White]
+            | has _Special cdesc = [color Blue]
+            | has _Just chapterstats = [color Gray]
+            | otherwise = [style filled]
+          cdesc = _pchoice chapter
+          combat = has (outcomePlate . biplate . _Fight) cdesc || has (biplate . _EvadeFight) cdesc
+          eating = preview (outcomePlate . biplate . _MustEat) cdesc
+          chapterstats = M.lookup cid res
+          ctitle = _title chapter
+          url = "https://www.projectaon.org/en/xhtml/lw/" ++ urlpart ++ "/sect" ++ ctitle ++ ".htm"
+          scorelabels =
+            case chapterstats of
+              Just stts ->
+                let ttl = sum (_cendurance stts)
+                 in FlipFields
+                      [ FieldLabel (T.pack (printf "%dstts" (M.findWithDefault 0 cid sttmap))),
+                        FieldLabel (T.pack (percent (LoneWolf.Data._cscore stts))),
+                        FieldLabel $
+                          if ttl > 0
+                            then T.pack (printf "%.2f hp" (fromRational @Double (sum [fromIntegral e * p / ttl | (e, p) <- M.toList (_cendurance stts)])))
+                            else ""
+                      ]
+              Nothing -> FieldLabel (T.pack (printf "%d states" (M.findWithDefault 0 cid sttmap)))
+          showDinfo di = case di of
+            DHasFlag flg -> do
+              stts <- chapterstats
+              let amount = sum (M.filterWithKey (const . view (bitAt (fromEnum flg))) (_cflags stts))
+              if amount > 0
+                then Just (FlipFields [FieldLabel (T.pack (show flg)), FieldLabel (T.pack (percent amount))])
+                else Nothing
+            _ -> error "unhandled showDinfo"
+          nodelabel = FieldLabel (T.pack ctitle) : scorelabels : mapMaybe showDinfo (bookDinfo book)
+      pure (DotNode cid (shape Record : toLabel [FlipFields nodelabel] : URL (T.pack url) : nodestyle))
+    showEdge mweight src dst = DotEdge src dst [color clr, toLabel lbl]
+      where
+        clr = if isJust mweight then Black else DarkGray
+        lbl = unwords (maybe "" percent mweight : getedgedesc src dst)
+    edges =
+      map (uncurry (showEdge Nothing)) (S.toList missingtransitions) ++ do
+        (src, dsts) <- M.toList soltransitions
+        let ttl = sum dsts
+            dsts' = if ttl > 0 then fmap (/ ttl) dsts else dsts
+        (dst, weight) <- M.toList dsts'
+        pure (showEdge (Just weight) src dst)
+
+todot :: DecisionStats Rational -> IO ()
+todot = T.putStrLn . renderDot . toDot . mkdot
 
 getSol :: M.Map (S.Set Item, S.Set Flag) Rational -> Bool -> SolDesc -> (Rational, [(NextStep, Solution NextStep String)])
 getSol scoremap autoweapon (SolDesc fchapters ccst ccvar) =
@@ -267,13 +314,7 @@ shortState ccst s = "e:" ++ printf "%2d" (s ^. curendurance . to getEndurance) +
     mstored = if null sitems then "" else " stored:" ++ itemlist sitems
     sitems = items (s ^. prevequipment)
     itemlist = intercalate "/" . map singleitem
-    singleitem (i, c) =
-      itm ++ (if c == 1 then "" else "(" ++ show c ++ ")")
-      where
-        itm = case (i, M.lookup (_bookid ccst) itemIds >>= M.lookup i) of
-          (_, Just d) -> d
-          (Weapon x, _) -> show x
-          _ -> show i
+    singleitem (i, c) = showItem (_bookid ccst) i ++ (if c == 1 then "" else "(" ++ show c ++ ")")
 
 percent :: Rational -> String
 percent = printf "%.3f%%" . fromRational @Double . (* 100)
@@ -348,57 +389,6 @@ mkhistogram :: M.Map ChapterId DecisionStat -> Maybe (ChapterId, DecisionStat) -
 mkhistogram curmp Nothing = curmp
 mkhistogram mp (Just (cid, ds)) = M.unionWith (<>) (M.singleton cid ds) mp
 
-nsChapter :: NextStep -> Maybe ChapterId
-nsChapter ns = case ns of
-  HasLost cid -> Just cid
-  HasWon _ -> Nothing
-  NewChapter cid _ -> Just cid
-
-countstates :: [(NextStep, a)] -> M.Map ChapterId Word64
-countstates = M.fromListWith (+) . mapMaybe (fmap (,1) . extractCid . fst)
-  where
-    extractCid ns = case ns of
-      NewChapter tgt _ -> Just tgt
-      HasLost tgt -> Just tgt
-      HasWon _ -> Nothing
-
-mksol :: NextStep -> HM.HashMap NextStep (ChoppedSolution NextStep) -> (M.Map ChapterId (M.Map ChapterId Rational), M.Map ChapterId (Rational, Rational))
-mksol ini sttmap = go M.empty M.empty [(1, ini)]
-  where
-    go ::
-      M.Map ChapterId (M.Map ChapterId Rational) ->
-      M.Map ChapterId (Rational, Rational) ->
-      [(Rational, NextStep)] ->
-      (M.Map ChapterId (M.Map ChapterId Rational), M.Map ChapterId (Rational, Rational))
-    go !linkmap !scoremap !todo =
-      case todo of
-        [] -> (linkmap, scoremap)
-        (p, s) : ss ->
-          let ee = case s of
-                HasLost _ -> 0
-                HasWon _ -> 0
-                NewChapter _ stt -> fromIntegral (stt ^. curendurance)
-           in case (nsChapter s, HM.lookup s sttmap) of
-                (Just src, Just sol) ->
-                  case sol of
-                    CLeafLost -> go linkmap scoremap ss
-                    CLeaf score -> go linkmap (updateScore (p * score, p * ee) src) ss
-                    CJump _ stt -> go (updateChoice src [(p, stt)]) (updateScore (p, p * ee) src) ((p, stt) : ss)
-                    CNode _ pms ->
-                      let pms' = mapMaybe (\(mstt, sc) -> (p * sc,) <$> mstt) pms
-                       in go (updateChoice src pms') (updateScore (p, p * ee) src) (pms' ++ ss)
-                _ -> go linkmap scoremap ss
-      where
-        updateChoice :: ChapterId -> [(Rational, NextStep)] -> M.Map ChapterId (M.Map ChapterId Rational)
-        updateChoice src = foldl' updateChoice' linkmap
-          where
-            updateChoice' !curmap (p1, dstt) = case nsChapter dstt of
-              Nothing -> curmap
-              Just dst -> M.insertWith (M.unionWith (+)) src (M.singleton dst p1) curmap
-
-        updateScore :: (Rational, Rational) -> ChapterId -> M.Map ChapterId (Rational, Rational)
-        updateScore score cid = M.insertWith (\(s1, e1) (s2, e2) -> (s1 + s2, e1 + e2)) cid score scoremap
-
 loadResults :: Maybe FilePath -> CharacterConstant -> IO (M.Map (S.Set Item, S.Set Flag) Rational)
 loadResults Nothing _ = pure M.empty
 loadResults (Just pth) ccst = do
@@ -443,16 +433,6 @@ main = do
           BSL.writeFile pth todump
           when (dmode == Other) $ encodeFile (pth ++ ".json") (soldumpSummary dmap)
         Nothing -> BSL.putStr todump
-    DecisionGraph dmode pth -> do
-      cnt <- decompress <$> BSL.readFile pth
-      let SolutionDump (SolDesc _ cc cv) res = S.deserialise cnt
-          book = _bookid cc
-          (transitions, scores) = mksol (NewChapter 1 (mkchar False cc cv)) (HM.fromList res)
-          sttmap = countstates res
-      traceM ("Loaded " ++ show (length res) ++ " states, computing decision graph")
-      case dmode of
-        Other -> todot book transitions scores sttmap
-        Json -> BS8.putStrLn (encode (book, scores, transitions, sttmap))
     ExploreFile pth mselector -> do
       cnt <- decompress <$> BSL.readFile pth
       let SolutionDump (SolDesc _ cc _) res = S.deserialise cnt
@@ -490,7 +470,10 @@ main = do
       let inv = Inventory itms
        in mapM_ (\(i, q) -> putStrLn (show q ++ " " ++ showItem book i)) (items inv)
     Dot pth -> do
-      Just (book, scores_, transitions_, sttmap) <- decode <$> BS8.readFile pth
-      let scores = fmap (bimap getERatio getERatio) scores_
-          transitions = fmap (fmap getERatio) transitions_
-      todot book transitions scores sttmap
+      rdstats <- do
+        r <- eitherDecodeFileStrict pth
+        case r of
+          Left rr -> error rr
+          Right x -> pure x
+      let dstats = fmap getERatio rdstats
+      todot dstats
