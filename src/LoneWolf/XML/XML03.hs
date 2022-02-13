@@ -314,7 +314,7 @@ book03gen cid _ computedDecision =
         )
     303 -> Just (computedDecision & _Outcome %~ Simple [LoseItem ornateSilverKeyB03 1])
     304 -> Just (computedDecision & _Outcome . _Fight . _1 . fightMod .~ [MindblastImmune, EnemyMindblast, Undead])
-    308 -> takeItems [(SilverHelm, 1)] computedDecision
+    308 -> takeItems [(Helmet, 1)] (computedDecision & _Outcome %~ Simple [SetFlag HelmetIsSilver])
     309 -> takeItems [(blueStoneTriangleB03, 1), (fireSphereB03, 1)] computedDecision
     311 -> Nothing
     321 -> takeItems [(blueStoneTriangleB03, 1)] computedDecision
@@ -403,7 +403,7 @@ extraChapters03 =
         )
     ),
     (368, takepotion "red" (HasDiscipline Healing) Potion5Hp 1 369),
-    (369, takepotion "orange" (COr (HasDiscipline Healing) (HasDiscipline SixthSense)) StrengthPotion 2 370),
+    (369, takepotion "orange" (COr (HasDiscipline Healing) (HasDiscipline SixthSense)) StrengthPotion4 1 370),
     (370, takepotion "green" (COr (HasDiscipline AnimalKinship) (HasLevel Aspirant)) gallowBrushB03 1 126)
   ]
   where

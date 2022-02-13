@@ -17,7 +17,7 @@ import Data.Data.Lens (biplate)
 import Data.GraphViz (toDot)
 import Data.GraphViz.Attributes (Shape (Record), color, filled, fontColor, shape, style, toLabel)
 import Data.GraphViz.Attributes.Colors.SVG (SVGColor (Black, Blue, DarkGray, Gray, Red, White, Yellow))
-import Data.GraphViz.Attributes.Complete (Attribute (RankDir, URL), RankDir (FromLeft, FromTop), RecordField (FieldLabel, FlipFields))
+import Data.GraphViz.Attributes.Complete (Attribute (URL), RecordField (FieldLabel, FlipFields))
 import Data.GraphViz.Printing (renderDot)
 import Data.GraphViz.Types.Canonical
 import qualified Data.HashMap.Strict as HM
@@ -86,10 +86,11 @@ pchapters book = case book of
 
 getBoundary :: Book -> Maybe (S.Set Item, S.Set Flag)
 getBoundary b = case b of
-  Book01 -> Just (S.singleton Gold, S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
-  Book02 -> Just (S.empty, S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
-  Book03 -> Just (S.fromList [Weapon Sommerswerd, SilverHelm], S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
-  Book04 -> Just (S.fromList [Weapon Sommerswerd, SilverHelm], S.fromList [FoughtElix, PermanentSkillReduction, PermanentSkillReduction2])
+  Book01 -> Just (S.fromList [Helmet, BodyArmor, Gold], S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
+  Book02 -> Just (S.fromList [Helmet, BodyArmor], S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
+  Book03 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [HelmetIsSilver])
+  Book03 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [PermanentSkillReduction, PermanentSkillReduction2, HelmetIsSilver])
+  Book04 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [FoughtElix, PermanentSkillReduction, PermanentSkillReduction2, HelmetIsSilver])
   _ -> Nothing
 
 simpleSol :: M.Map (S.Set Item, S.Set Flag) Rational -> Book -> CharacterConstant -> CharacterVariable -> [Int] -> (Rational, [(NextStep, Solution NextStep String)])
@@ -206,11 +207,12 @@ programOpts =
         <> progDesc "Solve and explore book02 solutions"
     )
 
-data DotInfo = DExpectedAmount Item | DHasItem Item | DHasFlag Flag
+data DotInfo = DExpectedAmount Item | DHasItem Item | DHasFlag Flag | BackpackSize
 
 bookDinfo :: Book -> [DotInfo]
 bookDinfo b = case b of
-  Book05 -> [DHasFlag LimbDeath]
+  Book04 -> BackpackSize : map DHasItem [StrengthPotion, StrengthPotion4, torchB04, pickAB04, pickBB04, ropeB04, Potion2Hp, Potion4Hp, Potion5Hp, Potion6Hp] ++ [DExpectedAmount Laumspur]
+  Book05 -> [DHasFlag LimbDeath, DHasItem StrengthPotion4, DHasItem StrengthPotion]
   _ -> []
 
 mkdot :: DecisionStats Rational -> DotGraph ChapterId
@@ -275,7 +277,29 @@ mkdot (DecisionStats book res sttmap) =
               if amount > 0
                 then Just (FlipFields [FieldLabel (T.pack (show flg)), FieldLabel (T.pack (percent amount))])
                 else Nothing
-            _ -> error "unhandled showDinfo"
+            DHasItem itm -> do
+              stts <- chapterstats
+              let amount = sum (M.filterWithKey (const . hasItem itm) (_citems stts)) / if ttl == 0 then 1 else ttl
+                  ttl = sum (_citems stts)
+              if amount > 0
+                then Just (FlipFields [FieldLabel (T.pack (showItem book itm)), FieldLabel (T.pack (percent amount))])
+                else Nothing
+            DExpectedAmount itm -> do
+              stts <- chapterstats
+              let amount = sum (map (\(inv, r) -> fromIntegral (itemCount itm inv) * r) $ M.toList (_citems stts)) / if ttl == 0 then 1 else ttl
+                  ttl = sum (_citems stts)
+              if amount > 0
+                then Just (FlipFields [FieldLabel (T.pack (showItem book itm)), FieldLabel (T.pack (printf "%.2f" (fromRational @Double amount)))])
+                else Nothing
+            BackpackSize -> do
+              stts <- chapterstats
+              let amount = sum $ do
+                    (inv, p) <- M.toList (_citems stts)
+                    (i, q) <- items inv
+                    guard (itemSlot i == BackpackSlot)
+                    pure (fromIntegral q * p)
+              Just (FlipFields [FieldLabel "Backpack items", FieldLabel (T.pack (printf "%.2f" (fromRational @Double amount)))])
+
           nodelabel = FieldLabel (T.pack ctitle) : scorelabels : mapMaybe showDinfo (bookDinfo book)
       pure (DotNode cid (shape Record : toLabel [FlipFields nodelabel] : URL (T.pack url) : nodestyle))
     showEdge mweight src dst = DotEdge src dst [color clr, toLabel lbl]

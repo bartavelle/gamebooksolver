@@ -948,10 +948,10 @@ chapters =
         "You dive backwards, but only just in time to avoid the falling mast as it smashes straight through the deck. You stagger upright and peer into the mass of shattered timbers. Pinned beneath the broken mast is the lifeless body of Captain Kelman.\nAs you stare in horror, a loud crack fills the air as the storm breaks open the already damaged hull of the <<Green Sceptre>>. As the ship breaks up you are hurled over the side and into the raging sea.\nGasping for air, you claw your way up to the surface but strike your head on a hatch cover. Lose 1 ENDURANCE point and pull yourself onto this makeshift raft. If you are wearing a Chainmail Waistcoat, you must discard this now or you will surely drown. In the grey light of the storm, you watch as the broken ship sinks beneath the heaving sea. You are feeling dizzy and very sick. Hanging on to the cover with all your strength, you gradually slip into unconsciousness.\nWhen you eventually awake, the storm has passed. The only trace of the <<Green Sceptre>> is the hatch cover on which you lie. By the position of the sun you suppose it to be late afternoon. In the distance, you can see a small fishing boat and beyond it, the coastline stretches out along the horizon.\n"
         ( Decisions
             [ ( "If you wish to use your cloak to try to signal to the fishing boat, turn to 278.",
-                NoDecision (Simple [DamagePlayer 1, LoseItem ChainMail 99] (Goto 278))
+                NoDecision (Simple [DamagePlayer 1, LoseItem BodyArmor 99] (Goto 278))
               ),
               ( "If you want to ignore the boat and paddle towards the shore instead, turn to 337.",
-                NoDecision (Simple [DamagePlayer 1, LoseItem ChainMail 99] (Goto 337))
+                NoDecision (Simple [DamagePlayer 1, LoseItem BodyArmor 99] (Goto 337))
               )
             ]
         )
@@ -1617,10 +1617,10 @@ chapters =
         "As the mast smashes into the deck, a splintered beam hits your head and you are knocked overboard. Gasping for air, you fight your way to the surface and catch hold of a hatch cover. You are half-stunned. You lose 2 ENDURANCE points.\nYou pull yourself onto this makeshift raft and cling to it with all your strength. If you are wearing a Chainmail Waistcoat, you must discard it now or otherwise you will be drowned for sure.\nYou feel dizzy and sick. As the heaving sea buffets you relentlessly, you gradually slip into unconsciousness. When you awake many hours later, the storm has passed. By the position of the sun, you judge it to be late afternoon. In the distance you can see a small fishing boat and beyond it, on the horizon, land. The only trace of the <<Green Sceptre>> is the hatch cover on which you now sit.\n"
         ( Decisions
             [ ( "If you wish to use your cloak to try to signal to the fishing boat, turn to 278.",
-                NoDecision (Simple [DamagePlayer (2), LoseItem ChainMail 99] (Goto 278))
+                NoDecision (Simple [DamagePlayer 2, LoseItem BodyArmor 99] (Goto 278))
               ),
               ( "If you wish to ignore the boat and paddle towards the shore, turn to 337.",
-                NoDecision (Simple [DamagePlayer (2), LoseItem ChainMail 99] (Goto 337))
+                NoDecision (Simple [DamagePlayer 2, LoseItem BodyArmor 99] (Goto 337))
               )
             ]
         )

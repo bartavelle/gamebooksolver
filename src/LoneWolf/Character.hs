@@ -159,6 +159,8 @@ data Flag
   | Poisonned2
   | HadCombat
   | PermanentSkillReduction2 -- happens in book 02
+  | HelmetIsSilver
+  | PotentStrengthPotionActive -- +4 bonus
   deriving (Show, Eq, Ord, Enum, Bounded, Data, Read, Generic)
 
 instance ToJSON Flag
@@ -239,9 +241,9 @@ I decided to let go of all items that were not useful.
 data Item
   = Weapon !Weapon
   | Backpack
-  | Helmet
+  | StrengthPotion4
   | Shield
-  | ChainMail
+  | BodyArmor
   | Potion2Hp
   | Potion4Hp
   | Potion5Hp
@@ -252,7 +254,7 @@ data Item
   | Meal
   | Gold
   | Laumspur
-  | SilverHelm -- book 03, combatskill + 1
+  | Helmet -- standard helmet, except in conjunction with the HelmetIsSilver flag
   deriving (Show, Eq, Generic, Ord, Read, Typeable, Data)
 
 itemNames :: M.Map Book (M.Map String Item)
@@ -527,9 +529,9 @@ instance Bounded Item where
 instance Enum Item where
   fromEnum x = case x of
     Backpack -> 0
-    Helmet -> 1
+    StrengthPotion4 -> 1
     Shield -> 2
-    ChainMail -> 3
+    BodyArmor -> 3
     Potion2Hp -> 4
     Potion4Hp -> 5
     Potion5Hp -> 6
@@ -538,7 +540,7 @@ instance Enum Item where
     Weapon w -> 9 + fromEnum w
     GenSpecial n -> 20 + fromIntegral n
     GenBackpack n -> 32 + fromIntegral n
-    SilverHelm -> 44
+    Helmet -> 44
     Laumspur -> 45
     Gold -> 46
     Meal -> 47
@@ -547,15 +549,15 @@ instance Enum Item where
 
   toEnum n = case n of
     0 -> Backpack
-    1 -> Helmet
+    1 -> StrengthPotion4
     2 -> Shield
-    3 -> ChainMail
+    3 -> BodyArmor
     4 -> Potion2Hp
     5 -> Potion4Hp
     6 -> Potion5Hp
     7 -> Potion6Hp
     8 -> StrengthPotion
-    44 -> SilverHelm
+    44 -> Helmet
     45 -> Laumspur
     46 -> Gold
     47 -> Meal
@@ -582,9 +584,9 @@ slotSize s = case s of
 
 itemSlot :: Item -> Slot
 itemSlot (Weapon _) = WeaponSlot
-itemSlot Helmet = SpecialSlot
+itemSlot StrengthPotion4 = SpecialSlot
 itemSlot Meal = BackpackSlot
-itemSlot ChainMail = SpecialSlot
+itemSlot BodyArmor = SpecialSlot
 itemSlot Potion2Hp = BackpackSlot
 itemSlot Potion4Hp = BackpackSlot
 itemSlot Potion5Hp = BackpackSlot
@@ -593,7 +595,7 @@ itemSlot Gold = PouchSlot
 itemSlot Laumspur = BackpackSlot
 itemSlot Backpack = SpecialSlot
 itemSlot Shield = SpecialSlot
-itemSlot SilverHelm = SpecialSlot
+itemSlot Helmet = SpecialSlot
 itemSlot (GenSpecial _) = SpecialSlot
 itemSlot (GenBackpack _) = BackpackSlot
 itemSlot StrengthPotion = BackpackSlot

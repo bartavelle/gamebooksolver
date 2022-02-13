@@ -28,7 +28,7 @@ import GHC.Generics (Generic)
 import LoneWolf.Chapter (ChapterId, FightDetails)
 import LoneWolf.Character
 import LoneWolf.Combat (expectedEndurance, winchance)
-import LoneWolf.Rules (NextStep (NewChapter))
+import LoneWolf.Rules (NextStep (NewChapter), getMaxHp)
 import Numeric (readDec, readHex)
 import Options.Applicative
 import SimpleSolver (ChoppedSolution, choppedScore)
@@ -116,9 +116,11 @@ instance FromJSON g => FromJSON (DecisionStats g) where
   parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 2}
 
 mkchar :: Bool -> CharacterConstant -> CVarState -> CharacterVariable
-mkchar autoweapon cst (CVarState sitems gld flgs) = foldl' (\c f -> c & LoneWolf.Character.flag f .~ True) chr flgs
+mkchar autoweapon cst (CVarState sitems gld flgs) = chr
   where
-    chr = mkCharacter (_maxendurance cst) (inventoryFromList allitems)
+    chr_beforeflags = mkCharacter (_maxendurance cst) (inventoryFromList allitems)
+    chr_afterflags = foldl' (\c f -> c & LoneWolf.Character.flag f .~ True) chr_beforeflags flgs
+    chr = chr_afterflags & curendurance .~ getMaxHp cst chr_afterflags
     allitems_pre = fromMaybe (defaultItems (_bookid cst)) sitems ++ [(Gold, gld)]
     allitems
       | autoweapon && notElem (Weapon Sommerswerd) (map fst allitems_pre) =

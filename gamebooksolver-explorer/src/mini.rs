@@ -1,7 +1,7 @@
 use minicbor::decode::{Decode, Decoder, Error};
 use rug::Integer;
 use rug::Rational;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 pub type Probably<A> = Vec<(A, Rational)>;
 
@@ -334,11 +334,11 @@ impl<'b> Decode<'b> for CharacterVariable {
   }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Item {
   Weapon(Weapon),
   Backpack,
-  Helmet,
+  StrengthPotion4,
   Shield,
   ChainMail,
   Potion2Hp,
@@ -351,7 +351,7 @@ pub enum Item {
   Meal,
   Gold,
   Laumspur,
-  SilverHelm,
+  Helmet,
 }
 
 impl<'b> Decode<'b> for Item {
@@ -366,7 +366,7 @@ impl<'b> Decode<'b> for Item {
     match tg {
       0 => d.decode().map(Weapon),
       1 => Ok(Backpack),
-      2 => Ok(Helmet),
+      2 => Ok(StrengthPotion4),
       3 => Ok(Shield),
       4 => Ok(ChainMail),
       5 => Ok(Potion2Hp),
@@ -379,7 +379,7 @@ impl<'b> Decode<'b> for Item {
       12 => Ok(Meal),
       13 => Ok(Gold),
       14 => Ok(Laumspur),
-      15 => Ok(SilverHelm),
+      15 => Ok(Helmet),
       _ => Err(Error::Message("invalid item id")),
     }
   }
@@ -389,7 +389,7 @@ impl Item {
   fn get_idx(&self) -> usize {
     match self {
       Item::Backpack => 0,
-      Item::Helmet => 1,
+      Item::StrengthPotion4 => 1,
       Item::Shield => 2,
       Item::ChainMail => 3,
       Item::Potion2Hp => 4,
@@ -400,7 +400,7 @@ impl Item {
       Item::Weapon(w) => 9 + *w as usize,
       Item::GenSpecial(n) => 20 + *n as usize,
       Item::GenBackpack(n) => 32 + *n as usize,
-      Item::SilverHelm => 44,
+      Item::Helmet => 44,
       Item::Laumspur => 45,
       Item::Gold => 46,
       Item::Meal => 47,
@@ -408,7 +408,7 @@ impl Item {
   }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[repr(u8)]
 pub enum Discipline {
   Camouflage,
@@ -448,7 +448,7 @@ impl<'b> Decode<'b> for Discipline {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum Weapon {
   Dagger = 0,
   Spear = 1,
@@ -519,7 +519,7 @@ impl<'b> Decode<'b> for Book {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum Flag {
   PermanentSkillReduction = 0,
   StrengthPotionActive = 1,
@@ -537,6 +537,8 @@ pub enum Flag {
   Poisonned2 = 13,
   HadCombat = 14,
   PermanentSkillReduction2 = 15,
+  HelmetIsSilver = 16,
+  PotentStrengthPotionActive = 17,
 }
 
 impl<'b> Decode<'b> for Flag {
@@ -566,6 +568,8 @@ impl<'b> Decode<'b> for Flag {
       13 => Ok(Poisonned2),
       14 => Ok(HadCombat),
       15 => Ok(PermanentSkillReduction2),
+      16 => Ok(HelmetIsSilver),
+      17 => Ok(PotentStrengthPotionActive),
       _ => Err(Error::Message("invalid flag id")),
     }
   }

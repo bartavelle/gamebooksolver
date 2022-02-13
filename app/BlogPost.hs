@@ -115,10 +115,10 @@ groupWinstates = M.fromListWith (+) . map (bimap extractCV getERatio)
     extractCV cv = (M.fromList (items (_cequipment cv)), S.fromList (allFlags cv))
 
 percent :: Double -> String
-percent = printf "%.3f%%" . (* 100)
+percent = printf "%.2f%%" . (* 100)
 
 rpercent :: Rational -> String
-rpercent = printf "%.3f%%" . (* 100) . fromRational @Double
+rpercent = printf "%.2f%%" . (* 100) . fromRational @Double
 
 rowStyleRG :: TermRaw Text arg => Double -> arg
 rowStyleRG d =
@@ -136,14 +136,17 @@ rowStyleGreen d =
    in style_ (fromString (printf "background-color: #00%02x00; color: %s;" color textcolor))
 
 heatmap :: (forall arg. TermRaw Text arg => Double -> arg) -> Maybe String -> [xs] -> [ys] -> (xs -> String) -> (ys -> String) -> (ys -> xs -> Maybe (Html (), Double)) -> Html ()
-heatmap rowStyle mname xs ys showX showY scorer = table_ [class_ "pure-table"] $ do
+heatmap rowStyle mname xs ys showX showY = heatmapH rowStyle (fmap fromString mname) xs ys (fromString . showX) (\n -> ([], fromString (showY n)))
+
+heatmapH :: (forall arg. TermRaw Text arg => Double -> arg) -> Maybe (Html ()) -> [xs] -> [ys] -> (xs -> Html ()) -> (ys -> ([Attribute], Html ())) -> (ys -> xs -> Maybe (Html (), Double)) -> Html ()
+heatmapH rowStyle mname xs ys showX showY scorer = table_ [class_ "pure-table"] $ do
   thead_ $
     tr_ $ do
-      th_ (maybe "" fromString mname)
-      mapM_ (th_ . div_ . span_ . fromString . showX) xs
+      th_ (fromMaybe "" mname)
+      mapM_ (th_ . div_ . span_ . showX) xs
   tbody_ $
     forM_ ys $ \d1 -> tr_ $ do
-      th_ (fromString (showY d1))
+      uncurry th_ (showY d1)
       forM_ xs $ \d2 ->
         case scorer d1 d2 of
           Nothing -> td_ "?"
@@ -172,6 +175,7 @@ main = do
   dt <- loadData book
   case mde of
     ChapterStats -> case book of
+      Book03 -> print (b03stats dt)
       Book04 -> print (b04stats dt)
       Book05 -> print (b05stats dt)
       _ -> error ("unsupported book stats for " ++ show book)
@@ -181,6 +185,11 @@ winrate = _mratio . _sentry
 
 visitrate :: ChapterId -> Stats -> Rational
 visitrate cid stts = M.findWithDefault 0 cid (fmap _cscore (_dres (_sdecisions stts)))
+
+mvisitrate :: [ChapterId] -> Stats -> (Html (), Double)
+mvisitrate cids stts = (fromString (intercalate " / " (map rpercent rates)), fromRational (sum rates / fromIntegral (length cids)))
+  where
+    rates = map (`visitrate` stts) cids
 
 linkrate :: ChapterId -> ChapterId -> Stats -> Rational
 linkrate src dst stts = fromMaybe 0 $ do
@@ -212,7 +221,9 @@ finalChapter stts = case _dbookid (_sdecisions stts) of
   _ -> 350
 
 finalStat :: Stats -> ChapterAggreg Rational
-finalStat stts = _dres (_sdecisions stts) M.! finalChapter stts
+finalStat stts = case M.lookup (finalChapter stts) (_dres (_sdecisions stts)) of
+  Nothing -> error ("no final chapter in " ++ show (_fp stts))
+  Just x -> x
 
 finalItems :: Stats -> M.Map Inventory Rational
 finalItems = _citems . finalStat
@@ -236,9 +247,31 @@ finalItem i stts = rate / rawrate
       let cnt = itemCount i inv
       pure (fromIntegral cnt * p)
 
-blogpostStats :: [Stats] -> [(String, Stats -> (Html (), Double))] -> Html ()
-blogpostStats astts cols = heatmap rowStyleGreen (Just "Missing disc") (map fst cols) (map _fp ordered) id (\n -> mdiscname (mpo M.! n)) getentry
+humanNumber :: Double -> String
+humanNumber = go units
   where
+    go [] _ = error "should not happen"
+    go [lastunit] n = printf "%.2f" n ++ lastunit
+    go (u : us) n
+      | n > 1000 = go us (n / 1000)
+      | otherwise = printf "%.2f" n ++ u
+    units :: [String]
+    units = ["", "K", "M", "G"]
+
+blogpostStats :: [Stats] -> [(String, Stats -> (Html (), Double))] -> Html ()
+blogpostStats astts cols = heatmapH rowStyleGreen (Just ("Missing disc" *> br_ [] *> "#states")) (map fst cols) (map _fp ordered) fromString colshow getentry
+  where
+    maxstates = maximum (map (_states . _sentry) astts)
+    colshow n =
+      let stt = mpo M.! n
+          nstates = _states (_sentry stt)
+          ratio = fromIntegral nstates / fromIntegral maxstates
+       in ( [rowStyleRG (1 - ratio)],
+            do
+              a_ [href_ (T.pack ("/images/lonewolf/" ++ drop 5 (_fp stt) ++ ".svg"))] (fromString (mdiscname stt))
+              br_ []
+              fromString (fromString (humanNumber (fromIntegral nstates)) <> " states")
+          )
     mpo = M.fromList [(_fp x, x) | x <- ordered]
     cmap = M.fromList cols
     ordered = sortOn (negate . winrate) astts
@@ -301,17 +334,31 @@ finalStateRecap' bk astts = blogpostStats astts cols
     iq Laumspur = 5
     iq _ = 1
 
+b03stats :: [Stats] -> Html ()
+b03stats astts = do
+  let cols =
+        [ ("Win rate", fmtr . winrate),
+          ("Raw rate", fmtr . sum . _cendurance . finalStat),
+          ("SS", fmtb . not . hasitem (Weapon Sword)),
+          ("End SH", fmtr . finalFlag HelmetIsSilver),
+          ("Baknar oil", fmtr . finalFlag baknarOilB03),
+          ("End +4", fmtr . finalItem StrengthPotion4)
+        ]
+  blogpostStats astts cols
+  finalStateRecap' Book03 astts
+
 b04stats :: [Stats] -> Html ()
 b04stats astts = do
   let cols =
         [ ("Win rate", fmtr . winrate),
-          ("Raw rate", fmtr . _cscore . finalStat),
-          ("Sommerswerd", fmtb . not . hasitem (Weapon Sword)),
-          ("Silver Helm", fmtb . hasitem SilverHelm),
-          ("F Gold", fmtq 21 . finalItem Gold),
+          ("Raw rate", fmtr . sum . _cendurance . finalStat),
+          ("SS", fmtb . not . hasitem (Weapon Sword)),
+          ("SH", fmtb . hasflag HelmetIsSilver),
+          ("+4", fmtb . hasitem StrengthPotion4),
           ("Fought Elix", fmtr . finalFlag FoughtElix),
-          ("End with Silver Helm", fmtr . finalItem SilverHelm),
-          ("Visualization", \e -> (a_ [href_ (T.pack ("/images/lonewolf/" ++ _fp e ++ ".svg"))] (fromString "link"), 1))
+          ("Laumspur collect", mvisitrate [12, 268, 302]),
+          ("End with +2 Strength Potion", fmtr . finalItem StrengthPotion),
+          ("End with +4 Strength Potion", fmtr . finalItem StrengthPotion4)
         ]
   blogpostStats astts cols
   finalStateRecap' Book04 astts
@@ -319,17 +366,17 @@ b04stats astts = do
 b05stats :: [Stats] -> Html ()
 b05stats astts = do
   let cols =
-        [ ("Win rate", fmtr . winrate),
-          ("Starting Sommerswerd", fmtb . not . hasitem (Weapon Sword)),
-          ("Starting Silver Helm", fmtb . hasitem SilverHelm),
+        [ ("SS", fmtb . not . hasitem (Weapon Sword)),
+          ("SH", fmtb . hasflag HelmetIsSilver),
+          ("+4", fmtb . hasitem StrengthPotion4),
+          ("Win rate", fmtr . winrate),
           ("Previously fought the Elix", fmtb . hasflag FoughtElix),
           ("Imprisoned", fmtr . visitrate 69),
           ("Offer Oede", fmtr . visitrate 344),
           ("Prism route", fmtr . finalItem prismB05),
           ("Sash route", fmtr . finalItem sashB05),
           ("Fight Dhorgaan", fmtr . visitrate 253),
-          ("End with Sommerswerd", fmtr . finalItem (Weapon Sommerswerd)),
-          ("Visualization", \e -> (a_ [href_ (T.pack ("/images/lonewolf/" ++ _fp e ++ ".svg"))] (fromString "link"), 1))
+          ("End with Sommerswerd", fmtr . finalItem (Weapon Sommerswerd))
         ]
   blogpostStats astts cols
   finalStateRecap' Book05 astts

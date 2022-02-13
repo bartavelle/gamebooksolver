@@ -11,7 +11,7 @@ import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.Combat (getRatio)
 import LoneWolf.CombatChart (hits)
-import LoneWolf.Rules (check, updateSimple)
+import LoneWolf.Rules (check, getMaxHp, updateSimple)
 import Solver (regroup)
 
 importantItem :: Item -> CharacterConstant -> CharacterVariable -> Bool
@@ -78,9 +78,18 @@ flattenDecision cconstant cvariable d =
              in flattenDecision cconstant nvariable d
         NoDecision o
           | Fight (FightDetails _ _ _ mds) _ <- o, NoPotion `elem` mds -> [([], o)]
+          | hasCombat o && hasItem StrengthPotion4 inventory && hasItem StrengthPotion inventory ->
+            [ (["don't use strength potion"], o),
+              (["use strength potion"], Simple [LoseItem StrengthPotion4 1, SetFlag PotentStrengthPotionActive] o),
+              (["use potent strength potion"], Simple [LoseItem StrengthPotion4 1, SetFlag PotentStrengthPotionActive] o)
+            ]
           | hasCombat o && hasItem StrengthPotion inventory ->
             [ (["don't use strength potion"], o),
               (["use strength potion"], Simple [LoseItem StrengthPotion 1, SetFlag StrengthPotionActive] o)
+            ]
+          | hasCombat o && hasItem StrengthPotion4 inventory ->
+            [ (["don't use strength potion"], o),
+              (["use potent strength potion"], Simple [LoseItem StrengthPotion4 1, SetFlag PotentStrengthPotionActive] o)
             ]
           | otherwise -> [([], o)]
         RetrieveEquipment nxt ->
@@ -104,7 +113,7 @@ flattenDecision cconstant cvariable d =
           | otherwise -> nopotion
           where
             nopotion = flattenDecision cconstant cvariable nxt
-            missingHp = cconstant ^. maxendurance - cvariable ^. curendurance
+            missingHp = getMaxHp cconstant cvariable - cvariable ^. curendurance
             book01 = _bookid cconstant == Book01
         Conditional bc d' ->
           if check cconstant cvariable bc

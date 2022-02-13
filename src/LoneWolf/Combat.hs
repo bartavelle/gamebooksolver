@@ -109,7 +109,7 @@ relevantDiscs :: S.Set Discipline
 relevantDiscs = S.fromList [MindBlast, MindShield]
 
 relevantFlags :: S.Set Flag
-relevantFlags = S.fromList [LimbDeath, PermanentSkillReduction, PermanentSkillReduction2, StrengthPotionActive]
+relevantFlags = S.fromList [LimbDeath, PermanentSkillReduction, PermanentSkillReduction2, StrengthPotionActive, PotentStrengthPotionActive]
 
 mkCombatInfo :: CharacterConstant -> CharacterVariable -> FightDetails -> CombatInfo
 mkCombatInfo cconstant cvariable fdetails = CombatInfo skill specialization weapons modifiers discs cflags shield silverhelm nlwendurance nopendurance
@@ -121,7 +121,7 @@ mkCombatInfo cconstant cvariable fdetails = CombatInfo skill specialization weap
     discs = S.toList $ S.fromList (cconstant ^. discipline) `S.intersection` relevantDiscs
     cflags = S.toList $ S.fromList (allFlags cvariable) `S.intersection` relevantFlags
     shield = hasItem Shield (cvariable ^. equipment)
-    silverhelm = hasItem SilverHelm (cvariable ^. equipment)
+    silverhelm = hasItem Helmet (cvariable ^. equipment) && hasFlag HelmetIsSilver cvariable
     nlwendurance = cvariable ^. curendurance
     nopendurance = fdetails ^. fendurance
 
@@ -135,6 +135,7 @@ getRatio' cinfo =
     + onflag PermanentSkillReduction (-1)
     + onflag PermanentSkillReduction2 (-2)
     + onflag StrengthPotionActive 2
+    + onflag PotentStrengthPotionActive 4
     + onflag LimbDeath (-3)
     + helmBonus
   where

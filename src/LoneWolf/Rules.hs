@@ -54,13 +54,11 @@ updateSimple cconstant cvariable soutcome =
   case soutcome of
     DamagePlayer dmg -> cvariable & curendurance %~ \hp -> max 0 (hp - dmg)
     HealPlayer heal -> cvariable & curendurance %~ \hp -> min maxhp (hp + heal)
-    FullHeal -> cvariable & curendurance .~ (cconstant ^. maxendurance)
+    FullHeal -> cvariable & curendurance .~ maxhp
     HalfHeal -> cvariable & curendurance %~ \hp -> (hp + maxhp) `div` 2
     GainItem item count -> cvariable & equipment %~ addItem item count
-    LoseItem item lost -> cvariable & equipment %~ delItem item lost
-    -- note that the silver helm is represented as a flag, and for this reason can't be lost here
-    -- however only book 2 makes you lose special items, and this helm appears in book 3
-    LoseItemKind slots -> cvariable & equipment %~ delItemSlot slots
+    LoseItem item lost -> cvariable & equipment %~ delItem item lost & updateMaxHp
+    LoseItemKind slots -> cvariable & equipment %~ delItemSlot slots & updateMaxHp
     SetFlag flg -> cvariable & flag flg .~ True
     ClearFlag flg -> cvariable & flag flg .~ False
     StoreEquipment ->
@@ -80,6 +78,7 @@ updateSimple cconstant cvariable soutcome =
     maxhp = getMaxHp cconstant cvariable
     eqp = cvariable ^. equipment
     updates = foldl' (updateSimple cconstant) cvariable
+    updateMaxHp cv = cv & curendurance %~ min maxhp
 
 update :: CharacterConstant -> CharacterVariable -> ChapterId -> ChapterOutcome -> Probably NextStep
 update cconstant cvariable cid outcome =
@@ -112,7 +111,7 @@ update cconstant cvariable cid outcome =
             | lwloss > oploss = lose
             | lwloss < oploss = eq
             | otherwise = win
-      fmap (* p) <$> update cconstant (cvariable & curendurance .~ lwhp & flag StrengthPotionActive .~ False) cid tgt
+      fmap (* p) <$> update cconstant (cvariable & curendurance .~ lwhp & flag StrengthPotionActive .~ False & flag PotentStrengthPotionActive .~ False) cid tgt
     Fight fd nxt -> regroup $
       (traverse . _1 . _NewChapter . _2 . flag HadCombat .~ True) $ do
         (echarendurance, p) <- fight cconstant cvariable fd
@@ -123,7 +122,7 @@ update cconstant cvariable cid outcome =
               Lost lostchapter -> (Goto lostchapter, 1)
               Stopped ecid n -> (Goto ecid, n)
             -- desactivate potion at the end of the fights
-            cvariable' = if has (fightMod . traverse . _MultiFight) fd then cvariable else cvariable & flag StrengthPotionActive .~ False
+            cvariable' = if has (fightMod . traverse . _MultiFight) fd then cvariable else cvariable & flag StrengthPotionActive .~ False & flag PotentStrengthPotionActive .~ False
         case fd ^? fightMod . traverse . _FakeFight of
           Nothing ->
             if charendurance <= 0
@@ -146,4 +145,8 @@ uCheck cconstant cvariable conds = case conds of
       else uCheck cconstant cvariable cs
 
 getMaxHp :: CharacterConstant -> CharacterVariable -> Endurance
-getMaxHp cconstant cvariable = cconstant ^. maxendurance + (if hasItem ChainMail (cvariable ^. equipment) then 4 else 0)
+getMaxHp cconstant cvariable =
+  let eq = cvariable ^. equipment
+   in cconstant ^. maxendurance
+        + (if hasItem BodyArmor eq then 4 else 0)
+        + (if hasItem Helmet eq && not (hasFlag HelmetIsSilver cvariable) then 2 else 0)

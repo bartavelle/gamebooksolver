@@ -40,7 +40,7 @@ orderChapters bkid book = M.fromList $ zip (reverse orderedlist) [1 ..]
 
 step :: M.Map ChapterId Int -> IM.IntMap Chapter -> CharacterConstant -> NextStep -> [(String, Probably NextStep)]
 step order chapters cconstant xx@(NewChapter cid curvariable)
-  | curvariable ^. curendurance > getMaxHp cconstant curvariable = error (show xx)
+  | curvariable ^. curendurance > getMaxHp cconstant curvariable = error ("TOO MANY HPs!! " ++ show xx ++ " (maxhp=" ++ show (getMaxHp cconstant curvariable) ++ ")")
   | otherwise =
     case IM.lookup cid chapters of
       Nothing -> error ("Unknown chapter: " ++ show cid)

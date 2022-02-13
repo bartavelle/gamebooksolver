@@ -44,7 +44,7 @@ if items:
 if mgold:
     cmdline += ["--gold", mgold[1:]]
 
-cmdline += [sys.argv[1], "+RTS", "-N1", "-t", "-M40G"]
+cmdline += [sys.argv[1], "+RTS", "-N1", "-t", "-M20G"]
 print(" ".join(cmdline))
 try:
     r = subprocess.run(cmdline, check=True, capture_output=True)

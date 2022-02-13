@@ -1,14 +1,22 @@
+use crate::chapter::*;
 use crate::mini::Equipment;
 use rug::Rational;
 use std::collections::HashMap;
 use std::fs::File;
+use std::io::BufReader;
 use structopt::StructOpt;
 
+mod chapter;
 mod mini;
 
 use mini::{
     Book, CVarState, CharacterConstant, CharacterVariable, ChoppedSolution, Item, NextStep,
 };
+
+#[derive(Debug, StructOpt)]
+enum Subcommand {
+    LoadChapter,
+}
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -19,6 +27,9 @@ struct Opt {
     /// Path to the solution file
     #[structopt(short, long)]
     solpath: String,
+    /// Alternate commands
+    #[structopt(subcommand)]
+    cmd: Option<Subcommand>,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -74,7 +85,10 @@ fn mksol(
         let mut out = HashMap::from([(src, stats)]);
 
         let cs = match searchmap.get(curns) {
-            None => return out,
+            None => {
+                eprintln!("Missing state!?! {:?}", curns);
+                return out;
+            }
             Some(x) => x,
         };
 
@@ -255,22 +269,32 @@ struct Output {
 fn main() {
     let opt = Opt::from_args();
 
-    let file = File::open(opt.solpath.clone()).unwrap();
-    let mut dec = zstd::Decoder::new(file).unwrap();
-    let soldump = decode_buffer(&mut dec);
+    match &opt.cmd {
+        None => {
+            let file = File::open(opt.solpath.clone()).unwrap();
+            let mut dec = zstd::Decoder::new(file).unwrap();
+            let soldump = decode_buffer(&mut dec);
 
-    let sttmap = count_states(&soldump.content);
-    let bookid = soldump.soldesc.ccst.bookid;
-    let ini = NextStep::NewChapter(1, mkchar(soldump.soldesc.ccst, soldump.soldesc.cvar));
-    let searchmap: HashMap<NextStep, ChoppedSolution<NextStep>> =
-        soldump.content.into_iter().collect();
-    eprintln!("{} : {} states", opt.solpath, searchmap.len());
-    let res = mksol(ini, searchmap);
-    let output = Output {
-        bookid: format!("{:?}", bookid),
-        res,
-        sttmap,
-    };
-    let x = serde_json::to_string(&output).unwrap();
-    println!("{}", x);
+            let sttmap = count_states(&soldump.content);
+            let bookid = soldump.soldesc.ccst.bookid;
+            let ini = NextStep::NewChapter(1, mkchar(soldump.soldesc.ccst, soldump.soldesc.cvar));
+            let searchmap: HashMap<NextStep, ChoppedSolution<NextStep>> =
+                soldump.content.into_iter().collect();
+            eprintln!("{} : {} states", opt.solpath, searchmap.len());
+            let res = mksol(ini, searchmap);
+            let output = Output {
+                bookid: format!("{:?}", bookid),
+                res,
+                sttmap,
+            };
+            let x = serde_json::to_string(&output).unwrap();
+            println!("{}", x);
+        }
+        Some(Subcommand::LoadChapter) => {
+            let file = File::open(opt.solpath.clone()).unwrap();
+            let reader = BufReader::new(file);
+            let u: Vec<(ChapterId, Chapter)> = serde_json::from_reader(reader).unwrap();
+            println!("{:?}", u);
+        }
+    }
 }
