@@ -88,7 +88,7 @@ getBoundary :: Book -> Maybe (S.Set Item, S.Set Flag)
 getBoundary b = case b of
   Book01 -> Just (S.fromList [Helmet, BodyArmor, Gold], S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
   Book02 -> Just (S.fromList [Helmet, BodyArmor], S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
-  Book03 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [HelmetIsSilver])
+  Book03 -> Just (S.fromList [Weapon Sommerswerd, Helmet, StrengthPotion4], S.fromList [HelmetIsSilver])
   Book03 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [PermanentSkillReduction, PermanentSkillReduction2, HelmetIsSilver])
   Book04 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [FoughtElix, PermanentSkillReduction, PermanentSkillReduction2, HelmetIsSilver])
   _ -> Nothing
@@ -247,12 +247,13 @@ mkdot (DecisionStats book res sttmap) =
             | eating == Just NoHunt = [style filled, color Yellow]
             | eating == Just Hunt = [color Yellow]
             | combat = [color Red]
-            | has (biplate . _GameLost) cdesc = [style filled, fontColor White]
+            | has (biplate @Decision @ChapterOutcome . _GameLost) cdesc = [style filled, fontColor White]
             | has _Special cdesc = [color Blue]
             | has _Just chapterstats = [color Gray]
             | otherwise = [style filled]
+          cdesc :: Decision
           cdesc = _pchoice chapter
-          combat = has (outcomePlate . biplate . _Fight) cdesc || has (biplate . _EvadeFight) cdesc
+          combat = has (outcomePlate . biplate @ChapterOutcome @ChapterOutcome . _Fight) cdesc || has (biplate @Decision @Decision . _EvadeFight) cdesc
           eating = preview (outcomePlate . biplate . _MustEat) cdesc
           chapterstats = M.lookup cid res
           ctitle = _title chapter
@@ -369,7 +370,7 @@ exploreChopped mp cc = go
       let nstates = stepper ns
           advance :: Rational -> Probably NextStep -> IO ()
           advance score outcomes = do
-            putStrLn (percent score ++ " - " ++ shortNS cc ns)
+            putStrLn (percent score ++ " - " ++ shortNS cc ns ++ " / " ++ show (rawInventory ns))
             -- selection
             (_, ch) <- selector (\(dsc, os) -> (if os == outcomes then " *** " else "  -  ") ++ dsc) nstates
             -- outcome
@@ -384,6 +385,11 @@ exploreChopped mp cc = go
             CLeafLost -> putStrLn "Lost!"
             CNode sc os -> advance sc (map (first (fromMaybe (HasLost 0))) os)
             CJump sc ns' -> advance sc [(ns', 1)]
+
+rawInventory :: NextStep -> Word64
+rawInventory ns = case ns of
+  NewChapter _ cv -> getInventory (cv ^. equipment)
+  _ -> 0
 
 ctarget :: NextStep -> ChoppedSolution NextStep -> Maybe (CharacterVariable, ChapterId)
 ctarget (NewChapter _ cv) (CNode _ ((Just (NewChapter tgt _), _) : _)) = Just (cv, tgt)
@@ -424,7 +430,7 @@ loadResults (Just pth) ccst = do
       loadContent p = do
         r <- eitherDecodeFileStrict p
         case r of
-          Left rr -> error rr
+          Left rr -> error ("could not load " ++ p ++ ": " ++ rr)
           Right x -> pure (p, x)
       curdiscs = S.fromList (_discipline ccst)
   allcontent <- traverse loadContent allfiles
@@ -444,7 +450,7 @@ main :: IO ()
 main = do
   Opts _ resdir cmd <- execParser programOpts
   case cmd of
-    DumpBook bk -> BS8.putStrLn (encode (pchapters bk))
+    DumpBook bk -> BS8.putStrLn (encode (pchapters bk & traverse . _2 %~ fmap ERatio))
     SolDump dmode sd mtarget autoweapon -> do
       res <- loadResults resdir (_ccst sd)
       let (_, solmap) = getSol res autoweapon sd

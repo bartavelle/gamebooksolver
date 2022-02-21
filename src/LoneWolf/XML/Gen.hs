@@ -218,6 +218,7 @@ toDec _ events =
       _ -> Left ("toDec: " ++ show jmps)
   where
     fds = extractFightDetails events
+    jmps :: [(String, ChapterOutcome)]
     jmps = events ^.. traverse . _Jmp . to (second Goto)
 
 randomRange :: (String, b) -> Maybe (Rational, b)

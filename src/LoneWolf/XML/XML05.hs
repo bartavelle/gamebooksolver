@@ -252,7 +252,22 @@ book05gen cid _ computedDecision =
                 ]
             )
         )
-    154 -> Just (Canbuy Laumspur 5 (Canbuy StrengthPotion 4 (Canbuy Potion2Hp 3 (Canbuy tinctureGraveweed 1 (NoDecision (Goto 179))))))
+    154 ->
+      Just
+        ( Canbuy
+            Laumspur
+            5
+            ( Canbuy
+                StrengthPotion
+                4
+                ( Canbuy
+                    Potion2Hp
+                    3
+                    ( Canbuy tinctureGraveweed 1 (NoDecision (Goto 179))
+                    )
+                )
+            )
+        )
     159 ->
       let NoDecision (Fight fd gt) = computedDecision
        in Just (NoDecision (Simple [DamagePlayer 2] (Fight (fd & fightMod .~ [Timed 3 (CombatBonus (-2))]) gt)))
@@ -530,9 +545,7 @@ book05gen cid _ computedDecision =
             ( Conditionally
                 [ (CAnd (HasLevel Savant) (HasEndurance 26), Randomly [(2 % 10, Goto 364), (8 % 10, Goto 218)]),
                   (CAnd (HasLevel Savant) (HasEndurance 15), Randomly [(4 % 10, Goto 364), (6 % 10, Goto 218)]),
-
                   (HasLevel Savant, Randomly [(6 % 10, Goto 364), (4 % 10, Goto 218)]),
-
                   (HasEndurance 26, Randomly [(5 % 10, Goto 364), (5 % 10, Goto 218)]),
                   (HasEndurance 15, Randomly [(7 % 10, Goto 364), (3 % 10, Goto 218)]),
                   (Always True, Randomly [(9 % 10, Goto 364), (1 % 10, Goto 218)])

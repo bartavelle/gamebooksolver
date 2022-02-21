@@ -13,7 +13,7 @@ import subprocess
 
 alldisciplines = set({"CA", "HU", "6S", "TR", "HL", "MS", "MB", "AK", "MO"})
 allweapons = set({"DA", "SP", "MA", "WH", "SW", "AX", "QS", "SO", "SS"})
-PTRN = re.compile("data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.cbor")
+PTRN = re.compile(r"data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.cbor")
 
 m = PTRN.match(sys.argv[1])
 assert m is not None
@@ -44,7 +44,7 @@ if items:
 if mgold:
     cmdline += ["--gold", mgold[1:]]
 
-cmdline += [sys.argv[1], "+RTS", "-N1", "-t", "-M20G"]
+cmdline += [sys.argv[1], "+RTS", "-N1", "-t", "-M110G"]
 print(" ".join(cmdline))
 try:
     r = subprocess.run(cmdline, check=True, capture_output=True)
@@ -54,4 +54,4 @@ try:
         print("e:%s s:%s ds:%s r:%s" % (e, s, discs, r.stderr.decode("utf-8").strip()))
 except subprocess.CalledProcessError as e:
     print(e.stderr.decode("utf-8"))
-    sys.exit(1)
+    raise

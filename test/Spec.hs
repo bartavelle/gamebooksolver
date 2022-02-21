@@ -75,11 +75,11 @@ main = hspec $ do
       defVariable = mkCharacter 25 (addItem (Weapon BroadSword) 1 emptyInventory)
       defCombat = FightDetails "def" 28 30 []
   describe "Item enum instance" $ do
-    it "fromEnum" $ map fromEnum [minBound .. maxBound :: Item] `shouldBe` [0 .. 46]
-    it "toEnum" $ map toEnum [0 .. 46] `shouldBe` [minBound .. maxBound :: Item]
+    it "fromEnum" $ map fromEnum [minBound .. maxBound :: Item] `shouldBe` [0 .. 47]
+    it "toEnum" $ map toEnum [0 .. 47] `shouldBe` [minBound .. maxBound :: Item]
     it "toEnum . fromEnum == id" $ forAll aitem $ \i -> toEnum (fromEnum i) == i
   describe "Flags" $ do
-    prop "flags fit in a 16 bit word" $ fromEnum (maxBound :: Flag) < 16
+    prop "flags fit in a 32 bit word" $ fromEnum (maxBound :: Flag) < 32
   describe "Inventory" $ do
     prop "empty Inventory has no item" $ forAll aitem $ \i -> not (hasItem i emptyInventory)
     prop "single item Inventory" $ forAll aitem $ \i -> items (addItem i 1 emptyInventory) == [(i, 1)]
@@ -232,6 +232,10 @@ main = hspec $ do
       case filter ((== "evasion") . fst) r of
         [x] -> x `shouldBe` ("evasion", expectedResult)
         _ -> fail "no evasion?"
+  describe "Fight round" $ do
+    it "Standard fight" $ do
+      let r = fightRound defConstant defVariable defCombat
+      S.fromList r `shouldBe` S.fromList [((0, 30), 1 % 5), ((17, 30), 1 % 5), ((18, 29), 1 % 10), ((19, 28), 1 % 10), ((20, 27), 1 % 10), ((21, 26), 1 % 10), ((22, 25), 1 % 10), ((25, 24), 1 % 10)]
   describe "Histostats" $ do
     it "Encode/decode" $ do
       let d1 :: DecisionStat

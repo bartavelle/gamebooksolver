@@ -18,7 +18,7 @@ import Data.Char (toLower)
 import Data.List (foldl', intercalate)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe)
-import Data.Ratio ((%))
+import Data.Ratio (denominator, numerator, (%))
 import qualified Data.Set as S
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -58,6 +58,9 @@ instance FromJSON ERatio where
               [n', d'] -> (rd n', rd d')
               _ -> error ("invalid value " ++ show vl)
         pure (ERatio (n % d))
+
+instance ToJSON ERatio where
+  toJSON (ERatio r) = object [("radix", toJSON @Int 10), ("value", toJSON (show (numerator r) ++ "/" ++ show (denominator r)))]
 
 data Multistat = Multistat
   { _mbook :: Book,
@@ -114,6 +117,18 @@ instance FromJSON g => FromJSON (ChapterAggreg g) where
 
 instance FromJSON g => FromJSON (DecisionStats g) where
   parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 2}
+
+instance Semigroup g => Semigroup (ChapterAggreg g) where
+  ChapterAggreg i1 f1 e1 t1 s1 <> ChapterAggreg i2 f2 e2 t2 s2 =
+    ChapterAggreg
+      (M.unionWith (<>) i1 i2)
+      (M.unionWith (<>) f1 f2)
+      (M.unionWith (<>) e1 e2)
+      (M.unionWith (<>) t1 t2)
+      (s1 <> s2)
+
+emptyAggreg :: Ord g => g -> ChapterAggreg g
+emptyAggreg = ChapterAggreg mempty mempty mempty mempty
 
 mkchar :: Bool -> CharacterConstant -> CVarState -> CharacterVariable
 mkchar autoweapon cst (CVarState sitems gld flgs) = chr

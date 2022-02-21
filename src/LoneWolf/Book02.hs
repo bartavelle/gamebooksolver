@@ -1,7 +1,6 @@
 module LoneWolf.Book02 where
 
 import Control.Lens ((%~), (&))
-import Data.Data.Lens (biplate)
 import Data.Ratio ((%))
 import LoneWolf.Chapter
 import LoneWolf.Character
@@ -28,8 +27,9 @@ pchapters = map patch (extractMultiFight chapters)
     -- loop breaker
     patch (172, Chapter t d _) = (172, Chapter t d (Decisions [("If you wish to climb the stone steps and confront it, turn to 52.", NoDecision (Goto 52)), ("If you wish to sprint past the steps and platform, turn to 256.", NoDecision (Goto 256))]))
     patch x = x
+    limitMoneyAt :: Int -> Decision -> Decision
     limitMoneyAt maxmoney dc =
-      dc & biplate %~ \o ->
+      dc & _Outcome %~ \o ->
         Conditionally
           [ (HasItem Gold maxmoney, Simple [LoseItemKind [PouchSlot], GainItem Gold maxmoney] o),
             (Always True, o)

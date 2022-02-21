@@ -9,20 +9,23 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module LoneWolf.Character where
 
 import Codec.Serialise (Serialise)
+import Control.Applicative ((<|>))
 import Control.DeepSeq
 import Control.Lens
-import Data.Aeson (FromJSON, FromJSONKey, Options (fieldLabelModifier), ToJSON (toJSON), ToJSONKey, defaultOptions, genericParseJSON, genericToJSON, withText)
+import Data.Aeson (FromJSON, FromJSONKey, Options (fieldLabelModifier), ToJSON (toJSON), ToJSONKey, Value (String), defaultOptions, genericParseJSON, genericToJSON, withObject, withText, (.:))
 import Data.Aeson.Types (FromJSON (parseJSON))
 import Data.Bits
 import Data.Bits.Lens (bitAt)
 import Data.Data
 import qualified Data.Function.Memoize as M
+import qualified Data.HashMap.Strict as HM
 import Data.Hashable
 import Data.Int (Int16)
 import Data.List
@@ -198,9 +201,29 @@ data Discipline
   | MindOverMatter
   deriving (Show, Eq, Generic, Read, Ord, Typeable, Data)
 
-instance ToJSON Discipline
+instance ToJSON Discipline where
+  toJSON d = case d of
+    WeaponSkill w -> toJSON w
+    _ -> toJSON (show d)
 
-instance FromJSON Discipline
+instance FromJSON Discipline where
+  parseJSON x = txtd x <|> (WeaponSkill <$> parseJSON x) <|> objd x
+    where
+      objd = withObject "Discipline" $ \o -> case HM.toList o of
+        [("WeaponSkill", w)] -> WeaponSkill <$> parseJSON w
+        [(k, v)]
+          | k == "tag" -> txtd v
+          | otherwise -> case readMaybe (T.unpack k) of
+            Just d -> pure d
+            Nothing -> fail ("unknown discipline " ++ show o)
+        _ -> do
+          t <- o .: "tag"
+          case t of
+            String "WeaponSkill" -> WeaponSkill <$> o .: "contents"
+            _ -> txtd t
+      txtd = withText "Discipline" $ \l -> case readMaybe (T.unpack l) of
+        Nothing -> fail (show x)
+        Just d -> pure d
 
 instance Serialise Discipline
 

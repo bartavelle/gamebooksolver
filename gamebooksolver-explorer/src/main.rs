@@ -1,21 +1,22 @@
-use crate::chapter::*;
-use crate::mini::Equipment;
+use lonewolf::chapter::*;
 use rug::Rational;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 use structopt::StructOpt;
 
-mod chapter;
-mod mini;
+mod lonewolf;
+mod solver;
 
-use mini::{
-    Book, CVarState, CharacterConstant, CharacterVariable, ChoppedSolution, Item, NextStep,
+use lonewolf::mini::{
+    Book, CVarState, CharacterConstant, CharacterVariable, ChoppedSolution, Equipment, Item,
+    NextStep,
 };
 
 #[derive(Debug, StructOpt)]
 enum Subcommand {
     LoadChapter,
+    DumpStates { cid: u16 },
 }
 
 #[derive(Debug, StructOpt)]
@@ -80,15 +81,12 @@ fn mksol(
         // basic state
         let mut stats = ChapterStats::default();
         stats.items.insert(cvar.cequipment, Rational::from(1));
-        stats.flags.insert(cvar.flags, Rational::from(1));
+        stats.flags.insert(cvar.flags.0, Rational::from(1));
         stats.endurance.insert(cvar.curendurance, Rational::from(1));
         let mut out = HashMap::from([(src, stats)]);
 
         let cs = match searchmap.get(curns) {
-            None => {
-                eprintln!("Missing state!?! {:?}", curns);
-                return out;
-            }
+            None => panic!("Missing state!?! {:?}", curns),
             Some(x) => x,
         };
 
@@ -151,60 +149,8 @@ fn mksol(
     go(&mut memo, &sttmap, &ini)
 }
 
-// fn update_score(src: u16, sc: Rational, entry: &mut Entry) {
-//     entry.entry(src).and_modify(|x| x.1 = sc);
-// }
-
-// let mut update_choice =
-//     |p: Rational,
-//      cstt: &NextStep,
-//      entry: &mut Entry,
-//      winmap: &mut HashMap<CharacterVariable, Rational>| {
-//         let (thisentry, curwinmap) = go(lastchapter, curmap, searchmap, cstt);
-//         for (winstt, winproba) in curwinmap.into_iter() {
-//             let e = winmap.entry(winstt).or_insert_with(|| Rational::from(0));
-//             *e += winproba * &p;
-//         }
-//         for (k1, (mp, csc, cen)) in thisentry.into_iter() {
-//             let e = entry
-//                 .entry(k1)
-//                 .or_insert_with(|| (HashMap::new(), Rational::from(0), Rational::from(0)));
-//             e.1 += csc * &p;
-//             e.2 += cen * &p;
-//             for (k2, tscore) in mp.into_iter() {
-//                 let e2 = e.0.entry(k2).or_insert_with(|| Rational::from(0));
-//                 *e2 += tscore * &p;
-//             }
-//         }
-//         if let Some(dst) = cstt.chapter() {
-//             let e = entry
-//                 .entry(src)
-//                 .or_insert_with(|| (HashMap::new(), Rational::from(0), Rational::from(0)));
-//             let e2 = e.0.entry(dst).or_insert_with(|| Rational::from(0));
-//             *e2 += &p;
-//         }
-//     };
-
-// match cs {
-//     ChoppedSolution::CLeafLost => (),
-//     ChoppedSolution::CLeaf(sc) => update_score(src, sc.clone(), &mut entry),
-//     ChoppedSolution::CJump(_, stt) => {
-//         update_choice(Rational::from(1), stt, &mut entry, &mut winmap);
-//         update_score(src, Rational::from(1), &mut entry);
-//     }
-//     ChoppedSolution::CNode(_, pms) => {
-//         update_score(src, Rational::from(1), &mut entry);
-//         for (mstt, sc) in pms.iter() {
-//             if let Some(stt) = mstt {
-//                 update_choice(sc.clone(), stt, &mut entry, &mut winmap);
-//             }
-//         }
-//     }
-// }
-// curmap.insert(curstt.clone(), (entry.clone(), winmap.clone()));
-
 fn default_items(book: Book) -> Vec<(Item, i64)> {
-    use mini::Weapon::{ShortSword, Sommerswerd};
+    use lonewolf::mini::Weapon::{ShortSword, Sommerswerd};
     use Book::*;
     use Item::*;
     match book {
@@ -233,11 +179,14 @@ fn mkchar(ccst: CharacterConstant, cvar: CVarState) -> CharacterVariable {
         .unwrap_or_else(|| default_items(ccst.bookid))
         .into_iter()
     {
-        cv.add_item(itm, qty);
+        cv.add_item(&itm, qty);
     }
-    cv.add_item(Item::Gold, cvar.gold as i64);
+    cv.add_item(&Item::Gold, cvar.gold as i64);
     for f in cvar.flags.into_iter() {
         cv.set_flag(f);
+    }
+    if cv.cequipment.has_itemb(&Item::BodyArmor) {
+        cv.curendurance += 4;
     }
     cv
 }
@@ -253,10 +202,10 @@ fn count_states<A>(cnt: &[(NextStep, A)]) -> HashMap<u16, u64> {
     o
 }
 
-fn decode_buffer<R: std::io::Read>(r: &mut R) -> mini::SolutionDump {
+fn decode_buffer<R: std::io::Read>(r: &mut R) -> lonewolf::mini::SolutionDump {
     let mut buf = Vec::new();
     r.read_to_end(&mut buf).unwrap();
-    mini::parse_soldump(&buf).unwrap()
+    lonewolf::mini::parse_soldump(&buf).unwrap()
 }
 
 #[derive(serde::Serialize)]
@@ -266,15 +215,18 @@ struct Output {
     sttmap: HashMap<u16, u64>,
 }
 
+fn load_soldump(pth: &str) -> lonewolf::mini::SolutionDump {
+    let file = File::open(pth).unwrap();
+    let mut dec = zstd::Decoder::new(file).unwrap();
+    decode_buffer(&mut dec)
+}
+
 fn main() {
     let opt = Opt::from_args();
 
     match &opt.cmd {
         None => {
-            let file = File::open(opt.solpath.clone()).unwrap();
-            let mut dec = zstd::Decoder::new(file).unwrap();
-            let soldump = decode_buffer(&mut dec);
-
+            let soldump = load_soldump(&opt.solpath);
             let sttmap = count_states(&soldump.content);
             let bookid = soldump.soldesc.ccst.bookid;
             let ini = NextStep::NewChapter(1, mkchar(soldump.soldesc.ccst, soldump.soldesc.cvar));
@@ -295,6 +247,15 @@ fn main() {
             let reader = BufReader::new(file);
             let u: Vec<(ChapterId, Chapter)> = serde_json::from_reader(reader).unwrap();
             println!("{:?}", u);
+        }
+        Some(Subcommand::DumpStates { cid }) => {
+            let soldump = load_soldump(&opt.solpath);
+            for (ns, sol) in &soldump.content {
+                if ns.chapter() == Some(*cid) {
+                    println!("{:?}", ns);
+                    println!(" -> {:?}", sol);
+                }
+            }
         }
     }
 }

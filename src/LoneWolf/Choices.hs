@@ -80,7 +80,7 @@ flattenDecision cconstant cvariable d =
           | Fight (FightDetails _ _ _ mds) _ <- o, NoPotion `elem` mds -> [([], o)]
           | hasCombat o && hasItem StrengthPotion4 inventory && hasItem StrengthPotion inventory ->
             [ (["don't use strength potion"], o),
-              (["use strength potion"], Simple [LoseItem StrengthPotion4 1, SetFlag PotentStrengthPotionActive] o),
+              (["use strength potion"], Simple [LoseItem StrengthPotion 1, SetFlag StrengthPotionActive] o),
               (["use potent strength potion"], Simple [LoseItem StrengthPotion4 1, SetFlag PotentStrengthPotionActive] o)
             ]
           | hasCombat o && hasItem StrengthPotion inventory ->

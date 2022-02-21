@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeApplications #-}
 module Main (main) where
 
 import Control.Lens (has, preview)
@@ -54,17 +55,17 @@ main = do
   let chapters = pchapters book
   let rank = orderChapters book (IM.fromList chapters)
   forM_ chapters $ \(cnumber, Chapter ctitle _ cdesc) -> do
-    let mhasCombat = has (outcomePlate . biplate . _Fight) cdesc || has (biplate . _EvadeFight) cdesc
+    let mhasCombat = has (outcomePlate . biplate @ChapterOutcome @ChapterOutcome . _Fight) cdesc || has (biplate @Decision @Decision . _EvadeFight) cdesc
         eating = preview (outcomePlate . biplate . _MustEat) cdesc
         style
           | eating == Just NoHunt = "color=yellow style=filled"
           | eating == Just Hunt = "color=yellow"
           | mhasCombat = "color=red"
-          | has (biplate . _GameLost) cdesc = "fillcolor=black style=filled fontcolor=white"
+          | has (biplate @Decision @ChapterOutcome . _GameLost) cdesc = "fillcolor=black style=filled fontcolor=white"
           | has _Special cdesc = "shape=square color=blue"
           | otherwise = ""
         label
-          | has (biplate . _GameLost) cdesc = ctitle ++ " :("
+          | has (biplate @Decision @ChapterOutcome . _GameLost) cdesc = ctitle ++ " :("
           | otherwise = ctitle
         rnk = maybe "??" show (M.lookup cnumber rank)
     putStrLn

@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-
 ---
@@ -23,6 +24,7 @@ Extensions and imports
 Clearly not the best part :)
 -}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module LoneWolf.Chapter where
@@ -34,7 +36,6 @@ import Data.Data.Lens
 import qualified Data.Function.Memoize as M
 import GHC.Generics (Generic)
 import LoneWolf.Character
-import Solver
 
 {-
 Basic types
@@ -59,14 +60,16 @@ What's in a chapter?
 Lone Wolf chapters usually have a descriptive text, some figures, a description of what happens to the payer, and a list of choices. The `title` of the chapter serves no real purpose here, as it is identical (in `String` form) to the associated `ChapterId`.
 -}
 
-data Chapter = Chapter
+type Chapter = ChapterG Rational
+
+data ChapterG a = Chapter
   { _title :: String,
     _desc :: String,
-    _pchoice :: Decision
+    _pchoice :: DecisionG a
   }
-  deriving (Show, Eq, Generic)
+  deriving (Show, Eq, Generic, Functor)
 
-instance ToJSON Chapter where
+instance ToJSON a => ToJSON (ChapterG a) where
   toJSON = genericToJSON jsonOptions
 
 {-
@@ -97,22 +100,24 @@ The Decision type
 In details, the `Decision` types has the following constructors:
 -}
 
-data Decision
-  = Decisions [(String, Decision)]
-  | RetrieveEquipment Decision
-  | CanTake Item Int Decision
-  | Canbuy Item Price Decision
-  | Cansell Item Price Decision
-  | Conditional BoolCond Decision
-  | Special SpecialChapter
-  | NoDecision ChapterOutcome
-  | EvadeFight Rounds ChapterId FightDetails ChapterOutcome
-  | AfterCombat Decision
-  | RemoveItemFrom Slot Int Decision -- must have that least that many items
-  | LoseItemFrom Slot Int Decision -- always succeeds
-  deriving (Show, Eq, Typeable, Data, Generic)
+type Decision = DecisionG Rational
 
-instance ToJSON Decision where
+data DecisionG a
+  = Decisions [(String, DecisionG a)]
+  | RetrieveEquipment (DecisionG a)
+  | CanTake Item Int (DecisionG a)
+  | Canbuy Item Price (DecisionG a)
+  | Cansell Item Price (DecisionG a)
+  | Conditional BoolCond (DecisionG a)
+  | Special SpecialChapter
+  | NoDecision (ChapterOutcomeG a)
+  | EvadeFight Rounds ChapterId (FightDetailsG a) (ChapterOutcomeG a)
+  | AfterCombat (DecisionG a)
+  | RemoveItemFrom Slot Int (DecisionG a) -- must have that least that many items
+  | LoseItemFrom Slot Int (DecisionG a) -- always succeeds
+  deriving (Show, Eq, Typeable, Data, Generic, Functor)
+
+instance ToJSON a => ToJSON (DecisionG a) where
   toJSON = genericToJSON jsonOptions
 
 data SpecialChapter
@@ -177,20 +182,30 @@ The ChapterOutcome type
 A `ChapterOutcome` describe what happens to the player once he has made a decision.
 -}
 
-data ChapterOutcome
-  = Fight FightDetails ChapterOutcome
+type ChapterOutcome = ChapterOutcomeG Rational
+
+data ChapterOutcomeG a
+  = Fight (FightDetailsG a) (ChapterOutcomeG a)
   | -- | lw loss, equal, lw win
-    OneRound FightDetails ChapterOutcome ChapterOutcome ChapterOutcome
-  | Randomly [(Proba, ChapterOutcome)]
-  | Conditionally [(BoolCond, ChapterOutcome)]
-  | Simple [SimpleOutcome] ChapterOutcome
+    OneRound (FightDetailsG a) (ChapterOutcomeG a) (ChapterOutcomeG a) (ChapterOutcomeG a)
+  | Randomly [(a, ChapterOutcomeG a)]
+  | Conditionally [(BoolCond, ChapterOutcomeG a)]
+  | Simple [SimpleOutcome] (ChapterOutcomeG a)
   | Goto ChapterId
   | GameLost
   | GameWon
-  deriving (Show, Eq, Typeable, Data, Generic)
+  deriving (Show, Eq, Typeable, Data, Generic, Functor)
 
-instance ToJSON ChapterOutcome where
-  toJSON = genericToJSON jsonOptions
+instance ToJSON a => ToJSON (ChapterOutcomeG a) where
+  toJSON x = case x of
+    GameLost -> "GameLost"
+    GameWon -> "GameWon"
+    Fight a b -> object [("Fight", toJSON (a, b))]
+    Simple a b -> object [("Simple", toJSON (a, b))]
+    Conditionally l -> object [("Conditionally", toJSON l)]
+    Randomly l -> object [("Randomly", toJSON l)]
+    Goto d -> object [("Goto", toJSON d)]
+    OneRound a b c d -> object [("OneRound", toJSON (a, b, c, d))]
 
 data SimpleOutcome
   = DamagePlayer Endurance
@@ -207,7 +222,18 @@ data SimpleOutcome
   deriving (Show, Eq, Typeable, Data, Generic)
 
 instance ToJSON SimpleOutcome where
-  toJSON = genericToJSON jsonOptions
+  toJSON x = case x of
+    DamagePlayer a -> object [("DamagePlayer", toJSON a)]
+    HealPlayer a -> object [("HealPlayer", toJSON a)]
+    LoseItemKind a -> object [("LoseItemKind", toJSON a)]
+    MustEat a -> object [("MustEat", toJSON a)]
+    SetFlag a -> object [("SetFlag", toJSON a)]
+    ClearFlag a -> object [("ClearFlag", toJSON a)]
+    FullHeal -> "FullHeal"
+    HalfHeal -> "HalfHeal"
+    StoreEquipment -> "StoreEquipment"
+    GainItem a b -> object [("GainItem", toJSON (a, b))]
+    LoseItem a b -> object [("LoseItem", toJSON (a, b))]
 
 hasCombat :: ChapterOutcome -> Bool
 hasCombat o =
@@ -278,21 +304,25 @@ There are however many combat situations that involve special modifiers which ar
 Fights against consecutive opponents are handled by chaining the `Fight` and `EvadeFight` constructors.
 -}
 
-data FightDetails = FightDetails
+type FightDetails = FightDetailsG Rational
+
+data FightDetailsG a = FightDetails
   { _opponent :: String,
     _fcombatSkill :: CombatSkill,
     _fendurance :: Endurance,
-    _fightMod :: [FightModifier]
+    _fightMod :: [FightModifierG a]
   }
-  deriving (Show, Eq, Typeable, Data, Generic)
+  deriving (Show, Eq, Typeable, Data, Generic, Functor)
 
-instance ToJSON FightDetails where
+instance ToJSON a => ToJSON (FightDetailsG a) where
   toJSON = genericToJSON jsonOptions
 
-data FightModifier
+type FightModifier = FightModifierG Rational
+
+data FightModifierG a
   = Undead
   | MindblastImmune
-  | Timed Int FightModifier
+  | Timed Int (FightModifierG a)
   | CombatBonus CombatSkill
   | BareHanded
   | FakeFight ChapterId
@@ -309,8 +339,31 @@ data FightModifier
   | StopFight ChapterId -- immediately stop the fight and jump
   | DPR Endurance -- damage per round inflicted to the opponent
   | NoPotion -- can't take a potion for this fight
-  | Poisonous Proba -- opponent doesn't damage, but can instakill on damage (cf b03s088)
-  deriving (Show, Eq, Typeable, Data, Generic, Ord)
+  | Poisonous a -- opponent doesn't damage, but can instakill on damage (cf b03s088)
+  deriving (Show, Eq, Typeable, Data, Generic, Ord, Functor)
+
+instance ToJSON a => ToJSON (FightModifierG a) where
+  toJSON x = case x of
+    Undead -> String "Undead"
+    MindblastImmune -> String "MindblastImmune"
+    Timed t m -> object [("Timed", toJSON (t, m))]
+    CombatBonus a -> object [("CombatBonus", toJSON a)]
+    BareHanded -> String "BareHanded"
+    FakeFight a -> object [("FakeFight", toJSON a)]
+    EnemyMindblast -> String "EnemyMindblast"
+    ForceEMindblast -> String "ForceEMindblast"
+    PlayerInvulnerable -> String "PlayerInvulnerable"
+    DoubleDamage -> String "DoubleDamage"
+    Evaded a -> object [("Evaded", toJSON a)]
+    OnDamage a -> object [("OnDamage", toJSON a)]
+    OnNotYetWon a -> object [("OnNotYetWon", toJSON a)]
+    MultiFight -> String "MultiFight"
+    EnemyInvulnerable -> String "EnemyInvulnerable"
+    OnLose a -> object [("OnLose", toJSON a)]
+    StopFight a -> object [("StopFight", toJSON a)]
+    DPR a -> object [("DPR", toJSON a)]
+    NoPotion -> String "NoPotion"
+    Poisonous a -> object [("Poisonous", toJSON a)]
 
 data KaiLevel
   = Novice
@@ -342,9 +395,6 @@ getLevel ccst = case length (_discipline ccst) of
   10 -> Master
   _ -> error ("invalid amount of disciplines: " ++ show (_discipline ccst))
 
-instance ToJSON FightModifier where
-  toJSON = genericToJSON jsonOptions
-
 {-
  * `Undead`: undead creatures take double damage from the `Sommerswerd`.
  * `MindblastImmune`: the opponent is not affected by the `MindBlast` ability of the player.
@@ -363,7 +413,7 @@ jsonOptions =
     { fieldLabelModifier = dropWhile (== '_'),
       allNullaryToStringTag = True,
       unwrapUnaryRecords = True,
-      tagSingleConstructors = True,
+      tagSingleConstructors = False,
       sumEncoding = ObjectWithSingleField
     }
 
@@ -372,12 +422,12 @@ Lenses, plates and utilities
 ----------------------------
 -}
 
-makePrisms ''ChapterOutcome
+makePrisms ''ChapterOutcomeG
 makePrisms ''SimpleOutcome
-makePrisms ''Decision
-makePrisms ''FightModifier
-makeLenses ''FightDetails
-makeLenses ''Chapter
+makePrisms ''DecisionG
+makePrisms ''FightModifierG
+makeLenses ''FightDetailsG
+makeLenses ''ChapterG
 
 moneyCond :: Int -> ChapterOutcome -> Decision
 moneyCond price = Conditional (HasItem Gold price) . NoDecision . Simple [LoseItem Gold price]
@@ -415,4 +465,4 @@ Next time will have actual code, with a rules interpreter!
 
 -}
 
-M.deriveMemoizable ''FightModifier
+M.deriveMemoizable ''FightModifierG

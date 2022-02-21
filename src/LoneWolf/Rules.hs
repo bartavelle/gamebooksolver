@@ -106,7 +106,7 @@ update cconstant cvariable cid outcome =
     OneRound fd lose eq win -> regroup $ do
       ((lwhp, ophp), p) <- fightRound cconstant cvariable fd
       let lwloss = cvariable ^. curendurance - lwhp
-          oploss = 28 - ophp
+          oploss = fd ^. fendurance - ophp
           tgt
             | lwloss > oploss = lose
             | lwloss < oploss = eq

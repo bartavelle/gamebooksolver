@@ -14,7 +14,7 @@ def load_jsons(dir: str, ignored: List[str]) -> Dict[str, Tuple[Fraction, int]]:
     for f in os.listdir(dir):
         if not f.endswith(".json"):
             continue
-        ignore =False
+        ignore = False
         for i in ignored:
             if i in f:
                 ignore = True
@@ -73,6 +73,7 @@ def extra_builds(d: Dict[Fraction, List[str]], options: List[str]):
                 print("touch " + ncbor)
                 print("cp " + json + " " + njson)
 
+
 def adjust_jsons(dir: str, options: List[str]):
     for f in os.listdir(dir):
         if not f.endswith(".json"):
@@ -86,51 +87,26 @@ def adjust_jsons(dir: str, options: List[str]):
             new_content = json.load(open(newpath, "r"))
             new_content["_msdisciplines"] = orig_content["_msdisciplines"]
             new_content["_variable"]["_cvflags"].append("PermanentSkillReduction2")
-            json.dump(new_content, open(newpath, "w") )
+            json.dump(new_content, open(newpath, "w"))
+
 
 B03BASE = [
-    "-Sommerswerd-Laumspur-Meal",
-    "-Sommerswerd-BodyArmor-Meal",
+    "-Sommerswerd-Laumspur-Meal-Meal",
+    "-Sommerswerd-BodyArmor-Meal-Meal",
     "-Sommerswerd-Laumspur-BodyArmor",
 ]
 
 B04OPTIONS = ["Helmet-FLGHelmetIsSilver", "StrengthPotion4"]
 B04BASE = [
-    "Sword-Laumspur-Shield-Meal-Meal-Meal-Meal",
-    "Sommerswerd-Laumspur-Shield-Meal-Meal-Meal-Meal",
+    "-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+    "-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
 ]
 
-TARGETSLOWB04TP = [
-    "",
-    "-Sword-Laumspur-Shield-Meal-Meal-Meal-Meal",
-    "-Sommerswerd-Helmet-FLGHelmetIsSilver-Laumspur-Shield-Meal-Meal-Meal-Meal",
-    "-Sword-Helmet-FLGHelmetIsSilver-Laumspur-Shield-Meal-Meal-Meal-Meal",
-    "-StrengthPotion4",
-    "-StrengthPotion4-Sword-Laumspur-Shield-Meal-Meal-Meal-Meal",
-    "-StrengthPotion4-Sommerswerd-Helmet-FLGHelmetIsSilver-Laumspur-Shield-Meal-Meal-Meal-Meal",
-    "-StrengthPotion4-Sword-Helmet-FLGHelmetIsSilver-Laumspur-Shield-Meal-Meal-Meal-Meal",
-]
-
-
-TARGETSLOWB05TP = [
-    "",
-    "-FLGFoughtElix",
+B05OPTIONS = ["Helmet-FLGHelmetIsSilver", "StrengthPotion4", "FLGFoughtElix", "BodyArmor"]
+B05BASE= [
     "-Sword-Meal-Meal-Shield-Laumspur",
-    "-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix",
-    "-Sommerswerd-Meal-Meal-Shield-Laumspur-Helmet-FLGHelmetIsSilver",
-    "-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-Helmet-FLGHelmetIsSilver",
-    "-Sword-Meal-Meal-Shield-Laumspur-Helmet-FLGHelmetIsSilver",
-    "-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-Helmet-FLGHelmetIsSilver",
-    "-StrengthPotion4-Sword-Meal-Meal-Shield-Laumspur",
-    "-StrengthPotion4-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix",
-    "-StrengthPotion4-Sommerswerd-Meal-Meal-Shield-Laumspur",
-    "-StrengthPotion4-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix",
-    "-StrengthPotion4-Sommerswerd-Meal-Meal-Shield-Laumspur-Helmet-FLGHelmetIsSilver",
-    "-StrengthPotion4-Sommerswerd-Meal-Meal-Shield-Laumspur-FLGFoughtElix-Helmet-FLGHelmetIsSilver",
-    "-StrengthPotion4-Sword-Meal-Meal-Shield-Laumspur-Helmet-FLGHelmetIsSilver",
-    "-StrengthPotion4-Sword-Meal-Meal-Shield-Laumspur-FLGFoughtElix-Helmet-FLGHelmetIsSilver",
+    "-Sommerswerd-Meal-Meal-Shield-Laumspur",
 ]
-
 
 def combinations(l: List[str], acc: List[str]) -> Iterator[List[str]]:
     if not l:
@@ -159,23 +135,36 @@ for t in B03BASE:
             if d1 > d2:
                 for d3 in RDISCS:
                     if d2 > d3:
-                        TGTS3.append("data/B03/2010SW.%s.%s.%s%s" % (d1, d2, d3, t))
+                        TGTS3.append("data/B03/2010SW.%s.%s.%s%s.cbor" % (d1, d2, d3, t))
 
 TGTS4: List[str] = []
-for t in TARGETSLOWB05TP:
-    for d1 in DISCS:
-        for d2 in DISCS:
-            if d1 > d2:
+for d1 in RDISCS:
+    for d2 in RDISCS:
+        if d1 > d2:
+            for t in geneqps(B04BASE, B04OPTIONS):
                 TGTS4.append("data/B04/2010SW.%s.%s%s.cbor" % (d1, d2, t))
 
 TGTS5: List[str] = []
-for t in TARGETSLOWB05TP:
-    for d in DISCS:
-        TGTS5.append("data/B05/2010SW.%s%s.cbor" % (d, t))
+for d1 in RDISCS:
+    for t in geneqps(B05BASE, B05OPTIONS):
+        TGTS5.append("data/B05/2010SW.%s%s.cbor" % (d1, t))
 
 
-ALLTGTS3 = [x + ".cbor" for x in geneqps(TGTS3, [])]
+def chunked_makefile(n: int, l: List[str], cs: int):
+    print("# LOW%02d : %d" % (n, len(l)))
+    lc = list(chunks(l, cs))
+    for (i, l) in enumerate(lc):
+        print("LOW%02d_%d = %s" % (n, i, " ".join(l)))
+        print("")
+        print("low%02d_%d: $(LOW%02d_%d)" % (n, i, n ,i))
+        print("")
+    print("TARGETSLOWB%02d = %s" % (n, " ".join("$(LOW%02d_%d)" % (n, i) for i in range(0, len(lc)))))
+    print("")
 
+
+chunked_makefile(3, TGTS3, 60)
+chunked_makefile(4, TGTS4, 30)
+chunked_makefile(5, TGTS5, 30)
 
 opts = ["FLGPermanentSkillReduction2"]
 
@@ -185,4 +174,4 @@ groups04 = json_groups(jsons04)
 jsons05 = load_jsons("data/B05", opts)
 groups05 = json_groups(jsons05)
 # extra_builds(groups05, ["FLGPermanentSkillReduction2"])
-adjust_jsons("data/B05", opts)
+# adjust_jsons("data/B05", opts)

@@ -115,10 +115,10 @@ groupWinstates = M.fromListWith (+) . map (bimap extractCV getERatio)
     extractCV cv = (M.fromList (items (_cequipment cv)), S.fromList (allFlags cv))
 
 percent :: Double -> String
-percent = printf "%.2f%%" . (* 100)
+percent = printf "%.3f%%" . (* 100)
 
 rpercent :: Rational -> String
-rpercent = printf "%.2f%%" . (* 100) . fromRational @Double
+rpercent = printf "%.3f%%" . (* 100) . fromRational @Double
 
 rowStyleRG :: TermRaw Text arg => Double -> arg
 rowStyleRG d =
@@ -221,9 +221,15 @@ finalChapter stts = case _dbookid (_sdecisions stts) of
   _ -> 350
 
 finalStat :: Stats -> ChapterAggreg Rational
-finalStat stts = case M.lookup (finalChapter stts) (_dres (_sdecisions stts)) of
-  Nothing -> error ("no final chapter in " ++ show (_fp stts))
+finalStat stts = statsAt (finalChapter stts) stts
+
+statsAt :: ChapterId -> Stats -> ChapterAggreg Rational
+statsAt cid stts = case M.lookup cid (_dres (_sdecisions stts)) of
+  Nothing -> error ("could not find chapter " ++ show cid ++ " in " ++ show (_fp stts))
   Just x -> x
+
+itemsAt :: ChapterId -> Stats -> M.Map Inventory Rational
+itemsAt cid = _citems . statsAt cid
 
 finalItems :: Stats -> M.Map Inventory Rational
 finalItems = _citems . finalStat
@@ -236,6 +242,16 @@ finalFlag f stts = sum (M.filterWithKey (const . view (bitAt (fromEnum f))) wsta
   where
     wstates = finalFlags stts
     rawrate = sum wstates
+
+itemAt :: ChapterId -> Item -> Stats -> Rational
+itemAt cid i stts = rate / rawrate
+  where
+    wstates = itemsAt cid stts
+    rawrate = sum wstates
+    rate = sum $ do
+      (inv, p) <- M.toList wstates
+      let cnt = itemCount i inv
+      pure (fromIntegral cnt * p)
 
 finalItem :: Item -> Stats -> Rational
 finalItem i stts = rate / rawrate
@@ -274,7 +290,7 @@ blogpostStats astts cols = heatmapH rowStyleGreen (Just ("Missing disc" *> br_ [
           )
     mpo = M.fromList [(_fp x, x) | x <- ordered]
     cmap = M.fromList cols
-    ordered = sortOn (negate . winrate) astts
+    ordered = sortOn (\x -> (negate (winrate x), _fp x)) astts
     getentry entry col =
       let Just e = M.lookup entry mpo
           fn = case M.lookup col cmap of
@@ -340,6 +356,9 @@ b03stats astts = do
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . sum . _cendurance . finalStat),
           ("SS", fmtb . not . hasitem (Weapon Sword)),
+          ("S LM", fmtr . itemAt 1 Laumspur),
+          ("S ML", fmtr . itemAt 1 Meal),
+          ("Armor", fmtb . hasitem BodyArmor),
           ("End SH", fmtr . finalFlag HelmetIsSilver),
           ("Baknar oil", fmtr . finalFlag baknarOilB03),
           ("End +4", fmtr . finalItem StrengthPotion4)
@@ -369,6 +388,7 @@ b05stats astts = do
         [ ("SS", fmtb . not . hasitem (Weapon Sword)),
           ("SH", fmtb . hasflag HelmetIsSilver),
           ("+4", fmtb . hasitem StrengthPotion4),
+          ("BA", fmtb . hasitem BodyArmor),
           ("Win rate", fmtr . winrate),
           ("Previously fought the Elix", fmtb . hasflag FoughtElix),
           ("Imprisoned", fmtr . visitrate 69),
