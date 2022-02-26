@@ -70,7 +70,7 @@ sumScore = sum . map (\(s, p) -> getSolScore s * p)
 
 main :: IO ()
 main = hspec $ do
-  let solveLW e b c v = fst (solveLWs (\_ _ -> 1) Book01 e b c v)
+  let solveLW e b c v = fst (solveLWsString (\_ _ -> 1) Book01 e b c v)
   let defConstant = CharacterConstant 25 15 [] Book01
       defVariable = mkCharacter 25 (addItem (Weapon BroadSword) 1 emptyInventory)
       defCombat = FightDetails "def" 28 30 []
@@ -175,7 +175,8 @@ main = hspec $ do
     it "seems to work" $ do
       let book =
             [ (296, Chapter "296" "lala" (EvadeFight 0 88 fd1 (Fight fd1 (Fight fd2 (Goto 221))))),
-              (12, Chapter "12" "xx" (NoDecision (Fight fd3 (Fight fd4 (Goto 12)))))
+              (12, Chapter "12" "xx" (NoDecision (Fight fd3 (Fight fd4 (Goto 12))))),
+              (50, Chapter "50" "xx" (NoDecision (Fight fd4 (Goto 33))))
             ]
           fd1 = FightDetails "F1" 13 22 []
           fd2 = FightDetails "F2" 12 21 []
@@ -184,13 +185,16 @@ main = hspec $ do
       M.fromList (extractMultiFight book)
         `shouldBe` M.fromList
           [ (296, Chapter "296" "lala" (EvadeFight 0 88 fd1 (Simple [SetFlag HadCombat] (Goto 297)))),
-            (297, Chapter "297" "Dummy chapter 297" (NoDecision (Fight (fd1 & fightMod .~ [MultiFight]) (Goto 298)))),
-            (298, Chapter "298" "Dummy chapter 298" (NoDecision (Fight fd2 (Goto 299)))),
-            (299, Chapter "299" "Dummy chapter 299" (NoDecision (Simple [SetFlag HadCombat] (Goto 221)))),
+            (297, Chapter "297" "Dummy fight chapter 297" (NoDecision (Fight (fd1 & fightMod .~ [MultiFight]) (Goto 298)))),
+            (298, Chapter "298" "Dummy fight chapter 298" (NoDecision (Fight fd2 (Goto 299)))),
+            (299, Chapter "299" "Last fight chapter 299" (AfterCombat (NoDecision (Simple [SetFlag HadCombat] (Goto 221))))),
             (12, Chapter "12" "xx" (NoDecision (Simple [SetFlag HadCombat] (Goto 300)))),
-            (300, Chapter "300" "Dummy chapter 300" (NoDecision (Fight (fd3 & fightMod .~ [MultiFight]) (Goto 301)))),
-            (301, Chapter "301" "Dummy chapter 301" (NoDecision (Fight fd4 (Goto 302)))),
-            (302, Chapter "302" "Dummy chapter 302" (NoDecision (Simple [SetFlag HadCombat] (Goto 12))))
+            (300, Chapter "300" "Dummy fight chapter 300" (NoDecision (Fight (fd3 & fightMod .~ [MultiFight]) (Goto 301)))),
+            (301, Chapter "301" "Dummy fight chapter 301" (NoDecision (Fight fd4 (Goto 302)))),
+            (302, Chapter "302" "Last fight chapter 302" (AfterCombat (NoDecision (Simple [SetFlag HadCombat] (Goto 12))))),
+            (50, Chapter "50" "xx" (NoDecision (Simple [SetFlag HadCombat] (Goto 303)))),
+            (303, Chapter "303" "Dummy fight chapter 303" (NoDecision (Fight fd4 (Goto 304)))),
+            (304, Chapter "304" "Last fight chapter 304" (AfterCombat (NoDecision (Simple [SetFlag HadCombat] (Goto 33)))))
           ]
   describe "Character selector" $
     forM_
@@ -204,15 +208,17 @@ main = hspec $ do
         fdesc n = EvadeFight n 88 rawfd (Goto 2)
         cconst = CharacterConstant 25 15 [] Book01
         scvar = mkCharacter 25 (inventoryFromList [(Weapon ShortSword, 1)])
-        stepper n = step order schapters cconst (NewChapter 1 scvar)
+        stepper n = step id order schapters cconst (NewChapter 1 scvar)
           where
             schapters = IM.fromList [(1, Chapter "1" "dummy" (fdesc n)), (2, Chapter "2" "dummy" (NoDecision GameLost)), (88, Chapter "88" "dummy" (NoDecision GameWon))]
             order = orderChapters Book01 schapters
     it "Properly flattened" $ do
-      flattenDecision cconst scvar (fdesc 0) `shouldBe` [(["no evasion"], Fight rawfd (Goto 2)), (["evasion"], Fight (FightDetails "F1" 20 20 [Evaded 88]) (Goto 2))]
-      flattenDecision cconst scvar (fdesc 2) `shouldBe` [(["no evasion"], Fight rawfd (Goto 2)), (["evasion"], Fight (FightDetails "F1" 20 20 [Timed 2 (Evaded 88)]) (Goto 2))]
+      flattenDecision id cconst scvar (fdesc 0) `shouldBe` [(["no evasion"], Fight rawfd (Goto 2)), (["evasion"], Fight (FightDetails "F1" 20 20 [Evaded 88]) (Goto 2))]
+      flattenDecision id cconst scvar (fdesc 2) `shouldBe` [(["no evasion"], Fight rawfd (Goto 2)), (["evasion"], Fight (FightDetails "F1" 20 20 [Timed 2 (Evaded 88)]) (Goto 2))]
     it "Fight result" $ do
-      fight cconst scvar (FightDetails "F1" 20 20 [Evaded 88])
+      let fd = FightDetails "F1" 20 20 [Evaded 88]
+      getRatio cconst scvar fd `shouldBe` (-5)
+      fight cconst scvar fd
         `shouldBe` [ (HasEscaped 88 19, 1 % 5),
                      (HasEscaped 88 20, 1 % 5),
                      (HasEscaped 88 21, 1 % 5),

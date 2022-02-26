@@ -99,7 +99,7 @@ low03: data/B03 $(patsubst %, %.svg, $(TARGETSLOWB03))
 
 
 data/%.cbor:
-	time python3 buildsol.py $@
+	time python3 buildsol-rust.py $@
 
 data/%.cbor.jot: data/%.cbor gamebooksolver-explorer
 	time ./gamebooksolver-explorer/target/release/gamebooksolver-explorer --solpath $< > $@

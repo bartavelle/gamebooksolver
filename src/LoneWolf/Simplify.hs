@@ -62,10 +62,11 @@ extractMultiFight chaps = std ++ mkMulti (maxid + 1) multi
     mkSimplified :: ChapterId -> ChapterSimplInfo -> (ChapterId, [(ChapterId, Chapter)])
     mkSimplified cid (CI rcid n d mkdec details oc) =
       ( lastsol + 2,
-        (rcid, Chapter n d (mkdec (hadcombat (Goto cid)))) : sols ++ [dummyChapter (lastsol + 1) (hadcombat oc)]
+        (rcid, Chapter n d (mkdec (hadcombat (Goto cid)))) : sols ++ [lastChapter (lastsol + 1) (hadcombat oc)]
       )
       where
         hadcombat = Simple [SetFlag HadCombat]
-        dummyChapter chid oc' = (chid, Chapter (show chid) ("Dummy chapter " ++ show chid) (NoDecision oc'))
+        dummyChapter chid oc' = (chid, Chapter (show chid) ("Dummy fight chapter " ++ show chid) (NoDecision oc'))
+        lastChapter chid oc' = (chid, Chapter (show chid) ("Last fight chapter " ++ show chid) (AfterCombat (NoDecision oc')))
         lastsol = fst (last sols)
         sols = zipWith (\chid fd -> dummyChapter chid (Fight fd (Goto (chid + 1)))) [cid ..] details

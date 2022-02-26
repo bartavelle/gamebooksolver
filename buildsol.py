@@ -25,7 +25,7 @@ cmdline = ["./dist/gamebooksolver-solvebook"]
 if int(b) < 5:
     cmdline += ["--results", "data/B%02d" % (int(b) + 1,)]
 
-cmdline += ["soldump", "--book", b, "--mode", "cbor", "-e", e, "-s", s, "--autoweapon"]
+cmdline += ["soldump", "--book", b, "--mode", "cbor", "-e", e, "-s", s]
 
 for d in discs:
     if d in alldisciplines:

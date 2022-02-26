@@ -1,9 +1,10 @@
 use crate::lonewolf::mini::{max_hp, Discipline, Flag, Slot, Weapon};
-use crate::lonewolf::rules::update_simple;
+use crate::lonewolf::rules::{check, update_simple};
 use crate::{
-  Book, ChapterOutcome, CharacterConstant, CharacterVariable, Decision, Endurance, FightDetails,
-  FightModifier, Item, SimpleOutcome,
+  Book, ChapterId, ChapterOutcome, CharacterConstant, CharacterVariable, Decision, Endurance,
+  FightDetails, FightModifier, Item, SimpleOutcome, SpecialChapter,
 };
+use rug::Rational;
 
 enum UsedWeapon {
   WithSkill(Weapon),
@@ -36,7 +37,7 @@ fn used_weapon(ccst: &CharacterConstant, cvar: &CharacterVariable) -> UsedWeapon
     let weapons = cvar.cequipment.weapons();
     if weapons.is_empty() {
       UsedWeapon::NoWeapon
-    } else if let Some(w) = weapons.iter().filter(|cw| Some(**cw) == wskill).next() {
+    } else if let Some(w) = weapons.iter().find(|cw| Some(**cw) == wskill) {
       UsedWeapon::WithSkill(*w)
     } else {
       UsedWeapon::WithoutSkill(weapons[0])
@@ -121,6 +122,8 @@ fn has_combat(o: &ChapterOutcome) -> Option<&FightDetails> {
     Conditionally(conds) => conds.iter().map(|x| &x.1).flat_map(has_combat).next(),
     Simple(_, o2) => has_combat(o2),
     Goto(_) => None,
+    GameLost => None,
+    GameWon => None,
   }
 }
 
@@ -129,23 +132,29 @@ pub fn flatten_decision(
   cvar: &CharacterVariable,
   dec: &Decision,
 ) -> Vec<(Vec<String>, ChapterOutcome)> {
-  // can be healed!
-  if cvar.flags.has(Flag::Poisonned2) && cvar.cequipment.has_itemb(&Item::Laumspur) {
-    let mut nv: CharacterVariable = cvar.clone();
-    nv.flags.unset(Flag::Poisonned2);
-    nv.cequipment.del_item(&Item::Laumspur, 1);
-    return flatten_decision(ccst, &nv, dec);
-  }
   let with_effect = |sos: &[SimpleOutcome], nxt: &Decision| -> Vec<(Vec<String>, ChapterOutcome)> {
     let mut nv = cvar.clone();
     for so in sos {
       update_simple(&mut nv, ccst, so);
     }
-    flatten_decision(ccst, &nv, nxt).into_iter().map(|(mut dsc, out)| {
-      dsc.insert(0, format!("{:?}", sos));
-      (dsc, out)
-    }).collect()
+    flatten_decision(ccst, &nv, nxt)
+      .into_iter()
+      .map(|(mut dsc, out)| {
+        dsc.insert(0, format!("{:?}", sos));
+        (dsc, ChapterOutcome::Simple(sos.to_vec(), Box::new(out)))
+      })
+      .collect()
   };
+  // can be healed!
+  if cvar.flags.has(Flag::Poisonned2) && cvar.cequipment.has_itemb(&Item::Laumspur) {
+    return with_effect(
+      &[
+        SimpleOutcome::ClearFlag(Flag::Poisonned2),
+        SimpleOutcome::LoseItem(Item::Laumspur, 1),
+      ],
+      dec,
+    );
+  }
   match dec {
     Decision::None(o) => {
       if let Some(fd) = has_combat(o) {
@@ -197,54 +206,283 @@ pub fn flatten_decision(
       let missing_hp = max_hp(ccst, cvar) - cvar.curendurance;
       let mut out = flatten_decision(ccst, cvar, nxt);
       if missing_hp >= 6 && cvar.cequipment.has_itemb(&Item::Potion6Hp) {
-        out.extend(with_effect(&[
-          SimpleOutcome::HealPlayer(Endurance(6)),
-          SimpleOutcome::LoseItem(Item::Potion6Hp, 1),
-        ], dec));
+        out.extend(with_effect(
+          &[
+            SimpleOutcome::HealPlayer(Endurance(6)),
+            SimpleOutcome::LoseItem(Item::Potion6Hp, 1),
+          ],
+          dec,
+        ));
         return out;
       }
       if missing_hp >= 5 && cvar.cequipment.has_itemb(&Item::Potion5Hp) {
-        out.extend(with_effect(&[
-          SimpleOutcome::HealPlayer(Endurance(5)),
-          SimpleOutcome::LoseItem(Item::Potion5Hp, 1),
-        ], dec));
+        out.extend(with_effect(
+          &[
+            SimpleOutcome::HealPlayer(Endurance(5)),
+            SimpleOutcome::LoseItem(Item::Potion5Hp, 1),
+          ],
+          dec,
+        ));
         return out;
       }
       if missing_hp >= 4 && cvar.cequipment.has_itemb(&Item::Potion4Hp) {
-        out.extend(with_effect(&[
-          SimpleOutcome::HealPlayer(Endurance(4)),
-          SimpleOutcome::LoseItem(Item::Potion4Hp, 1),
-        ], dec));
+        out.extend(with_effect(
+          &[
+            SimpleOutcome::HealPlayer(Endurance(4)),
+            SimpleOutcome::LoseItem(Item::Potion4Hp, 1),
+          ],
+          dec,
+        ));
         return out;
       }
       if ccst.bookid != Book::Book01
         && missing_hp >= 4
         && cvar.cequipment.has_itemb(&Item::Laumspur)
       {
-        out.extend(with_effect(&[
-          SimpleOutcome::HealPlayer(Endurance(4)),
-          SimpleOutcome::LoseItem(Item::Laumspur, 1),
-        ], dec));
+        out.extend(with_effect(
+          &[
+            SimpleOutcome::HealPlayer(Endurance(4)),
+            SimpleOutcome::LoseItem(Item::Laumspur, 1),
+          ],
+          dec,
+        ));
         return out;
       }
       if missing_hp >= 2 && cvar.cequipment.has_itemb(&Item::Potion2Hp) {
-        out.extend(with_effect(&[
-          SimpleOutcome::HealPlayer(Endurance(2)),
-          SimpleOutcome::LoseItem(Item::Potion6Hp, 1),
-        ], dec));
+        out.extend(with_effect(
+          &[
+            SimpleOutcome::HealPlayer(Endurance(2)),
+            SimpleOutcome::LoseItem(Item::Potion6Hp, 1),
+          ],
+          dec,
+        ));
         return out;
       }
       if ccst.bookid == Book::Book05
         && missing_hp >= 10
         && cvar.cequipment.has_itemb(&Item::GenBackpack(2))
       {
-        out.extend(with_effect(&[
-          SimpleOutcome::HealPlayer(Endurance(10)),
-          SimpleOutcome::LoseItem(Item::GenBackpack(2), 1),
-        ], dec));
+        out.extend(with_effect(
+          &[
+            SimpleOutcome::HealPlayer(Endurance(10)),
+            SimpleOutcome::LoseItem(Item::GenBackpack(2), 1),
+          ],
+          dec,
+        ));
         return out;
       }
-      return out;
+      out
     }
+    Decision::Conditional(bc, nxt) => {
+      if check(ccst, cvar, bc) {
+        flatten_decision(ccst, cvar, nxt)
+      } else {
+        Vec::new()
+      }
+    }
+    Decision::EvadeFight(nrounds, cid, fd, co) => {
+      let mut nfd: FightDetails = fd.clone();
+      let evaded_fm = FightModifier::Evaded(*cid);
+      nfd.fight_mod.push(if nrounds.0 > 0 {
+        FightModifier::Timed(nrounds.0, Box::new(evaded_fm))
+      } else {
+        evaded_fm
+      });
+      vec![
+        (
+          vec!["no evasion".to_string()],
+          ChapterOutcome::Fight(fd.clone(), Box::new(co.clone())),
+        ),
+        (
+          vec!["evasion".to_string()],
+          ChapterOutcome::Fight(nfd, Box::new(co.clone())),
+        ),
+      ]
+    }
+    Decision::Decisions(lst) => lst
+      .iter()
+      .flat_map(|(cdesc, d2)| {
+        flatten_decision(ccst, cvar, d2)
+          .into_iter()
+          .map(|(mut adesc, res)| {
+            adesc.insert(0, cdesc.clone());
+            (adesc, res)
+          })
+      })
+      .collect(),
+    Decision::CanTake(i, q, nxt) => {
+      if i == &Item::Gold {
+        with_effect(&[SimpleOutcome::GainItem(Item::Gold, *q)], nxt)
+      } else if *q == 0 {
+        flatten_decision(ccst, cvar, nxt)
+      } else if *q == 1 {
+        let notake = || flatten_decision(ccst, cvar, nxt);
+        match can_take(i, ccst, cvar) {
+          CanTake::Nope => notake(),
+          CanTake::SpaceAvailable(_) => with_effect(&[SimpleOutcome::GainItem(*i, 1)], nxt),
+          CanTake::MustDrop(lst) => {
+            if important_item(i, ccst, cvar) {
+              let mut out = Vec::new();
+              for l in lst {
+                out.extend(with_effect(
+                  &[
+                    SimpleOutcome::LoseItem(l, 1),
+                    SimpleOutcome::GainItem(*i, 1),
+                  ],
+                  nxt,
+                ))
+              }
+              out
+            } else {
+              notake()
+            }
+          }
+        }
+      } else {
+        let n = Decision::CanTake(*i, 1, Box::new(Decision::CanTake(*i, q - 1, nxt.clone())));
+        flatten_decision(ccst, cvar, &n)
+      }
+    }
+    Decision::RemoveItemFrom(Slot::Backpack, n, nxt) => {
+      if cvar.cequipment.in_backpack().len() < *n as usize {
+        Vec::new()
+      } else {
+        flatten_decision(
+          ccst,
+          cvar,
+          &Decision::LoseItemFrom(Slot::Backpack, *n, nxt.clone()),
+        )
+      }
+    }
+    Decision::LoseItemFrom(Slot::Backpack, n, nxt) => {
+      let allbackpackitems: Vec<(Item, u8)> = cvar
+        .cequipment
+        .items()
+        .into_iter()
+        .filter(|(i, _)| i.slot() == Slot::Backpack)
+        .collect();
+      if *n == 0 || allbackpackitems.is_empty() {
+        flatten_decision(ccst, cvar, nxt)
+      } else {
+        let mut out = Vec::new();
+        for (to_drop, _) in allbackpackitems {
+          let n2 = Decision::LoseItemFrom(Slot::Backpack, n - 1, nxt.clone());
+          out.extend(with_effect(&[SimpleOutcome::LoseItem(to_drop, 1)], &n2))
+        }
+        out
+      }
+    }
+    Decision::Canbuy(item, price, nxt) => {
+      let mut out = flatten_decision(ccst, cvar, nxt);
+      if cvar.cequipment.get_item_count(&Item::Gold) >= price.0 && important_item(item, ccst, cvar)
+      {
+        match can_take(item, ccst, cvar) {
+          CanTake::Nope => (),
+          CanTake::SpaceAvailable(_) => out.extend(with_effect(
+            &[
+              SimpleOutcome::LoseItem(Item::Gold, price.0),
+              SimpleOutcome::GainItem(*item, 1),
+            ],
+            nxt,
+          )),
+          CanTake::MustDrop(lst) => {
+            for to_drop in lst {
+              out.extend(with_effect(
+                &[
+                  SimpleOutcome::LoseItem(to_drop, 1),
+                  SimpleOutcome::LoseItem(Item::Gold, price.0),
+                  SimpleOutcome::GainItem(*item, 1),
+                ],
+                nxt,
+              ));
+            }
+          }
+        }
+      }
+      out
+    }
+    Decision::Special(SpecialChapter::B05S127) => {
+      let borne = |x| {
+        Rational::from((
+          if x > 10 {
+            10
+          } else if x < 0 {
+            0
+          } else {
+            x
+          },
+          10,
+        ))
+      };
+      let b1 = borne(ccst.combat_skill as i16 - 10);
+      let b2 = borne(20 - ccst.combat_skill as i16);
+      vec![(
+        vec!["No decision".to_string()],
+        ChapterOutcome::Randomly(vec![
+          (b1, ChapterOutcome::Goto(ChapterId(159))),
+          (b2, ChapterOutcome::Goto(ChapterId(93))),
+        ]),
+      )]
+    }
+    _ => todo!("{:?}", dec),
+  }
+}
+
+#[cfg(test)]
+mod test {
+  use super::*;
+  use crate::{BoolCond, ChapterId};
+
+  #[test]
+  fn flatten_cond() {
+    use ChapterOutcome::*;
+    use Decision::*;
+    let ccst = CharacterConstant {
+      bookid: Book::Book01,
+      combat_skill: 10,
+      discipline: vec![],
+      maxendurance: 20,
+    };
+    let cvar = CharacterVariable::new(20);
+    let mut cvar2 = cvar.clone();
+    cvar2.cequipment.add_item(&Item::GenBackpack(0), 1);
+    let dec = Decision::Decisions(vec![
+      (
+        "If you possess a rope".to_string(),
+        Conditional(
+          BoolCond::HasItem(Item::GenBackpack(0), 1),
+          Box::new(None(Goto(ChapterId(305)))),
+        ),
+      ),
+      (
+        "otherwise".to_string(),
+        Conditional(
+          BoolCond::Not(Box::new(BoolCond::HasItem(Item::GenBackpack(0), 1))),
+          Box::new(Decisions(vec![(
+            "if you do not possess a rope".to_string(),
+            None(Goto(ChapterId(387))),
+          )])),
+        ),
+      ),
+    ]);
+    let r1 = flatten_decision(&ccst, &cvar, &dec);
+    let r2 = flatten_decision(&ccst, &cvar2, &dec);
+    assert_eq!(
+      r1,
+      vec![(
+        vec![
+          "otherwise".to_string(),
+          "if you do not possess a rope".to_string()
+        ],
+        Goto(ChapterId(387))
+      )]
+    );
+    assert_eq!(
+      r2,
+      vec![(
+        vec!["If you possess a rope".to_string()],
+        Goto(ChapterId(305))
+      )]
+    );
   }
 }

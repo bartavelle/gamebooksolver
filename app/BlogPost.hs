@@ -181,7 +181,7 @@ main = do
       _ -> error ("unsupported book stats for " ++ show book)
 
 winrate :: Stats -> Rational
-winrate = _mratio . _sentry
+winrate = getERatio . _mratio . _sentry
 
 visitrate :: ChapterId -> Stats -> Rational
 visitrate cid stts = M.findWithDefault 0 cid (fmap _cscore (_dres (_sdecisions stts)))
@@ -225,7 +225,7 @@ finalStat stts = statsAt (finalChapter stts) stts
 
 statsAt :: ChapterId -> Stats -> ChapterAggreg Rational
 statsAt cid stts = case M.lookup cid (_dres (_sdecisions stts)) of
-  Nothing -> error ("could not find chapter " ++ show cid ++ " in " ++ show (_fp stts))
+  Nothing -> emptyAggreg 0
   Just x -> x
 
 itemsAt :: ChapterId -> Stats -> M.Map Inventory Rational
@@ -244,7 +244,7 @@ finalFlag f stts = sum (M.filterWithKey (const . view (bitAt (fromEnum f))) wsta
     rawrate = sum wstates
 
 itemAt :: ChapterId -> Item -> Stats -> Rational
-itemAt cid i stts = rate / rawrate
+itemAt cid i stts = if rawrate > 0 then rate / rawrate else rate
   where
     wstates = itemsAt cid stts
     rawrate = sum wstates
@@ -254,7 +254,7 @@ itemAt cid i stts = rate / rawrate
       pure (fromIntegral cnt * p)
 
 finalItem :: Item -> Stats -> Rational
-finalItem i stts = rate / rawrate
+finalItem i stts = if rawrate > 0 then rate / rawrate else rate
   where
     wstates = finalItems stts
     rawrate = sum wstates
@@ -371,9 +371,10 @@ b04stats astts = do
   let cols =
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . sum . _cendurance . finalStat),
-          ("SS", fmtb . not . hasitem (Weapon Sword)),
+          ("SS", fmtb . hasitem (Weapon Sommerswerd)),
           ("SH", fmtb . hasflag HelmetIsSilver),
           ("+4", fmtb . hasitem StrengthPotion4),
+          ("BA", fmtb . hasitem BodyArmor),
           ("Fought Elix", fmtr . finalFlag FoughtElix),
           ("Laumspur collect", mvisitrate [12, 268, 302]),
           ("End with +2 Strength Potion", fmtr . finalItem StrengthPotion),

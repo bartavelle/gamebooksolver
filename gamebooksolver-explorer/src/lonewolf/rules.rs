@@ -6,22 +6,26 @@ use crate::{
   Endurance, Equipment, FightModifier, Item, NextStep, SimpleOutcome,
 };
 
-fn check(ccst: &CharacterConstant, cvar: &CharacterVariable, cond: &BoolCond) -> bool {
+pub fn check(ccst: &CharacterConstant, cvar: &CharacterVariable, cond: &BoolCond) -> bool {
   use BoolCond::*;
   match cond {
     Always(b) => *b,
     HasDiscipline(d) => ccst.discipline.contains(d),
-    Not(s) => check(ccst, cvar, s),
+    Not(s) => !check(ccst, cvar, s),
     COr(a, b) => check(ccst, cvar, a) || check(ccst, cvar, b),
     CAnd(a, b) => check(ccst, cvar, a) && check(ccst, cvar, b),
     HasItem(i, q) => cvar.cequipment.has_item(i, *q),
     HasEndurance(e) => cvar.curendurance >= e.0,
     HasFlag(f) => cvar.flags.has(*f),
-    HasLevel(lvl) => panic!("TODO kai level {:?}", lvl),
+    HasLevel(lvl) => ccst.discipline.len() >= *lvl as usize,
   }
 }
 
-pub fn update_simple(cvar: &mut CharacterVariable, ccst: &CharacterConstant, soutcome: &SimpleOutcome) {
+pub fn update_simple(
+  cvar: &mut CharacterVariable,
+  ccst: &CharacterConstant,
+  soutcome: &SimpleOutcome,
+) {
   use SimpleOutcome::*;
 
   match soutcome {
@@ -83,7 +87,6 @@ pub fn update(
       let mut nv = cvar.clone();
       if cid < max_chapter && cvar.flags.has(Flag::Poisonned2) {
         update_simple(&mut nv, ccst, &SimpleOutcome::DamagePlayer(Endurance(2)));
-        nv.flags.unset(Flag::HadCombat);
         if nv.curendurance > 0 {
           vec![Proba::certain(NextStep::NewChapter(cid2.0, nv))]
         } else {
@@ -96,7 +99,6 @@ pub fn update(
         nv.heal(ccst, 1);
         vec![Proba::certain(NextStep::NewChapter(cid2.0, nv))]
       } else {
-        nv.flags.unset(Flag::HadCombat);
         vec![Proba::certain(NextStep::NewChapter(cid2.0, nv))]
       }
     }
@@ -222,5 +224,74 @@ pub fn update(
         .collect();
       optimize_outcome(out)
     }
+  }
+}
+
+#[cfg(test)]
+mod test {
+  use super::*;
+  use crate::{CombatSkill, FightDetails};
+  use rug::Rational;
+
+  #[test]
+  fn combat1() {
+    let mut memo = Memoz::default();
+    let ccst = CharacterConstant {
+      bookid: Book::Book04,
+      combat_skill: 10,
+      maxendurance: 20,
+      discipline: Vec::new(),
+    };
+    let cvar = CharacterVariable::new(20);
+    let fight = ChapterOutcome::Fight(
+      FightDetails {
+        combat_skill: CombatSkill(17),
+        endurance: Endurance(26),
+        fight_mod: Vec::new(),
+        opponent: "DQSD".to_string(),
+      },
+      Box::new(ChapterOutcome::Goto(ChapterId(16))),
+    );
+    let mut actual = update(&mut memo, &ccst, &cvar, ChapterId(50), &fight);
+    actual.sort();
+    let expected_raw = [
+      (0, (992003, 1000000)),
+      (1, (709, 1000000)),
+      (2, (403, 250000)),
+      (3, (1013, 1000000)),
+      (4, (147, 125000)),
+      (5, (817, 1000000)),
+      (6, (117, 200000)),
+      (7, (67, 200000)),
+      (8, (11, 40000)),
+      (9, (31, 200000)),
+      (10, (71, 200000)),
+      (11, (7, 50000)),
+      (12, (31, 100000)),
+      (13, (41, 200000)),
+      (14, (3, 20000)),
+      (15, (1, 20000)),
+      (16, (1, 20000)),
+      (17, (1, 20000)),
+      (20, (1, 100000)),
+    ];
+    let cc = |hp| {
+      let mut c = CharacterVariable::new(hp);
+      c.flags.set(Flag::HadCombat);
+      c
+    };
+    let mut expected: Outcome<NextStep> = expected_raw
+      .into_iter()
+      .map(|(hp, p)| Proba {
+        p: Rational::from(p),
+        v: if hp > 0 {
+          NextStep::NewChapter(16, cc(hp))
+        } else {
+          NextStep::HasLost(50)
+        },
+      })
+      .collect();
+    expected.sort();
+    assert_eq!(actual, expected);
   }
 }

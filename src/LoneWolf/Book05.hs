@@ -2,9 +2,11 @@
 
 module LoneWolf.Book05 where
 
+import Control.Lens
 import Data.Maybe (mapMaybe)
 import qualified Data.Set as S
 import LoneWolf.Chapter
+import LoneWolf.Character
 import LoneWolf.RawBook.Book05 (chapters)
 import LoneWolf.Simplify (extractMultiFight)
 
@@ -14,4 +16,6 @@ pchapters = mapMaybe (fmap patch . mignore) (extractMultiFight chapters)
     blacklisted = S.fromList []
     mignore (cid, c) = if cid `S.member` blacklisted then Nothing else Just (cid, c)
     patch (207, Chapter n d _) = (207, Chapter n d (NoDecision (Goto 224))) -- useless item
+    patch (131, c) =
+      (131, c & pchoice .~ CanTake Potion2Hp 1 (CanTake Meal 1 (CanTake (GenSpecial (GenCounter 5)) 1 (CanTake Laumspur 1 (CanTake (Weapon Dagger) 1 (NoDecision (Goto 58)))))))
     patch x = x

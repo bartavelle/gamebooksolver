@@ -582,7 +582,19 @@
                 },
                 {
                   "NoDecision": {
-                    "Goto": 282
+                    "Simple": [
+                      [
+                        {
+                          "LoseItem": [
+                            "SGenCounter 0",
+                            1
+                          ]
+                        }
+                      ],
+                      {
+                        "Goto": 282
+                      }
+                    ]
                   }
                 }
               ]
@@ -606,7 +618,19 @@
                       "If you do not, turn to 105.",
                       {
                         "NoDecision": {
-                          "Goto": 105
+                          "Simple": [
+                            [
+                              {
+                                "LoseItem": [
+                                  "SGenCounter 0",
+                                  1
+                                ]
+                              }
+                            ],
+                            {
+                              "Goto": 105
+                            }
+                          ]
                         }
                       }
                     ]
@@ -1521,25 +1545,37 @@
       "desc": "The great doors open to reveal a patrol of six tunnel guards. They are each armed with a crossbow and react instantly to your presence on the bridge. \"Charge!\" you shout, hoping that you might be able to overpower the guards before they can fire their deadly weapons.\nPick a number from the Random Number Table.\n",
       "pchoice": {
         "NoDecision": {
-          "Randomly": [
+          "Simple": [
             [
               {
-                "radix": 10,
-                "value": "7/10"
-              },
-              {
-                "Goto": 184
+                "LoseItem": [
+                  "SGenCounter 0",
+                  1
+                ]
               }
             ],
-            [
-              {
-                "radix": 10,
-                "value": "3/10"
-              },
-              {
-                "Goto": 267
-              }
-            ]
+            {
+              "Randomly": [
+                [
+                  {
+                    "radix": 10,
+                    "value": "7/10"
+                  },
+                  {
+                    "Goto": 184
+                  }
+                ],
+                [
+                  {
+                    "radix": 10,
+                    "value": "3/10"
+                  },
+                  {
+                    "Goto": 267
+                  }
+                ]
+              ]
+            }
           ]
         }
       },
@@ -1647,7 +1683,25 @@
                 },
                 {
                   "NoDecision": {
-                    "Goto": 4
+                    "Simple": [
+                      [
+                        {
+                          "LoseItem": [
+                            "BGenCounter 3",
+                            1
+                          ]
+                        },
+                        {
+                          "LoseItem": [
+                            "BGenCounter 4",
+                            1
+                          ]
+                        }
+                      ],
+                      {
+                        "Goto": 4
+                      }
+                    ]
                   }
                 }
               ]
@@ -1668,7 +1722,25 @@
                       "If you do not have this skill, or if you have yet to reach the rank of Kai Warmarn, you can risk walking through the fungi by turning to 65.",
                       {
                         "NoDecision": {
-                          "Goto": 65
+                          "Simple": [
+                            [
+                              {
+                                "LoseItem": [
+                                  "BGenCounter 3",
+                                  1
+                                ]
+                              },
+                              {
+                                "LoseItem": [
+                                  "BGenCounter 4",
+                                  1
+                                ]
+                              }
+                            ],
+                            {
+                              "Goto": 65
+                            }
+                          ]
                         }
                       }
                     ],
@@ -1676,7 +1748,25 @@
                       "Alternatively, if you wish, you may eat some of the fungi by turning to 201.",
                       {
                         "NoDecision": {
-                          "Goto": 201
+                          "Simple": [
+                            [
+                              {
+                                "LoseItem": [
+                                  "BGenCounter 3",
+                                  1
+                                ]
+                              },
+                              {
+                                "LoseItem": [
+                                  "BGenCounter 4",
+                                  1
+                                ]
+                              }
+                            ],
+                            {
+                              "Goto": 201
+                            }
+                          ]
                         }
                       }
                     ]
@@ -3378,7 +3468,25 @@
             "If you wish to land at the steps and investigate the tunnel, turn to 8.",
             {
               "NoDecision": {
-                "Goto": 8
+                "Simple": [
+                  [
+                    {
+                      "LoseItem": [
+                        "BGenCounter 3",
+                        1
+                      ]
+                    },
+                    {
+                      "LoseItem": [
+                        "BGenCounter 4",
+                        1
+                      ]
+                    }
+                  ],
+                  {
+                    "Goto": 8
+                  }
+                ]
               }
             }
           ],
@@ -3386,7 +3494,25 @@
             "If you wish to continue south by the river, turn to 240.",
             {
               "NoDecision": {
-                "Goto": 240
+                "Simple": [
+                  [
+                    {
+                      "LoseItem": [
+                        "BGenCounter 3",
+                        1
+                      ]
+                    },
+                    {
+                      "LoseItem": [
+                        "BGenCounter 4",
+                        1
+                      ]
+                    }
+                  ],
+                  {
+                    "Goto": 240
+                  }
+                ]
               }
             }
           ]
@@ -3521,54 +3647,25 @@
           [
             "If you possess an Iron Key, you may open the door by turning to 308.",
             {
-              "Conditional": [
-                {
-                  "HasItem": [
-                    "SGenCounter 2",
-                    1
-                  ]
-                },
-                {
-                  "NoDecision": {
-                    "Goto": 308
-                  }
-                }
-              ]
+              "NoDecision": {
+                "Goto": 308
+              }
             }
           ],
           [
-            "otherwise",
+            "If you wish to ascend the stairs, turn to 170.",
             {
-              "Conditional": [
-                {
-                  "Not": {
-                    "HasItem": [
-                      "SGenCounter 2",
-                      1
-                    ]
-                  }
-                },
-                {
-                  "Decisions": [
-                    [
-                      "If you wish to ascend the stairs, turn to 170.",
-                      {
-                        "NoDecision": {
-                          "Goto": 170
-                        }
-                      }
-                    ],
-                    [
-                      "If you wish to descend the stairs, turn to 228.",
-                      {
-                        "NoDecision": {
-                          "Goto": 228
-                        }
-                      }
-                    ]
-                  ]
-                }
-              ]
+              "NoDecision": {
+                "Goto": 170
+              }
+            }
+          ],
+          [
+            "If you wish to descend the stairs, turn to 228.",
+            {
+              "NoDecision": {
+                "Goto": 228
+              }
             }
           ]
         ]
@@ -4458,15 +4555,9 @@
                   "Meal",
                   2,
                   {
-                    "CanTake": [
-                      "SGenCounter 0",
-                      1,
-                      {
-                        "NoDecision": {
-                          "Goto": 81
-                        }
-                      }
-                    ]
+                    "NoDecision": {
+                      "Goto": 81
+                    }
                   }
                 ]
               }
@@ -4812,21 +4903,9 @@
               "Meal",
               2,
               {
-                "CanTake": [
-                  "BGenCounter 3",
-                  1,
-                  {
-                    "CanTake": [
-                      "BGenCounter 4",
-                      1,
-                      {
-                        "NoDecision": {
-                          "Goto": 185
-                        }
-                      }
-                    ]
-                  }
-                ]
+                "NoDecision": {
+                  "Goto": 185
+                }
               }
             ]
           }
@@ -4963,85 +5042,103 @@
       "desc": "The wooden pillar is stout and firm; it will take a heavy blow to dislodge it.\nIf you do not possess the Sommerswerd pick a number from the Random Number Table. If you possess either a Pick or a Shovel, add 2 to the number you have picked.\n",
       "pchoice": {
         "NoDecision": {
-          "Conditionally": [
+          "Simple": [
             [
               {
-                "HasItem": [
-                  "Sommerswerd",
+                "LoseItem": [
+                  "BGenCounter 3",
                   1
                 ]
               },
               {
-                "Goto": 275
+                "LoseItem": [
+                  "BGenCounter 4",
+                  1
+                ]
               }
             ],
-            [
-              {
-                "CAnd": [
+            {
+              "Conditionally": [
+                [
                   {
                     "HasItem": [
-                      "BGenCounter 3",
+                      "Sommerswerd",
                       1
                     ]
                   },
                   {
-                    "HasItem": [
-                      "BGenCounter 4",
-                      1
+                    "Goto": 275
+                  }
+                ],
+                [
+                  {
+                    "CAnd": [
+                      {
+                        "HasItem": [
+                          "BGenCounter 3",
+                          1
+                        ]
+                      },
+                      {
+                        "HasItem": [
+                          "BGenCounter 4",
+                          1
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Randomly": [
+                      [
+                        {
+                          "radix": 10,
+                          "value": "1/2"
+                        },
+                        {
+                          "Goto": 143
+                        }
+                      ],
+                      [
+                        {
+                          "radix": 10,
+                          "value": "1/2"
+                        },
+                        {
+                          "Goto": 179
+                        }
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  {
+                    "Always": true
+                  },
+                  {
+                    "Randomly": [
+                      [
+                        {
+                          "radix": 10,
+                          "value": "7/10"
+                        },
+                        {
+                          "Goto": 143
+                        }
+                      ],
+                      [
+                        {
+                          "radix": 10,
+                          "value": "3/10"
+                        },
+                        {
+                          "Goto": 179
+                        }
+                      ]
                     ]
                   }
                 ]
-              },
-              {
-                "Randomly": [
-                  [
-                    {
-                      "radix": 10,
-                      "value": "1/2"
-                    },
-                    {
-                      "Goto": 143
-                    }
-                  ],
-                  [
-                    {
-                      "radix": 10,
-                      "value": "1/2"
-                    },
-                    {
-                      "Goto": 179
-                    }
-                  ]
-                ]
-              }
-            ],
-            [
-              {
-                "Always": true
-              },
-              {
-                "Randomly": [
-                  [
-                    {
-                      "radix": 10,
-                      "value": "7/10"
-                    },
-                    {
-                      "Goto": 143
-                    }
-                  ],
-                  [
-                    {
-                      "radix": 10,
-                      "value": "3/10"
-                    },
-                    {
-                      "Goto": 179
-                    }
-                  ]
-                ]
-              }
-            ]
+              ]
+            }
           ]
         }
       },
@@ -6529,16 +6626,7 @@
           1,
           {
             "NoDecision": {
-              "Simple": [
-                [
-                  {
-                    "SetFlag": "Special01"
-                  }
-                ],
-                {
-                  "Goto": 165
-                }
-              ]
+              "Goto": 165
             }
           }
         ]
@@ -6595,7 +6683,25 @@
                 },
                 {
                   "NoDecision": {
-                    "Goto": 60
+                    "Simple": [
+                      [
+                        {
+                          "LoseItem": [
+                            "BGenCounter 3",
+                            1
+                          ]
+                        },
+                        {
+                          "LoseItem": [
+                            "BGenCounter 4",
+                            1
+                          ]
+                        }
+                      ],
+                      {
+                        "Goto": 60
+                      }
+                    ]
                   }
                 }
               ]
@@ -6605,7 +6711,25 @@
             "If you wish to enter the left tunnel, turn to 199.",
             {
               "NoDecision": {
-                "Goto": 199
+                "Simple": [
+                  [
+                    {
+                      "LoseItem": [
+                        "BGenCounter 3",
+                        1
+                      ]
+                    },
+                    {
+                      "LoseItem": [
+                        "BGenCounter 4",
+                        1
+                      ]
+                    }
+                  ],
+                  {
+                    "Goto": 199
+                  }
+                ]
               }
             }
           ],
@@ -6613,7 +6737,25 @@
             "If you wish to enter the right tunnel, turn to 208.",
             {
               "NoDecision": {
-                "Goto": 208
+                "Simple": [
+                  [
+                    {
+                      "LoseItem": [
+                        "BGenCounter 3",
+                        1
+                      ]
+                    },
+                    {
+                      "LoseItem": [
+                        "BGenCounter 4",
+                        1
+                      ]
+                    }
+                  ],
+                  {
+                    "Goto": 208
+                  }
+                ]
               }
             }
           ]
@@ -7070,7 +7212,25 @@
                 },
                 {
                   "NoDecision": {
-                    "Goto": 250
+                    "Simple": [
+                      [
+                        {
+                          "LoseItem": [
+                            "BGenCounter 3",
+                            1
+                          ]
+                        },
+                        {
+                          "LoseItem": [
+                            "BGenCounter 4",
+                            1
+                          ]
+                        }
+                      ],
+                      {
+                        "Goto": 250
+                      }
+                    ]
                   }
                 }
               ]
@@ -7098,7 +7258,25 @@
                       "If you do not possess either of these skills, you may enter the left tunnel by turning to 335.",
                       {
                         "NoDecision": {
-                          "Goto": 335
+                          "Simple": [
+                            [
+                              {
+                                "LoseItem": [
+                                  "BGenCounter 3",
+                                  1
+                                ]
+                              },
+                              {
+                                "LoseItem": [
+                                  "BGenCounter 4",
+                                  1
+                                ]
+                              }
+                            ],
+                            {
+                              "Goto": 335
+                            }
+                          ]
                         }
                       }
                     ],
@@ -7106,7 +7284,25 @@
                       "Or, if you wish, you may enter the right tunnel by turning to 11.",
                       {
                         "NoDecision": {
-                          "Goto": 11
+                          "Simple": [
+                            [
+                              {
+                                "LoseItem": [
+                                  "BGenCounter 3",
+                                  1
+                                ]
+                              },
+                              {
+                                "LoseItem": [
+                                  "BGenCounter 4",
+                                  1
+                                ]
+                              }
+                            ],
+                            {
+                              "Goto": 11
+                            }
+                          ]
                         }
                       }
                     ]
@@ -7863,44 +8059,38 @@
                       1,
                       {
                         "CanTake": [
-                          "SGenCounter 2",
+                          "SGenCounter 0",
                           1,
                           {
                             "CanTake": [
-                              "SGenCounter 0",
+                              "Laumspur",
                               1,
                               {
-                                "CanTake": [
-                                  "Laumspur",
-                                  1,
-                                  {
-                                    "Decisions": [
-                                      [
-                                        "If you wish to examine the iron door, turn to 118.",
-                                        {
-                                          "NoDecision": {
-                                            "Goto": 118
-                                          }
-                                        }
-                                      ],
-                                      [
-                                        "If you wish to ascend the spiral stairs, turn to 170.",
-                                        {
-                                          "NoDecision": {
-                                            "Goto": 170
-                                          }
-                                        }
-                                      ],
-                                      [
-                                        "If you wish to descend the spiral stairs, turn to 228.",
-                                        {
-                                          "NoDecision": {
-                                            "Goto": 228
-                                          }
-                                        }
-                                      ]
-                                    ]
-                                  }
+                                "Decisions": [
+                                  [
+                                    "If you wish to examine the iron door, turn to 118.",
+                                    {
+                                      "NoDecision": {
+                                        "Goto": 118
+                                      }
+                                    }
+                                  ],
+                                  [
+                                    "If you wish to ascend the spiral stairs, turn to 170.",
+                                    {
+                                      "NoDecision": {
+                                        "Goto": 170
+                                      }
+                                    }
+                                  ],
+                                  [
+                                    "If you wish to descend the spiral stairs, turn to 228.",
+                                    {
+                                      "NoDecision": {
+                                        "Goto": 228
+                                      }
+                                    }
+                                  ]
                                 ]
                               }
                             ]
@@ -9816,13 +10006,25 @@
           "Simple": [
             [
               {
-                "LoseItemKind": [
-                  "BackpackSlot"
+                "LoseItem": [
+                  "SGenCounter 0",
+                  1
                 ]
               }
             ],
             {
-              "Goto": 219
+              "Simple": [
+                [
+                  {
+                    "LoseItemKind": [
+                      "BackpackSlot"
+                    ]
+                  }
+                ],
+                {
+                  "Goto": 219
+                }
+              ]
             }
           ]
         }
@@ -10150,7 +10352,7 @@
   [
     363,
     {
-      "desc": "Dummy chapter 363",
+      "desc": "Dummy fight chapter 363",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10174,19 +10376,21 @@
   [
     364,
     {
-      "desc": "Dummy chapter 364",
+      "desc": "Last fight chapter 364",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 321
               }
-            ],
-            {
-              "Goto": 321
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "364"
@@ -10216,7 +10420,7 @@
   [
     365,
     {
-      "desc": "Dummy chapter 365",
+      "desc": "Dummy fight chapter 365",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10247,19 +10451,21 @@
   [
     366,
     {
-      "desc": "Dummy chapter 366",
+      "desc": "Last fight chapter 366",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 155
               }
-            ],
-            {
-              "Goto": 155
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "366"
@@ -10289,7 +10495,7 @@
   [
     367,
     {
-      "desc": "Dummy chapter 367",
+      "desc": "Dummy fight chapter 367",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10311,19 +10517,21 @@
   [
     368,
     {
-      "desc": "Dummy chapter 368",
+      "desc": "Last fight chapter 368",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 281
               }
-            ],
-            {
-              "Goto": 281
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "368"
@@ -10353,7 +10561,7 @@
   [
     369,
     {
-      "desc": "Dummy chapter 369",
+      "desc": "Dummy fight chapter 369",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10384,19 +10592,21 @@
   [
     370,
     {
-      "desc": "Dummy chapter 370",
+      "desc": "Last fight chapter 370",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 32
               }
-            ],
-            {
-              "Goto": 32
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "370"
@@ -10426,7 +10636,7 @@
   [
     371,
     {
-      "desc": "Dummy chapter 371",
+      "desc": "Dummy fight chapter 371",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10448,19 +10658,21 @@
   [
     372,
     {
-      "desc": "Dummy chapter 372",
+      "desc": "Last fight chapter 372",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 109
               }
-            ],
-            {
-              "Goto": 109
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "372"
@@ -10490,7 +10702,7 @@
   [
     373,
     {
-      "desc": "Dummy chapter 373",
+      "desc": "Dummy fight chapter 373",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10521,19 +10733,21 @@
   [
     374,
     {
-      "desc": "Dummy chapter 374",
+      "desc": "Last fight chapter 374",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 69
               }
-            ],
-            {
-              "Goto": 69
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "374"
@@ -10563,7 +10777,7 @@
   [
     375,
     {
-      "desc": "Dummy chapter 375",
+      "desc": "Dummy fight chapter 375",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10594,19 +10808,21 @@
   [
     376,
     {
-      "desc": "Dummy chapter 376",
+      "desc": "Last fight chapter 376",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 148
               }
-            ],
-            {
-              "Goto": 148
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "376"
@@ -10636,7 +10852,7 @@
   [
     377,
     {
-      "desc": "Dummy chapter 377",
+      "desc": "Dummy fight chapter 377",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10658,19 +10874,21 @@
   [
     378,
     {
-      "desc": "Dummy chapter 378",
+      "desc": "Last fight chapter 378",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 298
               }
-            ],
-            {
-              "Goto": 298
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "378"
@@ -10700,7 +10918,7 @@
   [
     379,
     {
-      "desc": "Dummy chapter 379",
+      "desc": "Dummy fight chapter 379",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10724,19 +10942,21 @@
   [
     380,
     {
-      "desc": "Dummy chapter 380",
+      "desc": "Last fight chapter 380",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 321
               }
-            ],
-            {
-              "Goto": 321
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "380"
@@ -10766,7 +10986,7 @@
   [
     381,
     {
-      "desc": "Dummy chapter 381",
+      "desc": "Dummy fight chapter 381",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10788,19 +11008,21 @@
   [
     382,
     {
-      "desc": "Dummy chapter 382",
+      "desc": "Last fight chapter 382",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 7
               }
-            ],
-            {
-              "Goto": 7
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "382"
@@ -10830,7 +11052,7 @@
   [
     383,
     {
-      "desc": "Dummy chapter 383",
+      "desc": "Dummy fight chapter 383",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10852,19 +11074,21 @@
   [
     384,
     {
-      "desc": "Dummy chapter 384",
+      "desc": "Last fight chapter 384",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 249
               }
-            ],
-            {
-              "Goto": 249
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "384"
@@ -10894,7 +11118,7 @@
   [
     385,
     {
-      "desc": "Dummy chapter 385",
+      "desc": "Dummy fight chapter 385",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10916,19 +11140,21 @@
   [
     386,
     {
-      "desc": "Dummy chapter 386",
+      "desc": "Last fight chapter 386",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 2
               }
-            ],
-            {
-              "Goto": 2
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "386"
@@ -10958,7 +11184,7 @@
   [
     387,
     {
-      "desc": "Dummy chapter 387",
+      "desc": "Dummy fight chapter 387",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -10980,19 +11206,21 @@
   [
     388,
     {
-      "desc": "Dummy chapter 388",
+      "desc": "Last fight chapter 388",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 295
               }
-            ],
-            {
-              "Goto": 295
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "388"
@@ -11022,7 +11250,7 @@
   [
     389,
     {
-      "desc": "Dummy chapter 389",
+      "desc": "Dummy fight chapter 389",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11046,7 +11274,7 @@
   [
     390,
     {
-      "desc": "Dummy chapter 390",
+      "desc": "Dummy fight chapter 390",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11070,7 +11298,7 @@
   [
     391,
     {
-      "desc": "Dummy chapter 391",
+      "desc": "Dummy fight chapter 391",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11092,19 +11320,21 @@
   [
     392,
     {
-      "desc": "Dummy chapter 392",
+      "desc": "Last fight chapter 392",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 261
               }
-            ],
-            {
-              "Goto": 261
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "392"
@@ -11134,7 +11364,7 @@
   [
     393,
     {
-      "desc": "Dummy chapter 393",
+      "desc": "Dummy fight chapter 393",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11156,19 +11386,21 @@
   [
     394,
     {
-      "desc": "Dummy chapter 394",
+      "desc": "Last fight chapter 394",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 360
               }
-            ],
-            {
-              "Goto": 360
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "394"
@@ -11198,7 +11430,7 @@
   [
     395,
     {
-      "desc": "Dummy chapter 395",
+      "desc": "Dummy fight chapter 395",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11227,19 +11459,21 @@
   [
     396,
     {
-      "desc": "Dummy chapter 396",
+      "desc": "Last fight chapter 396",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 280
               }
-            ],
-            {
-              "Goto": 280
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "396"
@@ -11269,7 +11503,7 @@
   [
     397,
     {
-      "desc": "Dummy chapter 397",
+      "desc": "Dummy fight chapter 397",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11300,19 +11534,21 @@
   [
     398,
     {
-      "desc": "Dummy chapter 398",
+      "desc": "Last fight chapter 398",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 174
               }
-            ],
-            {
-              "Goto": 174
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "398"
@@ -11342,7 +11578,7 @@
   [
     399,
     {
-      "desc": "Dummy chapter 399",
+      "desc": "Dummy fight chapter 399",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11364,19 +11600,21 @@
   [
     400,
     {
-      "desc": "Dummy chapter 400",
+      "desc": "Last fight chapter 400",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 123
               }
-            ],
-            {
-              "Goto": 123
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "400"
@@ -11406,7 +11644,7 @@
   [
     401,
     {
-      "desc": "Dummy chapter 401",
+      "desc": "Dummy fight chapter 401",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11437,19 +11675,21 @@
   [
     402,
     {
-      "desc": "Dummy chapter 402",
+      "desc": "Last fight chapter 402",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 311
               }
-            ],
-            {
-              "Goto": 311
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "402"
@@ -11479,7 +11719,7 @@
   [
     403,
     {
-      "desc": "Dummy chapter 403",
+      "desc": "Dummy fight chapter 403",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11501,19 +11741,21 @@
   [
     404,
     {
-      "desc": "Dummy chapter 404",
+      "desc": "Last fight chapter 404",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 217
               }
-            ],
-            {
-              "Goto": 217
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "404"
@@ -11543,7 +11785,7 @@
   [
     405,
     {
-      "desc": "Dummy chapter 405",
+      "desc": "Dummy fight chapter 405",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11565,19 +11807,21 @@
   [
     406,
     {
-      "desc": "Dummy chapter 406",
+      "desc": "Last fight chapter 406",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 229
               }
-            ],
-            {
-              "Goto": 229
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "406"
@@ -11617,7 +11861,7 @@
   [
     407,
     {
-      "desc": "Dummy chapter 407",
+      "desc": "Dummy fight chapter 407",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11641,7 +11885,7 @@
   [
     408,
     {
-      "desc": "Dummy chapter 408",
+      "desc": "Dummy fight chapter 408",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11665,7 +11909,7 @@
   [
     409,
     {
-      "desc": "Dummy chapter 409",
+      "desc": "Dummy fight chapter 409",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11689,7 +11933,7 @@
   [
     410,
     {
-      "desc": "Dummy chapter 410",
+      "desc": "Dummy fight chapter 410",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11713,7 +11957,7 @@
   [
     411,
     {
-      "desc": "Dummy chapter 411",
+      "desc": "Dummy fight chapter 411",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11735,19 +11979,21 @@
   [
     412,
     {
-      "desc": "Dummy chapter 412",
+      "desc": "Last fight chapter 412",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 237
               }
-            ],
-            {
-              "Goto": 237
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "412"
@@ -11777,7 +12023,7 @@
   [
     413,
     {
-      "desc": "Dummy chapter 413",
+      "desc": "Dummy fight chapter 413",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11801,7 +12047,7 @@
   [
     414,
     {
-      "desc": "Dummy chapter 414",
+      "desc": "Dummy fight chapter 414",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11825,7 +12071,7 @@
   [
     415,
     {
-      "desc": "Dummy chapter 415",
+      "desc": "Dummy fight chapter 415",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11847,19 +12093,21 @@
   [
     416,
     {
-      "desc": "Dummy chapter 416",
+      "desc": "Last fight chapter 416",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 199
               }
-            ],
-            {
-              "Goto": 199
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "416"
@@ -11889,7 +12137,7 @@
   [
     417,
     {
-      "desc": "Dummy chapter 417",
+      "desc": "Dummy fight chapter 417",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11911,19 +12159,21 @@
   [
     418,
     {
-      "desc": "Dummy chapter 418",
+      "desc": "Last fight chapter 418",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 312
               }
-            ],
-            {
-              "Goto": 312
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "418"
@@ -11953,7 +12203,7 @@
   [
     419,
     {
-      "desc": "Dummy chapter 419",
+      "desc": "Dummy fight chapter 419",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -11975,19 +12225,21 @@
   [
     420,
     {
-      "desc": "Dummy chapter 420",
+      "desc": "Last fight chapter 420",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 311
               }
-            ],
-            {
-              "Goto": 311
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "420"
@@ -12017,7 +12269,7 @@
   [
     421,
     {
-      "desc": "Dummy chapter 421",
+      "desc": "Dummy fight chapter 421",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -12039,19 +12291,21 @@
   [
     422,
     {
-      "desc": "Dummy chapter 422",
+      "desc": "Last fight chapter 422",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 155
               }
-            ],
-            {
-              "Goto": 155
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "422"
@@ -12081,7 +12335,7 @@
   [
     423,
     {
-      "desc": "Dummy chapter 423",
+      "desc": "Dummy fight chapter 423",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -12103,19 +12357,21 @@
   [
     424,
     {
-      "desc": "Dummy chapter 424",
+      "desc": "Last fight chapter 424",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 71
               }
-            ],
-            {
-              "Goto": 71
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "424"
@@ -12145,7 +12401,7 @@
   [
     425,
     {
-      "desc": "Dummy chapter 425",
+      "desc": "Dummy fight chapter 425",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -12167,19 +12423,21 @@
   [
     426,
     {
-      "desc": "Dummy chapter 426",
+      "desc": "Last fight chapter 426",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 75
               }
-            ],
-            {
-              "Goto": 75
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "426"
@@ -12209,7 +12467,7 @@
   [
     427,
     {
-      "desc": "Dummy chapter 427",
+      "desc": "Dummy fight chapter 427",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -12231,19 +12489,21 @@
   [
     428,
     {
-      "desc": "Dummy chapter 428",
+      "desc": "Last fight chapter 428",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 121
               }
-            ],
-            {
-              "Goto": 121
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "428"
@@ -12258,11 +12518,23 @@
           "Simple": [
             [
               {
-                "SetFlag": "HadCombat"
+                "LoseItem": [
+                  "SGenCounter 0",
+                  1
+                ]
               }
             ],
             {
-              "Goto": 429
+              "Simple": [
+                [
+                  {
+                    "SetFlag": "HadCombat"
+                  }
+                ],
+                {
+                  "Goto": 429
+                }
+              ]
             }
           ]
         }
@@ -12273,7 +12545,7 @@
   [
     429,
     {
-      "desc": "Dummy chapter 429",
+      "desc": "Dummy fight chapter 429",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -12295,19 +12567,21 @@
   [
     430,
     {
-      "desc": "Dummy chapter 430",
+      "desc": "Last fight chapter 430",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 127
               }
-            ],
-            {
-              "Goto": 127
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "430"
@@ -12337,7 +12611,7 @@
   [
     431,
     {
-      "desc": "Dummy chapter 431",
+      "desc": "Dummy fight chapter 431",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -12359,19 +12633,21 @@
   [
     432,
     {
-      "desc": "Dummy chapter 432",
+      "desc": "Last fight chapter 432",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 24
               }
-            ],
-            {
-              "Goto": 24
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "432"
@@ -12401,7 +12677,7 @@
   [
     433,
     {
-      "desc": "Dummy chapter 433",
+      "desc": "Dummy fight chapter 433",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -12425,19 +12701,21 @@
   [
     434,
     {
-      "desc": "Dummy chapter 434",
+      "desc": "Last fight chapter 434",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 350
               }
-            ],
-            {
-              "Goto": 350
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "434"

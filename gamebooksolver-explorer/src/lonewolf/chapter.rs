@@ -1,24 +1,24 @@
 use super::mini::{Discipline, Flag, Item, Slot};
 use rug::Rational;
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use std::hash::Hash;
 
-#[derive(PartialEq, Eq, Debug, Deserialize)]
+#[derive(PartialEq, Eq, Debug, Deserialize, Clone)]
 pub struct Chapter {
   pub title: String,
   pub desc: String,
   pub pchoice: Decision,
 }
 
-#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord, Serialize)]
 pub struct Rounds(pub u8);
-#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord, Serialize)]
 pub struct Price(pub u8);
-#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord, Serialize)]
 pub struct ChapterId(pub u16);
-#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord, Serialize)]
 pub struct Endurance(pub i8);
-#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord, Serialize)]
 pub struct CombatSkill(pub i8);
 
 impl Endurance {
@@ -144,15 +144,16 @@ pub enum FightModifier {
 }
 
 #[derive(PartialEq, Eq, Debug, PartialOrd, Ord, Deserialize, Clone, Copy)]
+#[repr(u8)]
 pub enum KaiLevel {
-  Novice,
-  Intuite,
-  Doan,
-  Acolyte,
-  Initiate,
-  Aspirant,
-  Guardian,
-  Warmarn,
-  Savant,
-  Master,
+  Novice = 1,
+  Intuite = 2,
+  Doan = 3,
+  Acolyte = 4,
+  Initiate = 5,
+  Aspirant = 6,
+  Guardian = 7,
+  Warmarn = 8,
+  Savant = 9,
+  Master = 10,
 }

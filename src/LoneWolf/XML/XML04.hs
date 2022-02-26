@@ -180,7 +180,8 @@ book04gen cid _ computedDecision =
     158 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 3, LoseItemKind [BackpackSlot]])
     159 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 2])
     165 -> Just (Decisions [("accept the meal", NoDecision (Goto 319)), ("eat your own", NoDecision (Simple [MustEat NoHunt] (Goto 13)))])
-    167 -> takeItems [(Backpack, 1), (Meal, 2), (pickAB04, 1), (pickBB04, 1)] computedDecision
+    -- pick is useless from here
+    167 -> takeItems [(Backpack, 1), (Meal, 2 {-,  (pickAB04, 1), (pickBB04, 1) -})] computedDecision
     173 ->
       Just
         ( NoDecision
@@ -247,7 +248,8 @@ book04gen cid _ computedDecision =
         )
     209 -> Just (NoDecision (Conditionally [(HasLevel Aspirant, Goto 111), (Always True, Goto 43)]))
     213 -> takeItems [(tinderBoxB04, 1), (torchB04, 1), (pickAB04, 1), (pickBB04, 1), (Weapon Axe, 1)] computedDecision
-    222 -> Just (CanTake (Weapon Sword) 1 (NoDecision (Simple [SetFlag captainDvalSword] (Goto 165))))
+    -- 222 -> Just (CanTake (Weapon Sword) 1 (NoDecision (Simple [SetFlag captainDvalSword] (Goto 165))))
+    222 -> Just (CanTake (Weapon Sword) 1 (NoDecision (Goto 165)))
     230 -> takeItems [(Gold, 9), (Meal, 2), (Weapon Sword, 1), (Weapon Dagger, 1)] computedDecision
     231 -> takeItems [(Gold, 3), (Meal, 1), (Weapon Sword, 1)] computedDecision
     234 -> Just (NoDecision (Goto 194)) -- same chapter

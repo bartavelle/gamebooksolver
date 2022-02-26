@@ -535,13 +535,16 @@ instance ToJSON Item where
     _ -> toJSON (show i)
 
 instance FromJSON Item where
-  parseJSON = withText "Item" $ \s -> case T.unpack s of
-    'S' : nums | Just n <- readMaybe nums -> pure (GenSpecial n)
-    'B' : nums | Just n <- readMaybe nums -> pure (GenBackpack n)
-    ss
-      | Just x <- readMaybe ss -> pure x
-      | Just x <- readMaybe ss -> pure (Weapon x)
-      | otherwise -> fail ":("
+  parseJSON i = txtitm i <|> wpnitm i
+    where
+      wpnitm = withObject "Item" $ \o -> Weapon <$> (o .: "Weapon")
+      txtitm = withText "Item" $ \s -> case T.unpack s of
+        'S' : nums | Just n <- readMaybe nums -> pure (GenSpecial n)
+        'B' : nums | Just n <- readMaybe nums -> pure (GenBackpack n)
+        ss
+          | Just x <- readMaybe ss -> pure x
+          | Just x <- readMaybe ss -> pure (Weapon x)
+          | otherwise -> fail ":("
 
 instance Serialise Item
 

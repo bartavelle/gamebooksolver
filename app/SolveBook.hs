@@ -86,24 +86,25 @@ pchapters book = case book of
 
 getBoundary :: Book -> Maybe (S.Set Item, S.Set Flag)
 getBoundary b = case b of
-  Book01 -> Just (S.fromList [Helmet, BodyArmor, Gold], S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
-  Book02 -> Just (S.fromList [Helmet, BodyArmor], S.fromList [PermanentSkillReduction, PermanentSkillReduction2])
+  Book01 -> Just (S.fromList [Helmet, BodyArmor, Gold], S.fromList [])
+  Book02 -> Just (S.fromList [Helmet, BodyArmor], S.fromList [])
   Book03 -> Just (S.fromList [Weapon Sommerswerd, Helmet, StrengthPotion4], S.fromList [HelmetIsSilver])
-  Book03 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [PermanentSkillReduction, PermanentSkillReduction2, HelmetIsSilver])
   Book04 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [FoughtElix, PermanentSkillReduction, PermanentSkillReduction2, HelmetIsSilver])
   _ -> Nothing
 
-simpleSol :: M.Map (S.Set Item, S.Set Flag) Rational -> Book -> CharacterConstant -> CharacterVariable -> [Int] -> (Rational, [(NextStep, Solution NextStep String)])
-simpleSol endscores book ccst cvar target =
+simpleSol :: Maybe (M.Map (S.Set Item, S.Set Flag) Rational) -> Book -> CharacterConstant -> CharacterVariable -> [Int] -> (Rational, [(NextStep, Solution NextStep ())])
+simpleSol mendscores book ccst cvar target =
   let (solution, smap) = solveLWs scorer book target (pchapters book) ccst cvar
       scorer = case getBoundary book of
         Nothing -> \_ _ -> 1
         Just (sitms, sflgs) -> \itms flgs ->
           let ritms = itms `S.intersection` sitms
               rflgs = flgs `S.intersection` sflgs
-           in case M.lookup (ritms, rflgs) endscores of
-                Nothing -> error ("unknown score combination: " ++ show (ritms, rflgs) ++ " keys are " ++ show (M.keys endscores))
-                Just r -> r
+           in case mendscores of
+                Nothing -> 1
+                Just endscores -> case M.lookup (ritms, rflgs) endscores of
+                  Nothing -> error ("unknown score combination: " ++ show (ritms, rflgs) ++ " keys are " ++ show (M.keys endscores))
+                  Just r -> r
    in (_score solution, smap)
 
 data Opts = Opts
@@ -187,7 +188,7 @@ scommand =
                   <$> dumpmode
                     <*> soldesc
                     <*> optional (strArgument (metavar "PATH" <> help "Dumped file path"))
-                    <*> switch (long "autoweapon" <> help "Automatically set the weapon to the specialty, unless it is the Sommerswerd")
+                    <*> switch (long "oneshot" <> help "Do not load further scores")
               )
               (progDesc "Dump a solution")
           )
@@ -318,7 +319,7 @@ mkdot (DecisionStats book res sttmap) =
 todot :: DecisionStats Rational -> IO ()
 todot = T.putStrLn . renderDot . toDot . mkdot
 
-getSol :: M.Map (S.Set Item, S.Set Flag) Rational -> Bool -> SolDesc -> (Rational, [(NextStep, Solution NextStep String)])
+getSol :: Maybe (M.Map (S.Set Item, S.Set Flag) Rational) -> Bool -> SolDesc -> (Rational, [(NextStep, Solution NextStep ())])
 getSol scoremap autoweapon (SolDesc fchapters ccst ccvar) =
   let cvar = mkchar autoweapon ccst ccvar
       finalchapters = case fchapters of
@@ -365,7 +366,7 @@ exploreChopped mp cc = go
     bk = _bookid cc
     book = IM.fromList (pchapters bk)
     order = orderChapters bk book
-    stepper = step order book cc
+    stepper = step id order book cc
     go ns = do
       let nstates = stepper ns
           advance :: Rational -> Probably NextStep -> IO ()
@@ -441,7 +442,7 @@ loadResults (Just pth) ccst = do
         guard (length diff <= 1)
         let startitems = S.fromList (map fst (fromMaybe (defaultItems bk) (_cvitems cvar)))
             startflags = S.fromList (_cvflags cvar)
-        MultistatEntry en sk _ s _ <- entries
+        MultistatEntry en sk _ (ERatio s) _ <- entries
         guard (en == _maxendurance ccst && sk == _combatSkill ccst)
         pure ((startitems `S.intersection` fitms, startflags `S.intersection` fflgs), s)
   pure (M.fromListWith max lst)
@@ -451,9 +452,12 @@ main = do
   Opts _ resdir cmd <- execParser programOpts
   case cmd of
     DumpBook bk -> BS8.putStrLn (encode (pchapters bk & traverse . _2 %~ fmap ERatio))
-    SolDump dmode sd mtarget autoweapon -> do
-      res <- loadResults resdir (_ccst sd)
-      let (_, solmap) = getSol res autoweapon sd
+    SolDump dmode sd mtarget oneshot -> do
+      res <-
+        if oneshot
+          then pure Nothing
+          else fmap Just (loadResults resdir (_ccst sd))
+      let (_, solmap) = getSol res False sd
           dmap = SolutionDump sd (map (fmap chopSolution) solmap)
           todump = case dmode of
             Json -> encode dmap

@@ -1,63 +1,16 @@
+use crate::solver::base::{cbor_option, e_cbor_option, ChoppedSolution};
 use minicbor::decode::{Decode, Decoder, Error};
-use rug::Integer;
-use rug::Rational;
+use minicbor::encode::{self, Encode, Encoder, Write};
 use serde::de::Visitor;
 use serde::Deserializer;
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
-
-pub type Probably<A> = Vec<(A, Rational)>;
+use structopt::StructOpt;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct SolutionDump {
   pub soldesc: SolDesc,
   pub content: Vec<(NextStep, ChoppedSolution<NextStep>)>,
-}
-
-fn cbor_pair<'a, F1, F2, V1, V2>(d: &mut Decoder<'a>, p1: F1, p2: F2) -> Result<(V1, V2), Error>
-where
-  F1: Fn(&mut Decoder<'a>) -> Result<V1, Error>,
-  F2: Fn(&mut Decoder<'a>) -> Result<V2, Error>,
-{
-  let ln = d.array()?;
-  if ln != Some(2) {
-    return Err(Error::Message("Invalid length for pair"));
-  }
-  let a = p1(d)?;
-  let b = p2(d)?;
-  Ok((a, b))
-}
-
-fn cbor_option<'a, F, V>(d: &mut Decoder<'a>, p: F) -> Result<Option<V>, Error>
-where
-  F: Fn(&mut Decoder<'a>) -> Result<V, Error>,
-{
-  let ln = d.array()?;
-  match ln {
-    Some(0) => Ok(None),
-    Some(1) => p(d).map(Some),
-    _ => Err(Error::Message("Invalid optional size")),
-  }
-}
-
-fn rational(d: &mut Decoder) -> Result<Rational, Error> {
-  fn read_bigint(d: &mut Decoder) -> Result<Integer, Error> {
-    let tp = d.datatype()?;
-    match tp {
-      minicbor::data::Type::Tag => {
-        let tg = d.tag()?;
-        match tg {
-          minicbor::data::Tag::PosBignum => {
-            Ok(Integer::from_digits(d.bytes()?, rug::integer::Order::Msf))
-          }
-          _ => Err(Error::Message("bad tag for bignum")),
-        }
-      }
-      _ => d.u64().map(Integer::from),
-    }
-  }
-  let (n, d) = cbor_pair(d, read_bigint, read_bigint)?;
-  Ok(Rational::from((n, d)))
 }
 
 impl<'b> Decode<'b> for SolutionDump {
@@ -73,6 +26,17 @@ impl<'b> Decode<'b> for SolutionDump {
       soldesc,
       content: rcontent?,
     })
+  }
+}
+
+impl Encode for SolutionDump {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(3)?.u8(0)?.encode(&self.soldesc)?;
+    e.array(self.content.len() as u64)?;
+    for c in &self.content {
+      e.encode(c)?;
+    }
+    Ok(())
   }
 }
 
@@ -101,8 +65,41 @@ impl<'b> Decode<'b> for SolDesc {
     })
   }
 }
+impl Encode for SolDesc {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(4)?.u8(0)?;
+    e.array(self.finalchapters.len() as u64)?;
+    for fc in &self.finalchapters {
+      e.encode(fc)?;
+    }
+    e.encode(&self.ccst)?;
+    e.encode(&self.cvar)?;
+    Ok(())
+  }
+}
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+impl SolDesc {
+  pub fn cvariable(&self) -> CharacterVariable {
+    let mut cvar = CharacterVariable::new(self.ccst.maxendurance);
+    cvar.cequipment.add_item(&Item::Backpack, 1);
+    cvar.cequipment.set_gold(self.cvar.gold);
+    let itms = self
+      .cvar
+      .items
+      .as_ref()
+      .expect("default items not yet implemented");
+    for (i, q) in itms {
+      cvar.cequipment.add_item(i, *q);
+    }
+    for f in &self.cvar.flags {
+      cvar.set_flag(*f);
+    }
+    cvar.curendurance = max_hp(&self.ccst, &cvar);
+    cvar
+  }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, StructOpt)]
 pub struct CharacterConstant {
   pub maxendurance: i8,
   pub combat_skill: u8,
@@ -131,47 +128,22 @@ impl<'b> Decode<'b> for CharacterConstant {
   }
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub enum ChoppedSolution<State> {
-  CNode(Rational, Probably<Option<State>>),
-  CJump(Rational, State),
-  CLeafLost,
-  CLeaf(Rational),
-}
-
-struct PPart<A>((Option<A>, Rational));
-impl<'b, A: Decode<'b>> Decode<'b> for PPart<A> {
-  fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
-    cbor_pair(d, |d| cbor_option(d, |d| d.decode()), rational).map(PPart)
-  }
-}
-
-impl<'b, A: Decode<'b>> Decode<'b> for ChoppedSolution<A> {
-  fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
-    let ln = d.array()?;
-    let tg = d.u8()?;
-    match (tg, ln) {
-      (0, Some(3)) => {
-        let sc = rational(d)?;
-        let content: Result<Probably<Option<A>>, _> = d
-          .array_iter()?
-          .map(|x: Result<PPart<A>, _>| x.map(|e| e.0))
-          .collect();
-        Ok(ChoppedSolution::CNode(sc, content?))
-      }
-      (1, Some(3)) => {
-        let sc = rational(d)?;
-        let stt = d.decode()?;
-        Ok(ChoppedSolution::CJump(sc, stt))
-      }
-      (2, Some(1)) => Ok(ChoppedSolution::CLeafLost),
-      (3, Some(2)) => rational(d).map(ChoppedSolution::CLeaf),
-      _ => Err(Error::Message("Invalid variant for ChoppedSolution")),
+impl Encode for CharacterConstant {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(5)?
+      .u8(0)?
+      .i8(self.maxendurance)?
+      .u8(self.combat_skill)?;
+    e.array(self.discipline.len() as u64)?;
+    for d in &self.discipline {
+      e.encode(d)?;
     }
+    e.encode(self.bookid)?;
+    Ok(())
   }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct CVarState {
   pub items: Option<Vec<(Item, i64)>>,
   pub gold: u8,
@@ -199,11 +171,40 @@ impl<'b> Decode<'b> for CVarState {
   }
 }
 
+impl Encode for CVarState {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(4)?.u8(0)?;
+    e_cbor_option(e, self.items.as_ref(), |e, lst| {
+      e.array(lst.len() as u64)?;
+      for l in lst {
+        e.encode(l)?;
+      }
+      Ok(())
+    })?;
+    e.u8(self.gold)?;
+    e.array(self.flags.len() as u64)?;
+    for f in &self.flags {
+      e.encode(f)?;
+    }
+    Ok(())
+  }
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Clone, PartialOrd, Ord)]
 pub enum NextStep {
   HasLost(u16),
   HasWon(CharacterVariable),
   NewChapter(u16, CharacterVariable),
+}
+
+impl std::fmt::Display for NextStep {
+  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    match self {
+      NextStep::HasLost(cid) => write!(f, "lost:{}", cid),
+      NextStep::HasWon(cv) => write!(f, "won:{}", cv),
+      NextStep::NewChapter(cid, cv) => write!(f, "c:{} {}", cid, cv),
+    }
+  }
 }
 
 impl<'b> Decode<'b> for NextStep {
@@ -220,6 +221,23 @@ impl<'b> Decode<'b> for NextStep {
       }
       _ => Err(Error::Message("Invalid variant for NextStep")),
     }
+  }
+}
+
+impl Encode for NextStep {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    match self {
+      NextStep::HasLost(cid) => {
+        e.array(2)?.u8(0)?.u16(*cid)?;
+      }
+      NextStep::HasWon(score) => {
+        e.array(2)?.u8(1)?.encode(score)?;
+      }
+      NextStep::NewChapter(cid, cv) => {
+        e.array(3)?.u8(2)?.u16(*cid)?.encode(cv)?;
+      }
+    }
+    Ok(())
   }
 }
 
@@ -280,7 +298,7 @@ impl Equipment {
     }
     match i {
       Item::Gold => {
-        self.set_gold(q as u8 + self.get_gold());
+        self.set_gold(std::cmp::min(50, q as u8 + self.get_gold()));
       }
       Item::Meal => {
         self.set_meal(q as u8 + self.get_meal());
@@ -418,7 +436,14 @@ impl<'b> Decode<'b> for Equipment {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord)]
+impl Encode for Equipment {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.u64(self.0)?;
+    Ok(())
+  }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord, Copy)]
 pub struct Flags(pub u32);
 
 impl Flags {
@@ -445,6 +470,19 @@ pub struct CharacterVariable {
   pub flags: Flags,
   pub cequipment: Equipment,
   pub cprevequipment: Equipment,
+}
+
+impl std::fmt::Display for CharacterVariable {
+  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    write!(
+      f,
+      "{} {:?} {:?} {:?}",
+      self.curendurance,
+      self.flags,
+      self.cequipment.items(),
+      self.cprevequipment.items()
+    )
+  }
 }
 
 impl CharacterVariable {
@@ -494,6 +532,18 @@ impl<'b> Decode<'b> for CharacterVariable {
   }
 }
 
+impl Encode for CharacterVariable {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(5)?
+      .u8(0)?
+      .i8(self.curendurance)?
+      .u32(self.flags.0)?
+      .encode(self.cequipment)?
+      .encode(self.cprevequipment)?;
+    Ok(())
+  }
+}
+
 #[derive(Debug, PartialEq, Eq, Serialize, Hash, Clone, Copy)]
 pub enum Item {
   Weapon(Weapon),
@@ -516,17 +566,9 @@ pub enum Item {
 
 struct ItemVisitor;
 
-impl<'de> Visitor<'de> for ItemVisitor {
-  type Value = Item;
-
-  fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-    formatter.write_str("an item")
-  }
-
-  fn visit_str<E>(self, s: &str) -> Result<Item, E>
-  where
-    E: serde::de::Error,
-  {
+impl std::str::FromStr for Item {
+  type Err = String;
+  fn from_str(s: &str) -> std::result::Result<Self, <Self as std::str::FromStr>::Err> {
     match s {
       "Backpack" => Ok(Item::Backpack),
       "StrengthPotion4" => Ok(Item::StrengthPotion4),
@@ -556,18 +598,36 @@ impl<'de> Visitor<'de> for ItemVisitor {
         Some(n) => n
           .parse::<u8>()
           .map(Item::GenBackpack)
-          .map_err(|_| serde::de::Error::invalid_value(serde::de::Unexpected::Str(s), &self)),
+          .map_err(|rr| format!("unexpected item {}: {}", s, rr)),
         None => match s.strip_prefix("SGenCounter ") {
           Some(n) => n
             .parse::<u8>()
             .map(Item::GenSpecial)
-            .map_err(|_| serde::de::Error::invalid_value(serde::de::Unexpected::Str(s), &self)),
-          None => Err(serde::de::Error::invalid_value(
-            serde::de::Unexpected::Str(s),
-            &self,
-          )),
+            .map_err(|rr| format!("unexpected item {}: {}", s, rr)),
+          None => Err(format!("unexpected item {}", s)),
         },
       },
+    }
+  }
+}
+
+impl<'de> Visitor<'de> for ItemVisitor {
+  type Value = Item;
+
+  fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+    formatter.write_str("an item")
+  }
+
+  fn visit_str<E>(self, s: &str) -> Result<Item, E>
+  where
+    E: serde::de::Error,
+  {
+    match s.parse() {
+      Ok(x) => Ok(x),
+      Err(_) => Err(serde::de::Error::invalid_value(
+        serde::de::Unexpected::Str(s),
+        &self,
+      )),
     }
   }
 }
@@ -609,6 +669,63 @@ impl<'b> Decode<'b> for Item {
       15 => Ok(Helmet),
       _ => Err(Error::Message("invalid item id")),
     }
+  }
+}
+
+impl Encode for Item {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    use Item::*;
+    match self {
+      Weapon(w) => {
+        e.array(2)?.u8(0)?.encode(w)?;
+      }
+      Backpack => {
+        e.array(1)?.u8(1)?;
+      }
+      StrengthPotion4 => {
+        e.array(1)?.u8(2)?;
+      }
+      Shield => {
+        e.array(1)?.u8(3)?;
+      }
+      BodyArmor => {
+        e.array(1)?.u8(4)?;
+      }
+      Potion2Hp => {
+        e.array(1)?.u8(5)?;
+      }
+      Potion4Hp => {
+        e.array(1)?.u8(6)?;
+      }
+      Potion5Hp => {
+        e.array(1)?.u8(7)?;
+      }
+      Potion6Hp => {
+        e.array(1)?.u8(8)?;
+      }
+      StrengthPotion => {
+        e.array(1)?.u8(9)?;
+      }
+      GenSpecial(n) => {
+        e.array(2)?.u8(10)?.u8(*n)?;
+      }
+      GenBackpack(n) => {
+        e.array(2)?.u8(11)?.u8(*n)?;
+      }
+      Meal => {
+        e.array(1)?.u8(12)?;
+      }
+      Gold => {
+        e.array(1)?.u8(13)?;
+      }
+      Laumspur => {
+        e.array(1)?.u8(14)?;
+      }
+      Helmet => {
+        e.array(1)?.u8(15)?;
+      }
+    }
+    Ok(())
   }
 }
 
@@ -719,17 +836,9 @@ pub enum Discipline {
 
 struct DisciplineVisitor;
 
-impl<'de> Visitor<'de> for DisciplineVisitor {
-  type Value = Discipline;
-
-  fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-    formatter.write_str("a discipline")
-  }
-
-  fn visit_str<E>(self, s: &str) -> Result<Discipline, E>
-  where
-    E: serde::de::Error,
-  {
+impl std::str::FromStr for Discipline {
+  type Err = String;
+  fn from_str(s: &str) -> std::result::Result<Self, <Self as std::str::FromStr>::Err> {
     use Discipline::*;
     match s {
       "Dagger" => Ok(WeaponSkill(Weapon::Dagger)),
@@ -752,6 +861,35 @@ impl<'de> Visitor<'de> for DisciplineVisitor {
       "MindBlast" => Ok(MindBlast),
       "AnimalKinship" => Ok(AnimalKinship),
       "MindOverMatter" => Ok(MindOverMatter),
+      "SS" => Ok(WeaponSkill(Weapon::ShortSword)),
+      "SW" => Ok(WeaponSkill(Weapon::Sword)),
+      "CA" => Ok(Camouflage),
+      "HU" => Ok(Hunting),
+      "6S" => Ok(SixthSense),
+      "TR" => Ok(Tracking),
+      "HL" => Ok(Healing),
+      "MS" => Ok(MindShield),
+      "MB" => Ok(MindBlast),
+      "AK" => Ok(AnimalKinship),
+      "MO" => Ok(MindOverMatter),
+      _ => Err(format!("Unrecognized discipline {}", s)),
+    }
+  }
+}
+
+impl<'de> Visitor<'de> for DisciplineVisitor {
+  type Value = Discipline;
+
+  fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+    formatter.write_str("a discipline")
+  }
+
+  fn visit_str<E>(self, s: &str) -> Result<Discipline, E>
+  where
+    E: serde::de::Error,
+  {
+    match s.parse() {
+      Ok(d) => Ok(d),
       _ => Err(serde::de::Error::invalid_value(
         serde::de::Unexpected::Str(s),
         &self,
@@ -791,6 +929,32 @@ impl<'b> Decode<'b> for Discipline {
       9 => Ok(MindOverMatter),
       _ => Err(Error::Message("invalid discipline id")),
     }
+  }
+}
+
+impl Encode for Discipline {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    use Discipline::*;
+    if let WeaponSkill(w) = self {
+      e.array(2)?;
+      e.u8(5)?;
+      e.encode(w)?;
+    } else {
+      e.array(1)?;
+      e.u8(match self {
+        Camouflage => 0,
+        Hunting => 1,
+        SixthSense => 2,
+        Tracking => 3,
+        Healing => 4,
+        MindShield => 6,
+        MindBlast => 7,
+        AnimalKinship => 8,
+        MindOverMatter => 9,
+        WeaponSkill(_) => panic!("can't happen"),
+      })?;
+    }
+    Ok(())
   }
 }
 
@@ -852,13 +1016,39 @@ impl<'b> Decode<'b> for Weapon {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+impl Encode for Weapon {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(1)?.u8(*self as u8)?;
+    Ok(())
+  }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum Book {
   Book01,
   Book02,
   Book03,
   Book04,
   Book05,
+}
+
+impl std::str::FromStr for Book {
+  type Err = String;
+  fn from_str(s: &str) -> std::result::Result<Self, <Self as std::str::FromStr>::Err> {
+    match s {
+      "01" => Ok(Book::Book01),
+      "02" => Ok(Book::Book02),
+      "03" => Ok(Book::Book03),
+      "04" => Ok(Book::Book04),
+      "05" => Ok(Book::Book05),
+      "book01" => Ok(Book::Book01),
+      "book02" => Ok(Book::Book02),
+      "book03" => Ok(Book::Book03),
+      "book04" => Ok(Book::Book04),
+      "book05" => Ok(Book::Book05),
+      _ => Err(format!("Invalid book {}", s)),
+    }
+  }
 }
 
 impl<'b> Decode<'b> for Book {
@@ -881,7 +1071,14 @@ impl<'b> Decode<'b> for Book {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+impl Encode for Book {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(1)?.u8(*self as u8)?;
+    Ok(())
+  }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize, Hash)]
 pub enum Flag {
   PermanentSkillReduction = 0,
   StrengthPotionActive = 1,
@@ -901,6 +1098,33 @@ pub enum Flag {
   PermanentSkillReduction2 = 15,
   HelmetIsSilver = 16,
   PotentStrengthPotionActive = 17,
+}
+
+impl std::str::FromStr for Flag {
+  type Err = String;
+  fn from_str(s: &str) -> std::result::Result<Self, <Self as std::str::FromStr>::Err> {
+    match s {
+      "PermanentSkillReduction" => Ok(Flag::PermanentSkillReduction),
+      "StrengthPotionActive" => Ok(Flag::StrengthPotionActive),
+      "FoughtElix" => Ok(Flag::FoughtElix),
+      "LimbDeath" => Ok(Flag::LimbDeath),
+      "ReceivedCrystalStarPendant" => Ok(Flag::ReceivedCrystalStarPendant),
+      "Knowledge01" => Ok(Flag::Knowledge01),
+      "Knowledge02" => Ok(Flag::Knowledge02),
+      "Knowledge03" => Ok(Flag::Knowledge03),
+      "Knowledge04" => Ok(Flag::Knowledge04),
+      "Special01" => Ok(Flag::Special01),
+      "Special02" => Ok(Flag::Special02),
+      "Special03" => Ok(Flag::Special03),
+      "Special04" => Ok(Flag::Special04),
+      "Poisonned2" => Ok(Flag::Poisonned2),
+      "HadCombat" => Ok(Flag::HadCombat),
+      "PermanentSkillReduction2" => Ok(Flag::PermanentSkillReduction2),
+      "HelmetIsSilver" => Ok(Flag::HelmetIsSilver),
+      "PotentStrengthPotionActive" => Ok(Flag::PotentStrengthPotionActive),
+      _ => Err(format!("Invalid flag: {}", s)),
+    }
+  }
 }
 
 impl<'b> Decode<'b> for Flag {
@@ -937,8 +1161,11 @@ impl<'b> Decode<'b> for Flag {
   }
 }
 
-pub fn parse_soldump(input: &[u8]) -> Result<SolutionDump, Error> {
-  Decoder::new(input).decode()
+impl Encode for Flag {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(1)?.u8(*self as u8)?;
+    Ok(())
+  }
 }
 
 pub fn max_hp(ccst: &CharacterConstant, cvar: &CharacterVariable) -> i8 {
@@ -948,9 +1175,262 @@ pub fn max_hp(ccst: &CharacterConstant, cvar: &CharacterVariable) -> i8 {
     } else {
       0
     })
-    + (if cvar.cequipment.has_itemb(&Item::Helmet) && cvar.flags.has(Flag::HelmetIsSilver) {
+    + (if cvar.cequipment.has_itemb(&Item::Helmet) && !cvar.flags.has(Flag::HelmetIsSilver) {
       2
     } else {
       0
     })
+}
+
+pub fn mkchar(ccst: &CharacterConstant, cvar: &CVarState) -> CharacterVariable {
+  let mut cv = CharacterVariable::new(ccst.maxendurance);
+  for (itm, qty) in cvar.items.as_ref().unwrap().iter() {
+    cv.add_item(itm, *qty);
+  }
+  cv.add_item(&Item::Backpack, 1);
+  cv.add_item(&Item::Gold, cvar.gold as i64);
+  for f in &cvar.flags {
+    cv.set_flag(*f);
+  }
+  cv.curendurance = max_hp(ccst, &cv);
+  cv
+}
+
+struct CompactSolution {
+  chapter: u16,
+  character: CharacterVariable,
+  score: f32,
+}
+
+impl Encode for CompactSolution {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.u16(self.chapter)?
+      .encode(&self.character)?
+      .f32(self.score)?;
+    Ok(())
+  }
+}
+impl<'b> Decode<'b> for CompactSolution {
+  fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+    let chapter = d.u16()?;
+    let character = d.decode()?;
+    let score = d.f32()?;
+    Ok(CompactSolution {
+      chapter,
+      character,
+      score,
+    })
+  }
+}
+
+#[cfg(test)]
+mod test {
+  use super::*;
+
+  #[test]
+  fn t_flag() {
+    use Flag::*;
+    for f in &[
+      PermanentSkillReduction,
+      StrengthPotionActive,
+      FoughtElix,
+      LimbDeath,
+      ReceivedCrystalStarPendant,
+      Knowledge01,
+      Knowledge02,
+      Knowledge03,
+      Knowledge04,
+      Special01,
+      Special02,
+      Special03,
+      Special04,
+      Poisonned2,
+      HadCombat,
+      PermanentSkillReduction2,
+      HelmetIsSilver,
+      PotentStrengthPotionActive,
+    ] {
+      let mut buffer = [0u8; 128];
+      minicbor::encode(f, buffer.as_mut()).unwrap();
+      let output: Flag = minicbor::decode(buffer.as_ref()).unwrap();
+      assert_eq!(f, &output);
+    }
+  }
+
+  #[test]
+  fn t_weapon() {
+    for f in Weapon::VALUES {
+      let mut buffer = [0u8; 128];
+      minicbor::encode(f, buffer.as_mut()).unwrap();
+      let output: Weapon = minicbor::decode(buffer.as_ref()).unwrap();
+      assert_eq!(f, output);
+    }
+  }
+
+  #[test]
+  fn t_discipline() {
+    use Discipline::*;
+    for d in &[
+      WeaponSkill(Weapon::Dagger),
+      WeaponSkill(Weapon::Spear),
+      WeaponSkill(Weapon::Mace),
+      WeaponSkill(Weapon::ShortSword),
+      WeaponSkill(Weapon::Warhammer),
+      WeaponSkill(Weapon::Sword),
+      WeaponSkill(Weapon::Axe),
+      WeaponSkill(Weapon::Quarterstaff),
+      WeaponSkill(Weapon::BroadSword),
+      WeaponSkill(Weapon::MagicSpear),
+      WeaponSkill(Weapon::Sommerswerd),
+      Camouflage,
+      Hunting,
+      SixthSense,
+      Tracking,
+      Healing,
+      MindShield,
+      MindBlast,
+      AnimalKinship,
+      MindOverMatter,
+      WeaponSkill(Weapon::ShortSword),
+      WeaponSkill(Weapon::Sword),
+      Camouflage,
+      Hunting,
+      SixthSense,
+      Tracking,
+      Healing,
+      MindShield,
+      MindBlast,
+      AnimalKinship,
+      MindOverMatter,
+    ] {
+      let mut buffer = [0u8; 128];
+      minicbor::encode(d, buffer.as_mut()).unwrap();
+      let output: Discipline = minicbor::decode(buffer.as_ref()).unwrap();
+      assert_eq!(d, &output);
+    }
+  }
+
+  #[test]
+  fn t_item() {
+    for d in &[
+      Item::Weapon(Weapon::Dagger),
+      Item::Shield,
+      Item::GenBackpack(4),
+    ] {
+      let mut buffer = [0u8; 128];
+      minicbor::encode(d, buffer.as_mut()).unwrap();
+      let output: Item = minicbor::decode(buffer.as_ref()).unwrap();
+      assert_eq!(d, &output);
+    }
+  }
+
+  #[test]
+  fn t_cvariable() {
+    fn check(c: &CharacterVariable) {
+      let mut buffer = [0u8; 128];
+      minicbor::encode(c, buffer.as_mut()).unwrap();
+      let output: CharacterVariable = minicbor::decode(buffer.as_ref()).unwrap();
+      assert_eq!(c, &output);
+    }
+    let mut cv = CharacterVariable::new(12);
+    check(&cv);
+    cv.cequipment = Equipment(1561486);
+    cv.flags = Flags(1561568);
+    check(&cv);
+    cv.cprevequipment = Equipment(541866158);
+    check(&cv);
+  }
+
+  #[test]
+  fn t_nextstep() {
+    for d in &[
+      NextStep::HasLost(12),
+      NextStep::HasWon(CharacterVariable::new(12)),
+    ] {
+      let mut buffer = [0u8; 128];
+      minicbor::encode(d, buffer.as_mut()).unwrap();
+      let output: NextStep = minicbor::decode(buffer.as_ref()).unwrap();
+      assert_eq!(d, &output);
+    }
+  }
+
+  #[test]
+  fn t_cvarstate() {
+    let c = CVarState {
+      flags: vec![
+        Flag::FoughtElix,
+        Flag::Knowledge02,
+        Flag::PermanentSkillReduction,
+      ],
+      gold: 12,
+      items: Some(vec![(Item::Meal, 3), (Item::Weapon(Weapon::BroadSword), 1)]),
+    };
+    let mut buffer = [0u8; 128];
+    minicbor::encode(&c, buffer.as_mut()).unwrap();
+    let output: CVarState = minicbor::decode(buffer.as_ref()).unwrap();
+    assert_eq!(&c, &output);
+  }
+
+  #[test]
+  fn t_soldesc() {
+    let cvar = CVarState {
+      flags: vec![
+        Flag::FoughtElix,
+        Flag::Knowledge02,
+        Flag::PermanentSkillReduction,
+      ],
+      gold: 12,
+      items: Some(vec![(Item::Meal, 3), (Item::Weapon(Weapon::BroadSword), 1)]),
+    };
+    let soldesc = SolDesc {
+      ccst: CharacterConstant {
+        combat_skill: 12,
+        maxendurance: 30,
+        discipline: vec![
+          Discipline::WeaponSkill(Weapon::Sword),
+          Discipline::SixthSense,
+        ],
+        bookid: Book::Book03,
+      },
+      finalchapters: vec![5, 8],
+      cvar,
+    };
+    let mut buffer = [0u8; 128];
+    minicbor::encode(&soldesc, buffer.as_mut()).unwrap();
+    let output: SolDesc = minicbor::decode(buffer.as_ref()).unwrap();
+    assert_eq!(&soldesc, &output);
+  }
+
+  #[test]
+  fn t_soldump() {
+    let cvar = CVarState {
+      flags: vec![
+        Flag::FoughtElix,
+        Flag::Knowledge02,
+        Flag::PermanentSkillReduction,
+      ],
+      gold: 12,
+      items: Some(vec![(Item::Meal, 3), (Item::Weapon(Weapon::BroadSword), 1)]),
+    };
+    let sd = SolutionDump {
+      soldesc: SolDesc {
+        ccst: CharacterConstant {
+          combat_skill: 12,
+          maxendurance: 30,
+          discipline: vec![
+            Discipline::WeaponSkill(Weapon::Sword),
+            Discipline::SixthSense,
+          ],
+          bookid: Book::Book03,
+        },
+        finalchapters: vec![5, 8],
+        cvar,
+      },
+      content: vec![(NextStep::HasLost(5), ChoppedSolution::CLeafLost)],
+    };
+    let mut buffer = [0u8; 128];
+    minicbor::encode(&sd, buffer.as_mut()).unwrap();
+    let output: SolutionDump = minicbor::decode(buffer.as_ref()).unwrap();
+    assert_eq!(&sd, &output);
+  }
 }

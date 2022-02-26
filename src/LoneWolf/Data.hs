@@ -34,7 +34,7 @@ import Options.Applicative
 import SimpleSolver (ChoppedSolution, choppedScore)
 import Text.Read (readMaybe)
 
-newtype ERatio = ERatio {getERatio :: Rational}
+newtype ERatio = ERatio {getERatio :: Rational} deriving (Show)
 
 instance FromJSON ERatio where
   parseJSON = withObject "Ratio" $ \m -> haskellratio m <|> radixed m
@@ -70,22 +70,26 @@ data Multistat = Multistat
   }
   deriving (Generic, Show)
 
-instance ToJSON Multistat
+instance ToJSON Multistat where
+  toJSON = genericToJSON (defaultOptions {fieldLabelModifier = drop 1})
 
-instance FromJSON Multistat
+instance FromJSON Multistat where
+  parseJSON = genericParseJSON (defaultOptions {fieldLabelModifier = drop 1})
 
 data MultistatEntry = MultistatEntry
   { _meendurance :: Endurance,
     _mskill :: CombatSkill,
     _mscore :: Double,
-    _mratio :: Rational,
+    _mratio :: ERatio,
     _states :: Int
   }
   deriving (Generic, Show)
 
-instance ToJSON MultistatEntry
+instance ToJSON MultistatEntry where
+  toJSON = genericToJSON (defaultOptions {fieldLabelModifier = drop 1})
 
-instance FromJSON MultistatEntry
+instance FromJSON MultistatEntry where
+  parseJSON = genericParseJSON (defaultOptions {fieldLabelModifier = drop 1})
 
 data CVarState = CVarState
   { _cvitems :: Maybe [(Item, Int)],
@@ -136,7 +140,7 @@ mkchar autoweapon cst (CVarState sitems gld flgs) = chr
     chr_beforeflags = mkCharacter (_maxendurance cst) (inventoryFromList allitems)
     chr_afterflags = foldl' (\c f -> c & LoneWolf.Character.flag f .~ True) chr_beforeflags flgs
     chr = chr_afterflags & curendurance .~ getMaxHp cst chr_afterflags
-    allitems_pre = fromMaybe (defaultItems (_bookid cst)) sitems ++ [(Gold, gld)]
+    allitems_pre = (Backpack, 1) : fromMaybe (defaultItems (_bookid cst)) sitems ++ [(Gold, gld)]
     allitems
       | autoweapon && notElem (Weapon Sommerswerd) (map fst allitems_pre) =
         case specialties of
@@ -153,9 +157,9 @@ instance ToJSON CVarState
 instance FromJSON CVarState where
   parseJSON = withObject "CVarState" $ \o ->
     CVarState
-      <$> (o .: "_cvitems" <|> o .: "_items")
-      <*> (o .: "_cvgold" <|> o .: "_gold")
-      <*> (o .: "_cvflags" <|> o .: "flags")
+      <$> (o .: "_cvitems" <|> o .: "_items" <|> o .: "items")
+      <*> (o .: "_cvgold" <|> o .: "_gold" <|> o .: "gold")
+      <*> (o .: "_cvflags" <|> o .: "flags" <|> o .: "flags")
 
 defaultItems :: Book -> [(Item, Int)]
 defaultItems Book01 = [(Weapon ShortSword, 1), (Shield, 1)]
@@ -286,7 +290,11 @@ soldumpSummary (SolutionDump (SolDesc _ ccst cvar) sol) =
         _ -> error "More than one first chapter?"
       score = choppedScore csol
       book = _bookid ccst
-   in Multistat book (_discipline ccst) cvar [MultistatEntry (_maxendurance ccst) (_combatSkill ccst) (fromRational score) score nstates]
+   in Multistat
+        book
+        (_discipline ccst)
+        cvar
+        [MultistatEntry (_maxendurance ccst) (_combatSkill ccst) (fromRational score) (ERatio score) nstates]
 
 data GoldWin = GoldWin
   { _gold :: Int,

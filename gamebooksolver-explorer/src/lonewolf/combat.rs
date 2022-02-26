@@ -1,16 +1,13 @@
 mod hits;
 
 use crate::lonewolf::mini::{Discipline, Flag, Flags, Weapon};
-use crate::solver::base::optimize_outcome;
-use crate::solver::base::Outcome;
-use crate::solver::base::Proba;
+use crate::solver::base::{optimize_outcome, Cache, Outcome, Proba};
 use crate::{
   ChapterId, CharacterConstant, CharacterVariable, CombatSkill, Endurance, FightDetails,
   FightModifier, Item,
 };
 use hits::hits;
 use rug::Rational;
-use std::collections::HashMap;
 use std::hash::Hash;
 
 const RFLAGS: Flags = Flags(0)
@@ -37,21 +34,20 @@ pub struct CombatInfo {
   opendurance: Endurance,
 }
 
-type MemoSimpleFight =
-  HashMap<(CombatSkill, Endurance, Endurance), Outcome<(Endurance, Endurance)>>;
+type MemoSimpleFight = Cache<(CombatSkill, Endurance, Endurance), Outcome<(Endurance, Endurance)>>;
 
 pub struct Memoz {
-  whole_fight: HashMap<CombatInfo, Outcome<Escaped<Endurance>>>,
-  fight_mindblasted: MemoSimpleFight,
-  fight_vanilla: MemoSimpleFight,
+  pub whole_fight: Cache<CombatInfo, Outcome<Escaped<Endurance>>>,
+  pub fight_mindblasted: MemoSimpleFight,
+  pub fight_vanilla: MemoSimpleFight,
 }
 
 impl Default for Memoz {
   fn default() -> Self {
     Memoz {
-      whole_fight: HashMap::default(),
-      fight_mindblasted: HashMap::default(),
-      fight_vanilla: HashMap::default(),
+      whole_fight: Cache::default(),
+      fight_mindblasted: Cache::default(),
+      fight_vanilla: Cache::default(),
     }
   }
 }
@@ -147,7 +143,7 @@ impl CombatInfo {
     }
   }
 
-  fn get_ratio(&self) -> CombatSkill {
+  pub fn get_ratio(&self) -> CombatSkill {
     let mut o = self.skilldiff;
     if self.modifiers.contains(&FightModifier::BareHanded) || self.weapons.is_empty() {
       o -= 4;
@@ -492,12 +488,6 @@ fn get_timed(m: &FightModifier) -> &FightModifier {
   }
 }
 
-enum FightType {
-  Vanilla,
-  GodMode,
-  Mindblasted,
-}
-
 #[derive(PartialEq, Eq, Hash, Clone, PartialOrd, Ord, Debug)]
 pub enum Escaped<A> {
   Escaped(ChapterId, A),
@@ -675,6 +665,34 @@ mod test {
         v: Escaped::Std(Endurance(*e)),
       })
       .collect();
+    expected.sort();
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn evasion0() {
+    let cinfo = CombatInfo::make(
+      &DEFCSTT,
+      &DEFCVAR,
+      &FightDetails {
+        opponent: "F1".to_string(),
+        combat_skill: CombatSkill(20),
+        endurance: Endurance(20),
+        fight_mod: vec![FightModifier::Evaded(ChapterId(88))],
+      },
+    );
+    assert_eq!(cinfo.get_ratio(), CombatSkill(-5));
+    let mut memo = Memoz::default();
+    let mut actual = cinfo.fight(&mut memo);
+    actual.sort();
+    let mut expected: Vec<Proba<Escaped<Endurance>>> =
+      [(19, 5), (20, 5), (21, 5), (22, 10), (23, 10), (25, 5)]
+        .iter()
+        .map(|(e, d)| Proba {
+          v: Escaped::Escaped(ChapterId(88), Endurance(*e)),
+          p: Rational::from((1, *d)),
+        })
+        .collect();
     expected.sort();
     assert_eq!(actual, expected);
   }

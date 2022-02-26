@@ -4441,7 +4441,7 @@
           {
             "CanTake": [
               "Meal",
-              3,
+              1,
               {
                 "CanTake": [
                   "SGenCounter 5",
@@ -13744,7 +13744,7 @@
   [
     406,
     {
-      "desc": "Dummy chapter 406",
+      "desc": "Dummy fight chapter 406",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -13781,19 +13781,21 @@
   [
     407,
     {
-      "desc": "Dummy chapter 407",
+      "desc": "Last fight chapter 407",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 165
               }
-            ],
-            {
-              "Goto": 165
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "407"
@@ -13823,7 +13825,7 @@
   [
     408,
     {
-      "desc": "Dummy chapter 408",
+      "desc": "Dummy fight chapter 408",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -13850,19 +13852,21 @@
   [
     409,
     {
-      "desc": "Dummy chapter 409",
+      "desc": "Last fight chapter 409",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 95
               }
-            ],
-            {
-              "Goto": 95
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "409"
@@ -13892,7 +13896,7 @@
   [
     410,
     {
-      "desc": "Dummy chapter 410",
+      "desc": "Dummy fight chapter 410",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -13914,19 +13918,21 @@
   [
     411,
     {
-      "desc": "Dummy chapter 411",
+      "desc": "Last fight chapter 411",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 3
               }
-            ],
-            {
-              "Goto": 3
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "411"
@@ -13956,7 +13962,7 @@
   [
     412,
     {
-      "desc": "Dummy chapter 412",
+      "desc": "Dummy fight chapter 412",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -13987,19 +13993,21 @@
   [
     413,
     {
-      "desc": "Dummy chapter 413",
+      "desc": "Last fight chapter 413",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 65
               }
-            ],
-            {
-              "Goto": 65
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "413"
@@ -14029,7 +14037,7 @@
   [
     414,
     {
-      "desc": "Dummy chapter 414",
+      "desc": "Dummy fight chapter 414",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14060,19 +14068,21 @@
   [
     415,
     {
-      "desc": "Dummy chapter 415",
+      "desc": "Last fight chapter 415",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 189
               }
-            ],
-            {
-              "Goto": 189
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "415"
@@ -14102,7 +14112,7 @@
   [
     416,
     {
-      "desc": "Dummy chapter 416",
+      "desc": "Dummy fight chapter 416",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14131,19 +14141,21 @@
   [
     417,
     {
-      "desc": "Dummy chapter 417",
+      "desc": "Last fight chapter 417",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 137
               }
-            ],
-            {
-              "Goto": 137
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "417"
@@ -14173,7 +14185,7 @@
   [
     418,
     {
-      "desc": "Dummy chapter 418",
+      "desc": "Dummy fight chapter 418",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14202,19 +14214,21 @@
   [
     419,
     {
-      "desc": "Dummy chapter 419",
+      "desc": "Last fight chapter 419",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 130
               }
-            ],
-            {
-              "Goto": 130
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "419"
@@ -14244,7 +14258,7 @@
   [
     420,
     {
-      "desc": "Dummy chapter 420",
+      "desc": "Dummy fight chapter 420",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14275,19 +14289,21 @@
   [
     421,
     {
-      "desc": "Dummy chapter 421",
+      "desc": "Last fight chapter 421",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 101
               }
-            ],
-            {
-              "Goto": 101
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "421"
@@ -14317,7 +14333,7 @@
   [
     422,
     {
-      "desc": "Dummy chapter 422",
+      "desc": "Dummy fight chapter 422",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14343,19 +14359,21 @@
   [
     423,
     {
-      "desc": "Dummy chapter 423",
+      "desc": "Last fight chapter 423",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 111
               }
-            ],
-            {
-              "Goto": 111
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "423"
@@ -14385,7 +14403,7 @@
   [
     424,
     {
-      "desc": "Dummy chapter 424",
+      "desc": "Dummy fight chapter 424",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14407,19 +14425,21 @@
   [
     425,
     {
-      "desc": "Dummy chapter 425",
+      "desc": "Last fight chapter 425",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 353
               }
-            ],
-            {
-              "Goto": 353
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "425"
@@ -14449,7 +14469,7 @@
   [
     426,
     {
-      "desc": "Dummy chapter 426",
+      "desc": "Dummy fight chapter 426",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14471,19 +14491,21 @@
   [
     427,
     {
-      "desc": "Dummy chapter 427",
+      "desc": "Last fight chapter 427",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 290
               }
-            ],
-            {
-              "Goto": 290
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "427"
@@ -14513,7 +14535,7 @@
   [
     428,
     {
-      "desc": "Dummy chapter 428",
+      "desc": "Dummy fight chapter 428",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14537,19 +14559,21 @@
   [
     429,
     {
-      "desc": "Dummy chapter 429",
+      "desc": "Last fight chapter 429",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 217
               }
-            ],
-            {
-              "Goto": 217
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "429"
@@ -14579,7 +14603,7 @@
   [
     430,
     {
-      "desc": "Dummy chapter 430",
+      "desc": "Dummy fight chapter 430",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14608,19 +14632,21 @@
   [
     431,
     {
-      "desc": "Dummy chapter 431",
+      "desc": "Last fight chapter 431",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 213
               }
-            ],
-            {
-              "Goto": 213
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "431"
@@ -14650,7 +14676,7 @@
   [
     432,
     {
-      "desc": "Dummy chapter 432",
+      "desc": "Dummy fight chapter 432",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14675,19 +14701,21 @@
   [
     433,
     {
-      "desc": "Dummy chapter 433",
+      "desc": "Last fight chapter 433",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 203
               }
-            ],
-            {
-              "Goto": 203
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "433"
@@ -14717,7 +14745,7 @@
   [
     434,
     {
-      "desc": "Dummy chapter 434",
+      "desc": "Dummy fight chapter 434",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14748,19 +14776,21 @@
   [
     435,
     {
-      "desc": "Dummy chapter 435",
+      "desc": "Last fight chapter 435",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 333
               }
-            ],
-            {
-              "Goto": 333
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "435"
@@ -14790,7 +14820,7 @@
   [
     436,
     {
-      "desc": "Dummy chapter 436",
+      "desc": "Dummy fight chapter 436",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14812,19 +14842,21 @@
   [
     437,
     {
-      "desc": "Dummy chapter 437",
+      "desc": "Last fight chapter 437",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 395
               }
-            ],
-            {
-              "Goto": 395
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "437"
@@ -14854,7 +14886,7 @@
   [
     438,
     {
-      "desc": "Dummy chapter 438",
+      "desc": "Dummy fight chapter 438",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14885,19 +14917,21 @@
   [
     439,
     {
-      "desc": "Dummy chapter 439",
+      "desc": "Last fight chapter 439",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 243
               }
-            ],
-            {
-              "Goto": 243
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "439"
@@ -14927,7 +14961,7 @@
   [
     440,
     {
-      "desc": "Dummy chapter 440",
+      "desc": "Dummy fight chapter 440",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -14951,19 +14985,21 @@
   [
     441,
     {
-      "desc": "Dummy chapter 441",
+      "desc": "Last fight chapter 441",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 400
               }
-            ],
-            {
-              "Goto": 400
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "441"
@@ -14993,7 +15029,7 @@
   [
     442,
     {
-      "desc": "Dummy chapter 442",
+      "desc": "Dummy fight chapter 442",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -15026,19 +15062,21 @@
   [
     443,
     {
-      "desc": "Dummy chapter 443",
+      "desc": "Last fight chapter 443",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 249
               }
-            ],
-            {
-              "Goto": 249
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "443"
@@ -15068,7 +15106,7 @@
   [
     444,
     {
-      "desc": "Dummy chapter 444",
+      "desc": "Dummy fight chapter 444",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -15099,19 +15137,21 @@
   [
     445,
     {
-      "desc": "Dummy chapter 445",
+      "desc": "Last fight chapter 445",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 288
               }
-            ],
-            {
-              "Goto": 288
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "445"
@@ -15141,7 +15181,7 @@
   [
     446,
     {
-      "desc": "Dummy chapter 446",
+      "desc": "Dummy fight chapter 446",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -15165,19 +15205,21 @@
   [
     447,
     {
-      "desc": "Dummy chapter 447",
+      "desc": "Last fight chapter 447",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 396
               }
-            ],
-            {
-              "Goto": 396
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "447"
@@ -15207,7 +15249,7 @@
   [
     448,
     {
-      "desc": "Dummy chapter 448",
+      "desc": "Dummy fight chapter 448",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -15229,19 +15271,21 @@
   [
     449,
     {
-      "desc": "Dummy chapter 449",
+      "desc": "Last fight chapter 449",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 404
               }
-            ],
-            {
-              "Goto": 404
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "449"
@@ -15271,7 +15315,7 @@
   [
     450,
     {
-      "desc": "Dummy chapter 450",
+      "desc": "Dummy fight chapter 450",
       "pchoice": {
         "NoDecision": {
           "Fight": [
@@ -15295,19 +15339,21 @@
   [
     451,
     {
-      "desc": "Dummy chapter 451",
+      "desc": "Last fight chapter 451",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
+        "AfterCombat": {
+          "NoDecision": {
+            "Simple": [
+              [
+                {
+                  "SetFlag": "HadCombat"
+                }
+              ],
               {
-                "SetFlag": "HadCombat"
+                "Goto": 217
               }
-            ],
-            {
-              "Goto": 217
-            }
-          ]
+            ]
+          }
         }
       },
       "title": "451"

@@ -1,22 +1,56 @@
+use crate::lonewolf::data::Multistat;
+use crate::lonewolf::explore::explore_solution;
+use crate::lonewolf::solve::solve_lws;
+use crate::solver::base::{ChoppedSolution, SolNode};
 use lonewolf::chapter::*;
 use rug::Rational;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
+use std::io::Write;
 use structopt::StructOpt;
 
 mod lonewolf;
 mod solver;
 
 use lonewolf::mini::{
-    Book, CVarState, CharacterConstant, CharacterVariable, ChoppedSolution, Equipment, Item,
-    NextStep,
+    mkchar, Book, CVarState, CharacterConstant, CharacterVariable, Discipline, Equipment, Flag,
+    Flags, Item, NextStep, SolDesc, SolutionDump, Weapon,
 };
+
+#[derive(Debug, StructOpt)]
+struct OSolDesc {
+    #[structopt(long = "maxendurance")]
+    pub maxendurance: i8,
+    #[structopt(long = "skill")]
+    pub combat_skill: u8,
+    #[structopt(long = "discipline", short = "d")]
+    pub discipline: Vec<Discipline>,
+    #[structopt(long = "book")]
+    pub bookid: Book,
+    #[structopt(long = "item", short = "i")]
+    pub items: Vec<Item>,
+    #[structopt(long = "gold")]
+    pub gold: u8,
+    #[structopt(long = "flag", short = "f")]
+    pub flags: Vec<Flag>,
+    #[structopt(long = "autoweapon")]
+    pub autoweapon: bool,
+    #[structopt(long = "finalchapters")]
+    pub finalchapters: Vec<u16>,
+    #[structopt(long = "bookpath")]
+    pub bookpath: String,
+    #[structopt(long = "results")]
+    pub resultspath: Option<String>,
+}
 
 #[derive(Debug, StructOpt)]
 enum Subcommand {
     LoadChapter,
     DumpStates { cid: u16 },
+    Soldump(OSolDesc),
+    Explore { bookpath: String },
 }
 
 #[derive(Debug, StructOpt)]
@@ -149,48 +183,6 @@ fn mksol(
     go(&mut memo, &sttmap, &ini)
 }
 
-fn default_items(book: Book) -> Vec<(Item, i64)> {
-    use lonewolf::mini::Weapon::{ShortSword, Sommerswerd};
-    use Book::*;
-    use Item::*;
-    match book {
-        Book01 => vec![(Weapon(ShortSword), 1), (Shield, 1)],
-        Book02 => vec![(Weapon(ShortSword), 1), (GenSpecial(3), 1), (Shield, 1)],
-        Book03 => vec![(Weapon(Sommerswerd), 1), (Laumspur, 1), (Meal, 1)],
-        Book04 => vec![
-            (Weapon(Sommerswerd), 1),
-            (Laumspur, 1),
-            (Meal, 4),
-            (Shield, 1),
-        ],
-        Book05 => vec![
-            (Weapon(Sommerswerd), 1),
-            (Laumspur, 1),
-            (Shield, 1),
-            (Meal, 2),
-        ],
-    }
-}
-
-fn mkchar(ccst: CharacterConstant, cvar: CVarState) -> CharacterVariable {
-    let mut cv = CharacterVariable::new(ccst.maxendurance);
-    for (itm, qty) in cvar
-        .items
-        .unwrap_or_else(|| default_items(ccst.bookid))
-        .into_iter()
-    {
-        cv.add_item(&itm, qty);
-    }
-    cv.add_item(&Item::Gold, cvar.gold as i64);
-    for f in cvar.flags.into_iter() {
-        cv.set_flag(f);
-    }
-    if cv.cequipment.has_itemb(&Item::BodyArmor) {
-        cv.curendurance += 4;
-    }
-    cv
-}
-
 fn count_states<A>(cnt: &[(NextStep, A)]) -> HashMap<u16, u64> {
     let mut o = HashMap::new();
     for (ns, _) in cnt.iter() {
@@ -205,7 +197,8 @@ fn count_states<A>(cnt: &[(NextStep, A)]) -> HashMap<u16, u64> {
 fn decode_buffer<R: std::io::Read>(r: &mut R) -> lonewolf::mini::SolutionDump {
     let mut buf = Vec::new();
     r.read_to_end(&mut buf).unwrap();
-    lonewolf::mini::parse_soldump(&buf).unwrap()
+    minicbor::decode(&buf).unwrap()
+    // lonewolf::mini::parse_soldump(&buf).unwrap()
 }
 
 #[derive(serde::Serialize)]
@@ -221,15 +214,143 @@ fn load_soldump(pth: &str) -> lonewolf::mini::SolutionDump {
     decode_buffer(&mut dec)
 }
 
+fn chop_solution(sol: SolNode<NextStep>) -> ChoppedSolution<NextStep> {
+    match sol {
+        SolNode::Win(sc) => ChoppedSolution::CLeaf(sc),
+        SolNode::Single(sc, u) => ChoppedSolution::CJump(sc, u),
+        SolNode::Chosen(sc, outcome) => {
+            ChoppedSolution::CNode(sc, outcome.into_iter().map(|x| (Some(x.v), x.p)).collect())
+        }
+    }
+}
+
+fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
+    use Flag::*;
+    use Item::{BodyArmor, Gold, Helmet, StrengthPotion4};
+
+    match bookid {
+        Book::Book01 => (
+            [Helmet, BodyArmor, Gold].into_iter().collect(),
+            HashSet::new(),
+        ),
+        Book::Book02 => ([Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
+        Book::Book03 => (
+            [
+                Item::Weapon(Weapon::Sommerswerd),
+                Helmet,
+                StrengthPotion4,
+            ]
+            .into_iter()
+            .collect(),
+            [HelmetIsSilver].into_iter().collect(),
+        ),
+        Book::Book04 => (
+            [
+                Item::Weapon(Weapon::Sommerswerd),
+                Helmet,
+                BodyArmor,
+                StrengthPotion4,
+            ]
+            .into_iter()
+            .collect(),
+            [FoughtElix, PermanentSkillReduction2, HelmetIsSilver]
+                .into_iter()
+                .collect(),
+        ),
+        Book::Book05 => (HashSet::new(), HashSet::new()),
+    }
+}
+
+fn load_results(
+    disciplines: HashSet<Discipline>,
+    iitems: &HashSet<Item>,
+    iflags: &HashSet<Flag>,
+    resdir: &str,
+) -> HashMap<(Equipment, Flags), Rational> {
+    let mut o = HashMap::new();
+    for fpath in std::fs::read_dir(resdir).unwrap() {
+        let pth = fpath.unwrap().path();
+        if !pth.ends_with(".json") {
+            continue;
+        }
+        let f = File::open(&pth).unwrap();
+        let ms: Multistat = serde_json::de::from_reader(f).unwrap();
+        if ms.msentries.len() != 1 {
+            eprintln!("invalid amount of entries in {:?}", pth.to_str());
+            continue;
+        }
+        let curdiscs: HashSet<Discipline> = ms.msdisciplines.into_iter().collect();
+        if curdiscs.difference(&disciplines).count() > 1 {
+            continue;
+        }
+        let mut flags = Flags(0);
+        for f in ms.variable.flags.into_iter().filter(|f| iflags.contains(f)) {
+            flags.set(f);
+        }
+        let mut items = Equipment(0);
+        for (i, q) in ms
+            .variable
+            .items
+            .iter()
+            .flatten()
+            .filter(|(i, _)| iitems.contains(i))
+        {
+            items.add_item(i, *q);
+        }
+        let mentry: &Rational = &ms.msentries[0].mratio;
+        let oentry: &mut Rational = o.entry((items, flags)).or_default();
+        if mentry.cmp(oentry) == std::cmp::Ordering::Greater {
+            *oentry = mentry.clone();
+        }
+    }
+    o
+}
+
+fn score_with(
+    mscoremap: &Option<HashMap<(Equipment, Flags), Rational>>,
+    iitems: &HashSet<Item>,
+    iflags: &HashSet<Flag>,
+    e: Equipment,
+    f: Flags,
+) -> Rational {
+    match mscoremap {
+        None => Rational::from(1),
+        Some(scoremap) => {
+            let mut re = Equipment(0);
+            for i in iitems {
+                let amount = e.get_item_count(i);
+                if amount > 0 {
+                    re.add_item(i, amount as i64);
+                }
+            }
+            let mut rf = Flags(0);
+            for i in iflags {
+                if f.has(*i) {
+                    rf.set(*i);
+                }
+            }
+            match scoremap.get(&(re, rf)) {
+                None => panic!(
+                    "Could not find matching combination for {:?} {:?}",
+                    e.items(),
+                    f
+                ),
+                Some(x) => x.clone(),
+            }
+        }
+    }
+}
+
 fn main() {
     let opt = Opt::from_args();
 
     match &opt.cmd {
         None => {
             let soldump = load_soldump(&opt.solpath);
+            let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
+            eprintln!("Starting condition: {:?} - {}", soldump.soldesc, ini);
             let sttmap = count_states(&soldump.content);
             let bookid = soldump.soldesc.ccst.bookid;
-            let ini = NextStep::NewChapter(1, mkchar(soldump.soldesc.ccst, soldump.soldesc.cvar));
             let searchmap: HashMap<NextStep, ChoppedSolution<NextStep>> =
                 soldump.content.into_iter().collect();
             eprintln!("{} : {} states", opt.solpath, searchmap.len());
@@ -242,6 +363,13 @@ fn main() {
             let x = serde_json::to_string(&output).unwrap();
             println!("{}", x);
         }
+        Some(Subcommand::Explore { bookpath }) => {
+            let fl = File::open(&bookpath).unwrap();
+            let book: Vec<(ChapterId, Chapter)> = serde_json::from_reader(fl).unwrap();
+            let soldump = load_soldump(&opt.solpath);
+            eprintln!("Starting condition: {:?}", soldump.soldesc);
+            explore_solution(soldump, &book);
+        }
         Some(Subcommand::LoadChapter) => {
             let file = File::open(opt.solpath.clone()).unwrap();
             let reader = BufReader::new(file);
@@ -252,10 +380,100 @@ fn main() {
             let soldump = load_soldump(&opt.solpath);
             for (ns, sol) in &soldump.content {
                 if ns.chapter() == Some(*cid) {
-                    println!("{:?}", ns);
-                    println!(" -> {:?}", sol);
+                    println!("{} -> {:?}", ns, sol);
                 }
             }
+        }
+        Some(Subcommand::Soldump(cnt)) => {
+            let (iitems, iflags) = get_boundary(cnt.bookid);
+            let mscoremap = cnt.resultspath.as_ref().map(|pth| {
+                load_results(
+                    cnt.discipline.iter().copied().collect(),
+                    &iitems,
+                    &iflags,
+                    pth,
+                )
+            });
+
+            let ccst = CharacterConstant {
+                bookid: cnt.bookid,
+                combat_skill: cnt.combat_skill,
+                discipline: cnt.discipline.clone(),
+                maxendurance: cnt.maxendurance,
+            };
+            let cvar = CVarState {
+                flags: cnt.flags.clone(),
+                gold: cnt.gold,
+                items: if cnt.items.is_empty() {
+                    None
+                } else {
+                    let mut mp: HashMap<Item, i64> = HashMap::new();
+                    for i in cnt.items.iter() {
+                        let e = mp.entry(*i).or_insert(0);
+                        *e += 1;
+                    }
+                    Some(mp.into_iter().collect())
+                },
+            };
+            let finalchapters = if cnt.finalchapters.is_empty() {
+                if ccst.bookid == Book::Book05 {
+                    vec![400]
+                } else {
+                    vec![350]
+                }
+            } else {
+                cnt.finalchapters.clone()
+            };
+            let fchapters: Vec<ChapterId> = finalchapters.iter().copied().map(ChapterId).collect();
+            let soldesc = SolDesc {
+                ccst,
+                cvar,
+                finalchapters,
+            };
+            let cvar = soldesc.cvariable();
+            eprintln!("ini: {:?}", cvar);
+            let fl = File::open(&cnt.bookpath).unwrap();
+            let book: Vec<(ChapterId, Chapter)> = serde_json::from_reader(fl).unwrap();
+            let sol = solve_lws(
+                |e, f| score_with(&mscoremap, &iitems, &iflags, e, f),
+                &fchapters,
+                &book,
+                &soldesc.ccst,
+                &cvar,
+            );
+            let soldump = SolutionDump {
+                soldesc,
+                content: sol
+                    .into_iter()
+                    .map(|(ns, x)| (ns, chop_solution(x)))
+                    .collect(),
+            };
+
+            // save json summary
+            let json_path = opt.solpath.clone() + ".json";
+            let json_file = File::create(&json_path).unwrap();
+            serde_json::to_writer(json_file, &Multistat::from_soldump(&soldump)).unwrap();
+
+            // save whole stuff
+            let file = File::create(&opt.solpath).unwrap();
+            let zwriter = zstd::Encoder::new(file, 3).unwrap();
+            struct WW<'t>(zstd::Encoder<'t, std::fs::File>);
+
+            impl<'t> minicbor::encode::Write for WW<'t> {
+                type Error = std::io::Error;
+                fn write_all(
+                    &mut self,
+                    buf: &[u8],
+                ) -> std::result::Result<(), <Self as minicbor::encode::Write>::Error>
+                {
+                    self.0.write_all(buf)
+                }
+            }
+
+            let mut w = WW(zwriter);
+
+            minicbor::encode(&soldump, &mut w).unwrap();
+            w.0.finish().unwrap();
         }
     }
 }

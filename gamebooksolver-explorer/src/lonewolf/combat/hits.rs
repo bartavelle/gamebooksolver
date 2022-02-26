@@ -1,14 +1,17 @@
 pub fn hits(ratio: i8) -> &'static [HitResult; 10] {
-  let nratio: usize = if ratio < -6 {
-    0
-  } else if ratio > 6 {
-    12
+  let nratio = if ratio < -10 {
+    -6
+  } else if ratio > 10 {
+    6
+  } else if ratio < 0 {
+    (ratio - 1) / 2
   } else {
-    (ratio + 6) as usize
+    (ratio + 1) / 2
   };
-  &HITSCHART[nratio]
+  &HITSCHART[(nratio + 6) as usize]
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct HitResult {
   pub op: u8,
   pub lw: u8,
@@ -185,3 +188,24 @@ const HITSCHART: [[HitResult; 10]; 13] = [
     HitResult { op: 100, lw: 0 },
   ],
 ];
+
+#[cfg(test)]
+mod test {
+  use super::*;
+
+  #[test]
+  fn div_resultn() {
+    assert_eq!(hits(-5), &HITSCHART[3]);
+    assert_eq!(hits(-6), &HITSCHART[3]);
+  }
+
+  #[test]
+  fn div_resultp5() {
+    assert_eq!(hits(5), &HITSCHART[9]);
+  }
+
+  #[test]
+  fn div_resultp6() {
+    assert_eq!(hits(6), &HITSCHART[9]);
+  }
+}
