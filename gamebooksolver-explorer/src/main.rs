@@ -1,6 +1,8 @@
 use crate::lonewolf::data::Multistat;
 use crate::lonewolf::explore::explore_solution;
 use crate::lonewolf::solve::solve_lws;
+use crate::solver::base::optimize_outcome;
+use crate::solver::base::Proba;
 use crate::solver::base::{ChoppedSolution, SolNode};
 use lonewolf::chapter::*;
 use rug::Rational;
@@ -49,6 +51,7 @@ struct OSolDesc {
 enum Subcommand {
     LoadChapter,
     DumpStates { cid: u16 },
+    CompareStates { otherpath: String, cid: u16 },
     Soldump(OSolDesc),
     Explore { bookpath: String },
 }
@@ -235,13 +238,9 @@ fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
         ),
         Book::Book02 => ([Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
         Book::Book03 => (
-            [
-                Item::Weapon(Weapon::Sommerswerd),
-                Helmet,
-                StrengthPotion4,
-            ]
-            .into_iter()
-            .collect(),
+            [Item::Weapon(Weapon::Sommerswerd), Helmet, StrengthPotion4]
+                .into_iter()
+                .collect(),
             [HelmetIsSilver].into_iter().collect(),
         ),
         Book::Book04 => (
@@ -250,6 +249,7 @@ fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
                 Helmet,
                 BodyArmor,
                 StrengthPotion4,
+                Gold,
             ]
             .into_iter()
             .collect(),
@@ -269,14 +269,15 @@ fn load_results(
 ) -> HashMap<(Equipment, Flags), Rational> {
     let mut o = HashMap::new();
     for fpath in std::fs::read_dir(resdir).unwrap() {
-        let pth = fpath.unwrap().path();
+        let rpath = fpath.unwrap().path();
+        let pth = rpath.to_str().unwrap();
         if !pth.ends_with(".json") {
             continue;
         }
         let f = File::open(&pth).unwrap();
         let ms: Multistat = serde_json::de::from_reader(f).unwrap();
         if ms.msentries.len() != 1 {
-            eprintln!("invalid amount of entries in {:?}", pth.to_str());
+            eprintln!("invalid amount of entries in {}", pth);
             continue;
         }
         let curdiscs: HashSet<Discipline> = ms.msdisciplines.into_iter().collect();
@@ -297,6 +298,9 @@ fn load_results(
         {
             items.add_item(i, *q);
         }
+        if iitems.contains(&Item::Gold) {
+            items.add_item(&Item::Gold, ms.variable.gold as i64);
+        }
         let mentry: &Rational = &ms.msentries[0].mratio;
         let oentry: &mut Rational = o.entry((items, flags)).or_default();
         if mentry.cmp(oentry) == std::cmp::Ordering::Greater {
@@ -307,6 +311,7 @@ fn load_results(
 }
 
 fn score_with(
+    bookid: Book,
     mscoremap: &Option<HashMap<(Equipment, Flags), Rational>>,
     iitems: &HashSet<Item>,
     iflags: &HashSet<Flag>,
@@ -318,7 +323,21 @@ fn score_with(
         Some(scoremap) => {
             let mut re = Equipment(0);
             for i in iitems {
-                let amount = e.get_item_count(i);
+                let ramount = e.get_item_count(i);
+                let amount = if i == &Item::Gold {
+                    match bookid {
+                        Book::Book04 => {
+                            if ramount < 4 {
+                                0
+                            } else {
+                                15
+                            }
+                        }
+                        _ => ramount,
+                    }
+                } else {
+                    ramount
+                };
                 if amount > 0 {
                     re.add_item(i, amount as i64);
                 }
@@ -330,15 +349,174 @@ fn score_with(
                 }
             }
             match scoremap.get(&(re, rf)) {
-                None => panic!(
-                    "Could not find matching combination for {:?} {:?}",
-                    e.items(),
-                    f
-                ),
+                None => {
+                    eprintln!(
+                        "Could not find matching combination for {:?} {:?}",
+                        re.items(),
+                        rf
+                    );
+                    eprintln!("know combinations are:");
+                    for (ke, kf) in scoremap.keys() {
+                        eprintln!(" * {:?} {:?}", ke.items(), kf);
+                    }
+                    panic!("failed :(");
+                }
                 Some(x) => x.clone(),
             }
         }
     }
+}
+
+fn compare_sols(
+    m1: HashMap<NextStep, ChoppedSolution<NextStep>>,
+    m2: HashMap<NextStep, ChoppedSolution<NextStep>>,
+) {
+    type Ocs = Vec<(Rational, NextStep)>;
+    fn deloss(chapter: Option<u16>, ns: NextStep) -> NextStep {
+        match &ns {
+            NextStep::NewChapter(cid, cvar) => {
+                if cvar.curendurance <= 0 {
+                    NextStep::HasLost(chapter.unwrap_or(*cid))
+                } else {
+                    ns
+                }
+            }
+            _ => ns,
+        }
+    }
+    fn descored(chapter: Option<u16>, cs: ChoppedSolution<NextStep>) -> Ocs {
+        match cs {
+            ChoppedSolution::CJump(_, ns) => vec![(Rational::from(1), deloss(chapter, ns.clone()))],
+            ChoppedSolution::CNode(_, subs) => {
+                let po: Vec<Proba<NextStep>> = subs
+                    .into_iter()
+                    .filter_map(|(ms, p)| {
+                        ms.map(|s| Proba {
+                            p,
+                            v: deloss(chapter, s),
+                        })
+                    })
+                    .collect();
+                let mut o = optimize_outcome(po)
+                    .into_iter()
+                    .map(|p| (p.p, p.v))
+                    .collect::<Vec<_>>();
+                o.sort();
+                o
+            }
+            _ => Vec::new(),
+        }
+    }
+
+    fn pretty_outcomes(outcomes: &[(Rational, NextStep)]) {
+        for (s, p) in outcomes {
+            println!(" - {} {}", p, s);
+        }
+    }
+
+    fn pretty_step(ns: &NextStep, outcomes: &[(Rational, NextStep)]) {
+        println!("{}", ns);
+        pretty_outcomes(outcomes);
+    }
+
+    let mkmap = |m: HashMap<NextStep, ChoppedSolution<NextStep>>| -> HashMap<NextStep, Ocs> {
+        m.into_iter()
+            .map(|(ns, cs)| {
+                let ch = ns.chapter();
+                (ns, descored(ch, cs))
+            })
+            .collect()
+    };
+
+    let m1_ = mkmap(m1);
+    let m2_ = mkmap(m2);
+
+    let mut only1: Vec<(NextStep, Ocs)> = Vec::new();
+    let mut only2: Vec<(NextStep, Ocs)> = Vec::new();
+    let mut differing: Vec<(NextStep, Ocs, Ocs)> = Vec::new();
+
+    for (k1, v1) in m1_.iter() {
+        match m2_.get(k1) {
+            None => only1.push((k1.clone(), v1.clone())),
+            Some(v2) => {
+                if v1 != v2 {
+                    differing.push((k1.clone(), v1.clone(), v2.clone()));
+                }
+            }
+        }
+    }
+    for (k2, v2) in m2_ {
+        if !m1_.contains_key(&k2) {
+            only2.push((k2, v2));
+        }
+    }
+
+    if !only1.is_empty() {
+        println!("*** ONLY IN 1 ***");
+        for (ns, outcomes) in only1.iter() {
+            pretty_step(ns, outcomes);
+        }
+    }
+    if !only2.is_empty() {
+        println!("*** ONLY IN 2 ***");
+        for (ns, outcomes) in only2.iter() {
+            pretty_step(ns, outcomes);
+        }
+    }
+    if !differing.is_empty() {
+        println!("*** DIFF ***");
+        for (k, v1, v2) in differing.iter() {
+            println!("**** {} ****", k);
+            pretty_outcomes(v1);
+            println!("****");
+            pretty_outcomes(v2);
+        }
+    }
+}
+
+fn diff_cvar(prev: &CharacterVariable, next: &CharacterVariable) -> String {
+    let mut o: Vec<String> = Vec::new();
+    match prev.curendurance.cmp(&next.curendurance) {
+        std::cmp::Ordering::Greater => {
+            o.push(format!("-{}hp", prev.curendurance - next.curendurance));
+        }
+        std::cmp::Ordering::Less => {
+            o.push(format!("+{}hp", next.curendurance - prev.curendurance));
+        }
+        _ => (),
+    }
+    for i in &Item::VALUES {
+        let pq = prev.cequipment.get_item_count(i);
+        let nq = next.cequipment.get_item_count(i);
+        match pq.cmp(&nq) {
+            std::cmp::Ordering::Greater => {
+                let desc = if pq - nq == 1 {
+                    format!("-{:?}", i)
+                } else {
+                    format!("-{}{:?}", pq - nq, i)
+                };
+                o.push(desc);
+            }
+            std::cmp::Ordering::Less => {
+                let desc = if nq - pq == 1 {
+                    format!("+{:?}", i)
+                } else {
+                    format!("+{}{:?}", nq - pq, i)
+                };
+                o.push(desc);
+            }
+            _ => (),
+        }
+    }
+    for f in &Flag::VALUES {
+        if prev.flags.has(*f) && !next.flags.has(*f) {
+            o.push(format!("-{:?}", f));
+        }
+        if !prev.flags.has(*f) && next.flags.has(*f) {
+            o.push(format!("+{:?}", f));
+        }
+    }
+    o.join(" ")
 }
 
 fn main() {
@@ -380,9 +558,38 @@ fn main() {
             let soldump = load_soldump(&opt.solpath);
             for (ns, sol) in &soldump.content {
                 if ns.chapter() == Some(*cid) {
-                    println!("{} -> {:?}", ns, sol);
+                    match (ns, sol) {
+                        (
+                            NextStep::NewChapter(_, pcvar),
+                            ChoppedSolution::CJump(sc, NextStep::NewChapter(nid, ncvar)),
+                        ) => println!(
+                            "{} -> JUMP {:.2}% ch:{} {}",
+                            ns,
+                            sc.to_f64() * 100.0,
+                            nid,
+                            &diff_cvar(pcvar, ncvar)
+                        ),
+                        _ => println!("{} -> {:?}", ns, sol),
+                    }
                 }
             }
+        }
+        Some(Subcommand::CompareStates { cid, otherpath }) => {
+            let dump1 = load_soldump(&opt.solpath);
+            println!("S1: {:?}", dump1.soldesc);
+            let sols1: HashMap<NextStep, ChoppedSolution<NextStep>> = dump1
+                .content
+                .into_iter()
+                .filter(|(ns, _)| ns.chapter() == Some(*cid))
+                .collect();
+            let dump2 = load_soldump(otherpath);
+            println!("S2: {:?}", dump2.soldesc);
+            let sols2: HashMap<NextStep, ChoppedSolution<NextStep>> = dump2
+                .content
+                .into_iter()
+                .filter(|(ns, _)| ns.chapter() == Some(*cid))
+                .collect();
+            compare_sols(sols1, sols2)
         }
         Some(Subcommand::Soldump(cnt)) => {
             let (iitems, iflags) = get_boundary(cnt.bookid);
@@ -435,7 +642,7 @@ fn main() {
             let fl = File::open(&cnt.bookpath).unwrap();
             let book: Vec<(ChapterId, Chapter)> = serde_json::from_reader(fl).unwrap();
             let sol = solve_lws(
-                |e, f| score_with(&mscoremap, &iitems, &iflags, e, f),
+                |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f),
                 &fchapters,
                 &book,
                 &soldesc.ccst,

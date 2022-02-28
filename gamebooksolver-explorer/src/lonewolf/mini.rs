@@ -618,6 +618,26 @@ impl<'de> Visitor<'de> for ItemVisitor {
     formatter.write_str("an item")
   }
 
+  fn visit_map<A: serde::de::MapAccess<'de>>(self, omap: A) -> Result<Item, A::Error> {
+    let mut mmap = omap;
+    let mk: Option<String> = mmap.next_key()?;
+    let key = mk.unwrap();
+    if key != "Weapon" {
+      return Err(serde::de::Error::invalid_value(
+        serde::de::Unexpected::Str(&key),
+        &self,
+      ));
+    }
+    let v: String = mmap.next_value()?;
+    match v.parse() {
+      Ok(d) => Ok(d),
+      _ => Err(serde::de::Error::invalid_value(
+        serde::de::Unexpected::Str(&v),
+        &self,
+      )),
+    }
+  }
+
   fn visit_str<E>(self, s: &str) -> Result<Item, E>
   where
     E: serde::de::Error,
@@ -637,7 +657,7 @@ impl<'de> Deserialize<'de> for Item {
   where
     D: Deserializer<'de>,
   {
-    deserializer.deserialize_string(ItemVisitor)
+    deserializer.deserialize_any(ItemVisitor)
   }
 }
 
@@ -730,7 +750,7 @@ impl Encode for Item {
 }
 
 impl Item {
-  const VALUES: [Item; 48] = [
+  pub const VALUES: [Item; 48] = [
     Item::Backpack,
     Item::StrengthPotion4,
     Item::Shield,
@@ -896,6 +916,26 @@ impl<'de> Visitor<'de> for DisciplineVisitor {
       )),
     }
   }
+
+  fn visit_map<A: serde::de::MapAccess<'de>>(self, omap: A) -> Result<Discipline, A::Error> {
+    let mut mmap = omap;
+    let mk: Option<String> = mmap.next_key()?;
+    let key = mk.unwrap();
+    if key != "WeaponSkill" {
+      return Err(serde::de::Error::invalid_value(
+        serde::de::Unexpected::Str(&key),
+        &self,
+      ));
+    }
+    let v: String = mmap.next_value()?;
+    match v.parse() {
+      Ok(d) => Ok(d),
+      _ => Err(serde::de::Error::invalid_value(
+        serde::de::Unexpected::Str(&v),
+        &self,
+      )),
+    }
+  }
 }
 
 impl<'de> Deserialize<'de> for Discipline {
@@ -903,7 +943,7 @@ impl<'de> Deserialize<'de> for Discipline {
   where
     D: Deserializer<'de>,
   {
-    deserializer.deserialize_string(DisciplineVisitor)
+    deserializer.deserialize_any(DisciplineVisitor)
   }
 }
 
@@ -1098,6 +1138,29 @@ pub enum Flag {
   PermanentSkillReduction2 = 15,
   HelmetIsSilver = 16,
   PotentStrengthPotionActive = 17,
+}
+
+impl Flag {
+  pub const VALUES: [Flag; 18] = [
+    Flag::PermanentSkillReduction,
+    Flag::StrengthPotionActive,
+    Flag::FoughtElix,
+    Flag::LimbDeath,
+    Flag::ReceivedCrystalStarPendant,
+    Flag::Knowledge01,
+    Flag::Knowledge02,
+    Flag::Knowledge03,
+    Flag::Knowledge04,
+    Flag::Special01,
+    Flag::Special02,
+    Flag::Special03,
+    Flag::Special04,
+    Flag::Poisonned2,
+    Flag::HadCombat,
+    Flag::PermanentSkillReduction2,
+    Flag::HelmetIsSilver,
+    Flag::PotentStrengthPotionActive,
+  ];
 }
 
 impl std::str::FromStr for Flag {

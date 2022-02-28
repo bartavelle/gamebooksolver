@@ -49,7 +49,7 @@ impl<S> SolNode<S> {
 
 pub type Probably<A> = Vec<(A, Rational)>;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ChoppedSolution<State> {
     CNode(Rational, Probably<Option<State>>),
     CJump(Rational, State),

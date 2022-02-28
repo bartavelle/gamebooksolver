@@ -83,6 +83,7 @@ updateSimple cconstant cvariable soutcome =
 update :: CharacterConstant -> CharacterVariable -> ChapterId -> ChapterOutcome -> Probably NextStep
 update cconstant cvariable cid outcome =
   case outcome of
+    _ | cvariable ^. curendurance <= 0 -> certain (HasLost cid)
     Goto cid'
       | cid < maxchapter && hasFlag Poisonned2 cvariable ->
         let nvariable = updateSimple cconstant cvariable (DamagePlayer 2)
@@ -109,29 +110,39 @@ update cconstant cvariable cid outcome =
           oploss = fd ^. fendurance - ophp
           tgt
             | lwloss > oploss = lose
-            | lwloss < oploss = eq
-            | otherwise = win
-      fmap (* p) <$> update cconstant (cvariable & curendurance .~ lwhp & flag StrengthPotionActive .~ False & flag PotentStrengthPotionActive .~ False) cid tgt
+            | lwloss < oploss = win
+            | otherwise = eq
+      fmap (* p)
+        <$> update
+          cconstant
+          ( cvariable
+              & curendurance .~ lwhp
+              & flag StrengthPotionActive .~ False
+              & flag PotentStrengthPotionActive .~ False
+              & flag HadCombat .~ True
+          )
+          cid
+          tgt
     Fight fd nxt -> regroup $ do
-        (echarendurance, p) <- fight cconstant cvariable fd
-        let (noutcome, charendurance) = case echarendurance of
-              HasEscaped ecid n -> (Goto ecid, n)
-              LateWin ecid n -> (Goto ecid, n)
-              NotEscaped n -> (nxt, n)
-              Lost lostchapter -> (Goto lostchapter, 1)
-              Stopped ecid n -> (Goto ecid, n)
-            -- desactivate potion at the end of the fights
-            cvariable_popo = if has (fightMod . traverse . _MultiFight) fd then cvariable else cvariable & flag StrengthPotionActive .~ False & flag PotentStrengthPotionActive .~ False
-            cvariable' = cvariable_popo & flag HadCombat .~ True
-        case fd ^? fightMod . traverse . _FakeFight of
-          Nothing ->
-            if charendurance <= 0
-              then [(HasLost cid, p)]
-              else fmap (* p) <$> update cconstant (cvariable' & curendurance .~ charendurance) cid noutcome
-          Just cid' ->
-            if charendurance <= 0
-              then [(NewChapter cid' (cvariable & flag HadCombat .~ False), p)]
-              else fmap (* p) <$> update cconstant cvariable' cid noutcome
+      (echarendurance, p) <- fight cconstant cvariable fd
+      let (noutcome, charendurance) = case echarendurance of
+            HasEscaped ecid n -> (Goto ecid, n)
+            LateWin ecid n -> (Goto ecid, n)
+            NotEscaped n -> (nxt, n)
+            Lost lostchapter -> (Goto lostchapter, 1)
+            Stopped ecid n -> (Goto ecid, n)
+          -- desactivate potion at the end of the fights
+          cvariable_popo = if has (fightMod . traverse . _MultiFight) fd then cvariable else cvariable & flag StrengthPotionActive .~ False & flag PotentStrengthPotionActive .~ False
+          cvariable' = cvariable_popo & flag HadCombat .~ True
+      case fd ^? fightMod . traverse . _FakeFight of
+        Nothing ->
+          if charendurance <= 0
+            then [(HasLost cid, p)]
+            else fmap (* p) <$> update cconstant (cvariable' & curendurance .~ charendurance) cid noutcome
+        Just cid' ->
+          if charendurance <= 0
+            then [(NewChapter cid' (cvariable & flag HadCombat .~ False), p)]
+            else fmap (* p) <$> update cconstant cvariable' cid noutcome
   where
     maxchapter = if _bookid cconstant == Book05 then 400 else 350
 

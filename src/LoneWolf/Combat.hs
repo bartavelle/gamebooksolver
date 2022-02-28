@@ -2,13 +2,14 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module LoneWolf.Combat (fight, getRatio, Escaped (..), winchance, expectedEndurance, fightRound) where
+module LoneWolf.Combat (fight, getRatio, Escaped (..), winchance, expectedEndurance, fightRound, rustResult) where
 
 import Control.Lens
 import qualified Data.Function.Memoize as M
 import Data.Maybe (mapMaybe)
 import qualified Data.MemoCombinators as Memo
 import Data.Monoid (Sum (Sum, getSum))
+import Data.Ratio (denominator, numerator)
 import qualified Data.Set as S
 import LoneWolf.Chapter
 import LoneWolf.Character
@@ -170,8 +171,9 @@ fightRound' :: CombatInfo -> Probably (Endurance, Endurance)
 fightRound' cinfo = regroup $ do
   let ratio = getRatio' cinfo
       modifiers = map getTimed (_modifiers cinfo)
+      dpr = getSum (cinfo ^. cmodifiers . folded . _DPR . to Sum)
   (rdmgOpponent, odmgLoneWolf) <- hits ratio
-  let odmgOpponent = rdmgOpponent + getSum (cinfo ^. cmodifiers . folded . _DPR . to Sum)
+  let odmgOpponent = rdmgOpponent + dpr
   let dmgLoneWolf
         | PlayerInvulnerable `elem` modifiers = 0
         | (EnemyMindblast `elem` modifiers && MindShield `notElem` _discs cinfo) || ForceEMindblast `elem` modifiers = odmgLoneWolf + 2
@@ -257,3 +259,17 @@ getRatio cconstant cvariable fdetails = getRatio' (mkCombatInfo cconstant cvaria
 
 fightRound :: CharacterConstant -> CharacterVariable -> FightDetails -> Probably (Endurance, Endurance)
 fightRound cconstant cvariable fdetails = fightRound' (mkCombatInfo cconstant cvariable fdetails)
+
+rustResult :: Probably (Escaped Endurance) -> [String]
+rustResult = map format
+  where
+    format (c, r) =
+      "Proba {v: " ++ showC c
+        ++ ", p: Rational::from(("
+        ++ show (numerator r)
+        ++ ", "
+        ++ show (denominator r)
+        ++ "))},"
+    showC (NotEscaped (Endurance e)) = "Escaped::Std(Endurance(" ++ show e ++ "))"
+    showC (HasEscaped d (Endurance e)) = "Escaped::Escaped(" ++ show d ++ ", Endurance(" ++ show e ++ "))"
+    showC x = error (show x)

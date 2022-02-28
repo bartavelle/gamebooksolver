@@ -9,7 +9,7 @@ hits ratio = hits' nratio
     nratio
       | ratio < -10 = -6
       | ratio > 10 = 6
-      | ratio < 0 = (ratio - 1) `div` 2
+      | ratio < 0 = ratio `div` 2
       | otherwise = (ratio + 1) `div` 2
     hits' (-6) = [(0, 100), (0, 100), (0, 8), (0, 8), (1, 7), (2, 6), (3, 5), (4, 4), (5, 3), (6, 0)]
     hits' (-5) = [(0, 100), (0, 8), (0, 7), (1, 7), (2, 6), (3, 6), (4, 5), (5, 4), (6, 3), (7, 0)]

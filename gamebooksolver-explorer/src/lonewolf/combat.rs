@@ -8,6 +8,7 @@ use crate::{
 };
 use hits::hits;
 use rug::Rational;
+use std::collections::HashSet;
 use std::hash::Hash;
 
 const RFLAGS: Flags = Flags(0)
@@ -105,6 +106,10 @@ fn fight_vanilla(
 }
 
 impl CombatInfo {
+  pub fn curmodifiers(&self) -> HashSet<&FightModifier> {
+    self.modifiers.iter().filter_map(get_timed).collect()
+  }
+
   pub fn make(
     cconstant: &CharacterConstant,
     cvariable: &CharacterVariable,
@@ -145,7 +150,16 @@ impl CombatInfo {
 
   pub fn get_ratio(&self) -> CombatSkill {
     let mut o = self.skilldiff;
-    if self.modifiers.contains(&FightModifier::BareHanded) || self.weapons.is_empty() {
+    let modifiers = self.curmodifiers();
+    let combat_bonus: i8 = modifiers
+      .iter()
+      .filter_map(|m| match m {
+        FightModifier::CombatBonus(d) => Some(d.0),
+        _ => None,
+      })
+      .sum();
+    o += combat_bonus;
+    if modifiers.contains(&FightModifier::BareHanded) || self.weapons.is_empty() {
       o -= 4;
     } else if self.weapons.contains(&Weapon::Sommerswerd) {
       if let Some(w) = self.specialization {
@@ -164,7 +178,7 @@ impl CombatInfo {
         o += 2
       }
     }
-    if self.mindblast && !self.modifiers.contains(&FightModifier::MindblastImmune) {
+    if self.mindblast && !modifiers.contains(&FightModifier::MindblastImmune) {
       o += 2;
     }
     if self.shield && !self.cflags.has(Flag::LimbDeath) {
@@ -194,7 +208,7 @@ impl CombatInfo {
 
   pub fn fight_round(&self) -> Outcome<(Endurance, Endurance)> {
     let ratio = self.get_ratio();
-    let modifiers: Vec<FightModifier> = self.modifiers.iter().map(get_timed).cloned().collect();
+    let modifiers = self.curmodifiers();
     let mut o: Outcome<(Endurance, Endurance)> = Vec::new();
     for dmg in hits(ratio.0) {
       let odmg_opponent: u8 = dmg.op
@@ -265,7 +279,7 @@ impl CombatInfo {
       notyetwon: None,
     };
 
-    for m in &self.modifiers {
+    for m in &self.curmodifiers() {
       match m {
         FightModifier::OnLose(cid) => fightmodifiers.onlose = Some(*cid),
         FightModifier::StopFight(cid) => fightmodifiers.stop_fight = Some(*cid),
@@ -481,10 +495,13 @@ fn decrement_timed(m: FightModifier) -> Option<FightModifier> {
   }
 }
 
-fn get_timed(m: &FightModifier) -> &FightModifier {
+fn get_timed(m: &FightModifier) -> Option<&FightModifier> {
   match m {
-    FightModifier::Timed(_, x) => x,
-    _ => m,
+    FightModifier::Timed(_, x) => match x.as_ref() {
+      FightModifier::Evaded(_) => None,
+      _ => Some(x),
+    },
+    _ => Some(m),
   }
 }
 
@@ -547,6 +564,16 @@ mod test {
     assert_eq!(cinfo.get_ratio(), CombatSkill(-17));
   }
   #[test]
+  fn ratio_timed_no_weapons_special() {
+    let mut combat = mk_def_combat();
+    combat
+      .fight_mod
+      .push(FightModifier::Timed(2, Box::new(FightModifier::BareHanded)));
+
+    let cinfo = CombatInfo::make(&DEFCSTT, &DEFCVAR, &combat);
+    assert_eq!(cinfo.get_ratio(), CombatSkill(-17));
+  }
+  #[test]
   fn ratio_good_weapon() {
     let mut cstt = DEFCSTT.clone();
     cstt
@@ -602,7 +629,10 @@ mod test {
 
   #[test]
   fn fight_round() {
-    let cinfo = CombatInfo::make(&DEFCSTT, &DEFCVAR, &mk_def_combat());
+    let mut defcmb = mk_def_combat();
+    let cinfo = CombatInfo::make(&DEFCSTT, &DEFCVAR, &defcmb);
+    defcmb.combat_skill.0 += 1;
+    let cinfob = CombatInfo::make(&DEFCSTT, &DEFCVAR, &defcmb);
     let expected_raw = &[
       ((0, 30), Rational::from((1, 5))),
       ((17, 30), Rational::from((1, 5))),
@@ -621,9 +651,12 @@ mod test {
       })
       .collect();
     let mut actual = cinfo.fight_round();
+    let mut actualb = cinfob.fight_round();
     actual.sort();
+    actualb.sort();
     expected.sort();
     assert_eq!(actual, expected);
+    assert_eq!(actualb, expected);
   }
 
   #[test]
@@ -693,6 +726,273 @@ mod test {
           p: Rational::from((1, *d)),
         })
         .collect();
+    expected.sort();
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn evasion2() {
+    let cinfo = CombatInfo::make(
+      &DEFCSTT,
+      &DEFCVAR,
+      &FightDetails {
+        opponent: "F1".to_string(),
+        combat_skill: CombatSkill(20),
+        endurance: Endurance(20),
+        fight_mod: vec![FightModifier::Timed(
+          2,
+          Box::new(FightModifier::Evaded(ChapterId(88))),
+        )],
+      },
+    );
+    assert_eq!(cinfo.get_ratio(), CombatSkill(-5));
+    let mut memo = Memoz::default();
+    let mut actual = cinfo.fight(&mut memo);
+    actual.sort();
+    let mut expected: Vec<Proba<Escaped<Endurance>>> = [
+      (7, 1, 125),
+      (8, 3, 125),
+      (9, 6, 125),
+      (10, 17, 250),
+      (11, 21, 250),
+      (12, 21, 250),
+      (13, 49, 500),
+      (14, 51, 500),
+      (15, 27, 250),
+      (16, 91, 1000),
+      (17, 81, 1000),
+      (18, 51, 1000),
+      (19, 11, 200),
+      (20, 9, 250),
+      (21, 3, 100),
+      (22, 3, 250),
+      (23, 3, 250),
+      (25, 1, 125),
+    ]
+    .iter()
+    .map(|(e, n, d)| Proba {
+      v: Escaped::Escaped(ChapterId(88), Endurance(*e)),
+      p: Rational::from((*n, *d)),
+    })
+    .collect();
+    expected.sort();
+    assert_eq!(actual, expected);
+  }
+
+  fn quick_combatinfo(
+    lwe: i8,
+    lws: u8,
+    ope: i8,
+    ops: i8,
+    lwitems: &[Item],
+    lwdisc: &[Discipline],
+    mods: &[FightModifier],
+  ) -> CombatInfo {
+    let ccst = CharacterConstant {
+      bookid: Book::Book04,
+      maxendurance: 20,
+      combat_skill: lws,
+      discipline: lwdisc.iter().copied().collect(),
+    };
+    let mut cvar = CharacterVariable::new(lwe);
+    for i in lwitems {
+      cvar.add_item(i, 1);
+    }
+    let fd = FightDetails {
+      opponent: String::new(),
+      combat_skill: CombatSkill(ops),
+      endurance: Endurance(ope),
+      fight_mod: mods.to_vec(),
+    };
+    CombatInfo::make(&ccst, &cvar, &fd)
+  }
+
+  fn quick_combat(
+    lwe: i8,
+    lws: u8,
+    ope: i8,
+    ops: i8,
+    lwitems: &[Item],
+    lwdisc: &[Discipline],
+    mods: &[FightModifier],
+  ) -> Outcome<Escaped<Endurance>> {
+    let cinfo = quick_combatinfo(lwe, lws, ope, ops, lwitems, lwdisc, mods);
+    let mut memo = Memoz::default();
+    let mut actual = cinfo.fight(&mut memo);
+    actual.sort();
+    actual
+  }
+
+  #[test]
+  fn timed_invulnerability() {
+    let actual = quick_combat(
+      5,
+      15,
+      20,
+      20,
+      &[Item::Weapon(Weapon::Sword)],
+      &[],
+      &[FightModifier::Timed(
+        2,
+        Box::new(FightModifier::PlayerInvulnerable),
+      )],
+    );
+    let mut expected: Outcome<Escaped<Endurance>> = vec![
+      Proba {
+        v: Escaped::Std(Endurance(0)),
+        p: Rational::from((18873, 25000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(1)),
+        p: Rational::from((3457, 50000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(2)),
+        p: Rational::from((4009, 100000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(3)),
+        p: Rational::from((933, 20000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(5)),
+        p: Rational::from((223, 2500)),
+      },
+    ];
+    expected.sort();
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn easy_fight() {
+    let actual1 = quick_combat(5, 15, 20, 5, &[Item::Weapon(Weapon::Sword)], &[], &[]);
+    let actual2 = quick_combat(5, 15, 20, 6, &[Item::Weapon(Weapon::Sword)], &[], &[]);
+    let mut expected: Outcome<Escaped<Endurance>> = vec![
+      Proba {
+        v: Escaped::Std(Endurance(0)),
+        p: Rational::from((4, 25)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(1)),
+        p: Rational::from((13, 100)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(2)),
+        p: Rational::from((9, 50)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(3)),
+        p: Rational::from((19, 100)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(4)),
+        p: Rational::from((3, 50)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(5)),
+        p: Rational::from((7, 25)),
+      },
+    ];
+    expected.sort();
+    assert_eq!(actual1, expected);
+    assert_eq!(actual2, expected);
+  }
+
+  #[test]
+  fn timed_barehanded() {
+    let actual = quick_combat(
+      18,
+      10,
+      26,
+      17,
+      &[Item::Weapon(Weapon::Sword), Item::Shield, Item::BodyArmor],
+      &[
+        Discipline::MindBlast,
+        Discipline::WeaponSkill(Weapon::Sword),
+      ],
+      &[FightModifier::Timed(
+        2,
+        Box::new(FightModifier::CombatBonus(CombatSkill(-4))),
+      )],
+    );
+    let mut expected: Outcome<Escaped<Endurance>> = vec![
+      Proba {
+        v: Escaped::Std(Endurance(0)),
+        p: Rational::from((320017, 1000000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(1)),
+        p: Rational::from((52671, 1000000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(2)),
+        p: Rational::from((37463, 500000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(3)),
+        p: Rational::from((7801, 100000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(4)),
+        p: Rational::from((16839, 250000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(5)),
+        p: Rational::from((211, 4000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(6)),
+        p: Rational::from((383, 10000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(7)),
+        p: Rational::from((219, 6250)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(8)),
+        p: Rational::from((2389, 50000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(9)),
+        p: Rational::from((1137, 20000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(10)),
+        p: Rational::from((667, 12500)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(11)),
+        p: Rational::from((493, 12500)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(12)),
+        p: Rational::from((291, 10000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(13)),
+        p: Rational::from((7, 400)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(14)),
+        p: Rational::from((109, 10000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(15)),
+        p: Rational::from((59, 10000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(16)),
+        p: Rational::from((89, 10000)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(17)),
+        p: Rational::from((2, 625)),
+      },
+      Proba {
+        v: Escaped::Std(Endurance(18)),
+        p: Rational::from((1, 125)),
+      },
+    ];
     expected.sort();
     assert_eq!(actual, expected);
   }

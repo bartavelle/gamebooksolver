@@ -77,8 +77,15 @@ pub fn update(
   cid: ChapterId,
   outcome: &ChapterOutcome,
 ) -> Outcome<NextStep> {
+  if cvar.curendurance <= 0 {
+    return vec![Proba::certain(NextStep::HasLost(cid.0))];
+  }
   match outcome {
     ChapterOutcome::Goto(cid2) => {
+      // must be checked before healing
+      if cvar.curendurance <= 0 {
+        return vec![Proba::certain(NextStep::HasLost(cid.0))];
+      }
       let max_chapter = ChapterId(if ccst.bookid == Book::Book05 {
         400
       } else {
@@ -145,10 +152,11 @@ pub fn update(
           nv.curendurance = r.v.0 .0;
           nv.flags.unset(Flag::StrengthPotionActive);
           nv.flags.unset(Flag::PotentStrengthPotionActive);
+          nv.flags.set(Flag::HadCombat);
           let nxt = match lwloss.cmp(&oploss) {
             std::cmp::Ordering::Greater => lose,
-            std::cmp::Ordering::Less => win,
             std::cmp::Ordering::Equal => eq,
+            std::cmp::Ordering::Less => win,
           };
           update(memo, ccst, &nv, cid, nxt)
             .into_iter()
@@ -230,7 +238,7 @@ pub fn update(
 #[cfg(test)]
 mod test {
   use super::*;
-  use crate::{CombatSkill, FightDetails};
+  use crate::{CombatSkill, FightDetails, Weapon};
   use rug::Rational;
 
   #[test]
@@ -291,6 +299,60 @@ mod test {
         },
       })
       .collect();
+    expected.sort();
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn oneround() {
+    let mut memo = Memoz::default();
+    let ccst = CharacterConstant {
+      bookid: Book::Book04,
+      combat_skill: 10,
+      maxendurance: 20,
+      discipline: vec![
+        Discipline::WeaponSkill(Weapon::Sword),
+        Discipline::MindBlast,
+      ],
+    };
+    let mut cvar = CharacterVariable::new(20);
+    cvar.add_item(&Item::Weapon(Weapon::Sword), 1);
+    cvar.add_item(&Item::Shield, 1);
+    let duel = ChapterOutcome::OneRound(
+      FightDetails {
+        combat_skill: CombatSkill(20),
+        endurance: Endurance(26),
+        fight_mod: Vec::new(),
+        opponent: String::new(),
+      },
+      Box::new(ChapterOutcome::Goto(ChapterId(1))),
+      Box::new(ChapterOutcome::Goto(ChapterId(2))),
+      Box::new(ChapterOutcome::Goto(ChapterId(3))),
+    );
+    let mut actual = optimize_outcome(
+      update(&mut memo, &ccst, &cvar, ChapterId(50), &duel)
+        .into_iter()
+        .map(|r| Proba {
+          p: r.p,
+          v: r.v.chapter(),
+        })
+        .collect(),
+    );
+    actual.sort();
+    let mut expected = vec![
+      Proba {
+        v: Some(1),
+        p: Rational::from((3, 10)),
+      },
+      Proba {
+        v: Some(2),
+        p: Rational::from((1, 10)),
+      },
+      Proba {
+        v: Some(3),
+        p: Rational::from((6, 10)),
+      },
+    ];
     expected.sort();
     assert_eq!(actual, expected);
   }

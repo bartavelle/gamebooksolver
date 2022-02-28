@@ -4,7 +4,6 @@ module Main where
 
 import Control.Lens hiding (elements)
 import Control.Monad
-import Data.Aeson (decode, encode)
 import qualified Data.IntMap.Strict as IM
 import qualified Data.Map.Strict as M
 import Data.Ratio
@@ -14,7 +13,6 @@ import LoneWolf.Chapter
 import LoneWolf.Character
 import LoneWolf.Choices (flattenDecision)
 import LoneWolf.Combat
-import LoneWolf.Data
 import LoneWolf.Rules (NextStep (..))
 import LoneWolf.Simplify (extractMultiFight)
 import LoneWolf.Solve
@@ -121,6 +119,7 @@ main = hspec $ do
     it "default combat" $ getRatio defConstant defVariable defCombat `shouldBe` -13
     it "no weapons (normal)" $ getRatio defConstant (defVariable & equipment %~ delItem (Weapon BroadSword) 1) defCombat `shouldBe` -17
     it "no weapons (special)" $ getRatio defConstant defVariable (defCombat & fightMod .~ [BareHanded]) `shouldBe` -17
+    it "no weapons (timed, special)" $ getRatio defConstant defVariable (defCombat & fightMod .~ [Timed 2 BareHanded]) `shouldBe` -17
     it "good weapon" $ getRatio (defConstant & discipline .~ [WeaponSkill BroadSword]) defVariable defCombat `shouldBe` -11
     it "mindblast" $ getRatio (defConstant & discipline .~ [MindBlast]) defVariable defCombat `shouldBe` -11
     it "mindblast (countered)" $ getRatio (defConstant & discipline .~ [MindBlast]) defVariable (defCombat & fightMod .~ [MindblastImmune]) `shouldBe` -13
@@ -215,17 +214,94 @@ main = hspec $ do
     it "Properly flattened" $ do
       flattenDecision id cconst scvar (fdesc 0) `shouldBe` [(["no evasion"], Fight rawfd (Goto 2)), (["evasion"], Fight (FightDetails "F1" 20 20 [Evaded 88]) (Goto 2))]
       flattenDecision id cconst scvar (fdesc 2) `shouldBe` [(["no evasion"], Fight rawfd (Goto 2)), (["evasion"], Fight (FightDetails "F1" 20 20 [Timed 2 (Evaded 88)]) (Goto 2))]
-    it "Fight result" $ do
+    it "Fight result (directly evaded)" $ do
       let fd = FightDetails "F1" 20 20 [Evaded 88]
       getRatio cconst scvar fd `shouldBe` (-5)
-      fight cconst scvar fd
-        `shouldBe` [ (HasEscaped 88 19, 1 % 5),
-                     (HasEscaped 88 20, 1 % 5),
-                     (HasEscaped 88 21, 1 % 5),
-                     (HasEscaped 88 22, 1 % 10),
-                     (HasEscaped 88 23, 1 % 10),
-                     (HasEscaped 88 25, 1 % 5)
-                   ]
+      S.fromList (fight cconst scvar fd)
+        `shouldBe` S.fromList
+          [ (HasEscaped 88 19, 1 % 5),
+            (HasEscaped 88 20, 1 % 5),
+            (HasEscaped 88 21, 1 % 5),
+            (HasEscaped 88 22, 1 % 10),
+            (HasEscaped 88 23, 1 % 10),
+            (HasEscaped 88 25, 1 % 5)
+          ]
+    it "Fight result (evaded 2)" $ do
+      let fd = FightDetails "F2" 20 20 [Timed 2 (Evaded 88)]
+      getRatio cconst scvar fd `shouldBe` (-5)
+      S.fromList (fight cconst scvar fd)
+        `shouldBe` S.fromList
+          [ (HasEscaped 88 7, 1 % 125),
+            (HasEscaped 88 8, 3 % 125),
+            (HasEscaped 88 9, 6 % 125),
+            (HasEscaped 88 10, 17 % 250),
+            (HasEscaped 88 11, 21 % 250),
+            (HasEscaped 88 12, 21 % 250),
+            (HasEscaped 88 13, 49 % 500),
+            (HasEscaped 88 14, 51 % 500),
+            (HasEscaped 88 15, 27 % 250),
+            (HasEscaped 88 16, 91 % 1000),
+            (HasEscaped 88 17, 81 % 1000),
+            (HasEscaped 88 18, 51 % 1000),
+            (HasEscaped 88 19, 11 % 200),
+            (HasEscaped 88 20, 9 % 250),
+            (HasEscaped 88 21, 3 % 100),
+            (HasEscaped 88 22, 3 % 250),
+            (HasEscaped 88 23, 3 % 250),
+            (HasEscaped 88 25, 1 % 125)
+          ]
+    it "Fight result (evaded 2')" $ do
+      let fd = FightDetails "F2" 21 20 [Timed 2 (Evaded 88)]
+      getRatio cconst scvar fd `shouldBe` (-6)
+      S.fromList (fight cconst scvar fd)
+        `shouldBe` S.fromList
+          [ (HasEscaped 88 7, 1 % 125),
+            (HasEscaped 88 8, 3 % 125),
+            (HasEscaped 88 9, 6 % 125),
+            (HasEscaped 88 10, 17 % 250),
+            (HasEscaped 88 11, 21 % 250),
+            (HasEscaped 88 12, 21 % 250),
+            (HasEscaped 88 13, 49 % 500),
+            (HasEscaped 88 14, 51 % 500),
+            (HasEscaped 88 15, 27 % 250),
+            (HasEscaped 88 16, 91 % 1000),
+            (HasEscaped 88 17, 81 % 1000),
+            (HasEscaped 88 18, 51 % 1000),
+            (HasEscaped 88 19, 11 % 200),
+            (HasEscaped 88 20, 9 % 250),
+            (HasEscaped 88 21, 3 % 100),
+            (HasEscaped 88 22, 3 % 250),
+            (HasEscaped 88 23, 3 % 250),
+            (HasEscaped 88 25, 1 % 125)
+          ]
+    it "Fight result (hard)" $ do
+      let fd = FightDetails "Vassaginian Captain" 22 28 [MindblastImmune, EnemyMindblast]
+      let tccst =
+            CharacterConstant 20 10 [WeaponSkill Sword, MindShield, MindBlast] Book04
+      let tcvar =
+            CharacterVariable
+              8
+              0
+              ( inventoryFromList
+                  [ (Shield, 1),
+                    (BodyArmor, 1),
+                    (Weapon Dagger, 1),
+                    (Weapon Sword, 1)
+                  ]
+              )
+              (Inventory 0)
+      getRatio tccst tcvar fd `shouldBe` (-8)
+      S.fromList (fight tccst tcvar fd)
+        `shouldBe` S.fromList
+          [ (NotEscaped 0, 49627 % 50000),
+            (NotEscaped 1, 41 % 25000),
+            (NotEscaped 2, 57 % 25000),
+            (NotEscaped 3, 41 % 25000),
+            (NotEscaped 4, 1 % 1000),
+            (NotEscaped 5, 1 % 2500),
+            (NotEscaped 6, 1 % 2500),
+            (NotEscaped 8, 1 % 10000)
+          ]
     it "Ratio" $ getRatio cconst scvar rawfd `shouldBe` (-5)
     it "Escapes after a round" $ do
       let r = stepper 1
@@ -241,9 +317,7 @@ main = hspec $ do
   describe "Fight round" $ do
     it "Standard fight" $ do
       let r = fightRound defConstant defVariable defCombat
-      S.fromList r `shouldBe` S.fromList [((0, 30), 1 % 5), ((17, 30), 1 % 5), ((18, 29), 1 % 10), ((19, 28), 1 % 10), ((20, 27), 1 % 10), ((21, 26), 1 % 10), ((22, 25), 1 % 10), ((25, 24), 1 % 10)]
-  describe "Histostats" $ do
-    it "Encode/decode" $ do
-      let d1 :: DecisionStat
-          d1 = DecisionStat (singletonbag 45) (singletonbag 3) (singletonbag 8) (singletonbag (GoldWin 3 4)) (singletonbag 8)
-      decode (encode d1) `shouldBe` Just d1
+          rb = fightRound defConstant defVariable (defCombat & fcombatSkill %~ (+ 1))
+          expected = S.fromList [((0, 30), 1 % 5), ((17, 30), 1 % 5), ((18, 29), 1 % 10), ((19, 28), 1 % 10), ((20, 27), 1 % 10), ((21, 26), 1 % 10), ((22, 25), 1 % 10), ((25, 24), 1 % 10)]
+      S.fromList r `shouldBe` expected
+      S.fromList rb `shouldBe` expected

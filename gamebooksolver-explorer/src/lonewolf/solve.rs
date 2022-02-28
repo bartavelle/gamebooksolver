@@ -162,10 +162,7 @@ mod test {
 
     assert_eq!(
       c1,
-      &SolNode::Chosen(
-        Rational::from(1),
-        vec![Proba::certain(NextStep::NewChapter(2, nvar))]
-      )
+      &SolNode::Single(Rational::from(1), NextStep::NewChapter(2, nvar))
     )
   }
 }

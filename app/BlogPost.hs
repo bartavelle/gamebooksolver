@@ -308,7 +308,10 @@ fmtbl :: Rational -> (Html (), Double)
 fmtbl = fmtb . (== 1)
 
 fmtq :: Rational -> Rational -> (Html (), Double)
-fmtq mx q = (fromString (printf "%.2f" (fromRational @Double q)), fromRational (q / mx))
+fmtq mx q = (fromString (printf "%.2f" (fromRational @Double q)), min 1 (fromRational (q / mx)))
+
+fmtqi :: Rational -> Rational -> (Html (), Double)
+fmtqi mx q = (fromString (printf "%d" (truncate @Rational @Int q)), min 1 (fromRational (q / mx)))
 
 getallflags :: Flags -> [Flag]
 getallflags flgs = filter (\f -> view (bitAt (fromEnum f)) flgs) [minBound .. maxBound]
@@ -374,9 +377,9 @@ b04stats astts = do
           ("SS", fmtb . hasitem (Weapon Sommerswerd)),
           ("SH", fmtb . hasflag HelmetIsSilver),
           ("+4", fmtb . hasitem StrengthPotion4),
-          ("BA", fmtb . hasitem BodyArmor),
           ("Fought Elix", fmtr . finalFlag FoughtElix),
           ("Laumspur collect", mvisitrate [12, 268, 302]),
+          ("Final gold", fmtq 50 . finalItem Gold),
           ("End with +2 Strength Potion", fmtr . finalItem StrengthPotion),
           ("End with +4 Strength Potion", fmtr . finalItem StrengthPotion4)
         ]
@@ -390,8 +393,9 @@ b05stats astts = do
           ("SH", fmtb . hasflag HelmetIsSilver),
           ("+4", fmtb . hasitem StrengthPotion4),
           ("BA", fmtb . hasitem BodyArmor),
+          ("GD", fmtqi 15 . itemAt 1 Gold),
+          ("EX", fmtb . hasflag FoughtElix),
           ("Win rate", fmtr . winrate),
-          ("Previously fought the Elix", fmtb . hasflag FoughtElix),
           ("Imprisoned", fmtr . visitrate 69),
           ("Offer Oede", fmtr . visitrate 344),
           ("Prism route", fmtr . finalItem prismB05),
