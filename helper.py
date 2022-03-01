@@ -98,16 +98,14 @@ B03BASE = [
 
 B04OPTIONS = ["Helmet-FLGHelmetIsSilver", "StrengthPotion4"]
 B04BASE = [
-    "-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
-    "-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+    "g0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+    "g0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
 ]
 
 B05OPTIONS = ["Helmet-FLGHelmetIsSilver", "StrengthPotion4", "FLGFoughtElix", "BodyArmor"]
 B05BASE= [
     "-Sword-Meal-Meal-Shield-Laumspur",
     "-Sommerswerd-Meal-Meal-Shield-Laumspur",
-    "g0-Sword-Meal-Meal-Shield-Laumspur",
-    "g0-Sommerswerd-Meal-Meal-Shield-Laumspur",
 ]
 
 def combinations(l: List[str], acc: List[str]) -> Iterator[List[str]]:

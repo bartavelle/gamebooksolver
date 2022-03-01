@@ -213,7 +213,7 @@ data DotInfo = DExpectedAmount Item | DHasItem Item | DHasFlag Flag | BackpackSi
 bookDinfo :: Book -> [DotInfo]
 bookDinfo b = case b of
   Book04 -> BackpackSize : map DHasItem [StrengthPotion, StrengthPotion4, torchB04, pickAB04, pickBB04, ropeB04, Potion2Hp, Potion4Hp, Potion5Hp, Potion6Hp] ++ [DExpectedAmount Laumspur]
-  Book05 -> [DHasFlag LimbDeath, DHasItem StrengthPotion4, DHasItem StrengthPotion]
+  Book05 -> DHasFlag LimbDeath : DExpectedAmount Gold : map DHasItem [StrengthPotion4, StrengthPotion, Potion6Hp, Potion4Hp, Potion2Hp]
   _ -> []
 
 mkdot :: DecisionStats Rational -> DotGraph ChapterId

@@ -249,7 +249,6 @@ fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
                 Helmet,
                 BodyArmor,
                 StrengthPotion4,
-                Gold,
             ]
             .into_iter()
             .collect(),

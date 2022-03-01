@@ -169,17 +169,6 @@ instance Traversable P where
 rebagWithItems :: (Ord a) => (Inventory -> a) -> Bagged Inventory -> Bagged a
 rebagWithItems selector = Bagged . M.fromListWith (+) . map (first selector) . M.toList . getBag
 
-main :: IO ()
-main = do
-  Opts book mde <- execParser programOpts
-  dt <- loadData book
-  case mde of
-    ChapterStats -> case book of
-      Book03 -> print (b03stats dt)
-      Book04 -> print (b04stats dt)
-      Book05 -> print (b05stats dt)
-      _ -> error ("unsupported book stats for " ++ show book)
-
 winrate :: Stats -> Rational
 winrate = getERatio . _mratio . _sentry
 
@@ -393,15 +382,27 @@ b05stats astts = do
           ("SH", fmtb . hasflag HelmetIsSilver),
           ("+4", fmtb . hasitem StrengthPotion4),
           ("BA", fmtb . hasitem BodyArmor),
-          ("GD", fmtqi 15 . itemAt 1 Gold),
           ("EX", fmtb . hasflag FoughtElix),
           ("Win rate", fmtr . winrate),
           ("Imprisoned", fmtr . visitrate 69),
           ("Offer Oede", fmtr . visitrate 344),
-          ("Prism route", fmtr . finalItem prismB05),
-          ("Sash route", fmtr . finalItem sashB05),
-          ("Fight Dhorgaan", fmtr . visitrate 253),
-          ("End with Sommerswerd", fmtr . finalItem (Weapon Sommerswerd))
+          ("Limbdeath", fmtr . visitrate 81),
+          ("Prism", fmtr . finalItem prismB05),
+          ("Sash", fmtr . finalItem sashB05),
+          ("c27 +2HP", fmtr . itemAt 160 Potion2Hp),
+          ("Dhorgaan", fmtr . visitrate 253),
+          ("Keep SS", fmtr . finalItem (Weapon Sommerswerd))
         ]
   blogpostStats astts cols
   finalStateRecap' Book05 astts
+
+main :: IO ()
+main = do
+  Opts book mde <- execParser programOpts
+  dt <- loadData book
+  case mde of
+    ChapterStats -> case book of
+      Book03 -> print (b03stats dt)
+      Book04 -> print (b04stats dt)
+      Book05 -> print (b05stats dt)
+      _ -> error ("unsupported book stats for " ++ show book)
