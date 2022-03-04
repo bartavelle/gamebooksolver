@@ -1,10 +1,12 @@
-use crate::lonewolf::data::Multistat;
-use crate::lonewolf::explore::explore_solution;
-use crate::lonewolf::solve::solve_lws;
-use crate::solver::base::optimize_outcome;
-use crate::solver::base::Proba;
-use crate::solver::base::{ChoppedSolution, SolNode};
-use lonewolf::chapter::*;
+mod lwexplore;
+
+use gamebooksolver_base::lonewolf::chapter::*;
+use gamebooksolver_base::lonewolf::data::Multistat;
+use gamebooksolver_base::lonewolf::solve::solve_lws;
+use gamebooksolver_base::solver::base::optimize_outcome;
+use gamebooksolver_base::solver::base::Proba;
+use gamebooksolver_base::solver::base::{ChoppedSolution, SolNode};
+use lwexplore::explore_solution;
 use rug::Rational;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -13,10 +15,7 @@ use std::io::BufReader;
 use std::io::Write;
 use structopt::StructOpt;
 
-mod lonewolf;
-mod solver;
-
-use lonewolf::mini::{
+use gamebooksolver_base::lonewolf::mini::{
     mkchar, Book, CVarState, CharacterConstant, CharacterVariable, CompactSolution, CompactState,
     Discipline, Equipment, Flag, Flags, Item, NextStep, SolDesc, SolutionDump, Weapon,
 };
@@ -94,14 +93,14 @@ impl Default for ChapterStats {
 
 fn mksol(
     ini: NextStep,
-    sttmap: HashMap<NextStep, ChoppedSolution<NextStep>>,
+    sttmap: HashMap<NextStep, ChoppedSolution<Rational, NextStep>>,
 ) -> HashMap<u16, ChapterStats> {
     type Imap = HashMap<NextStep, HashMap<u16, ChapterStats>>;
     let mut memo: Imap = HashMap::new();
 
     fn go(
         curmap: &mut Imap,
-        searchmap: &HashMap<NextStep, ChoppedSolution<NextStep>>,
+        searchmap: &HashMap<NextStep, ChoppedSolution<Rational, NextStep>>,
         curns: &NextStep,
     ) -> HashMap<u16, ChapterStats> {
         if let Some(e) = curmap.get(curns) {
@@ -198,11 +197,12 @@ fn count_states<A>(cnt: &[(NextStep, A)]) -> HashMap<u16, u64> {
     o
 }
 
-fn decode_buffer<R: std::io::Read>(r: &mut R) -> lonewolf::mini::SolutionDump {
+fn decode_buffer<R: std::io::Read>(
+    r: &mut R,
+) -> gamebooksolver_base::lonewolf::mini::SolutionDump<Rational> {
     let mut buf = Vec::new();
     r.read_to_end(&mut buf).unwrap();
     minicbor::decode(&buf).unwrap()
-    // lonewolf::mini::parse_soldump(&buf).unwrap()
 }
 
 #[derive(serde::Serialize)]
@@ -212,13 +212,13 @@ struct Output {
     sttmap: HashMap<u16, u64>,
 }
 
-fn load_soldump(pth: &str) -> lonewolf::mini::SolutionDump {
+fn load_soldump(pth: &str) -> gamebooksolver_base::lonewolf::mini::SolutionDump<Rational> {
     let file = File::open(pth).unwrap();
     let mut dec = zstd::Decoder::new(file).unwrap();
     decode_buffer(&mut dec)
 }
 
-fn chop_solution(sol: SolNode<NextStep>) -> ChoppedSolution<NextStep> {
+fn chop_solution(sol: SolNode<Rational, NextStep>) -> ChoppedSolution<Rational, NextStep> {
     match sol {
         SolNode::Win(sc) => ChoppedSolution::CLeaf(sc),
         SolNode::Single(sc, u) => ChoppedSolution::CJump(sc, u),
@@ -275,7 +275,7 @@ fn load_results(
             continue;
         }
         let f = File::open(&pth).unwrap();
-        let ms: Multistat = serde_json::de::from_reader(f).unwrap();
+        let ms: Multistat<Rational> = serde_json::de::from_reader(f).unwrap();
         if ms.msentries.len() != 1 {
             eprintln!("invalid amount of entries in {}", pth);
             continue;
@@ -368,8 +368,8 @@ fn score_with(
 }
 
 fn compare_sols(
-    m1: HashMap<NextStep, ChoppedSolution<NextStep>>,
-    m2: HashMap<NextStep, ChoppedSolution<NextStep>>,
+    m1: HashMap<NextStep, ChoppedSolution<Rational, NextStep>>,
+    m2: HashMap<NextStep, ChoppedSolution<Rational, NextStep>>,
 ) {
     type Ocs = Vec<(Rational, NextStep)>;
     fn deloss(chapter: Option<u16>, ns: NextStep) -> NextStep {
@@ -384,11 +384,11 @@ fn compare_sols(
             _ => ns,
         }
     }
-    fn descored(chapter: Option<u16>, cs: ChoppedSolution<NextStep>) -> Ocs {
+    fn descored(chapter: Option<u16>, cs: ChoppedSolution<Rational, NextStep>) -> Ocs {
         match cs {
             ChoppedSolution::CJump(_, ns) => vec![(Rational::from(1), deloss(chapter, ns.clone()))],
             ChoppedSolution::CNode(_, subs) => {
-                let po: Vec<Proba<NextStep>> = subs
+                let po: Vec<Proba<Rational, NextStep>> = subs
                     .into_iter()
                     .filter_map(|(ms, p)| {
                         ms.map(|s| Proba {
@@ -419,14 +419,15 @@ fn compare_sols(
         pretty_outcomes(outcomes);
     }
 
-    let mkmap = |m: HashMap<NextStep, ChoppedSolution<NextStep>>| -> HashMap<NextStep, Ocs> {
-        m.into_iter()
-            .map(|(ns, cs)| {
-                let ch = ns.chapter();
-                (ns, descored(ch, cs))
-            })
-            .collect()
-    };
+    let mkmap =
+        |m: HashMap<NextStep, ChoppedSolution<Rational, NextStep>>| -> HashMap<NextStep, Ocs> {
+            m.into_iter()
+                .map(|(ns, cs)| {
+                    let ch = ns.chapter();
+                    (ns, descored(ch, cs))
+                })
+                .collect()
+        };
 
     let m1_ = mkmap(m1);
     let m2_ = mkmap(m2);
@@ -541,7 +542,7 @@ fn main() {
             eprintln!("Starting condition: {:?} - {}", soldump.soldesc, ini);
             let sttmap = count_states(&soldump.content);
             let bookid = soldump.soldesc.ccst.bookid;
-            let searchmap: HashMap<NextStep, ChoppedSolution<NextStep>> =
+            let searchmap: HashMap<NextStep, ChoppedSolution<Rational, NextStep>> =
                 soldump.content.into_iter().collect();
             eprintln!("{} : {} states", opt.solpath, searchmap.len());
             let res = mksol(ini, searchmap);
@@ -580,7 +581,7 @@ fn main() {
         }
         Some(Subcommand::Explore { bookpath }) => {
             let fl = File::open(&bookpath).unwrap();
-            let book: Vec<(ChapterId, Chapter)> = serde_json::from_reader(fl).unwrap();
+            let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl).unwrap();
             let soldump = load_soldump(&opt.solpath);
             eprintln!("Starting condition: {:?}", soldump.soldesc);
             explore_solution(soldump, &book);
@@ -588,7 +589,7 @@ fn main() {
         Some(Subcommand::LoadChapter) => {
             let file = File::open(opt.solpath.clone()).unwrap();
             let reader = BufReader::new(file);
-            let u: Vec<(ChapterId, Chapter)> = serde_json::from_reader(reader).unwrap();
+            let u: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(reader).unwrap();
             println!("{:?}", u);
         }
         Some(Subcommand::DumpStates { cid }) => {
@@ -630,14 +631,14 @@ fn main() {
         Some(Subcommand::CompareStates { cid, otherpath }) => {
             let dump1 = load_soldump(&opt.solpath);
             println!("S1: {:?}", dump1.soldesc);
-            let sols1: HashMap<NextStep, ChoppedSolution<NextStep>> = dump1
+            let sols1: HashMap<NextStep, ChoppedSolution<Rational, NextStep>> = dump1
                 .content
                 .into_iter()
                 .filter(|(ns, _)| ns.chapter() == Some(*cid))
                 .collect();
             let dump2 = load_soldump(otherpath);
             println!("S2: {:?}", dump2.soldesc);
-            let sols2: HashMap<NextStep, ChoppedSolution<NextStep>> = dump2
+            let sols2: HashMap<NextStep, ChoppedSolution<Rational, NextStep>> = dump2
                 .content
                 .into_iter()
                 .filter(|(ns, _)| ns.chapter() == Some(*cid))
@@ -693,7 +694,7 @@ fn main() {
             let cvar = soldesc.cvariable();
             eprintln!("ini: {:?}", cvar);
             let fl = File::open(&cnt.bookpath).unwrap();
-            let book: Vec<(ChapterId, Chapter)> = serde_json::from_reader(fl).unwrap();
+            let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl).unwrap();
             let sol = solve_lws(
                 |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f),
                 &fchapters,

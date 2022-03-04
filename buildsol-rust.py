@@ -22,8 +22,7 @@ assert m is not None
 (b, e, s, sdiscs, mgold, items) = m.groups()
 discs = sdiscs.split(".")
 
-cmdline = ["./dist/gamebooksolver-solvebook"]
-cmdline = ["gamebooksolver-explorer/target/release/gamebooksolver-explorer", "--solpath", path, "soldump"]
+cmdline = ["target/release/gamebooksolver-explorer", "--solpath", path, "soldump"]
 
 if int(b) < 5:
     cmdline += ["--results", "data/B%02d" % (int(b) + 1,)]

@@ -1,17 +1,18 @@
-use crate::lonewolf::combat::Memoz;
-use crate::lonewolf::solve::step;
-use crate::solver::base::{Proba, ChoppedSolution};
-use crate::{mkchar, Chapter, ChapterId, CharacterConstant, NextStep, SolutionDump};
+use gamebooksolver_base::lonewolf::chapter::{Chapter, ChapterId};
+use gamebooksolver_base::lonewolf::combat::Memoz;
+use gamebooksolver_base::lonewolf::mini::{mkchar, CharacterConstant, NextStep, SolutionDump};
+use gamebooksolver_base::lonewolf::solve::step;
+use gamebooksolver_base::solver::base::{ChoppedSolution, Proba};
 use rug::Rational;
 use std::collections::HashMap;
 use std::io::stdin;
 
-pub fn explore_solution(soldump: SolutionDump, book: &[(ChapterId, Chapter)]) {
+pub fn explore_solution(soldump: SolutionDump<Rational>, book: &[(ChapterId, Chapter<Rational>)]) {
   let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
   let mut memo = Memoz::default();
-  let mbook: HashMap<ChapterId, Chapter> = book.iter().cloned().collect();
+  let mbook: HashMap<ChapterId, Chapter<Rational>> = book.iter().cloned().collect();
   let order: HashMap<ChapterId, u32> = HashMap::new();
-  let content: HashMap<NextStep, ChoppedSolution<NextStep>> = soldump.content.into_iter().collect();
+  let content: HashMap<NextStep, ChoppedSolution<Rational, NextStep>> = soldump.content.into_iter().collect();
 
   go(
     &mut memo,
@@ -51,8 +52,8 @@ where
 }
 
 fn compute_score(
-  solmap: &HashMap<NextStep, ChoppedSolution<NextStep>>,
-  outcome: &[Proba<NextStep>],
+  solmap: &HashMap<NextStep, ChoppedSolution<Rational, NextStep>>,
+  outcome: &[Proba<Rational, NextStep>],
 ) -> Rational {
   let mut o = Rational::from(0);
   for p in outcome {
@@ -64,11 +65,11 @@ fn compute_score(
 }
 
 fn go(
-  memo: &mut Memoz,
+  memo: &mut Memoz<Rational>,
   ccst: &CharacterConstant,
-  mbook: &HashMap<ChapterId, Chapter>,
+  mbook: &HashMap<ChapterId, Chapter<Rational>>,
   order: &HashMap<ChapterId, u32>,
-  solmap: &HashMap<NextStep, ChoppedSolution<NextStep>>,
+  solmap: &HashMap<NextStep, ChoppedSolution<Rational, NextStep>>,
   ns: &NextStep,
 ) {
   match ns {

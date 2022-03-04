@@ -139,10 +139,10 @@ data/%.cbor:
 	time python3 buildsol-rust.py $@
 
 data/%.compact: data/%.cbor
-	time ./gamebooksolver-explorer/target/release/gamebooksolver-explorer --solpath $< optimize $@
+	time ./target/release/gamebooksolver-explorer --solpath $< optimize $@
 
 data/%.cbor.jot: data/%.cbor gamebooksolver-explorer
-	time ./gamebooksolver-explorer/target/release/gamebooksolver-explorer --solpath $< > $@
+	time ./target/release/gamebooksolver-explorer --solpath $< > $@
 
 data/B05/%.dot: data/B05/%.jot json-chapters/display05.json
 	./dist/gamebooksolver-solvebook dot $< json-chapters/display05.json > $@
