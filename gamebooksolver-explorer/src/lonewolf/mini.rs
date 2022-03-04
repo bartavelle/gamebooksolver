@@ -1259,13 +1259,28 @@ pub fn mkchar(ccst: &CharacterConstant, cvar: &CVarState) -> CharacterVariable {
   cv
 }
 
-struct CompactSolution {
-  chapter: u16,
-  character: CharacterVariable,
-  score: f32,
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
+pub struct CompactState {
+  pub chapter: u16,
+  pub character: CharacterVariable,
+  pub score: f32,
 }
 
-impl Encode for CompactSolution {
+impl CompactState {
+  pub fn from_choppedsolution(cur: NextStep, cs: ChoppedSolution<NextStep>) -> Option<Self> {
+    let score = cs.score().to_f32();
+    match cur {
+      NextStep::NewChapter(cid, cv) => Some(CompactState {
+        chapter: cid,
+        character: cv,
+        score,
+      }),
+      _ => None,
+    }
+  }
+}
+
+impl Encode for CompactState {
   fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
     e.u16(self.chapter)?
       .encode(&self.character)?
@@ -1273,16 +1288,49 @@ impl Encode for CompactSolution {
     Ok(())
   }
 }
-impl<'b> Decode<'b> for CompactSolution {
+impl<'b> Decode<'b> for CompactState {
   fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
     let chapter = d.u16()?;
     let character = d.decode()?;
     let score = d.f32()?;
-    Ok(CompactSolution {
+    Ok(CompactState {
       chapter,
       character,
       score,
     })
+  }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct CompactSolution {
+  pub soldesc: SolDesc,
+  pub content: Vec<CompactState>,
+}
+
+impl<'b> Decode<'b> for CompactSolution {
+  fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+    let ln = d.array()?;
+    if ln != Some(3) {
+      return Err(Error::Message("invalid length for SolutionDump"));
+    }
+    d.u8()?;
+    let soldesc = d.decode()?;
+    let rcontent: Result<Vec<_>, Error> = d.array_iter()?.collect();
+    Ok(CompactSolution {
+      soldesc,
+      content: rcontent?,
+    })
+  }
+}
+
+impl Encode for CompactSolution {
+  fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+    e.array(3)?.u8(0)?.encode(&self.soldesc)?;
+    e.array(self.content.len() as u64)?;
+    for c in &self.content {
+      e.encode(c)?;
+    }
+    Ok(())
   }
 }
 

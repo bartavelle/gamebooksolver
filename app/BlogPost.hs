@@ -220,6 +220,9 @@ statsAt cid stts = case M.lookup cid (_dres (_sdecisions stts)) of
 itemsAt :: ChapterId -> Stats -> M.Map Inventory Rational
 itemsAt cid = _citems . statsAt cid
 
+flagsAt :: ChapterId -> Stats -> M.Map Flags Rational
+flagsAt cid = _cflags . statsAt cid
+
 finalItems :: Stats -> M.Map Inventory Rational
 finalItems = _citems . finalStat
 
@@ -241,6 +244,15 @@ itemAt cid i stts = if rawrate > 0 then rate / rawrate else rate
       (inv, p) <- M.toList wstates
       let cnt = itemCount i inv
       pure (fromIntegral cnt * p)
+
+flagAt :: ChapterId -> Flag -> Stats -> Rational
+flagAt cid fl stts = if rawrate > 0 then rate / rawrate else rate
+  where
+    wstates = flagsAt cid stts
+    rawrate = sum wstates
+    rate = sum $ do
+      (flgs, p) <- M.toList wstates
+      pure (if flgs ^. bitAt (fromEnum fl) then p else 0)
 
 finalItem :: Item -> Stats -> Rational
 finalItem i stts = if rawrate > 0 then rate / rawrate else rate
@@ -342,17 +354,32 @@ finalStateRecap' bk astts = blogpostStats astts cols
     iq Laumspur = 5
     iq _ = 1
 
+b02stats :: [Stats] -> Html ()
+b02stats astts = do
+  let cols =
+        [ ("Win rate", fmtr . winrate),
+          ("Raw rate", fmtr . sum . _cendurance . finalStat),
+          ("S money", fmtq 30 . itemAt 1 Gold),
+          ("S BA", fmtb . hasitem BodyArmor),
+          ("S Shield", fmtb . hasitem Shield)
+        ]
+  blogpostStats astts cols
+  finalStateRecap' Book02 astts
+
 b03stats :: [Stats] -> Html ()
 b03stats astts = do
   let cols =
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . sum . _cendurance . finalStat),
-          ("SS", fmtb . not . hasitem (Weapon Sword)),
-          ("S LM", fmtr . itemAt 1 Laumspur),
-          ("S ML", fmtr . itemAt 1 Meal),
+          ("S LM", fmtb . hasitem Laumspur),
+          ("S ML", fmtqi 2 . itemAt 1 Meal),
           ("Armor", fmtb . hasitem BodyArmor),
-          ("End SH", fmtr . finalFlag HelmetIsSilver),
+          ("Visited GotA", fmtb . hasflag Knowledge01),
+          ("Corridor", fmtr . visitrate 206),
+          ("Passage", fmtr . visitrate 6),
+          ("280", fmtr . visitrate 280),
           ("Baknar oil", fmtr . finalFlag baknarOilB03),
+          ("End SH", fmtr . finalFlag HelmetIsSilver),
           ("End +4", fmtr . finalItem StrengthPotion4)
         ]
   blogpostStats astts cols
@@ -369,6 +396,8 @@ b04stats astts = do
           ("Fought Elix", fmtr . finalFlag FoughtElix),
           ("Laumspur collect", mvisitrate [12, 268, 302]),
           ("Final gold", fmtq 50 . finalItem Gold),
+          ("V302", fmtr . visitrate 302),
+          ("G302", fmtr . itemAt 131 StrengthPotion),
           ("End with +2 Strength Potion", fmtr . finalItem StrengthPotion),
           ("End with +4 Strength Potion", fmtr . finalItem StrengthPotion4)
         ]
@@ -402,6 +431,7 @@ main = do
   dt <- loadData book
   case mde of
     ChapterStats -> case book of
+      Book02 -> print (b02stats dt)
       Book03 -> print (b03stats dt)
       Book04 -> print (b04stats dt)
       Book05 -> print (b05stats dt)

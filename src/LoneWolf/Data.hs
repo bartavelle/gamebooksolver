@@ -387,3 +387,16 @@ csvlines ccst mfd entries = unlines (headers : map csvline entries)
         inv = cv ^. equipment
         fightstats fd = [winchance ccst cv fd, expectedEndurance ccst cv fd]
     headers = intercalate "\t" ("chapter" : "endurance" : "allmeals" : map show allitems ++ maybe [] (const ["winchance", "expectedendurance"]) mfd)
+
+data DotInfo
+  = DExpectedAmount Item
+  | DHasItem Item
+  | DHasFlag Flag
+  | BackpackSize
+  deriving (Show, Generic)
+
+instance ToJSON DotInfo where
+  toJSON = genericToJSON defaultOptions {sumEncoding = ObjectWithSingleField}
+
+instance FromJSON DotInfo where
+  parseJSON = genericParseJSON defaultOptions {sumEncoding = ObjectWithSingleField}

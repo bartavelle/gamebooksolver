@@ -17,8 +17,8 @@ mod lonewolf;
 mod solver;
 
 use lonewolf::mini::{
-    mkchar, Book, CVarState, CharacterConstant, CharacterVariable, Discipline, Equipment, Flag,
-    Flags, Item, NextStep, SolDesc, SolutionDump, Weapon,
+    mkchar, Book, CVarState, CharacterConstant, CharacterVariable, CompactSolution, CompactState,
+    Discipline, Equipment, Flag, Flags, Item, NextStep, SolDesc, SolutionDump, Weapon,
 };
 
 #[derive(Debug, StructOpt)]
@@ -54,6 +54,7 @@ enum Subcommand {
     CompareStates { otherpath: String, cid: u16 },
     Soldump(OSolDesc),
     Explore { bookpath: String },
+    Optimize { target: String },
 }
 
 #[derive(Debug, StructOpt)]
@@ -518,6 +519,18 @@ fn diff_cvar(prev: &CharacterVariable, next: &CharacterVariable) -> String {
     o.join(" ")
 }
 
+struct WW<I>(I);
+
+impl<I: Write> minicbor::encode::Write for WW<I> {
+    type Error = std::io::Error;
+    fn write_all(
+        &mut self,
+        buf: &[u8],
+    ) -> std::result::Result<(), <Self as minicbor::encode::Write>::Error> {
+        self.0.write_all(buf)
+    }
+}
+
 fn main() {
     let opt = Opt::from_args();
 
@@ -539,6 +552,31 @@ fn main() {
             };
             let x = serde_json::to_string(&output).unwrap();
             println!("{}", x);
+        }
+        Some(Subcommand::Optimize { target }) => {
+            let soldump = load_soldump(&opt.solpath);
+            let mut content = soldump
+                .content
+                .into_iter()
+                .filter_map(|(k, v)| CompactState::from_choppedsolution(k, v))
+                .collect::<Vec<_>>();
+            content.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+            let compact = CompactSolution {
+                soldesc: soldump.soldesc,
+                content,
+            };
+            // save json recap
+            let jname = target.clone() + ".desc";
+            let json_file = File::create(&jname).unwrap();
+            let mut json_w = WW(json_file);
+            minicbor::encode(&compact.soldesc, &mut json_w).unwrap();
+
+            // save compact solution
+            let file = File::create(target).unwrap();
+            let zwriter = zstd::Encoder::new(file, 9).unwrap();
+            let mut w = WW(zwriter);
+            minicbor::encode(&compact, &mut w).unwrap();
+            w.0.finish().unwrap();
         }
         Some(Subcommand::Explore { bookpath }) => {
             let fl = File::open(&bookpath).unwrap();
@@ -568,6 +606,22 @@ fn main() {
                             nid,
                             &diff_cvar(pcvar, ncvar)
                         ),
+                        (NextStep::NewChapter(_, pcvar), ChoppedSolution::CNode(sc, outcomes)) => {
+                            println!("{} - {:.2}% ", ns, sc.to_f64() * 100.0);
+                            for (mns, pb) in outcomes {
+                                match mns {
+                                    Some(NextStep::NewChapter(nid, ncvar)) => {
+                                        println!(
+                                            " [{:.2}%] ch:{} {}",
+                                            pb.to_f64() * 100.0,
+                                            nid,
+                                            &diff_cvar(pcvar, ncvar)
+                                        )
+                                    }
+                                    _ => println!(" [{:.2}%] {:?}", pb.to_f64() * 100.0, mns),
+                                }
+                            }
+                        }
                         _ => println!("{} -> {:?}", ns, sol),
                     }
                 }
@@ -663,19 +717,6 @@ fn main() {
             // save whole stuff
             let file = File::create(&opt.solpath).unwrap();
             let zwriter = zstd::Encoder::new(file, 3).unwrap();
-            struct WW<'t>(zstd::Encoder<'t, std::fs::File>);
-
-            impl<'t> minicbor::encode::Write for WW<'t> {
-                type Error = std::io::Error;
-                fn write_all(
-                    &mut self,
-                    buf: &[u8],
-                ) -> std::result::Result<(), <Self as minicbor::encode::Write>::Error>
-                {
-                    self.0.write_all(buf)
-                }
-            }
-
             let mut w = WW(zwriter);
 
             minicbor::encode(&soldump, &mut w).unwrap();

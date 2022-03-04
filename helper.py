@@ -90,9 +90,14 @@ def adjust_jsons(dir: str, options: List[str]):
             json.dump(new_content, open(newpath, "w"))
 
 
+B02BASE = [
+    "-Sword-Shield",
+]
+
+B03OPTIONS = ["FLGKnowledge01"]
 B03BASE = [
-    "-Sommerswerd-Laumspur-Meal-Meal",
-    "-Sommerswerd-BodyArmor-Meal-Meal",
+    # "-Sommerswerd-Laumspur-Meal-Meal",
+    # "-Sommerswerd-BodyArmor-Meal-Meal",
     "-Sommerswerd-Laumspur-BodyArmor",
 ]
 
@@ -103,10 +108,11 @@ B04BASE = [
 ]
 
 B05OPTIONS = ["Helmet-FLGHelmetIsSilver", "StrengthPotion4", "FLGFoughtElix", "BodyArmor"]
-B05BASE= [
+B05BASE = [
     "-Sword-Meal-Meal-Shield-Laumspur",
     "-Sommerswerd-Meal-Meal-Shield-Laumspur",
 ]
+
 
 def combinations(l: List[str], acc: List[str]) -> Iterator[List[str]]:
     if not l:
@@ -128,8 +134,25 @@ def geneqps(base: List[str], options: List[str]) -> Iterator[str]:
 DISCS = {"CA", "HU", "6S", "TR", "HL", "MS", "MB", "AK", "MO"}
 RDISCS = {"CA", "HU", "6S", "TR", "MS", "MO"}
 
+TGTS2: List[str] = []
+for t in B02BASE:
+    for d1 in RDISCS:
+        for d2 in RDISCS:
+            if d1 > d2:
+                for d3 in RDISCS:
+                    if d2 > d3:
+                        for d4 in RDISCS:
+                            if d3 > d4:
+                                for gold in range(10, 28):
+                                    if gold == 15:
+                                        TGTS2.append("data/B02/2010SW.%s.%s.%s.%s%s.cbor" % (d1, d2, d3, d4, t))
+                                    else:
+                                        TGTS2.append(
+                                            "data/B02/2010SW.%s.%s.%s.%sg%d%s.cbor" % (d1, d2, d3, d4, gold, t)
+                                        )
+
 TGTS3: List[str] = []
-for t in B03BASE:
+for t in geneqps(B03BASE, B03OPTIONS):
     for d1 in RDISCS:
         for d2 in RDISCS:
             if d1 > d2:
@@ -156,22 +179,13 @@ def chunked_makefile(n: int, l: List[str], cs: int):
     for (i, l) in enumerate(lc):
         print("LOW%02d_%d = %s" % (n, i, " ".join(l)))
         print("")
-        print("low%02d_%d: $(LOW%02d_%d)" % (n, i, n ,i))
+        print("low%02d_%d: $(LOW%02d_%d)" % (n, i, n, i))
         print("")
     print("TARGETSLOWB%02d = %s" % (n, " ".join("$(LOW%02d_%d)" % (n, i) for i in range(0, len(lc)))))
     print("")
 
 
+chunked_makefile(2, TGTS2, 60)
 chunked_makefile(3, TGTS3, 60)
 chunked_makefile(4, TGTS4, 30)
 chunked_makefile(5, TGTS5, 30)
-
-opts = ["FLGPermanentSkillReduction2"]
-
-jsons04 = load_jsons("data/B04", opts)
-groups04 = json_groups(jsons04)
-# extra_builds(groups04, ["FLGPermanentSkillReduction2"])
-jsons05 = load_jsons("data/B05", opts)
-groups05 = json_groups(jsons05)
-# extra_builds(groups05, ["FLGPermanentSkillReduction2"])
-# adjust_jsons("data/B05", opts)

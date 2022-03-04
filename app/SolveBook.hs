@@ -123,7 +123,7 @@ data Command
   | DecisionTracker FilePath FightDetails (Log Selector)
   | DecodeItems Book Word64
   | ShowStates FilePath (Log Selector)
-  | Dot FilePath
+  | Dot FilePath (Maybe FilePath)
   | DumpBook Book
 
 options :: Parser Opts
@@ -196,7 +196,7 @@ scommand =
         <> command "extract" (info (ExtractFile <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> charfilter) (progDesc "Extract solution data from a file"))
         <> command "decisiontracker" (info (DecisionTracker <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> fightdetails <*> charfilter) (progDesc "Displays stats about how a decision is taken"))
         <> command "decodeitems" (info (DecodeItems <$> pbook <*> argument auto (metavar "ITEMS" <> help "numerical representation of items")) (progDesc "Decode numerical inventory"))
-        <> command "dot" (info (Dot <$> strArgument (help "path to the json dump")) (progDesc "Generate a dot file from the json dump"))
+        <> command "dot" (info (Dot <$> strArgument (help "path to the json dump") <*> optional (strArgument (help "path to description file"))) (progDesc "Generate a dot file from the json dump"))
         <> command "dumpbook" (info (DumpBook <$> pbook) (progDesc "Dump a book as JSON"))
     )
 
@@ -208,16 +208,8 @@ programOpts =
         <> progDesc "Solve and explore book02 solutions"
     )
 
-data DotInfo = DExpectedAmount Item | DHasItem Item | DHasFlag Flag | BackpackSize
-
-bookDinfo :: Book -> [DotInfo]
-bookDinfo b = case b of
-  Book04 -> BackpackSize : map DHasItem [StrengthPotion, StrengthPotion4, torchB04, pickAB04, pickBB04, ropeB04, Potion2Hp, Potion4Hp, Potion5Hp, Potion6Hp] ++ [DExpectedAmount Laumspur]
-  Book05 -> DHasFlag LimbDeath : DExpectedAmount Gold : map DHasItem [StrengthPotion4, StrengthPotion, Potion6Hp, Potion4Hp, Potion2Hp]
-  _ -> []
-
-mkdot :: DecisionStats Rational -> DotGraph ChapterId
-mkdot (DecisionStats book res sttmap) =
+mkdot :: [DotInfo] -> DecisionStats Rational -> DotGraph ChapterId
+mkdot dsc (DecisionStats book res sttmap) =
   DotGraph
     { strictGraph = False,
       directedGraph = True,
@@ -295,14 +287,16 @@ mkdot (DecisionStats book res sttmap) =
                 else Nothing
             BackpackSize -> do
               stts <- chapterstats
-              let amount = sum $ do
+              let ramount = sum $ do
                     (inv, p) <- M.toList (_citems stts)
                     (i, q) <- items inv
                     guard (itemSlot i == BackpackSlot)
                     pure (fromIntegral q * p)
+              let base = sum (_cendurance stts)
+              let amount = if base > 0 then ramount / base else ramount
               Just (FlipFields [FieldLabel "Backpack items", FieldLabel (T.pack (printf "%.2f" (fromRational @Double amount)))])
 
-          nodelabel = FieldLabel (T.pack ctitle) : scorelabels : mapMaybe showDinfo (bookDinfo book)
+          nodelabel = FieldLabel (T.pack ctitle) : scorelabels : mapMaybe showDinfo dsc
       pure (DotNode cid (shape Record : toLabel [FlipFields nodelabel] : URL (T.pack url) : nodestyle))
     showEdge mweight src dst = DotEdge src dst [color clr, toLabel lbl]
       where
@@ -316,8 +310,8 @@ mkdot (DecisionStats book res sttmap) =
         (dst, weight) <- M.toList dsts'
         pure (showEdge (Just weight) src dst)
 
-todot :: DecisionStats Rational -> IO ()
-todot = T.putStrLn . renderDot . toDot . mkdot
+todot :: [DotInfo] -> DecisionStats Rational -> IO ()
+todot dsc = T.putStrLn . renderDot . toDot . mkdot dsc
 
 getSol :: Maybe (M.Map (S.Set Item, S.Set Flag) Rational) -> Bool -> SolDesc -> (Rational, [(NextStep, Solution NextStep ())])
 getSol scoremap autoweapon (SolDesc fchapters ccst ccvar) =
@@ -503,11 +497,20 @@ main = do
     DecodeItems book itms ->
       let inv = Inventory itms
        in mapM_ (\(i, q) -> putStrLn (show q ++ " " ++ showItem book i)) (items inv)
-    Dot pth -> do
-      rdstats <- do
+    Dot pth mdescpth -> do
+      (rdstats, rdesc) <- do
         r <- eitherDecodeFileStrict pth
-        case r of
+        let rx = either error id r
+        d <- eitherDecodeFileStrict $ case mdescpth of
+          Just p -> p
+          Nothing -> case _dbookid rx of
+            Book01 -> "json-chapters/display01.json"
+            Book02 -> "json-chapters/display02.json"
+            Book03 -> "json-chapters/display03.json"
+            Book04 -> "json-chapters/display04.json"
+            Book05 -> "json-chapters/display05.json"
+        case d of
           Left rr -> error rr
-          Right x -> pure x
+          Right y -> pure (rx, y)
       let dstats = fmap getERatio rdstats
-      todot dstats
+      todot rdesc dstats

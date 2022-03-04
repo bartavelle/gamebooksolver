@@ -1,3 +1,4 @@
+use crate::lonewolf::cartwheel::{cartwheel, CARTWHEEL_LABEL, MAX_CARTWHEEL};
 use crate::lonewolf::mini::{max_hp, Discipline, Flag, Slot, Weapon};
 use crate::lonewolf::rules::{check, update_simple};
 use crate::{
@@ -372,6 +373,21 @@ pub fn flatten_decision(
         out
       }
     }
+    Decision::Cansell(item, price, nxt) => {
+      let mut out = flatten_decision(ccst, cvar, nxt);
+      let cnt = cvar.cequipment.get_item_count(item);
+      // TODO, sell more than 1 item
+      if cnt > 0 && !important_item(item, ccst, cvar) {
+        out.extend(with_effect(
+          &[
+            SimpleOutcome::LoseItem(*item, 1),
+            SimpleOutcome::GainItem(Item::Gold, price.0),
+          ],
+          nxt,
+        ))
+      }
+      out
+    }
     Decision::Canbuy(item, price, nxt) => {
       let mut out = flatten_decision(ccst, cvar, nxt);
       if cvar.cequipment.get_item_count(&Item::Gold) >= price.0 && important_item(item, ccst, cvar)
@@ -424,6 +440,60 @@ pub fn flatten_decision(
         ]),
       )]
     }
+    Decision::Special(SpecialChapter::Cartwheel) => {
+      let gold = cvar.cequipment.get_item_count(&Item::Gold);
+      if gold >= MAX_CARTWHEEL {
+        flatten_decision(
+          ccst,
+          cvar,
+          &Decision::None(ChapterOutcome::Goto(ChapterId(136))),
+        )
+        .into_iter()
+        .map(|(mut dsc, out)| {
+          dsc.insert(0, "cartwheel ok".into());
+          (dsc, out)
+        })
+        .collect()
+      } else {
+        let start_target = std::cmp::min(std::cmp::max(20, gold), MAX_CARTWHEEL);
+        (start_target..=MAX_CARTWHEEL)
+          .flat_map(|target| {
+            flatten_decision(
+              ccst,
+              cvar,
+              &Decision::None(ChapterOutcome::Randomly(
+                cartwheel(gold, target)
+                  .into_iter()
+                  .map(|pb| {
+                    (
+                      pb.p,
+                      ChapterOutcome::Simple(
+                        vec![
+                          SimpleOutcome::LoseItemKind(vec![Slot::Pouch]),
+                          SimpleOutcome::GainItem(Item::Gold, pb.v),
+                        ],
+                        Box::new(ChapterOutcome::Goto(ChapterId(136))),
+                      ),
+                    )
+                  })
+                  .collect(),
+              )),
+            )
+            .into_iter()
+            .map(move |(mut dsc, out)| {
+              dsc.insert(0, CARTWHEEL_LABEL[target as usize - 20].into());
+              (dsc, out)
+            })
+          })
+          .collect()
+      }
+    }
+    // do not play portholes!
+    Decision::Special(SpecialChapter::Portholes) => flatten_decision(
+      ccst,
+      cvar,
+      &Decision::None(ChapterOutcome::Goto(ChapterId(197))),
+    ),
     _ => todo!("{:?}", dec),
   }
 }

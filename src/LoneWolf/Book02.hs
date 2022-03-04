@@ -431,10 +431,14 @@ chapters =
       Chapter
         "31"
         "Your first meeting with the Lord-lieutenant comes as something of a shock. You had perhaps half expected him to be a servile old man, as are the envoys of the southern lands that plague your King's court with their delegations. The man clad in heavy chainmail standing before you is neither old nor servile. You are soon to learn that Lord-lieutenant Rhygar is an exceptional man.\nBorn of a Sommlending father and a Durenese mother, he has become something of a legend in this city. In the last decade, he has led an alliance of the nations to victory against the invading Ice Barbarians of Kalte. Wise in peace, fierce in war, you could not have wished for better company on your quest for the Sommerswerd.\nRhygar orders that a sumptuous meal be served. It is by far the best food you have tasted since the war began. During the feast, you recall the events that have brought you to Port Bax, and reflect on the daunting challenge that still lies before you. After the meal, Rhygar sends for his physician who attends to your wounds. His potions restore 6 ENDURANCE points. Then he advises you to sleep, for you are to leave with the Lord-lieutenant for Hammerdal in the morning.\nEarly next day, you are taken to an enclosed garden at the rear of the consulate where Rhygar and three of his best soldiers await you on horseback. They are to be your bodyguard and guides on the 230 mile ride to Hammerdal. The streets of Port Bax are just beginning to come to life as you ride through the town. Passing under the moss-covered city gate, you now feel confident that your mission will succeed.\nPick a number from the Random Number Table.\n"
-        ( NoDecision
-            ( Simple
-                [HealPlayer 6]
-                (Randomly [(1 % 2, Goto 176), (1 % 2, Goto 254)])
+        ( CanTake
+            Backpack
+            1
+            ( NoDecision
+                ( Simple
+                    [HealPlayer 6]
+                    (Randomly [(1 % 2, Goto 176), (1 % 2, Goto 254)])
+                )
             )
         )
     ),

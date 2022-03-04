@@ -10,3 +10,7 @@ local
 project-aon
 .mypy_cache
 backup.sh
+*.compact
+*.compact.desc
+/target
+Cargo.lock
