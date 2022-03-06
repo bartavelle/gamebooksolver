@@ -5,6 +5,14 @@ use num_rational::BigRational;
 use num_traits::cast::FromPrimitive;
 use num_traits::cast::ToPrimitive;
 use num_traits::identities::Zero;
+use serde::{Deserialize, Serialize};
+
+// representation of rationals as json
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+pub struct JRatio {
+  radix: i32,
+  value: String,
+}
 
 pub trait Rational:
   Sized + Clone + Eq + Ord + std::fmt::Debug + std::hash::Hash + std::iter::Sum
@@ -20,6 +28,7 @@ pub trait Rational:
   fn add(self, other: &Self) -> Self;
   fn sub(self, other: &Self) -> Self;
   fn is_z(&self) -> bool;
+  fn from_jratio(r: &JRatio) -> Self;
 }
 
 impl Rational for BigRational {
@@ -82,6 +91,20 @@ impl Rational for BigRational {
   }
   fn is_z(&self) -> bool {
     self.is_zero()
+  }
+  fn from_jratio(r: &JRatio) -> Self {
+    if r.radix != 10 {
+      panic!("only support radix=10 for now");
+    }
+    let splt = r.value.split('/').collect::<Vec<_>>();
+    match splt.as_slice() {
+      [sn, sd] => {
+        let n = sn.parse().unwrap();
+        let d = sd.parse().unwrap();
+        BigRational::new(n, d)
+      }
+      _ => panic!("invalid string {}", r.value),
+    }
   }
 }
 
@@ -152,6 +175,9 @@ impl Rational for rug::Rational {
   }
   fn is_z(&self) -> bool {
     self == &0.0
+  }
+  fn from_jratio(r: &JRatio) -> Self {
+    rug::Rational::from_str_radix(&r.value, r.radix).unwrap()
   }
 }
 

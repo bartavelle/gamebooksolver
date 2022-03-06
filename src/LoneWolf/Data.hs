@@ -237,7 +237,7 @@ data SolDesc = SolDesc
     _ccst :: CharacterConstant,
     _cvar :: CVarState
   }
-  deriving (Generic, Eq)
+  deriving (Generic, Eq, Show)
 
 data SolutionDump = SolutionDump SolDesc [(NextStep, ChoppedSolution NextStep)]
   deriving (Generic, Eq)

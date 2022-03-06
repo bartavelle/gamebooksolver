@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+    integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css"
+    integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+  <title>Lonewolf solution explorer</title>
+</head>
+
+<body>
+  <script type="module" src="/index.js"></script>
+  <div class="container-fluid" x-data="{ curbook: null, cursol: null }">
+    <div class="row">
+      <h1>Book</h1>
+      <template x-for="book in $store.books" key=":id">
+        <div class="col-md-2">
+          <button type="button" x-data x-bind:class="book.id === curbook ? 'btn btn-primary' : 'btn btn-default'"
+            x-text="book.id + ' (' + Object.keys(book.book.content).length + ' start states)'"
+            @click="curbook=book.book"></button>
+        </div>
+      </template>
+    </div>
+    <template x-if="curbook">
+      <div class="row">
+        <div class="col-md-12">
+          <template x-for="soldesc in curbook.content">
+            <button type="button" x-data x-text="soldesc.score" @click="cursol=soldesc"></button>
+          </template>
+        </div>
+      </div>
+    </template>
+    <template x-if="cursol">
+      <div class="row">
+        <div class="col-md-4">
+          <h3>Disciplines</h3>
+          <ul>
+            <template x-for="d in cursol.desc._ccst._discipline">
+              <li x-text="d"></li>
+            </template>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h3>Starting items</h3>
+          <ul>
+            <template x-for="[i, q] in cursol.desc._cvar._cvitems">
+              <li x-text="i + ' x ' + q"></li>
+            </template>
+            <li x-text="'Gold x ' + cursol.desc._cvar._cvgold"></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+            <a x-bind:href="'/explore.html?book=' + cursol.desc._ccst._bookid + '&path=' + cursol.path">Go?</a>
+        </div>
+      </div>
+    </template>
+  </div>
+</body>
+
+</html>

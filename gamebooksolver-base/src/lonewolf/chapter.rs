@@ -9,6 +9,19 @@ pub struct Chapter<P> {
   pub pchoice: Decision<P>,
 }
 
+impl<P: Clone> Chapter<P> {
+  pub fn map_proba<F, P2>(self, f: &F) -> Chapter<P2>
+  where
+    F: Fn(&P) -> P2,
+  {
+    Chapter {
+      title: self.title,
+      desc: self.desc,
+      pchoice: self.pchoice.map_proba(f),
+    }
+  }
+}
+
 #[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord, Serialize)]
 pub struct Rounds(pub u8);
 #[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, Copy, PartialOrd, Ord, Serialize)]
@@ -47,6 +60,39 @@ pub enum Decision<P> {
   LoseItemFrom(Slot, u8, Box<Decision<P>>),
 }
 
+impl<P: Clone> Decision<P> {
+  pub fn map_proba<F, P2>(self, f: &F) -> Decision<P2>
+  where
+    F: Fn(&P) -> P2,
+  {
+    use Decision::*;
+    let convert = |b: Box<Decision<P>>| -> Box<Decision<P2>> {
+      Box::new({
+        let b2: &Decision<P> = &b;
+        b2.clone().map_proba(f)
+      })
+    };
+    match self {
+      Decisions(v) => Decisions(
+        v.into_iter()
+          .map(|(t, sub)| (t, sub.map_proba(f)))
+          .collect(),
+      ),
+      RetrieveEquipment(nxt) => RetrieveEquipment(convert(nxt)),
+      CanTake(i, q, nxt) => CanTake(i, q, convert(nxt)),
+      Canbuy(i, p, nxt) => Canbuy(i, p, convert(nxt)),
+      Cansell(i, p, nxt) => Cansell(i, p, convert(nxt)),
+      Conditional(bc, nxt) => Conditional(bc, convert(nxt)),
+      Special(s) => Special(s),
+      None(co) => None(co.map_proba(f)),
+      EvadeFight(r, cid, fd, co) => EvadeFight(r, cid, fd.map_proba(f), co.map_proba(f)),
+      AfterCombat(nxt) => AfterCombat(convert(nxt)),
+      RemoveItemFrom(sl, q, nxt) => RemoveItemFrom(sl, q, convert(nxt)),
+      LoseItemFrom(sl, q, nxt) => LoseItemFrom(sl, q, convert(nxt)),
+    }
+  }
+}
+
 #[derive(PartialEq, Eq, Debug, Deserialize, Clone, Copy)]
 pub enum SpecialChapter {
   Cartwheel,
@@ -70,6 +116,41 @@ pub enum ChapterOutcome<P> {
   Goto(ChapterId),
   GameLost,
   GameWon,
+}
+
+impl<P: Clone> ChapterOutcome<P> {
+  pub fn map_proba<F, P2>(self, f: &F) -> ChapterOutcome<P2>
+  where
+    F: Fn(&P) -> P2,
+  {
+    let convert = |b: Box<ChapterOutcome<P>>| -> Box<ChapterOutcome<P2>> {
+      Box::new({
+        let b2: &ChapterOutcome<P> = &b;
+        b2.clone().map_proba(f)
+      })
+    };
+    use ChapterOutcome::*;
+    match self {
+      Fight(fd, co) => Fight(fd.map_proba(f), convert(co)),
+      OneRound(fd, cl, ce, cw) => OneRound(fd.map_proba(f), convert(cl), convert(ce), convert(cw)),
+      Randomly(lst) => Randomly(
+        lst
+          .into_iter()
+          .map(|(p, co2)| (f(&p), co2.map_proba(f)))
+          .collect(),
+      ),
+      Conditionally(lst) => Conditionally(
+        lst
+          .into_iter()
+          .map(|(c, co2)| (c, co2.map_proba(f)))
+          .collect(),
+      ),
+      Simple(sos, nxt) => Simple(sos, convert(nxt)),
+      Goto(cid) => Goto(cid),
+      GameLost => GameLost,
+      GameWon => GameWon,
+    }
+  }
 }
 
 #[derive(PartialEq, Eq, Debug, Deserialize, Clone)]
@@ -117,6 +198,20 @@ pub struct FightDetails<P> {
   pub fight_mod: Vec<FightModifier<P>>,
 }
 
+impl<P: Clone> FightDetails<P> {
+  pub fn map_proba<F, P2>(self, f: &F) -> FightDetails<P2>
+  where
+    F: Fn(&P) -> P2,
+  {
+    FightDetails {
+      opponent: self.opponent,
+      combat_skill: self.combat_skill,
+      endurance: self.endurance,
+      fight_mod: self.fight_mod.into_iter().map(|m| m.map_proba(f)).collect(),
+    }
+  }
+}
+
 #[derive(PartialEq, Eq, Debug, Deserialize, Hash, Clone, PartialOrd, Ord)]
 pub enum FightModifier<P> {
   Undead,
@@ -140,6 +235,40 @@ pub enum FightModifier<P> {
   Dpr(Endurance),
   NoPotion,
   Poisonous(P),
+}
+
+impl<P: Clone> FightModifier<P> {
+  pub fn map_proba<F, P2>(self, f: &F) -> FightModifier<P2>
+  where
+    F: Fn(&P) -> P2,
+  {
+    use FightModifier::*;
+    match self {
+      Undead => Undead,
+      MindblastImmune => MindblastImmune,
+      Timed(t, nxt) => Timed(t, {
+        let nxt2: &FightModifier<P> = &nxt;
+        Box::new(nxt2.clone().map_proba(f))
+      }),
+      CombatBonus(cs) => CombatBonus(cs),
+      BareHanded => BareHanded,
+      FakeFight(cid) => FakeFight(cid),
+      EnemyMindblast => EnemyMindblast,
+      ForceEMindblast => ForceEMindblast,
+      PlayerInvulnerable => PlayerInvulnerable,
+      DoubleDamage => DoubleDamage,
+      Evaded(cid) => Evaded(cid),
+      OnDamage(cid) => OnDamage(cid),
+      OnNotYetWon(cid) => OnNotYetWon(cid),
+      MultiFight => MultiFight,
+      EnemyInvulnerable => EnemyInvulnerable,
+      OnLose(cid) => OnLose(cid),
+      StopFight(cid) => StopFight(cid),
+      Dpr(e) => Dpr(e),
+      NoPotion => NoPotion,
+      Poisonous(p) => Poisonous(f(&p)),
+    }
+  }
 }
 
 #[derive(PartialEq, Eq, Debug, PartialOrd, Ord, Deserialize, Clone, Copy)]

@@ -157,3 +157,6 @@ data/B01/%.dot: data/B01/%.jot json-chapters/display01.json
 
 data/%.svg: data/%.dot
 	dot -Tsvg -o$@ $<
+
+gamebooksolver-webapp/static/books.json:
+	./dist/gamebooksolver-solvebook dumpbooks > $@

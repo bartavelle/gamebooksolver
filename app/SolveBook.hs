@@ -7,8 +7,9 @@ module Main (main) where
 import Codec.Compression.Zstd.Lazy (compress, decompress)
 import qualified Codec.Serialise as S
 import Control.Lens hiding (argument)
-import Control.Monad (forM_, guard, when)
-import Data.Aeson (eitherDecodeFileStrict, encode, encodeFile)
+import Control.Monad (forM, forM_, guard, when)
+import Data.Aeson (ToJSON (toJSON), eitherDecodeFileStrict, encode, encodeFile, object)
+import Data.Aeson.Types (Value)
 import Data.Bifunctor (first)
 import Data.Bits.Lens (bitAt)
 import qualified Data.ByteString.Lazy as BSL
@@ -26,6 +27,7 @@ import Data.List (foldl', intercalate, isSuffixOf)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, isJust, mapMaybe)
 import qualified Data.Set as S
+import qualified Data.Text as TS
 import qualified Data.Text.Lazy as T
 import qualified Data.Text.Lazy.IO as T
 import Data.Word (Word64)
@@ -125,6 +127,7 @@ data Command
   | ShowStates FilePath (Log Selector)
   | Dot FilePath (Maybe FilePath)
   | DumpBook Book
+  | DumpBooks
 
 options :: Parser Opts
 options =
@@ -198,6 +201,7 @@ scommand =
         <> command "decodeitems" (info (DecodeItems <$> pbook <*> argument auto (metavar "ITEMS" <> help "numerical representation of items")) (progDesc "Decode numerical inventory"))
         <> command "dot" (info (Dot <$> strArgument (help "path to the json dump") <*> optional (strArgument (help "path to description file"))) (progDesc "Generate a dot file from the json dump"))
         <> command "dumpbook" (info (DumpBook <$> pbook) (progDesc "Dump a book as JSON"))
+        <> command "dumpbooks" (info (pure DumpBooks) (progDesc "Dump all book data, for consumption with the web site"))
     )
 
 programOpts :: ParserInfo Opts
@@ -414,6 +418,12 @@ mkhistogram :: M.Map ChapterId DecisionStat -> Maybe (ChapterId, DecisionStat) -
 mkhistogram curmp Nothing = curmp
 mkhistogram mp (Just (cid, ds)) = M.unionWith (<>) (M.singleton cid ds) mp
 
+replaceSuffix :: String -> String -> FilePath -> FilePath
+replaceSuffix toreplace replacement fp =
+  case T.stripSuffix (T.pack toreplace) (T.pack fp) of
+    Nothing -> fp
+    Just n -> T.unpack n <> replacement
+
 loadResults :: Maybe FilePath -> CharacterConstant -> IO (M.Map (S.Set Item, S.Set Flag) Rational)
 loadResults Nothing _ = pure M.empty
 loadResults (Just pth) ccst = do
@@ -441,10 +451,27 @@ loadResults (Just pth) ccst = do
         pure ((startitems `S.intersection` fitms, startflags `S.intersection` fflgs), s)
   pure (M.fromListWith max lst)
 
+loadSiteData :: Book -> IO (TS.Text, Value)
+loadSiteData bk = do
+  let bookn = fromEnum bk + 1
+      chapterdata = pchapters bk & traverse . _2 %~ fmap ERatio
+      datapath = "data/B0" ++ show bookn
+  allfiles <- map ((datapath <> "/") <>) . filter (isSuffixOf ".compact") <$> getDirectoryContents datapath
+  cnt <- forM allfiles $ \compactpath -> do
+    let descpath = compactpath <> ".desc"
+        mspath = replaceSuffix ".compact" ".cbor.json" compactpath
+    dsc <- S.deserialise <$> BSL.readFile descpath :: IO SolDesc
+    Multistat _ _ _ [entry] <- either (error . show) id <$> eitherDecodeFileStrict mspath
+    pure (TS.pack compactpath, object [("desc", toJSON dsc), ("score", toJSON (_mscore entry))])
+  pure (TS.pack (show bk), object [("content", object cnt), ("chapters", toJSON chapterdata)])
+
 main :: IO ()
 main = do
   Opts _ resdir cmd <- execParser programOpts
   case cmd of
+    DumpBooks -> do
+      dt <- mapM loadSiteData [Book01 .. Book05]
+      BS8.putStrLn (encode (object dt))
     DumpBook bk -> BS8.putStrLn (encode (pchapters bk & traverse . _2 %~ fmap ERatio))
     SolDump dmode sd mtarget oneshot -> do
       res <-

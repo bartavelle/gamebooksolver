@@ -49,11 +49,22 @@ struct OSolDesc {
 #[derive(Debug, StructOpt)]
 enum Subcommand {
     LoadChapter,
-    DumpStates { cid: u16 },
-    CompareStates { otherpath: String, cid: u16 },
+    DumpStates {
+        cid: u16,
+    },
+    CompareStates {
+        otherpath: String,
+        cid: u16,
+    },
     Soldump(OSolDesc),
-    Explore { bookpath: String },
-    Optimize { target: String },
+    Explore {
+        bookpath: String,
+    },
+    Optimize {
+        target: String,
+        #[structopt(long)]
+        dummy: bool,
+    },
 }
 
 #[derive(Debug, StructOpt)]
@@ -554,13 +565,17 @@ fn main() {
             let x = serde_json::to_string(&output).unwrap();
             println!("{}", x);
         }
-        Some(Subcommand::Optimize { target }) => {
+        Some(Subcommand::Optimize { target, dummy }) => {
             let soldump = load_soldump(&opt.solpath);
-            let mut content = soldump
-                .content
-                .into_iter()
-                .filter_map(|(k, v)| CompactState::from_choppedsolution(k, v))
-                .collect::<Vec<_>>();
+            let mut content = if *dummy {
+                Vec::new()
+            } else {
+                soldump
+                    .content
+                    .into_iter()
+                    .filter_map(|(k, v)| CompactState::from_choppedsolution(k, v))
+                    .collect::<Vec<_>>()
+            };
             content.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
             let compact = CompactSolution {
                 soldesc: soldump.soldesc,

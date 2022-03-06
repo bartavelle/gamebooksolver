@@ -3,7 +3,7 @@ use minicbor::decode::{Decode, Decoder, Error};
 use minicbor::encode::{self, Encode, Encoder, Write};
 use std::collections::HashMap;
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
 pub struct Proba<P, T> {
     pub v: T,
     pub p: P,
@@ -20,7 +20,7 @@ impl<P: Rational, T> Proba<P, T> {
 
 pub type Outcome<P, T> = Vec<Proba<P, T>>;
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize, Clone)]
 pub struct Choice<P, DESC, STT> {
     pub desc: DESC,
     pub res: Outcome<P, STT>,

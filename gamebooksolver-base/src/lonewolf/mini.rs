@@ -462,6 +462,14 @@ impl Flags {
   pub const fn has(&self, f: Flag) -> bool {
     self.0 & (1 << (f as usize)) > 0
   }
+
+  pub fn all(&self) -> Vec<Flag> {
+    Flag::VALUES
+      .iter()
+      .filter(|f| self.has(**f))
+      .copied()
+      .collect()
+  }
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord)]
