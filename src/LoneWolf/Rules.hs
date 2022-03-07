@@ -75,7 +75,7 @@ updateSimple cconstant cvariable soutcome =
     book01 = _bookid cconstant == Book01
     laumspuru = updates [HealPlayer 3, LoseItem Laumspur 1]
     curhp = cvariable ^. curendurance
-    maxhp = getMaxHp cconstant cvariable
+    maxhp = getMaxHp cconstant cvariabl../gamebooksolver-webapp-alpine/e
     eqp = cvariable ^. equipment
     updates = foldl' (updateSimple cconstant) cvariable
     updateMaxHp cv = cv & curendurance %~ min maxhp

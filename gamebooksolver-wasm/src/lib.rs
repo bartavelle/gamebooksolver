@@ -15,7 +15,7 @@ use gamebooksolver_base::solver::rational::{JRatio, Rational};
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
-pub fn init() {
+pub fn init_hooks() {
   std::panic::set_hook(Box::new(console_error_panic_hook::hook));
 }
 
@@ -244,8 +244,12 @@ impl WState {
     ))
   }
 
-  pub fn score(&self, chapter: u16, cv: &WCharacterVariable) -> Option<f32> {
-    self.scores.get(&(chapter, cv.0.clone())).copied()
+  pub fn score(&self, ns: &WNS) -> Option<f32> {
+    match &ns.0 {
+      NextStep::HasLost(_) => Some(0.0),
+      NextStep::HasWon(sc) => Some(1.0),
+      NextStep::NewChapter(chapter, cv) => self.scores.get(&(*chapter, cv.clone())).copied(),
+    }
   }
 
   pub fn ini_cvar(&self) -> WCharacterVariable {
