@@ -462,7 +462,7 @@ loadSiteData bk = do
         mspath = replaceSuffix ".compact" ".cbor.json" compactpath
     dsc <- S.deserialise <$> BSL.readFile descpath :: IO SolDesc
     Multistat _ _ _ [entry] <- either (error . show) id <$> eitherDecodeFileStrict mspath
-    pure (TS.pack compactpath, object [("desc", toJSON dsc), ("score", toJSON (_mscore entry))])
+    pure (TS.pack compactpath, object [("desc", toJSON dsc), ("score", toJSON (_mscore entry)), ("states", toJSON (_states entry))])
   pure (TS.pack (show bk), object [("content", object cnt), ("chapters", toJSON chapterdata)])
 
 main :: IO ()

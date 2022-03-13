@@ -40,10 +40,13 @@ impl<P: Rational> Encode for SolutionDump<P> {
   }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub struct SolDesc {
+  #[serde(alias="_finalchapters")]
   pub finalchapters: Vec<u16>,
+  #[serde(alias="_ccst")]
   pub ccst: CharacterConstant,
+  #[serde(alias="_cvar")]
   pub cvar: CVarState,
 }
 
@@ -99,11 +102,15 @@ impl SolDesc {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Deserialize)]
 pub struct CharacterConstant {
+  #[serde(alias="_maxendurance")]
   pub maxendurance: i8,
+  #[serde(alias="_combatSkill")]
   pub combat_skill: u8,
+  #[serde(alias="_discipline")]
   pub discipline: Vec<Discipline>,
+  #[serde(alias="_bookid")]
   pub bookid: Book,
 }
 
@@ -145,8 +152,11 @@ impl Encode for CharacterConstant {
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct CVarState {
+  #[serde(alias="_cvitems")]
   pub items: Option<Vec<(Item, i64)>>,
+  #[serde(alias="_cvgold")]
   pub gold: u8,
+  #[serde(alias="_cvflags")]
   pub flags: Vec<Flag>,
 }
 

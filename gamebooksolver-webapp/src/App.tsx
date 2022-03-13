@@ -7,14 +7,15 @@ import { WState, WCharacterVariable, WNS } from 'gamebooksolver-wasm';
 type Chapter = {
   title: string,
   desc: string,
-  pchoice: any,
+  pchoice: Array<any>,
 };
 
 type Item = string | any;
 
 type ScoreDesc = {
   score: number,
-  desc: Desc
+  desc: Desc,
+  states: number,
 };
 
 type Desc = {
@@ -35,11 +36,12 @@ type PScoreDesc = {
   path: string,
   desc: Desc,
   score: number,
+  states: number,
 };
 
 function percent(score: number): string {
   if (!score) {
-    return "??"
+    return "unk"
   }
   return (score * 100).toFixed(2) + "%"
 }
@@ -66,6 +68,7 @@ type State = {
 
 type StateDesc = {
   score: number,
+  states: number,
   chapter: number,
   curhp: number,
   maxhp: number,
@@ -93,7 +96,7 @@ function statedesc_show(d: StateDesc) {
         <td>{d.curhp + '/' + d.maxhp}</td>
         <td>
           <ul>
-            {d.items.map(([q, i]) => <li key={i}>{q} x {i}</li>)}
+            {d.items.map(([i, q]) => <li key={i}>{i} x {q}</li>)}
           </ul>
         </td>
         <td>
@@ -111,6 +114,20 @@ function statedesc_show(d: StateDesc) {
   </table>
 }
 
+function urlpart(bookid: string) {
+  switch (bookid) {
+    case "Book01": return "01fftd";
+    case "Book02": return "02fotw";
+    case "Book03": return "03tcok";
+    case "Book04": return "04tcod";
+    case "Book05": return "05sots";
+    default:
+      console.log("Unknown bookid: " + bookid);
+      return "000"
+  }
+}
+
+
 function cvar_diff(curcvar: WCharacterVariable, newcvar: WCharacterVariable): string {
   var changes = [];
   if (curcvar.endurance != newcvar.endurance) {
@@ -118,7 +135,6 @@ function cvar_diff(curcvar: WCharacterVariable, newcvar: WCharacterVariable): st
   }
 
   function diff(curl: Array<[any, number]>, newl: Array<[any, number]>): Array<string> {
-    console.log("diff", curl, newl);
     var out: Array<string> = [];
 
     function toobject(l: Array<[any, number]>): { [key: string]: number } {
@@ -213,7 +229,6 @@ class App extends React.Component<{}, State> {
 
   async componentDidMount() {
     const books: Books = await (await fetch('/books.json')).json();
-    console.log(books)
     const bookids = Object.keys(books).sort();
     const wasmm = await import("gamebooksolver-wasm");
 
@@ -232,6 +247,24 @@ class App extends React.Component<{}, State> {
     this.setState({
       cursolpath: pth,
       cursoldesc: this.state.books[this.state.curbook!].content[pth]
+    })
+  }
+
+  async init_solution(pth: string) {
+    if (this.state.curcvar) {
+      this.state.curcvar.free();
+    }
+    if (this.state.stt) {
+      this.state.stt.free();
+    }
+    const stt = WState.from_desc(
+      JSON.stringify(this.state.books[this.state.curbook!].content[pth].desc),
+      JSON.stringify(this.state.books[this.state.curbook!].chapters));
+    const cvar = stt.ini_cvar();
+    this.setState({
+      stt: stt,
+      curchapter: 1,
+      curcvar: cvar
     })
   }
 
@@ -263,18 +296,23 @@ class App extends React.Component<{}, State> {
     })
   }
 
-  outcome_button(pb: number, wns: WNS): JSX.Element {
+  outcome_button(pb: number, wns: WNS, score: number | undefined): JSX.Element {
     switch (wns.tp()) {
       case "lost": return <button type="button" className="btn btn-danger">{percent(pb)} - LOST!</button>
       case "win": return <button type="button" className="btn btn-success">{percent(pb)} - WON!</button>
+    }
+    var scorestr = "??";
+    if (score) {
+      scorestr = percent(score);
     }
     // we are in the chapter case
     const newchapter = wns.chapter()!;
     return <button
       type="button"
+      key={wns.repr()}
       onClick={() => this.jump_to(newchapter.chapter, newchapter.cvar)}
       className="btn btn-default">
-      {percent(pb)} / dst:{newchapter.chapter} / {cvar_diff(this.state.curcvar!, newchapter.cvar)}
+      {percent(pb)} / dst:{newchapter.chapter} / {cvar_diff(this.state.curcvar!, newchapter.cvar)} / [win:{scorestr}]
     </button>
   }
 
@@ -286,6 +324,7 @@ class App extends React.Component<{}, State> {
     const ns = new WNS(this.state.curchapter, this.state.curcvar);
     const wchoices = this.state.stt.step(ns);
 
+    var best_score = 0.0;
     var choices = [];
     for (var i = 0; i < wchoices.count(); i++) {
       const wchoice = wchoices.nth(i);
@@ -310,10 +349,12 @@ class App extends React.Component<{}, State> {
           if (curscore) {
             score += curscore * pns.p;
           }
-          oos.push({ p: pns.p, wns: pns.v })
+          oos.push({ p: pns.p, wns: pns.v, score: curscore })
         }
       }
       outcome.free();
+      if (score > best_score)
+        best_score = score;
 
       choices.push({
         desc: wchoice.desc,
@@ -324,20 +365,44 @@ class App extends React.Component<{}, State> {
     }
     ns.free();
 
-    return <div className="col-md-12">
-      {this.state.chapters[this.state.curchapter].desc}
-      <ul>{choices.map((c) => <li>
-        win:{percent(c.score)} - {c.desc}
-        <ul>
-          {c.oos.map((o) => <li>{this.outcome_button(o.p, o.wns)}</li>)}
-        </ul>
-      </li>)}</ul>
-    </div>
+    const curchapter = this.state.chapters[this.state.curchapter];
+
+    return <div className="row">
+      <div className="col col-md">
+        <h3>Description</h3>
+        <a href={"https://www.projectaon.org/en/xhtml/lw/" + urlpart(this.state.curbook!) + "/sect" + curchapter.title + ".htm"} target="_blank" rel="noopener noreferrer">Compare with original chapter</a><br/>
+        {curchapter.desc}
+      </div>
+      <div className="col col-md">
+        <h3>Encoded logic</h3>
+        <div><pre>{JSON.stringify(curchapter.pchoice, null, 2)}</pre></div>
+      </div>
+
+      <div className="col col-md">
+        <h3>Decisions</h3>
+        <ul>{choices.map((c) => <li key={c.desc}>
+          <span className={c.score >= best_score ? "badge badge-primary" : "badge badge-secondary"}>win:{percent(c.score)}</span> {c.desc}
+          <ul>
+            {c.oos.map((o) => <li key={o.p + o.wns.repr()}>{this.outcome_button(o.p, o.wns, o.score)}</li>)}
+          </ul>
+        </li>)}</ul>
+      </div>
+    </div >
   }
 
   solpath_load_button() {
     if (this.state.cursolpath) {
-      return <button type="button" className="btn btn-danger" onClick={() => this.load_solution(this.state.cursolpath!)}>LOAD!</button>
+      const rsz = this.state.cursoldesc!.states / 5000000;
+      const sz = rsz.toFixed(2);
+      const withoutsol = <button type="button" className="btn btn-success" onClick={() => this.init_solution(this.state.cursolpath!)}>Run without solution</button>
+      if (rsz < 2) {
+        return <div>
+          <button type="button" className="btn btn-danger" onClick={() => this.load_solution(this.state.cursolpath!)}>LOAD! Will use {sz}Gb</button>
+          {withoutsol}
+        </div>
+      } else {
+        return withoutsol
+      }
     } else {
       return "";
     }
@@ -364,7 +429,8 @@ class App extends React.Component<{}, State> {
       descs.push({
         path: path,
         desc: curcontent.desc,
-        score: curcontent.score
+        score: curcontent.score,
+        states: curcontent.states,
       })
     }
     descs.sort((a, b) => b.score - a.score);
@@ -381,6 +447,7 @@ class App extends React.Component<{}, State> {
     if (this.state.curcvar) {
       return statedesc_show({
         score: s.score,
+        states: s.states,
         chapter: this.state.curchapter,
         curhp: this.state.curcvar.endurance,
         maxhp: s.desc._ccst._maxendurance,
@@ -396,7 +463,7 @@ class App extends React.Component<{}, State> {
       })
     } else {
       var items: Array<[string, number]> =
-        s.desc._cvar._cvitems.map(([q, i]) => {
+        s.desc._cvar._cvitems.map(([i, q]) => {
           if (typeof i === 'string') {
             return [i, q]
           } else {
@@ -408,6 +475,7 @@ class App extends React.Component<{}, State> {
 
       return statedesc_show({
         score: s.score,
+        states: s.states,
         chapter: 1,
         curhp: s.desc._ccst._maxendurance,
         maxhp: s.desc._ccst._maxendurance,
@@ -424,7 +492,7 @@ class App extends React.Component<{}, State> {
       <div className="container-fluid">
         <div className="row">
           <h2>Solution selector</h2>
-          <div className="col-md-2">{this.state.bookids.map((bid) =>
+          <div className="col col-lg-2">{this.state.bookids.map((bid) =>
             <button
               type="button"
               key={bid}
@@ -433,7 +501,7 @@ class App extends React.Component<{}, State> {
               {bid} - {Object.keys(this.state.books[bid].content).length} sols
             </button>
           )}</div>
-          <div className="col-md-10">
+          <div className="col">
             <ul>
               {this.state.sorted_descs.map((d) => this.pscoredesc_button(d))}
             </ul>
@@ -441,13 +509,15 @@ class App extends React.Component<{}, State> {
         </div>
         <div className="row">
           <h2>Player state</h2>
+        </div>
+        <div className="row">
           {this.cursoldesc_show()}
           {this.solpath_load_button()}
         </div>
         <div className="row">
           <h2>Solution explorer</h2>
-          {this.solexplorer()}
         </div>
+        {this.solexplorer()}
       </div >
     );
   }

@@ -142,6 +142,16 @@ impl WNS {
       None
     }
   }
+
+  pub fn repr(&self) -> String {
+    match &self.0 {
+      NextStep::HasLost(cid) => format!("lost:{}", cid),
+      NextStep::HasWon(sc) => format!("won:{}", sc),
+      NextStep::NewChapter(cid, ns) => {
+        format!("dst:{}:{}", cid, WCharacterVariable(ns.clone()).repr())
+      }
+    }
+  }
 }
 
 #[wasm_bindgen]
@@ -168,10 +178,7 @@ impl WCharacterVariable {
   pub fn desc(&self) -> String {
     format!("{}", self.0)
   }
-}
 
-#[wasm_bindgen]
-impl WCharacterVariable {
   #[wasm_bindgen(getter)]
   pub fn endurance(&self) -> i8 {
     self.0.curendurance
@@ -195,6 +202,13 @@ impl WCharacterVariable {
       .into_iter()
       .map(|p| JsValue::from_serde(&p).unwrap())
       .collect()
+  }
+
+  pub fn repr(&self) -> String {
+    format!(
+      "{}:{}:{}:{}",
+      self.0.curendurance, self.0.flags.0, self.0.cequipment.0, self.0.cprevequipment.0
+    )
   }
 }
 
@@ -234,6 +248,25 @@ impl WState {
     }
   }
 
+  pub fn from_desc(desc: &str, bk: &str) -> WState {
+    let book: Vec<(ChapterId, Chapter<JRatio>)> = serde_json::from_str(&bk).unwrap();
+    let chapters: HashMap<ChapterId, Chapter<BigRational>> = book
+      .into_iter()
+      .map(|(cid, c)| (cid, c.map_proba(&|p: &JRatio| BigRational::from_jratio(p))))
+      .collect();
+    let order = order_chapters(&chapters);
+    let scores = HashMap::new();
+    let soldesc: SolDesc = serde_json::from_str(&desc).unwrap();
+
+    WState {
+      soldesc,
+      scores,
+      memo: Memoz::default(),
+      order,
+      chapters,
+    }
+  }
+
   pub fn step(&mut self, ns: &WNS) -> WChoices {
     WChoices(step(
       &mut self.memo,
@@ -247,7 +280,7 @@ impl WState {
   pub fn score(&self, ns: &WNS) -> Option<f32> {
     match &ns.0 {
       NextStep::HasLost(_) => Some(0.0),
-      NextStep::HasWon(sc) => Some(1.0),
+      NextStep::HasWon(_) => Some(1.0),
       NextStep::NewChapter(chapter, cv) => self.scores.get(&(*chapter, cv.clone())).copied(),
     }
   }
