@@ -20,14 +20,7 @@ impl<P, STT> NodeState<P, STT> {
     }
 }
 
-pub fn solve<
-    STT: Eq + Hash + Clone + std::fmt::Debug,
-    FC,
-    FS,
-    INSPECT,
-    DESC: std::fmt::Debug,
-    P: Rational,
->(
+pub fn solve<STT: Eq + Hash + Clone + std::fmt::Debug, FC, FS, INSPECT, DESC: std::fmt::Debug, P: Rational>(
     get_choices: &mut FC,
     get_score: &FS,
     inistate: &STT,
@@ -60,10 +53,7 @@ where
     FS: Fn(&STT) -> Option<P>,
 {
     if let Some(score) = get_score(curstate) {
-        search_state.insert(
-            curstate.clone(),
-            NodeState::Solved(SolNode::Win(score.clone())),
-        );
+        search_state.insert(curstate.clone(), NodeState::Solved(SolNode::Win(score.clone())));
         return score;
     }
 
