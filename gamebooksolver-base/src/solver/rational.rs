@@ -48,9 +48,10 @@ impl Rational for BigRational {
             match tp {
                 minicbor::data::Type::Tag => {
                     let tg = d.tag()?;
-                    match tg {
-                        minicbor::data::Tag::PosBignum => Ok(BigInt::from_signed_bytes_be(d.bytes()?)),
-                        _ => Err(Error::Message("bad tag for bignum")),
+                    if tg == minicbor::data::IanaTag::PosBignum.tag() {
+                        Ok(BigInt::from_signed_bytes_be(d.bytes()?))
+                    } else {
+                        Err(Error::message("bad tag for bignum"))
                     }
                 }
                 _ => d.u64().map(BigInt::from),
@@ -58,7 +59,7 @@ impl Rational for BigRational {
         }
         let ln = d.array()?;
         if ln != Some(2) {
-            return Err(Error::Message("Invalid length for pair"));
+            return Err(Error::message("Invalid length for pair"));
         }
         let nu = read_bigint(d)?;
         let de = read_bigint(d)?;
@@ -66,7 +67,7 @@ impl Rational for BigRational {
     }
     fn cbor_encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
         fn e_bigint<W: Write>(e: &mut Encoder<W>, i: &BigInt) -> Result<(), encode::Error<W::Error>> {
-            e.tag(minicbor::data::Tag::PosBignum)?.bytes(&i.to_signed_bytes_be())?;
+            e.tag(minicbor::data::IanaTag::PosBignum)?.bytes(&i.to_signed_bytes_be())?;
             Ok(())
         }
         e.array(2)?;
@@ -125,11 +126,10 @@ impl Rational for rug::Rational {
             match tp {
                 minicbor::data::Type::Tag => {
                     let tg = d.tag()?;
-                    match tg {
-                        minicbor::data::Tag::PosBignum => {
-                            Ok(rug::Integer::from_digits(d.bytes()?, rug::integer::Order::Msf))
-                        }
-                        _ => Err(Error::Message("bad tag for bignum")),
+                    if tg == minicbor::data::IanaTag::PosBignum.tag() {
+                        Ok(rug::Integer::from_digits(d.bytes()?, rug::integer::Order::Msf))
+                    } else {
+                        Err(Error::message("bad tag for bignum"))
                     }
                 }
                 _ => d.u64().map(rug::Integer::from),
@@ -137,7 +137,7 @@ impl Rational for rug::Rational {
         }
         let ln = d.array()?;
         if ln != Some(2) {
-            return Err(Error::Message("Invalid length for pair"));
+            return Err(Error::message("Invalid length for pair"));
         }
         let nu = read_bigint(d)?;
         let de = read_bigint(d)?;
@@ -145,7 +145,7 @@ impl Rational for rug::Rational {
     }
     fn cbor_encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
         fn e_bigint<W: Write>(e: &mut Encoder<W>, i: &rug::Integer) -> Result<(), encode::Error<W::Error>> {
-            e.tag(minicbor::data::Tag::PosBignum)?
+            e.tag(minicbor::data::IanaTag::PosBignum)?
                 .bytes(&i.to_digits(rug::integer::Order::Msf))?;
             Ok(())
         }

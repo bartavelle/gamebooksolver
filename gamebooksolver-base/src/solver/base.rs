@@ -125,8 +125,8 @@ pub fn sort_outcome<P: Rational, T: Ord>(o: &mut Outcome<P, T>) {
 // CBOR stuff
 
 struct PPart<P, A>((Option<A>, P));
-impl<'b, A: Decode<'b>, P: Rational> Decode<'b> for PPart<P, A> {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b, A: Decode<'b, ()>, P: Rational> Decode<'b, ()> for PPart<P, A> {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         cbor_pair(d, |d| cbor_option(d, |d| d.decode()), P::cbor_decode).map(PPart)
     }
 }
@@ -142,8 +142,8 @@ impl<P: Rational, A> ChoppedSolution<P, A> {
     }
 }
 
-impl<'b, A: Decode<'b>, P: Rational> Decode<'b> for ChoppedSolution<P, A> {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b, A: Decode<'b, ()>, P: Rational> Decode<'b, ()> for ChoppedSolution<P, A> {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let ln = d.array()?;
         let tg = d.u8()?;
         match (tg, ln) {
@@ -162,13 +162,13 @@ impl<'b, A: Decode<'b>, P: Rational> Decode<'b> for ChoppedSolution<P, A> {
             }
             (2, Some(1)) => Ok(ChoppedSolution::CLeafLost),
             (3, Some(2)) => P::cbor_decode(d).map(ChoppedSolution::CLeaf),
-            _ => Err(Error::Message("Invalid variant for ChoppedSolution")),
+            _ => Err(Error::message("Invalid variant for ChoppedSolution")),
         }
     }
 }
 
-impl<'t, A: Encode, P: Rational> Encode for ChoppedSolution<P, A> {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl<'t, A: Encode<()>, P: Rational> Encode<()> for ChoppedSolution<P, A> {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         match self {
             ChoppedSolution::CNode(sc, content) => {
                 e.array(3)?.u8(0)?;
@@ -207,7 +207,7 @@ where
 {
     let ln = d.array()?;
     if ln != Some(2) {
-        return Err(Error::Message("Invalid length for pair"));
+        return Err(Error::message("Invalid length for pair"));
     }
     let a = p1(d)?;
     let b = p2(d)?;
@@ -238,7 +238,7 @@ where
     match ln {
         Some(0) => Ok(None),
         Some(1) => p(d).map(Some),
-        _ => Err(Error::Message("Invalid optional size")),
+        _ => Err(Error::message("Invalid optional size")),
     }
 }
 

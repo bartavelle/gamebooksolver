@@ -8,9 +8,9 @@ edition = "2021"
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-minicbor = { version = "0.12" , features= ["derive"] }
-lazy_static = "1.4.0"
+minicbor = { version = "0" , features= ["derive"] }
+lazy_static = "1.4"
 num-rational = "0.4"
 num-bigint = "0.4"
 num-traits = "0.2"
-rug = { version = "1.14", features = ["serde"], optional = true }
+rug = { version = "1", features = ["serde"], optional = true }

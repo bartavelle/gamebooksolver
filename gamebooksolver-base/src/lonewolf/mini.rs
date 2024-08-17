@@ -13,11 +13,11 @@ pub struct SolutionDump<P> {
     pub content: Vec<(NextStep, ChoppedSolution<P, NextStep>)>,
 }
 
-impl<'b, P: Rational> Decode<'b> for SolutionDump<P> {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b, P: Rational> Decode<'b, ()> for SolutionDump<P> {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let ln = d.array()?;
         if ln != Some(3) {
-            return Err(Error::Message("invalid length for SolutionDump"));
+            return Err(Error::message("invalid length for SolutionDump"));
         }
         d.u8()?;
         let soldesc = d.decode()?;
@@ -29,8 +29,8 @@ impl<'b, P: Rational> Decode<'b> for SolutionDump<P> {
     }
 }
 
-impl<P: Rational> Encode for SolutionDump<P> {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl<P: Rational> Encode<()> for SolutionDump<P> {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(3)?.u8(0)?.encode(&self.soldesc)?;
         e.array(self.content.len() as u64)?;
         for c in &self.content {
@@ -50,11 +50,11 @@ pub struct SolDesc {
     pub cvar: CVarState,
 }
 
-impl<'b> Decode<'b> for SolDesc {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for SolDesc {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let ln = d.array()?;
         if ln != Some(4) {
-            return Err(Error::Message("invalid length for SolDesc"));
+            return Err(Error::message("invalid length for SolDesc"));
         }
         d.u8()?;
         let finalchaptersr: Result<Vec<u16>, Error> = d.array_iter()?.collect();
@@ -68,8 +68,8 @@ impl<'b> Decode<'b> for SolDesc {
         })
     }
 }
-impl Encode for SolDesc {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for SolDesc {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(4)?.u8(0)?;
         e.array(self.finalchapters.len() as u64)?;
         for fc in &self.finalchapters {
@@ -110,11 +110,11 @@ pub struct CharacterConstant {
     pub bookid: Book,
 }
 
-impl<'b> Decode<'b> for CharacterConstant {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for CharacterConstant {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let ln = d.array()?;
         if ln != Some(5) {
-            return Err(Error::Message("invalid length for CharacterConstant"));
+            return Err(Error::message("invalid length for CharacterConstant"));
         }
         d.u8()?;
         let maxendurance = d.i8()?;
@@ -131,8 +131,8 @@ impl<'b> Decode<'b> for CharacterConstant {
     }
 }
 
-impl Encode for CharacterConstant {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for CharacterConstant {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(5)?.u8(0)?.i8(self.maxendurance)?.u8(self.combat_skill)?;
         e.array(self.discipline.len() as u64)?;
         for d in &self.discipline {
@@ -153,11 +153,11 @@ pub struct CVarState {
     pub flags: Vec<Flag>,
 }
 
-impl<'b> Decode<'b> for CVarState {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for CVarState {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let ln = d.array()?;
         if ln != Some(4) {
-            return Err(Error::Message("invalid length for CVarState"));
+            return Err(Error::message("invalid length for CVarState"));
         }
         d.u8()?;
         let ritems: Result<Option<Vec<(Item, i64)>>, Error> =
@@ -174,8 +174,8 @@ impl<'b> Decode<'b> for CVarState {
     }
 }
 
-impl Encode for CVarState {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for CVarState {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(4)?.u8(0)?;
         e_cbor_option(e, self.items.as_ref(), |e, lst| {
             e.array(lst.len() as u64)?;
@@ -210,8 +210,8 @@ impl std::fmt::Display for NextStep {
     }
 }
 
-impl<'b> Decode<'b> for NextStep {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for NextStep {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let ln = d.array()?;
         let tg = d.u8()?;
         match (tg, ln) {
@@ -222,13 +222,13 @@ impl<'b> Decode<'b> for NextStep {
                 let cv = d.decode()?;
                 Ok(NextStep::NewChapter(cid, cv))
             }
-            _ => Err(Error::Message("Invalid variant for NextStep")),
+            _ => Err(Error::message("Invalid variant for NextStep")),
         }
     }
 }
 
-impl Encode for NextStep {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for NextStep {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         match self {
             NextStep::HasLost(cid) => {
                 e.array(2)?.u8(0)?.u16(*cid)?;
@@ -433,14 +433,14 @@ impl Equipment {
     }
 }
 
-impl<'b> Decode<'b> for Equipment {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for Equipment {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         d.u64().map(Equipment)
     }
 }
 
-impl Encode for Equipment {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for Equipment {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.u64(self.0)?;
         Ok(())
     }
@@ -519,11 +519,11 @@ impl CharacterVariable {
     }
 }
 
-impl<'b> Decode<'b> for CharacterVariable {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for CharacterVariable {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let ln = d.array()?;
         if ln != Some(5) {
-            return Err(Error::Message("invalid length for CharacterVariable"));
+            return Err(Error::message("invalid length for CharacterVariable"));
         }
         d.u8()?;
         let curendurance = d.i8()?;
@@ -539,8 +539,8 @@ impl<'b> Decode<'b> for CharacterVariable {
     }
 }
 
-impl Encode for CharacterVariable {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for CharacterVariable {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(5)?
             .u8(0)?
             .i8(self.curendurance)?
@@ -659,14 +659,14 @@ impl<'de> Deserialize<'de> for Item {
     }
 }
 
-impl<'b> Decode<'b> for Item {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for Item {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         use Item::*;
         let ln = d.array()?;
         let tg = d.u8()?;
 
         if ln != Some(1) && ln != Some(2) {
-            return Err(Error::Message("invalid length for item"));
+            return Err(Error::message("invalid length for item"));
         }
         match tg {
             0 => d.decode().map(Weapon),
@@ -685,13 +685,13 @@ impl<'b> Decode<'b> for Item {
             13 => Ok(Gold),
             14 => Ok(Laumspur),
             15 => Ok(Helmet),
-            _ => Err(Error::Message("invalid item id")),
+            _ => Err(Error::message("invalid item id")),
         }
     }
 }
 
-impl Encode for Item {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for Item {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         use Item::*;
         match self {
             Weapon(w) => {
@@ -936,14 +936,14 @@ impl<'de> Deserialize<'de> for Discipline {
     }
 }
 
-impl<'b> Decode<'b> for Discipline {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for Discipline {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         use Discipline::*;
         let ln = d.array()?;
         let tg = d.u8()?;
 
         if ln != Some(1) && (ln != Some(2) && tg != 5) {
-            return Err(Error::Message("invalid length for discipline"));
+            return Err(Error::message("invalid length for discipline"));
         }
         match tg {
             0 => Ok(Camouflage),
@@ -956,13 +956,13 @@ impl<'b> Decode<'b> for Discipline {
             7 => Ok(MindBlast),
             8 => Ok(AnimalKinship),
             9 => Ok(MindOverMatter),
-            _ => Err(Error::Message("invalid discipline id")),
+            _ => Err(Error::message("invalid discipline id")),
         }
     }
 }
 
-impl Encode for Discipline {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for Discipline {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         use Discipline::*;
         if let WeaponSkill(w) = self {
             e.array(2)?;
@@ -1018,14 +1018,14 @@ impl Weapon {
     ];
 }
 
-impl<'b> Decode<'b> for Weapon {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for Weapon {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         use Weapon::*;
         let ln = d.array()?;
         let tg = d.u8()?;
 
         if ln != Some(1) {
-            return Err(Error::Message("invalid length for weapon"));
+            return Err(Error::message("invalid length for weapon"));
         }
 
         match tg {
@@ -1040,13 +1040,13 @@ impl<'b> Decode<'b> for Weapon {
             8 => Ok(BroadSword),
             9 => Ok(MagicSpear),
             10 => Ok(Sommerswerd),
-            _ => Err(Error::Message("invalid weapon id")),
+            _ => Err(Error::message("invalid weapon id")),
         }
     }
 }
 
-impl Encode for Weapon {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for Weapon {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(1)?.u8(*self as u8)?;
         Ok(())
     }
@@ -1080,14 +1080,14 @@ impl std::str::FromStr for Book {
     }
 }
 
-impl<'b> Decode<'b> for Book {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for Book {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         use Book::*;
         let ln = d.array()?;
         let tg = d.u8()?;
 
         if ln != Some(1) {
-            return Err(Error::Message("invalid length for book"));
+            return Err(Error::message("invalid length for book"));
         }
         match tg {
             0 => Ok(Book01),
@@ -1095,13 +1095,13 @@ impl<'b> Decode<'b> for Book {
             2 => Ok(Book03),
             3 => Ok(Book04),
             4 => Ok(Book05),
-            _ => Err(Error::Message("Invalid book id")),
+            _ => Err(Error::message("Invalid book id")),
         }
     }
 }
 
-impl Encode for Book {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for Book {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(1)?.u8(*self as u8)?;
         Ok(())
     }
@@ -1179,14 +1179,14 @@ impl std::str::FromStr for Flag {
     }
 }
 
-impl<'b> Decode<'b> for Flag {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for Flag {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         use Flag::*;
         let ln = d.array()?;
         let tg = d.u8()?;
 
         if ln != Some(1) {
-            return Err(Error::Message("invalid length for flag"));
+            return Err(Error::message("invalid length for flag"));
         }
 
         match tg {
@@ -1208,13 +1208,13 @@ impl<'b> Decode<'b> for Flag {
             15 => Ok(PermanentSkillReduction2),
             16 => Ok(HelmetIsSilver),
             17 => Ok(PotentStrengthPotionActive),
-            _ => Err(Error::Message("invalid flag id")),
+            _ => Err(Error::message("invalid flag id")),
         }
     }
 }
 
-impl Encode for Flag {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for Flag {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(1)?.u8(*self as u8)?;
         Ok(())
     }
@@ -1269,14 +1269,14 @@ impl CompactState {
     }
 }
 
-impl Encode for CompactState {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for CompactState {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.u16(self.chapter)?.encode(&self.character)?.f32(self.score)?;
         Ok(())
     }
 }
-impl<'b> Decode<'b> for CompactState {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for CompactState {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let chapter = d.u16()?;
         let character = d.decode()?;
         let score = d.f32()?;
@@ -1294,11 +1294,11 @@ pub struct CompactSolution {
     pub content: Vec<CompactState>,
 }
 
-impl<'b> Decode<'b> for CompactSolution {
-    fn decode(d: &mut Decoder<'b>) -> Result<Self, Error> {
+impl<'b> Decode<'b, ()> for CompactSolution {
+    fn decode(d: &mut Decoder<'b>, _: &mut ()) -> Result<Self, Error> {
         let ln = d.array()?;
         if ln != Some(3) {
-            return Err(Error::Message("invalid length for SolutionDump"));
+            return Err(Error::message("invalid length for SolutionDump"));
         }
         d.u8()?;
         let soldesc = d.decode()?;
@@ -1310,8 +1310,8 @@ impl<'b> Decode<'b> for CompactSolution {
     }
 }
 
-impl Encode for CompactSolution {
-    fn encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
+impl Encode<()> for CompactSolution {
+    fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         e.array(3)?.u8(0)?.encode(&self.soldesc)?;
         e.array(self.content.len() as u64)?;
         for c in &self.content {
