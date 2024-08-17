@@ -763,7 +763,7 @@ mod test {
             bookid: Book::Book04,
             maxendurance: 20,
             combat_skill: lws,
-            discipline: lwdisc.iter().copied().collect(),
+            discipline: lwdisc.to_vec(),
         };
         let mut cvar = CharacterVariable::new(lwe);
         for i in lwitems {

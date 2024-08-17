@@ -36,8 +36,6 @@ struct OSolDesc {
     pub gold: u8,
     #[structopt(long = "flag", short = "f")]
     pub flags: Vec<Flag>,
-    #[structopt(long = "autoweapon")]
-    pub autoweapon: bool,
     #[structopt(long = "finalchapters")]
     pub finalchapters: Vec<u16>,
     #[structopt(long = "bookpath")]
@@ -268,7 +266,7 @@ fn load_results(
         if !pth.ends_with(".json") {
             continue;
         }
-        let f = File::open(&pth).unwrap();
+        let f = File::open(pth).unwrap();
         let ms: Multistat<Rational> = serde_json::de::from_reader(f).unwrap();
         if ms.msentries.len() != 1 {
             eprintln!("invalid amount of entries in {}", pth);
@@ -561,7 +559,7 @@ fn main() {
             w.0.finish().unwrap();
         }
         Some(Subcommand::Explore { bookpath }) => {
-            let fl = File::open(&bookpath).unwrap();
+            let fl = File::open(bookpath).unwrap();
             let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl).unwrap();
             let soldump = load_soldump(&opt.solpath);
             eprintln!("Starting condition: {:?}", soldump.soldesc);

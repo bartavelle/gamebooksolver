@@ -8,7 +8,7 @@ use crate::solver::rational::Rational;
 
 enum UsedWeapon {
     WithSkill(Weapon),
-    WithoutSkill(Weapon),
+    WithoutSkill,
     NoWeapon,
 }
 
@@ -25,7 +25,7 @@ fn used_weapon(ccst: &CharacterConstant, cvar: &CharacterVariable) -> UsedWeapon
         if wskill == Some(Weapon::Sword) || wskill == Some(Weapon::ShortSword) || wskill == Some(Weapon::BroadSword) {
             UsedWeapon::WithSkill(Weapon::Sommerswerd)
         } else {
-            UsedWeapon::WithoutSkill(Weapon::Sommerswerd)
+            UsedWeapon::WithoutSkill
         }
     } else {
         let weapons = cvar.cequipment.weapons();
@@ -34,7 +34,7 @@ fn used_weapon(ccst: &CharacterConstant, cvar: &CharacterVariable) -> UsedWeapon
         } else if let Some(w) = weapons.iter().find(|cw| Some(**cw) == wskill) {
             UsedWeapon::WithSkill(*w)
         } else {
-            UsedWeapon::WithoutSkill(weapons[0])
+            UsedWeapon::WithoutSkill
         }
     }
 }
@@ -50,7 +50,7 @@ fn important_item(i: &Item, ccst: &CharacterConstant, cvar: &CharacterVariable) 
                 match used_weapon(ccst, cvar) {
                     UsedWeapon::WithSkill(_) => false,
                     UsedWeapon::NoWeapon => true,
-                    UsedWeapon::WithoutSkill(_) => ccst.discipline.contains(&Discipline::WeaponSkill(*w)),
+                    UsedWeapon::WithoutSkill => ccst.discipline.contains(&Discipline::WeaponSkill(*w)),
                 }
             }
         }
@@ -396,18 +396,7 @@ pub fn flatten_decision<P: Rational>(
             out
         }
         Decision::Special(SpecialChapter::B05S127) => {
-            let borne = |x| {
-                P::from_i64(
-                    if x > 10 {
-                        10
-                    } else if x < 0 {
-                        0
-                    } else {
-                        x
-                    },
-                    10,
-                )
-            };
+            let borne = |x: i64| P::from_i64(x.clamp(0, 10), 10);
             let b1 = borne(ccst.combat_skill as i64 - 10);
             let b2 = borne(20 - ccst.combat_skill as i64);
             vec![(

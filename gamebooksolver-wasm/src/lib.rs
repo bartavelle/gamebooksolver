@@ -26,7 +26,7 @@ pub struct WSolDesc(SolDesc);
 impl WSolDesc {
     #[wasm_bindgen(constructor)]
     pub fn new(buf: &[u8]) -> Self {
-        WSolDesc(minicbor::decode(&buf).unwrap())
+        WSolDesc(minicbor::decode(buf).unwrap())
     }
 
     pub fn ini_cvar(&self) -> WCharacterVariable {
@@ -189,7 +189,7 @@ impl WCharacterVariable {
             .flags
             .all()
             .into_iter()
-            .map(|f| JsValue::from_serde(&f).unwrap())
+            .map(|f| serde_wasm_bindgen::to_value(&f).unwrap())
             .collect()
     }
     #[wasm_bindgen(getter)]
@@ -198,7 +198,7 @@ impl WCharacterVariable {
             .cequipment
             .items()
             .into_iter()
-            .map(|p| JsValue::from_serde(&p).unwrap())
+            .map(|p| serde_wasm_bindgen::to_value(&p).unwrap())
             .collect()
     }
 
@@ -223,8 +223,8 @@ pub struct WState {
 impl WState {
     #[wasm_bindgen(constructor)]
     pub fn new(buf: &[u8], bk: &str) -> WState {
-        let sol: CompactSolution = minicbor::decode(&buf).unwrap();
-        let book: Vec<(ChapterId, Chapter<JRatio>)> = serde_json::from_str(&bk).unwrap();
+        let sol: CompactSolution = minicbor::decode(buf).unwrap();
+        let book: Vec<(ChapterId, Chapter<JRatio>)> = serde_json::from_str(bk).unwrap();
         let chapters: HashMap<ChapterId, Chapter<BigRational>> = book
             .into_iter()
             .map(|(cid, c)| (cid, c.map_proba(&|p: &JRatio| BigRational::from_jratio(p))))
@@ -247,14 +247,14 @@ impl WState {
     }
 
     pub fn from_desc(desc: &str, bk: &str) -> WState {
-        let book: Vec<(ChapterId, Chapter<JRatio>)> = serde_json::from_str(&bk).unwrap();
+        let book: Vec<(ChapterId, Chapter<JRatio>)> = serde_json::from_str(bk).unwrap();
         let chapters: HashMap<ChapterId, Chapter<BigRational>> = book
             .into_iter()
             .map(|(cid, c)| (cid, c.map_proba(&|p: &JRatio| BigRational::from_jratio(p))))
             .collect();
         let order = order_chapters(&chapters);
         let scores = HashMap::new();
-        let soldesc: SolDesc = serde_json::from_str(&desc).unwrap();
+        let soldesc: SolDesc = serde_json::from_str(desc).unwrap();
 
         WState {
             soldesc,

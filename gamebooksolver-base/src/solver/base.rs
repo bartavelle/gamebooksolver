@@ -167,7 +167,7 @@ impl<'b, A: Decode<'b, ()>, P: Rational> Decode<'b, ()> for ChoppedSolution<P, A
     }
 }
 
-impl<'t, A: Encode<()>, P: Rational> Encode<()> for ChoppedSolution<P, A> {
+impl<A: Encode<()>, P: Rational> Encode<()> for ChoppedSolution<P, A> {
     fn encode<W: Write>(&self, e: &mut Encoder<W>, _: &mut ()) -> Result<(), encode::Error<W::Error>> {
         match self {
             ChoppedSolution::CNode(sc, content) => {
