@@ -5,6 +5,7 @@ use minicbor::encode::{self, Encode, Encoder, Write};
 use serde::de::Visitor;
 use serde::Deserializer;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::hash::Hash;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -1256,10 +1257,14 @@ pub struct CompactState {
 }
 
 impl CompactState {
-    pub fn from_choppedsolution<P: Rational>(cur: NextStep, cs: ChoppedSolution<P, NextStep>) -> Option<Self> {
+    pub fn from_choppedsolution<P: Rational>(
+        cur: NextStep,
+        cs: ChoppedSolution<P, NextStep>,
+        useless_chapters: &HashSet<u16>,
+    ) -> Option<Self> {
         let score = cs.score().to_f32();
         match cur {
-            NextStep::NewChapter(cid, cv) => Some(CompactState {
+            NextStep::NewChapter(cid, cv) if !useless_chapters.contains(&cid) => Some(CompactState {
                 chapter: cid,
                 character: cv,
                 score,

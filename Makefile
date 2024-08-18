@@ -109,37 +109,45 @@ low05c: data/B05 $(TARGETSLOWB05)
 low05j: data/B05 $(patsubst %, %.jot, $(TARGETSLOWB05))
 low05d: data/B05 json-chapters/display05.json $(patsubst %, %.dot, $(TARGETSLOWB05))
 low05: data/B05 $(patsubst %, %.svg, $(TARGETSLOWB05))
-low05co: $(patsubst %.cbor, %.compact, $(TARGETSLOWB05))
+low05co: $(patsubst %.cbor, %.compact.zstd, $(TARGETSLOWB05))
 
 low04c: low05j data/B04 $(TARGETSLOWB04)
 low04j: data/B04 $(patsubst %, %.jot, $(TARGETSLOWB04))
 low04d: data/B04 json-chapters/display04.json $(patsubst %, %.dot, $(TARGETSLOWB04))
 low04: data/B04 $(patsubst %, %.svg, $(TARGETSLOWB04))
-low04co: $(patsubst %.cbor, %.compact, $(TARGETSLOWB04))
+low04co: $(patsubst %.cbor, %.compact.zstd, $(TARGETSLOWB04))
 
 low03c: low04j data/B03 $(TARGETSLOWB03)
 low03j: data/B03 $(patsubst %, %.jot, $(TARGETSLOWB03))
 low03d: data/B03 json-chapters/display03.json $(patsubst %, %.dot, $(TARGETSLOWB03))
 low03: data/B03 $(patsubst %, %.svg, $(TARGETSLOWB03))
-low03co: $(patsubst %.cbor, %.compact, $(TARGETSLOWB03))
+low03co: $(patsubst %.cbor, %.compact.zstd, $(TARGETSLOWB03))
 
 low02c: low03j data/B02 $(TARGETSLOWB02)
 low02j: data/B02 $(patsubst %, %.jot, $(TARGETSLOWB02))
 low02d: data/B02 json-chapters/display02.json $(patsubst %, %.dot, $(TARGETSLOWB02))
 low02: data/B02 $(patsubst %, %.svg, $(TARGETSLOWB02))
-low02co: $(patsubst %.cbor, %.compact, $(TARGETSLOWB02))
+low02co: $(patsubst %.cbor, %.compact.zstd, $(TARGETSLOWB02))
 
 low01c: low01j data/B01 $(TARGETSLOWB01)
 low01j: data/B01 $(patsubst %, %.jot, $(TARGETSLOWB01))
 low01d: data/B01 json-chapters/display01.json $(patsubst %, %.dot, $(TARGETSLOWB01))
 low01: data/B01 $(patsubst %, %.svg, $(TARGETSLOWB01))
-low01co: $(patsubst %.cbor, %.compact, $(TARGETSLOWB01))
+low01co: $(patsubst %.cbor, %.compact.zstd, $(TARGETSLOWB01))
 
 data/%.cbor:
 	time python3 buildsol-rust.py $@
 
-data/%.compact: data/%.cbor
-	time ./target/release/gamebooksolver-explorer --solpath $< optimize $@
+data/B05/%.compact.zstd: data/B05/%.cbor
+	time ./target/release/gamebooksolver-explorer --solpath $< optimize --bookpath json-chapters/book05.json $@
+data/B04/%.compact.zstd: data/B04/%.cbor
+	time ./target/release/gamebooksolver-explorer --solpath $< optimize --bookpath json-chapters/book04.json $@
+data/B03/%.compact.zstd: data/B03/%.cbor
+	time ./target/release/gamebooksolver-explorer --solpath $< optimize --bookpath json-chapters/book03.json $@
+data/B02/%.compact.zstd: data/B02/%.cbor
+	time ./target/release/gamebooksolver-explorer --solpath $< optimize --bookpath json-chapters/book02.json $@
+data/B01/%.compact.zstd: data/B01/%.cbor
+	time ./target/release/gamebooksolver-explorer --solpath $< optimize --bookpath json-chapters/book01.json $@
 
 data/%.cbor.jot: data/%.cbor gamebooksolver-explorer
 	time ./target/release/gamebooksolver-explorer --solpath $< > $@

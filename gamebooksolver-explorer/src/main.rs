@@ -62,6 +62,8 @@ enum Subcommand {
         target: String,
         #[structopt(long)]
         dummy: bool,
+        #[structopt(long)]
+        bookpath: Option<String>,
     },
 }
 
@@ -529,15 +531,29 @@ fn main() {
             let x = serde_json::to_string(&output).unwrap();
             println!("{}", x);
         }
-        Some(Subcommand::Optimize { target, dummy }) => {
+        Some(Subcommand::Optimize {
+            target,
+            dummy,
+            bookpath,
+        }) => {
             let soldump = load_soldump(&opt.solpath);
+            let useless_chapters = bookpath
+                .as_ref()
+                .map(|bookpath| {
+                    let fl = File::open(bookpath).unwrap();
+                    let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl).unwrap();
+                    book.into_iter()
+                        .filter_map(|(a, b)| if has_no_choice(&b.pchoice) { None } else { Some(a.0) })
+                        .collect::<HashSet<_>>()
+                })
+                .unwrap_or_default();
             let mut content = if *dummy {
                 Vec::new()
             } else {
                 soldump
                     .content
                     .into_iter()
-                    .filter_map(|(k, v)| CompactState::from_choppedsolution(k, v))
+                    .filter_map(|(k, v)| CompactState::from_choppedsolution(k, v, &useless_chapters))
                     .collect::<Vec<_>>()
             };
             content.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
@@ -695,5 +711,20 @@ fn main() {
             minicbor::encode(&soldump, &mut w).unwrap();
             w.0.finish().unwrap();
         }
+    }
+}
+
+fn has_no_choice(d: &Decision<Rational>) -> bool {
+    match d {
+        Decision::Decisions(x) => x.len() == 1,
+        Decision::RetrieveEquipment(_)
+        | Decision::CanTake(_, _, _)
+        | Decision::Canbuy(_, _, _)
+        | Decision::Special(_)
+        | Decision::EvadeFight(_, _, _, _)
+        | Decision::RemoveItemFrom(_, _, _)
+        | Decision::Cansell(_, _, _) => false,
+        Decision::AfterCombat(d) | Decision::LoseItemFrom(_, _, d) | Decision::Conditional(_, d) => has_no_choice(d),
+        Decision::None(_) => true,
     }
 }

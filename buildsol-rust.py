@@ -18,7 +18,7 @@ PTRN = re.compile(r"data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.cbo
 path = sys.argv[1]
 
 m = PTRN.match(path)
-assert m is not None
+assert m is not None, path
 (b, e, s, sdiscs, mgold, items) = m.groups()
 discs = sdiscs.split(".")
 
