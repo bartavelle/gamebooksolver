@@ -14,12 +14,11 @@ publish = false
 
 ### BEGIN HAKARI SECTION
 [dependencies]
-libc = { version = "0.2" }
+memchr = { version = "2" }
 
 [build-dependencies]
 proc-macro2 = { version = "1" }
 quote = { version = "1" }
-syn-dff4ba8e3ae991db = { package = "syn", version = "1", features = ["extra-traits", "full", "visit"] }
-syn-f595c2ba2a3f28df = { package = "syn", version = "2", features = ["full", "visit"] }
+syn = { version = "2", features = ["extra-traits", "full", "visit", "visit-mut"] }
 
 ### END HAKARI SECTION
