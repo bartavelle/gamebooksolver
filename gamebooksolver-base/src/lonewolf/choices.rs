@@ -59,7 +59,7 @@ fn important_item(i: &Item, ccst: &CharacterConstant, cvar: &CharacterVariable) 
 }
 
 enum CanTake {
-    SpaceAvailable(u8),
+    SpaceAvailable,
     MustDrop(Vec<Item>),
     Nope,
 }
@@ -70,15 +70,15 @@ fn can_take(item: &Item, ccst: &CharacterConstant, cvar: &CharacterVariable) -> 
             if cvar.cequipment.has_itemb(item) {
                 CanTake::Nope
             } else {
-                CanTake::SpaceAvailable(1)
+                CanTake::SpaceAvailable
             }
         }
-        Slot::Pouch => CanTake::SpaceAvailable(50),
+        Slot::Pouch => CanTake::SpaceAvailable,
         Slot::Weapon => {
             let weapons = cvar.cequipment.weapons();
             match weapons.len() {
-                0 => CanTake::SpaceAvailable(2),
-                1 => CanTake::SpaceAvailable(1),
+                0 => CanTake::SpaceAvailable,
+                1 => CanTake::SpaceAvailable,
                 _ => CanTake::MustDrop(match used_weapon(ccst, cvar) {
                     UsedWeapon::WithSkill(w) => weapons
                         .into_iter()
@@ -98,7 +98,7 @@ fn can_take(item: &Item, ccst: &CharacterConstant, cvar: &CharacterVariable) -> 
                 panic!("too many items in backpack :(")
             }
             if bpitems.len() < 8 {
-                CanTake::SpaceAvailable(8 - bpitems.len() as u8)
+                CanTake::SpaceAvailable
             } else {
                 bpitems.dedup();
                 CanTake::MustDrop(bpitems)
@@ -306,7 +306,7 @@ pub fn flatten_decision<P: Rational>(
                 let notake = || flatten_decision(ccst, cvar, nxt);
                 match can_take(i, ccst, cvar) {
                     CanTake::Nope => notake(),
-                    CanTake::SpaceAvailable(_) => with_effect(&[SimpleOutcome::GainItem(*i, 1)], nxt),
+                    CanTake::SpaceAvailable => with_effect(&[SimpleOutcome::GainItem(*i, 1)], nxt),
                     CanTake::MustDrop(lst) => {
                         if important_item(i, ccst, cvar) {
                             let mut out = Vec::new();
@@ -372,7 +372,7 @@ pub fn flatten_decision<P: Rational>(
             if cvar.cequipment.get_item_count(&Item::Gold) >= price.0 && important_item(item, ccst, cvar) {
                 match can_take(item, ccst, cvar) {
                     CanTake::Nope => (),
-                    CanTake::SpaceAvailable(_) => out.extend(with_effect(
+                    CanTake::SpaceAvailable => out.extend(with_effect(
                         &[
                             SimpleOutcome::LoseItem(Item::Gold, price.0),
                             SimpleOutcome::GainItem(*item, 1),

@@ -1512,4 +1512,10 @@ mod test {
         let output: SolutionDump<BigRational> = minicbor::decode(buffer.as_ref()).unwrap();
         assert_eq!(&sd, &output);
     }
+
+    #[test]
+    fn character_variable_size() {
+        let sz = size_of::<CharacterVariable>();
+        assert_eq!(sz, 24)
+    }
 }

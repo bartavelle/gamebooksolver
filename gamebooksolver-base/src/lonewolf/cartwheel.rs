@@ -50,7 +50,7 @@ impl Matrix {
         Matrix {
             sx,
             sy,
-            content: std::iter::repeat(0.0).take(sx * sy).collect(),
+            content: std::iter::repeat_n(0.0, sx * sy).collect(),
         }
     }
 
