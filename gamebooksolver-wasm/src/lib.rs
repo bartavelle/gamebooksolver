@@ -6,7 +6,9 @@ use wasm_bindgen::prelude::*;
 use gamebooksolver_base::lonewolf::chapter::{Chapter, ChapterId};
 use gamebooksolver_base::lonewolf::combat::Memoz;
 use gamebooksolver_base::lonewolf::data::order_chapters;
-use gamebooksolver_base::lonewolf::mini::{CharacterVariable, CompactSolution, NextStep, SolDesc};
+use gamebooksolver_base::lonewolf::mini::{
+    CharacterVariable, CompactSolution, Equipment, NextStep, SolDesc,
+};
 use gamebooksolver_base::lonewolf::solve::step;
 use gamebooksolver_base::solver::base::{Choice, Outcome, Proba};
 use gamebooksolver_base::solver::rational::{JRatio, Rational};
@@ -38,7 +40,7 @@ impl WSolDesc {
 pub struct WCharacterVariable(CharacterVariable);
 
 #[wasm_bindgen]
-pub struct WChoices(Vec<Choice<BigRational, String, NextStep>>);
+pub struct WChoices(Vec<Choice<BigRational, String, NextStep<Equipment>>>);
 
 #[wasm_bindgen]
 impl WChoices {
@@ -52,7 +54,7 @@ impl WChoices {
 }
 
 #[wasm_bindgen]
-pub struct WChoice(Choice<BigRational, String, NextStep>);
+pub struct WChoice(Choice<BigRational, String, NextStep<Equipment>>);
 
 #[wasm_bindgen]
 impl WChoice {
@@ -68,7 +70,7 @@ impl WChoice {
 }
 
 #[wasm_bindgen]
-pub struct WOutcome(Outcome<BigRational, NextStep>);
+pub struct WOutcome(Outcome<BigRational, NextStep<Equipment>>);
 
 #[wasm_bindgen]
 impl WOutcome {
@@ -82,7 +84,7 @@ impl WOutcome {
 }
 
 #[wasm_bindgen]
-pub struct PNS(Proba<BigRational, NextStep>);
+pub struct PNS(Proba<BigRational, NextStep<Equipment>>);
 
 #[wasm_bindgen]
 impl PNS {
@@ -98,7 +100,7 @@ impl PNS {
 }
 
 #[wasm_bindgen]
-pub struct WNS(NextStep);
+pub struct WNS(NextStep<Equipment>);
 
 #[wasm_bindgen]
 impl WNS {
@@ -204,8 +206,8 @@ impl WCharacterVariable {
 
     pub fn repr(&self) -> String {
         format!(
-            "{}:{}:{}:{}",
-            self.0.curendurance, self.0.flags.0, self.0.cequipment.0, self.0.cprevequipment.0
+            "{}:{}:{:?}:{:?}",
+            self.0.curendurance, self.0.flags.0, self.0.cequipment, self.0.cprevequipment
         )
     }
 }
@@ -223,7 +225,7 @@ pub struct WState {
 impl WState {
     #[wasm_bindgen(constructor)]
     pub fn new(buf: &[u8], bk: &str) -> WState {
-        let sol: CompactSolution = minicbor::decode(buf).unwrap();
+        let sol: CompactSolution<Equipment> = minicbor::decode(buf).unwrap();
         let book: Vec<(ChapterId, Chapter<JRatio>)> = serde_json::from_str(bk).unwrap();
         let chapters: HashMap<ChapterId, Chapter<BigRational>> = book
             .into_iter()

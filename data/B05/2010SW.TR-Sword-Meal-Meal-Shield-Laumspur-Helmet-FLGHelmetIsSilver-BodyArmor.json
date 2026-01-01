@@ -1,0 +1,62 @@
+{
+  "mbook": "Book05",
+  "msdisciplines": [
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindOverMatter",
+    "MindBlast",
+    "Healing",
+    "Camouflage",
+    "SixthSense",
+    "Hunting",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": [
+      [
+        "Helmet",
+        1
+      ],
+      [
+        "Shield",
+        1
+      ],
+      [
+        "BodyArmor",
+        1
+      ],
+      [
+        "Meal",
+        2
+      ],
+      [
+        {
+          "Weapon": "Sword"
+        },
+        1
+      ],
+      [
+        "Laumspur",
+        1
+      ]
+    ],
+    "gold": 15,
+    "flags": [
+      "HelmetIsSilver"
+    ]
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.5787848358536651,
+      "mratio": {
+        "radix": 16,
+        "value": "1d389e6156d78b59a1e97a6d9/327cb2734119d3b7a90000000"
+      },
+      "states": 71880041
+    }
+  ]
+}

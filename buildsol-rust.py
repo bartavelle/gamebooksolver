@@ -13,21 +13,54 @@ import subprocess
 
 alldisciplines = set({"CA", "HU", "6S", "TR", "HL", "MS", "MB", "AK", "MO"})
 allweapons = set({"DA", "SP", "MA", "WH", "SW", "AX", "QS", "SO", "SS"})
-PTRN = re.compile(r"data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.cbor")
+PTRN = re.compile(r"data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.bin")
+PTRN_CO = re.compile(
+    r"data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.compact\.zstd"
+)
 
 path = sys.argv[1]
 
+is_bin = False
+
 m = PTRN.match(path)
+if m:
+    is_bin = True
+else:
+    m = PTRN_CO.match(path)
 assert m is not None, path
 (b, e, s, sdiscs, mgold, items) = m.groups()
 discs = sdiscs.split(".")
 
-cmdline = ["target/release/gamebooksolver-explorer", "--solpath", path, "soldump"]
+if is_bin:
+    cmdline = ["target/release/gamebooksolver-explorer", "--solpath", path, "soldump"]
+else:
+    stem = path[:-13]
+    cmdline = [
+        "target/release/gamebooksolver-explorer",
+        "--solpath",
+        path,
+        "--desc",
+        stem + ".desc",
+        "--jot",
+        stem + ".jot",
+        "--json",
+        stem + ".json",
+        "soldump-optimize",
+    ]
 
 if int(b) < 5:
     cmdline += ["--results", "data/B%02d" % (int(b) + 1,)]
 
-cmdline += ["--book", b, "--maxendurance", e, "--skill", s, "--bookpath", "json-chapters/book%s.json" % b]
+cmdline += [
+    "--book",
+    b,
+    "--maxendurance",
+    e,
+    "--skill",
+    s,
+    "--bookpath",
+    "json-chapters/book%s.json" % b,
+]
 
 for d in discs:
     if d in alldisciplines:

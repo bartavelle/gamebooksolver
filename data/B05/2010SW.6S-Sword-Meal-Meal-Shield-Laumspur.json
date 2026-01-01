@@ -1,0 +1,52 @@
+{
+  "mbook": "Book05",
+  "msdisciplines": [
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindOverMatter",
+    "Healing",
+    "Camouflage",
+    "Tracking",
+    "MindBlast",
+    "AnimalKinship",
+    "Hunting",
+    "MindShield"
+  ],
+  "variable": {
+    "items": [
+      [
+        {
+          "Weapon": "Sword"
+        },
+        1
+      ],
+      [
+        "Laumspur",
+        1
+      ],
+      [
+        "Shield",
+        1
+      ],
+      [
+        "Meal",
+        2
+      ]
+    ],
+    "gold": 15,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.2212137563954493,
+      "mratio": {
+        "radix": 16,
+        "value": "bb60164923cb1d52a5/34f086f3b33b6840000"
+      },
+      "states": 53600167
+    }
+  ]
+}

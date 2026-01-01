@@ -1,0 +1,65 @@
+{
+  "mbook": "Book04",
+  "msdisciplines": [
+    {
+      "WeaponSkill": "Sword"
+    },
+    "Healing",
+    "Tracking",
+    "MindBlast",
+    "SixthSense",
+    "Camouflage",
+    "MindShield",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": [
+      [
+        "BodyArmor",
+        1
+      ],
+      [
+        "Laumspur",
+        2
+      ],
+      [
+        "Shield",
+        1
+      ],
+      [
+        "StrengthPotion4",
+        1
+      ],
+      [
+        {
+          "Weapon": "Dagger"
+        },
+        1
+      ],
+      [
+        {
+          "Weapon": "Sword"
+        },
+        1
+      ],
+      [
+        "Meal",
+        5
+      ]
+    ],
+    "gold": 0,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.4912768002732205,
+      "mratio": {
+        "radix": 16,
+        "value": "1069d0ba50009fd0abbac12dd5ec4e46509d6bdb97/2168d8d9badc7c1051e9b68adfe191d40000000000"
+      },
+      "states": 26808527
+    }
+  ]
+}

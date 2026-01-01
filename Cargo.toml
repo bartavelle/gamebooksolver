@@ -1,3 +1,5 @@
 [workspace]
 resolver = "2"
-members = [ "gamebooksolver-base", "gamebooksolver-explorer", "gamebooksolver-wasm" , "workspace_hack" ]
+members = [ "gamebooksolver-base", "gamebooksolver-explorer", "workspace_hack" ]
+
+edition = '2024'

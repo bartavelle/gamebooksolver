@@ -1,0 +1,71 @@
+{
+  "mbook": "Book04",
+  "msdisciplines": [
+    {
+      "WeaponSkill": "Sword"
+    },
+    "AnimalKinship",
+    "MindOverMatter",
+    "Tracking",
+    "MindShield",
+    "Healing",
+    "Hunting",
+    "MindBlast"
+  ],
+  "variable": {
+    "items": [
+      [
+        "StrengthPotion4",
+        1
+      ],
+      [
+        "Meal",
+        5
+      ],
+      [
+        {
+          "Weapon": "Dagger"
+        },
+        1
+      ],
+      [
+        "Shield",
+        1
+      ],
+      [
+        "Laumspur",
+        2
+      ],
+      [
+        {
+          "Weapon": "Sword"
+        },
+        1
+      ],
+      [
+        "BodyArmor",
+        1
+      ],
+      [
+        "Helmet",
+        1
+      ]
+    ],
+    "gold": 0,
+    "flags": [
+      "HelmetIsSilver"
+    ]
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.7359958866349345,
+      "mratio": {
+        "radix": 16,
+        "value": "92904a7eb6ada32bfd9c414d7d096d7ea048fb8105ee69597/c722f0ef9d80aad6424d3ad2b7b97ef50f540000000000000"
+      },
+      "states": 24020362
+    }
+  ]
+}

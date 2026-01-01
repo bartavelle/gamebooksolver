@@ -1,7 +1,9 @@
 mod hits;
 
 use crate::lonewolf::chapter::{ChapterId, CombatSkill, Endurance, FightDetails, FightModifier};
-use crate::lonewolf::mini::{CharacterConstant, CharacterVariable, Discipline, Flag, Flags, Item, Weapon};
+use crate::lonewolf::mini::{
+    CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Flags, Item, Weapon,
+};
 use crate::solver::base::{optimize_outcome, Cache, Outcome, Proba};
 use crate::solver::rational::Rational;
 use hits::hits;
@@ -32,7 +34,8 @@ pub struct CombatInfo<P> {
     opendurance: Endurance,
 }
 
-type MemoSimpleFight<P> = Cache<(CombatSkill, Endurance, Endurance), Outcome<P, (Endurance, Endurance)>>;
+type MemoSimpleFight<P> =
+    Cache<(CombatSkill, Endurance, Endurance), Outcome<P, (Endurance, Endurance)>>;
 
 pub struct Memoz<P> {
     pub whole_fight: Cache<CombatInfo<P>, Outcome<P, Escaped<Endurance>>>,
@@ -107,7 +110,11 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
         self.modifiers.iter().filter_map(get_timed).collect()
     }
 
-    pub fn make(cconstant: &CharacterConstant, cvariable: &CharacterVariable, fdetails: &FightDetails<P>) -> Self {
+    pub fn make<PREV: Into<Equipment> + From<Equipment>>(
+        cconstant: &CharacterConstant,
+        cvariable: &CharacterVariableG<PREV>,
+        fdetails: &FightDetails<P>,
+    ) -> Self {
         let skilldiff = cconstant.combat_skill as i8 - fdetails.combat_skill.0;
         let specialization: Option<Weapon> = cconstant
             .discipline
@@ -124,7 +131,8 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
         let mindshield = cconstant.discipline.contains(&Discipline::MindShield);
         let cflags = Flags(cvariable.flags.0 & RFLAGS.0);
         let shield = cvariable.cequipment.has_item(&Item::Shield, 1);
-        let silverhelm = cvariable.cequipment.has_item(&Item::Helmet, 1) & cvariable.flags.has(Flag::HelmetIsSilver);
+        let silverhelm = cvariable.cequipment.has_item(&Item::Helmet, 1)
+            & cvariable.flags.has(Flag::HelmetIsSilver);
         CombatInfo {
             skilldiff,
             specialization,
@@ -164,7 +172,9 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
                 o += 8;
             }
         } else if let Some(wspec) = self.specialization {
-            if self.weapons.contains(&wspec) || (wspec == Weapon::Spear && self.weapons.contains(&Weapon::MagicSpear)) {
+            if self.weapons.contains(&wspec)
+                || (wspec == Weapon::Spear && self.weapons.contains(&Weapon::MagicSpear))
+            {
                 o += 2
             }
         }
@@ -221,7 +231,8 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
             let dmg_opponent = if modifiers.contains(&FightModifier::EnemyInvulnerable) {
                 0
             } else if modifiers.contains(&FightModifier::DoubleDamage)
-                || (self.weapons.contains(&Weapon::Sommerswerd) && modifiers.contains(&FightModifier::Undead))
+                || (self.weapons.contains(&Weapon::Sommerswerd)
+                    && modifiers.contains(&FightModifier::Undead))
             {
                 odmg_opponent * 2
             } else {
@@ -366,7 +377,11 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
                 } else {
                     let mut ncinfo = self.clone();
                     ncinfo.opendurance = r.v.1;
-                    ncinfo.modifiers = ncinfo.modifiers.into_iter().filter_map(decrement_timed).collect();
+                    ncinfo.modifiers = ncinfo
+                        .modifiers
+                        .into_iter()
+                        .filter_map(decrement_timed)
+                        .collect();
                     ncinfo
                         .fight(memo)
                         .into_iter()
@@ -400,7 +415,11 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
                     let mut ncinfo = self.clone();
                     ncinfo.lwendurance = r.v.0;
                     ncinfo.opendurance = r.v.1;
-                    ncinfo.modifiers = ncinfo.modifiers.into_iter().filter_map(decrement_timed).collect();
+                    ncinfo.modifiers = ncinfo
+                        .modifiers
+                        .into_iter()
+                        .filter_map(decrement_timed)
+                        .collect();
                     ncinfo
                         .fight(memo)
                         .into_iter()
@@ -418,18 +437,20 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
 
         // general case, prepare for the fast fight track
         let ratio = self.get_ratio();
-        let ohp =
-            if fightmodifiers.double_damage || (self.weapons.contains(&Weapon::Sommerswerd) && fightmodifiers.undead) {
-                Endurance((self.opendurance.0 + 1) / 2)
-            } else {
-                self.opendurance
-            };
-
-        let eoutcome = if fightmodifiers.force_emindblast || (!self.mindshield && fightmodifiers.emindblast) {
-            fight_mindblasted(&mut memo.fight_mindblasted, ratio, self.lwendurance, ohp)
+        let ohp = if fightmodifiers.double_damage
+            || (self.weapons.contains(&Weapon::Sommerswerd) && fightmodifiers.undead)
+        {
+            Endurance((self.opendurance.0 + 1) / 2)
         } else {
-            fight_vanilla(&mut memo.fight_vanilla, ratio, self.lwendurance, ohp)
+            self.opendurance
         };
+
+        let eoutcome =
+            if fightmodifiers.force_emindblast || (!self.mindshield && fightmodifiers.emindblast) {
+                fight_mindblasted(&mut memo.fight_mindblasted, ratio, self.lwendurance, ohp)
+            } else {
+                fight_vanilla(&mut memo.fight_vanilla, ratio, self.lwendurance, ohp)
+            };
         let outcome = optimize_outcome(
             eoutcome
                 .into_iter()
@@ -494,7 +515,7 @@ pub enum Escaped<A> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::lonewolf::mini::{Book, Equipment};
+    use crate::lonewolf::mini::{Book, CharacterVariable, Equipment};
     use num_rational::BigRational;
 
     static DEFCSTT: CharacterConstant = CharacterConstant {
@@ -506,8 +527,13 @@ mod test {
 
     static DEFCVAR: CharacterVariable = CharacterVariable {
         curendurance: 25,
-        cequipment: Equipment(1 << Item::Weapon(Weapon::BroadSword).get_idx()),
-        cprevequipment: Equipment(0),
+        cequipment: Equipment {
+            gold: 0,
+            meal_ls: 0,
+            a: 0,
+            b: 1 << (Weapon::BroadSword as u8 - 3),
+        },
+        cprevequipment: Equipment::empty(),
         flags: Flags(0),
     };
 
@@ -528,7 +554,7 @@ mod test {
     #[test]
     fn ratio_no_weapons_normal() {
         let mut ncvar = DEFCVAR.clone();
-        ncvar.cequipment = Equipment(0);
+        ncvar.cequipment = Equipment::default();
 
         let cinfo = CombatInfo::make(&DEFCSTT, &ncvar, &mk_def_combat());
         assert_eq!(cinfo.get_ratio(), CombatSkill(-17));
@@ -554,7 +580,8 @@ mod test {
     #[test]
     fn ratio_good_weapon() {
         let mut cstt = DEFCSTT.clone();
-        cstt.discipline.push(Discipline::WeaponSkill(Weapon::BroadSword));
+        cstt.discipline
+            .push(Discipline::WeaponSkill(Weapon::BroadSword));
 
         let cinfo = CombatInfo::make(&cstt, &DEFCVAR, &mk_def_combat());
         assert_eq!(cinfo.get_ratio(), CombatSkill(-11));
@@ -596,7 +623,8 @@ mod test {
         let mut ncvar = DEFCVAR.clone();
         ncvar.add_item(&Item::Weapon(Weapon::Sommerswerd), 1);
         let mut cstt = DEFCSTT.clone();
-        cstt.discipline.push(Discipline::WeaponSkill(Weapon::BroadSword));
+        cstt.discipline
+            .push(Discipline::WeaponSkill(Weapon::BroadSword));
         let cinfo = CombatInfo::make(&cstt, &ncvar, &mk_def_combat());
         assert_eq!(cinfo.get_ratio(), CombatSkill(-3));
     }
@@ -713,7 +741,10 @@ mod test {
                 opponent: "F1".to_string(),
                 combat_skill: CombatSkill(20),
                 endurance: Endurance(20),
-                fight_mod: vec![FightModifier::Timed(2, Box::new(FightModifier::Evaded(ChapterId(88))))],
+                fight_mod: vec![FightModifier::Timed(
+                    2,
+                    Box::new(FightModifier::Evaded(ChapterId(88))),
+                )],
             },
         );
         assert_eq!(cinfo.get_ratio(), CombatSkill(-5));
@@ -803,7 +834,10 @@ mod test {
             20,
             &[Item::Weapon(Weapon::Sword)],
             &[],
-            &[FightModifier::Timed(2, Box::new(FightModifier::PlayerInvulnerable))],
+            &[FightModifier::Timed(
+                2,
+                Box::new(FightModifier::PlayerInvulnerable),
+            )],
         );
         let mut expected: Outcome<BigRational, Escaped<Endurance>> = vec![
             Proba {
@@ -874,7 +908,10 @@ mod test {
             26,
             17,
             &[Item::Weapon(Weapon::Sword), Item::Shield, Item::BodyArmor],
-            &[Discipline::MindBlast, Discipline::WeaponSkill(Weapon::Sword)],
+            &[
+                Discipline::MindBlast,
+                Discipline::WeaponSkill(Weapon::Sword),
+            ],
             &[FightModifier::Timed(
                 2,
                 Box::new(FightModifier::CombatBonus(CombatSkill(-4))),

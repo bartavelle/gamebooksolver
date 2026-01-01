@@ -1,0 +1,46 @@
+{
+  "mbook": "Book03",
+  "msdisciplines": [
+    {
+      "WeaponSkill": "Sword"
+    },
+    "AnimalKinship",
+    "MindBlast",
+    "MindShield",
+    "Healing",
+    "Hunting",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": [
+      [
+        "Meal",
+        2
+      ],
+      [
+        {
+          "Weapon": "Sommerswerd"
+        },
+        1
+      ],
+      [
+        "BodyArmor",
+        1
+      ]
+    ],
+    "gold": 15,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.7486435478240809,
+      "mratio": {
+        "radix": 16,
+        "value": "41912b3a8ef6c3444a9fd9210b982f76e8d8b22b/5794c6828721caeb4b385895bfa0800000000000"
+      },
+      "states": 15291037
+    }
+  ]
+}

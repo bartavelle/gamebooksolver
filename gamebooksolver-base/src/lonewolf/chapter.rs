@@ -1,6 +1,8 @@
+use crate::solver::rational::Rational;
+
 use super::mini::{Discipline, Flag, Item, Slot};
 use serde::{Deserialize, Serialize};
-use std::hash::Hash;
+use std::{borrow::Cow, hash::Hash};
 
 #[derive(PartialEq, Eq, Debug, Deserialize, Clone)]
 pub struct Chapter<P> {
@@ -60,7 +62,67 @@ pub enum Decision<P> {
     LoseItemFrom(Slot, u8, Box<Decision<P>>),
 }
 
+pub struct OutcomeIt<'t, P> {
+    decs: Vec<&'t Decision<P>>,
+    oc: Vec<&'t ChapterOutcome<P>>,
+}
+
+impl<'t, P: Rational> Iterator for OutcomeIt<'t, P> {
+    type Item = Cow<'t, ChapterOutcome<P>>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.oc.pop() {
+            None => match self.decs.pop()? {
+                Decision::Decisions(items) => {
+                    self.decs.extend(items.iter().rev().map(|x| &x.1));
+                    self.next()
+                }
+                Decision::Canbuy(_, _, decision)
+                | Decision::Cansell(_, _, decision)
+                | Decision::Conditional(_, decision)
+                | Decision::AfterCombat(decision)
+                | Decision::RemoveItemFrom(_, _, decision)
+                | Decision::LoseItemFrom(_, _, decision)
+                | Decision::CanTake(_, _, decision)
+                | Decision::RetrieveEquipment(decision) => {
+                    self.decs.push(decision);
+                    self.next()
+                }
+                Decision::Special(special_chapter) => match special_chapter {
+                    SpecialChapter::Cartwheel => Some(Cow::Owned(ChapterOutcome::Randomly(vec![
+                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(169))),
+                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(186))),
+                    ]))),
+                    SpecialChapter::Portholes => {
+                        Some(Cow::Owned(ChapterOutcome::Goto(ChapterId(197))))
+                    }
+                    SpecialChapter::B05S127 => Some(Cow::Owned(ChapterOutcome::Randomly(vec![
+                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(159))),
+                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(93))),
+                    ]))),
+                    SpecialChapter::B05S357 => Some(Cow::Owned(ChapterOutcome::Randomly(vec![
+                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(207))),
+                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(224))),
+                    ]))),
+                },
+                Decision::None(chapter_outcome)
+                | Decision::EvadeFight(_, _, _, chapter_outcome) => {
+                    Some(Cow::Borrowed(chapter_outcome))
+                }
+            },
+            Some(o) => Some(Cow::Borrowed(o)),
+        }
+    }
+}
+
 impl<P: Clone> Decision<P> {
+    pub fn iter_outcomes<'t>(&'t self) -> OutcomeIt<'t, P> {
+        OutcomeIt {
+            decs: vec![self],
+            oc: Vec::new(),
+        }
+    }
+
     pub fn map_proba<F, P2>(self, f: &F) -> Decision<P2>
     where
         F: Fn(&P) -> P2,
@@ -73,7 +135,11 @@ impl<P: Clone> Decision<P> {
             })
         };
         match self {
-            Decisions(v) => Decisions(v.into_iter().map(|(t, sub)| (t, sub.map_proba(f))).collect()),
+            Decisions(v) => Decisions(
+                v.into_iter()
+                    .map(|(t, sub)| (t, sub.map_proba(f)))
+                    .collect(),
+            ),
             RetrieveEquipment(nxt) => RetrieveEquipment(convert(nxt)),
             CanTake(i, q, nxt) => CanTake(i, q, convert(nxt)),
             Canbuy(i, p, nxt) => Canbuy(i, p, convert(nxt)),
@@ -114,6 +180,58 @@ pub enum ChapterOutcome<P> {
     GameWon,
 }
 
+pub struct SimpleOutcomeIt<'t, P> {
+    si: Vec<&'t SimpleOutcome>,
+    co: Vec<&'t ChapterOutcome<P>>,
+}
+
+impl<'t, P> Iterator for SimpleOutcomeIt<'t, P> {
+    type Item = &'t SimpleOutcome;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.si.pop() {
+            Some(x) => Some(x),
+            None => match self.co.pop()? {
+                ChapterOutcome::OneRound(_, co1, co2, co3) => {
+                    self.co.push(co3);
+                    self.co.push(co2);
+                    self.co.push(co1);
+                    self.next()
+                }
+                ChapterOutcome::Fight(_, chapter_outcome) => {
+                    self.co.push(chapter_outcome);
+                    self.next()
+                }
+                ChapterOutcome::Randomly(items) => {
+                    self.co.extend(items.iter().map(|x| &x.1));
+                    self.next()
+                }
+                ChapterOutcome::Conditionally(items) => {
+                    self.co.extend(items.iter().map(|x| &x.1));
+                    self.next()
+                }
+                ChapterOutcome::Simple(simple_outcomes, chapter_outcome) => {
+                    self.co.push(chapter_outcome);
+                    self.si.extend(simple_outcomes);
+                    self.next()
+                }
+                ChapterOutcome::Goto(_) | ChapterOutcome::GameWon | ChapterOutcome::GameLost => {
+                    self.next()
+                }
+            },
+        }
+    }
+}
+
+impl<P> ChapterOutcome<P> {
+    pub fn simple_outcomes(&'_ self) -> SimpleOutcomeIt<'_, P> {
+        SimpleOutcomeIt {
+            si: Vec::new(),
+            co: vec![self],
+        }
+    }
+}
+
 impl<P: Clone> ChapterOutcome<P> {
     pub fn map_proba<F, P2>(self, f: &F) -> ChapterOutcome<P2>
     where
@@ -128,9 +246,19 @@ impl<P: Clone> ChapterOutcome<P> {
         use ChapterOutcome::*;
         match self {
             Fight(fd, co) => Fight(fd.map_proba(f), convert(co)),
-            OneRound(fd, cl, ce, cw) => OneRound(fd.map_proba(f), convert(cl), convert(ce), convert(cw)),
-            Randomly(lst) => Randomly(lst.into_iter().map(|(p, co2)| (f(&p), co2.map_proba(f))).collect()),
-            Conditionally(lst) => Conditionally(lst.into_iter().map(|(c, co2)| (c, co2.map_proba(f))).collect()),
+            OneRound(fd, cl, ce, cw) => {
+                OneRound(fd.map_proba(f), convert(cl), convert(ce), convert(cw))
+            }
+            Randomly(lst) => Randomly(
+                lst.into_iter()
+                    .map(|(p, co2)| (f(&p), co2.map_proba(f)))
+                    .collect(),
+            ),
+            Conditionally(lst) => Conditionally(
+                lst.into_iter()
+                    .map(|(c, co2)| (c, co2.map_proba(f)))
+                    .collect(),
+            ),
             Simple(sos, nxt) => Simple(sos, convert(nxt)),
             Goto(cid) => Goto(cid),
             GameLost => GameLost,

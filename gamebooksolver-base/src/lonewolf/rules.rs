@@ -1,11 +1,17 @@
-use crate::lonewolf::chapter::{BoolCond, CanHunt, ChapterId, ChapterOutcome, Endurance, FightModifier, SimpleOutcome};
+use crate::lonewolf::chapter::{
+    BoolCond, CanHunt, ChapterId, ChapterOutcome, Endurance, FightModifier, SimpleOutcome,
+};
 use crate::lonewolf::combat::{CombatInfo, Escaped, Memoz};
-use crate::lonewolf::mini::{max_hp, Discipline, Flag};
-use crate::lonewolf::mini::{Book, CharacterConstant, CharacterVariable, Equipment, Item, NextStep};
+use crate::lonewolf::mini::{max_hp, CharacterVariableG, Discipline, Flag};
+use crate::lonewolf::mini::{Book, CharacterConstant, Equipment, Item, NextStep};
 use crate::solver::base::{optimize_outcome, Outcome, Proba};
 use crate::solver::rational::Rational;
 
-pub fn check(ccst: &CharacterConstant, cvar: &CharacterVariable, cond: &BoolCond) -> bool {
+pub fn check<PREV: Into<Equipment> + From<Equipment>>(
+    ccst: &CharacterConstant,
+    cvar: &CharacterVariableG<PREV>,
+    cond: &BoolCond,
+) -> bool {
     use BoolCond::*;
     match cond {
         Always(b) => *b,
@@ -20,7 +26,11 @@ pub fn check(ccst: &CharacterConstant, cvar: &CharacterVariable, cond: &BoolCond
     }
 }
 
-pub fn update_simple(cvar: &mut CharacterVariable, ccst: &CharacterConstant, soutcome: &SimpleOutcome) {
+pub fn update_simple<PREV: Into<Equipment> + From<Equipment>>(
+    cvar: &mut CharacterVariableG<PREV>,
+    ccst: &CharacterConstant,
+    soutcome: &SimpleOutcome,
+) {
     use SimpleOutcome::*;
 
     match soutcome {
@@ -38,8 +48,8 @@ pub fn update_simple(cvar: &mut CharacterVariable, ccst: &CharacterConstant, sou
         SetFlag(f) => cvar.flags.set(*f),
         ClearFlag(f) => cvar.flags.unset(*f),
         StoreEquipment => {
-            cvar.cprevequipment = cvar.cequipment;
-            cvar.cequipment = Equipment(0);
+            cvar.cprevequipment = cvar.cequipment.into();
+            cvar.cequipment = Equipment::default();
         }
         MustEat(canhunt) => {
             let b01ls = ccst.bookid == Book::Book01 && cvar.cequipment.has_itemb(&Item::Laumspur);
@@ -65,13 +75,16 @@ pub fn update_simple(cvar: &mut CharacterVariable, ccst: &CharacterConstant, sou
     }
 }
 
-pub fn update<P: Rational>(
+pub fn update<
+    P: Rational,
+    PREV: Into<Equipment> + From<Equipment> + Clone + std::hash::Hash + Ord + Eq,
+>(
     memo: &mut Memoz<P>,
     ccst: &CharacterConstant,
-    cvar: &CharacterVariable,
+    cvar: &CharacterVariableG<PREV>,
     cid: ChapterId,
     outcome: &ChapterOutcome<P>,
-) -> Outcome<P, NextStep> {
+) -> Outcome<P, NextStep<PREV>> {
     if cvar.curendurance <= 0 {
         return vec![Proba::certain(NextStep::HasLost(cid.0))];
     }
@@ -81,7 +94,11 @@ pub fn update<P: Rational>(
             if cvar.curendurance <= 0 {
                 return vec![Proba::certain(NextStep::HasLost(cid.0))];
             }
-            let max_chapter = ChapterId(if ccst.bookid == Book::Book05 { 400 } else { 350 });
+            let max_chapter = ChapterId(if ccst.bookid == Book::Book05 {
+                400
+            } else {
+                350
+            });
             let mut nv = cvar.clone();
             if cid < max_chapter && cvar.flags.has(Flag::Poisonned2) {
                 update_simple(&mut nv, ccst, &SimpleOutcome::DamagePlayer(Endurance(2)));
@@ -118,25 +135,28 @@ pub fn update<P: Rational>(
             panic!("No conditions found :(");
         }
         ChapterOutcome::Randomly(rands) => {
-            let out: Outcome<P, NextStep> = rands
+            let out: Outcome<P, NextStep<PREV>> = rands
                 .iter()
                 .flat_map(|(pb, o)| {
                     update(memo, ccst, cvar, cid, o)
                         .into_iter()
-                        .map(move |r| Proba { p: r.p.mul(pb), v: r.v })
+                        .map(move |r| Proba {
+                            p: r.p.mul(pb),
+                            v: r.v,
+                        })
                 })
                 .collect();
             optimize_outcome(out)
         }
         ChapterOutcome::OneRound(fd, lose, eq, win) => {
             let cinfo = CombatInfo::make(ccst, cvar, fd);
-            let out: Outcome<P, NextStep> = cinfo
+            let out: Outcome<P, NextStep<PREV>> = cinfo
                 .fight_round()
                 .into_iter()
                 .flat_map(|r| {
                     let lwloss = cvar.curendurance - r.v.0 .0;
                     let oploss = fd.endurance.0 - r.v.1 .0;
-                    let mut nv: CharacterVariable = cvar.clone();
+                    let mut nv: CharacterVariableG<PREV> = cvar.clone();
                     nv.curendurance = r.v.0 .0;
                     nv.flags.unset(Flag::StrengthPotionActive);
                     nv.flags.unset(Flag::PotentStrengthPotionActive);
@@ -146,17 +166,19 @@ pub fn update<P: Rational>(
                         std::cmp::Ordering::Equal => eq,
                         std::cmp::Ordering::Less => win,
                     };
-                    update(memo, ccst, &nv, cid, nxt).into_iter().map(move |r2| Proba {
-                        p: r2.p.mul(&r.p),
-                        v: r2.v,
-                    })
+                    update(memo, ccst, &nv, cid, nxt)
+                        .into_iter()
+                        .map(move |r2| Proba {
+                            p: r2.p.mul(&r.p),
+                            v: r2.v,
+                        })
                 })
                 .collect();
             optimize_outcome(out)
         }
         ChapterOutcome::Fight(fd, nxt) => {
             let cinfo = CombatInfo::make(ccst, cvar, fd);
-            let out: Outcome<P, NextStep> = cinfo
+            let out: Outcome<P, NextStep<PREV>> = cinfo
                 .fight(memo)
                 .into_iter()
                 .flat_map(|r| {
@@ -170,7 +192,7 @@ pub fn update<P: Rational>(
                         Escaped::Lost(ecid) => (ChapterOutcome::Goto(ecid), Endurance(1)),
                         Escaped::Stopped(ecid, n) => (ChapterOutcome::Goto(ecid), n),
                     };
-                    let mut nv: CharacterVariable = cvar.clone();
+                    let mut nv: CharacterVariableG<PREV> = cvar.clone();
                     nv.flags.set(Flag::HadCombat);
                     if !fd.fight_mod.contains(&FightModifier::MultiFight) {
                         nv.flags.unset(Flag::StrengthPotionActive);
@@ -225,7 +247,7 @@ pub fn update<P: Rational>(
 mod test {
     use super::*;
     use crate::lonewolf::chapter::{CombatSkill, FightDetails};
-    use crate::lonewolf::mini::Weapon;
+    use crate::lonewolf::mini::{CharacterVariable, Weapon};
     use num_rational::BigRational;
 
     #[test]
@@ -275,7 +297,7 @@ mod test {
             c.flags.set(Flag::HadCombat);
             c
         };
-        let mut expected: Outcome<BigRational, NextStep> = expected_raw
+        let mut expected: Outcome<BigRational, NextStep<Equipment>> = expected_raw
             .into_iter()
             .map(|(hp, p)| Proba {
                 p: BigRational::from_i64(p.0, p.1),
@@ -297,7 +319,10 @@ mod test {
             bookid: Book::Book04,
             combat_skill: 10,
             maxendurance: 20,
-            discipline: vec![Discipline::WeaponSkill(Weapon::Sword), Discipline::MindBlast],
+            discipline: vec![
+                Discipline::WeaponSkill(Weapon::Sword),
+                Discipline::MindBlast,
+            ],
         };
         let mut cvar = CharacterVariable::new(20);
         cvar.add_item(&Item::Weapon(Weapon::Sword), 1);

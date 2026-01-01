@@ -1,7 +1,8 @@
 use crate::lonewolf::chapter::{
-    Chapter, ChapterId, ChapterOutcome, CombatSkill, Decision, Endurance, FightModifier, SpecialChapter,
+    Chapter, ChapterId, ChapterOutcome, CombatSkill, Decision, Endurance, FightModifier,
+    SpecialChapter,
 };
-use crate::lonewolf::mini::{Book, CVarState, Discipline, NextStep, SolutionDump};
+use crate::lonewolf::mini::{Book, CVarState, Discipline, Equipment, NextStep, SolutionDump};
 use crate::solver::rational::Rational;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -25,7 +26,9 @@ pub struct MultistatEntry<P> {
 }
 
 impl<P: Rational> Multistat<P> {
-    pub fn from_soldump(dump: &SolutionDump<P>) -> Option<Self> {
+    pub fn from_soldump<PREV: Into<Equipment> + From<Equipment> + Ord>(
+        dump: &SolutionDump<P, PREV>,
+    ) -> Option<Self> {
         let score = dump
             .content
             .iter()
@@ -71,7 +74,10 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
     }
     fn get_destinations_o<P>(co: &ChapterOutcome<P>) -> HashSet<ChapterId> {
         match co {
-            ChapterOutcome::Conditionally(lst) => lst.iter().flat_map(|(_, o)| get_destinations_o(o)).collect(),
+            ChapterOutcome::Conditionally(lst) => lst
+                .iter()
+                .flat_map(|(_, o)| get_destinations_o(o))
+                .collect(),
             ChapterOutcome::Fight(fds, nxt) => {
                 let mut o = get_destinations_o(nxt);
                 for d in fds.fight_mod.iter().filter_map(get_destinations_fd) {
@@ -92,7 +98,10 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
                 o.extend(get_destinations_o(o3));
                 o
             }
-            ChapterOutcome::Randomly(lst) => lst.iter().flat_map(|(_, o)| get_destinations_o(o)).collect(),
+            ChapterOutcome::Randomly(lst) => lst
+                .iter()
+                .flat_map(|(_, o)| get_destinations_o(o))
+                .collect(),
             ChapterOutcome::Simple(_, nxt) => get_destinations_o(nxt),
         }
     }
@@ -131,8 +140,16 @@ pub fn order_chapters<P>(book: &HashMap<ChapterId, Chapter<P>>) -> HashMap<Chapt
             }
         }
     }
-    let startedges: Vec<ChapterId> = book.keys().filter(|k| !edgemap.contains_key(k)).copied().collect();
-    fn go(edges: Vec<ChapterId>, acc: Vec<ChapterId>, emap: HashMap<ChapterId, HashSet<ChapterId>>) -> Vec<ChapterId> {
+    let startedges: Vec<ChapterId> = book
+        .keys()
+        .filter(|k| !edgemap.contains_key(k))
+        .copied()
+        .collect();
+    fn go(
+        edges: Vec<ChapterId>,
+        acc: Vec<ChapterId>,
+        emap: HashMap<ChapterId, HashSet<ChapterId>>,
+    ) -> Vec<ChapterId> {
         let mut redges = edges;
         match redges.pop() {
             None => acc,

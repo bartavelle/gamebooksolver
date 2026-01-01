@@ -1,5 +1,3 @@
-use minicbor::decode::{Decoder, Error};
-use minicbor::encode::{self, Encoder, Write};
 use num_bigint::BigInt;
 use num_rational::BigRational;
 use num_traits::cast::FromPrimitive;
@@ -14,13 +12,13 @@ pub struct JRatio {
     value: String,
 }
 
-pub trait Rational: Sized + Clone + Eq + Ord + std::fmt::Debug + std::hash::Hash + std::iter::Sum {
+pub trait Rational:
+    Sized + Clone + Eq + Ord + std::fmt::Debug + std::hash::Hash + std::iter::Sum
+{
     fn from_i64(n: i64, d: i64) -> Self;
     fn f_f64(i: f64) -> Self;
     fn to_f32(&self) -> f32;
     fn t_f64(&self) -> f64;
-    fn cbor_decode(d: &mut Decoder) -> Result<Self, Error>;
-    fn cbor_encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>>;
     fn mul(self, other: &Self) -> Self;
     fn div(self, other: &Self) -> Self;
     fn add(self, other: &Self) -> Self;
@@ -41,39 +39,6 @@ impl Rational for BigRational {
     }
     fn t_f64(&self) -> f64 {
         self.to_f64().unwrap()
-    }
-    fn cbor_decode(d: &mut Decoder) -> Result<Self, Error> {
-        fn read_bigint(d: &mut Decoder) -> Result<BigInt, Error> {
-            let tp = d.datatype()?;
-            match tp {
-                minicbor::data::Type::Tag => {
-                    let tg = d.tag()?;
-                    if tg == minicbor::data::IanaTag::PosBignum.tag() {
-                        Ok(BigInt::from_signed_bytes_be(d.bytes()?))
-                    } else {
-                        Err(Error::message("bad tag for bignum"))
-                    }
-                }
-                _ => d.u64().map(BigInt::from),
-            }
-        }
-        let ln = d.array()?;
-        if ln != Some(2) {
-            return Err(Error::message("Invalid length for pair"));
-        }
-        let nu = read_bigint(d)?;
-        let de = read_bigint(d)?;
-        Ok(BigRational::new(nu, de))
-    }
-    fn cbor_encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
-        fn e_bigint<W: Write>(e: &mut Encoder<W>, i: &BigInt) -> Result<(), encode::Error<W::Error>> {
-            e.tag(minicbor::data::IanaTag::PosBignum)?.bytes(&i.to_signed_bytes_be())?;
-            Ok(())
-        }
-        e.array(2)?;
-        e_bigint(e, self.numer())?;
-        e_bigint(e, self.denom())?;
-        Ok(())
     }
     fn mul(self, other: &Self) -> Self {
         self * other
@@ -120,40 +85,6 @@ impl Rational for rug::Rational {
     fn t_f64(&self) -> f64 {
         self.to_f64()
     }
-    fn cbor_decode(d: &mut Decoder) -> Result<Self, Error> {
-        fn read_bigint(d: &mut Decoder) -> Result<rug::Integer, Error> {
-            let tp = d.datatype()?;
-            match tp {
-                minicbor::data::Type::Tag => {
-                    let tg = d.tag()?;
-                    if tg == minicbor::data::IanaTag::PosBignum.tag() {
-                        Ok(rug::Integer::from_digits(d.bytes()?, rug::integer::Order::Msf))
-                    } else {
-                        Err(Error::message("bad tag for bignum"))
-                    }
-                }
-                _ => d.u64().map(rug::Integer::from),
-            }
-        }
-        let ln = d.array()?;
-        if ln != Some(2) {
-            return Err(Error::message("Invalid length for pair"));
-        }
-        let nu = read_bigint(d)?;
-        let de = read_bigint(d)?;
-        Ok(rug::Rational::from((nu, de)))
-    }
-    fn cbor_encode<W: Write>(&self, e: &mut Encoder<W>) -> Result<(), encode::Error<W::Error>> {
-        fn e_bigint<W: Write>(e: &mut Encoder<W>, i: &rug::Integer) -> Result<(), encode::Error<W::Error>> {
-            e.tag(minicbor::data::IanaTag::PosBignum)?
-                .bytes(&i.to_digits(rug::integer::Order::Msf))?;
-            Ok(())
-        }
-        e.array(2)?;
-        e_bigint(e, self.numer())?;
-        e_bigint(e, self.denom())?;
-        Ok(())
-    }
     fn mul(self, other: &Self) -> Self {
         self * other
     }
@@ -174,44 +105,212 @@ impl Rational for rug::Rational {
     }
 }
 
-#[cfg(test)]
-mod test {
+#[cfg(feature = "rug")]
+pub mod r {
+    use bincode::{Decode, Encode};
+
     use super::*;
 
-    #[test]
-    fn t_rational() {
-        let r: BigRational = Rational::from_i64(5615165615_i64, 8122123_i64);
-        let mut buffer = [0u8; 128];
-        let mut e = minicbor::encode::Encoder::new(&mut buffer as &mut [u8]);
-        r.cbor_encode(&mut e).unwrap();
-        let mut d = minicbor::decode::Decoder::new(&buffer);
-        let r2 = BigRational::cbor_decode(&mut d).unwrap();
-        assert_eq!(r, r2);
+    #[repr(transparent)]
+    #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Hash)]
+    #[serde(transparent)]
+    pub struct MRational {
+        inner: rug::Rational,
     }
 
-    #[test]
-    #[cfg(feature = "rug")]
-    fn t_interop_a() {
-        let r: BigRational = Rational::from_i64(5615165615_i64, 8122123_i64);
-        let expected: rug::Rational = Rational::from_i64(5615165615_i64, 8122123_i64);
-        let mut buffer = [0u8; 128];
-        let mut e = minicbor::encode::Encoder::new(&mut buffer as &mut [u8]);
-        r.cbor_encode(&mut e).unwrap();
-        let mut d = minicbor::decode::Decoder::new(&buffer);
-        let r2 = rug::Rational::cbor_decode(&mut d).unwrap();
-        assert_eq!(r2, expected);
+    impl Encode for MRational {
+        fn encode<E: bincode::enc::Encoder>(
+            &self,
+            encoder: &mut E,
+        ) -> Result<(), bincode::error::EncodeError> {
+            Encode::encode(&bincode::serde::Compat(&self.inner), encoder)
+        }
     }
 
-    #[test]
-    #[cfg(feature = "rug")]
-    fn t_interop_b() {
-        let r: rug::Rational = Rational::from_i64(5615165615_i64, 8122123_i64);
-        let expected: BigRational = Rational::from_i64(5615165615_i64, 8122123_i64);
-        let mut buffer = [0u8; 128];
-        let mut e = minicbor::encode::Encoder::new(&mut buffer as &mut [u8]);
-        r.cbor_encode(&mut e).unwrap();
-        let mut d = minicbor::decode::Decoder::new(&buffer);
-        let r2 = BigRational::cbor_decode(&mut d).unwrap();
-        assert_eq!(r2, expected);
+    impl<CTX> Decode<CTX> for MRational {
+        fn decode<D: bincode::de::Decoder<Context = CTX>>(
+            decoder: &mut D,
+        ) -> Result<Self, bincode::error::DecodeError> {
+            bincode::serde::Compat::decode(decoder).map(|x| Self { inner: x.0 })
+        }
+    }
+
+    impl MRational {
+        pub fn to_f64(&self) -> f64 {
+            self.inner.to_f64()
+        }
+    }
+
+    impl std::fmt::Debug for MRational {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            self.inner.fmt(f)
+        }
+    }
+
+    impl std::fmt::Display for MRational {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            self.inner.fmt(f)
+        }
+    }
+
+    impl From<i64> for MRational {
+        fn from(value: i64) -> Self {
+            Self {
+                inner: rug::Rational::from(value),
+            }
+        }
+    }
+
+    impl std::ops::Add<&MRational> for MRational {
+        type Output = Self;
+
+        fn add(self, rhs: &MRational) -> Self::Output {
+            Self {
+                inner: self.inner + &rhs.inner,
+            }
+        }
+    }
+
+    impl std::ops::Mul<&MRational> for MRational {
+        type Output = Self;
+
+        fn mul(self, rhs: &MRational) -> Self::Output {
+            Self {
+                inner: self.inner * &rhs.inner,
+            }
+        }
+    }
+
+    impl std::ops::AddAssign for MRational {
+        fn add_assign(&mut self, rhs: Self) {
+            self.inner += rhs.inner;
+        }
+    }
+
+    impl std::iter::Sum for MRational {
+        fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+            iter.fold(Self::default(), |a, b| a + &b)
+        }
+    }
+
+    impl Rational for MRational {
+        fn from_i64(n: i64, d: i64) -> Self {
+            Self {
+                inner: rug::Rational::from((n, d)),
+            }
+        }
+        fn f_f64(i: f64) -> Self {
+            Self {
+                inner: rug::Rational::from_f64(i).unwrap(),
+            }
+        }
+        fn to_f32(&self) -> f32 {
+            self.inner.t_f64() as f32
+        }
+        fn t_f64(&self) -> f64 {
+            self.inner.to_f64()
+        }
+        fn mul(self, other: &Self) -> Self {
+            self * other
+        }
+        fn add(self, other: &Self) -> Self {
+            Self {
+                inner: self.inner + &other.inner,
+            }
+        }
+        fn div(self, other: &Self) -> Self {
+            Self {
+                inner: self.inner / &other.inner,
+            }
+        }
+        fn sub(self, other: &Self) -> Self {
+            Self {
+                inner: self.inner - &other.inner,
+            }
+        }
+        fn is_z(&self) -> bool {
+            self.inner == 0.0
+        }
+        fn from_jratio(r: &JRatio) -> Self {
+            Self {
+                inner: rug::Rational::from_str_radix(&r.value, r.radix).unwrap(),
+            }
+        }
+    }
+}
+
+#[repr(transparent)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Default, Debug)]
+#[serde(transparent)]
+pub struct MF64(f64);
+
+impl std::iter::Sum for MF64 {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(Self::default(), |a, b| MF64(a.0 + b.0))
+    }
+}
+
+impl std::hash::Hash for MF64 {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        (self.0.to_le_bytes()).hash(state);
+    }
+}
+
+impl Eq for MF64 {}
+
+impl Ord for MF64 {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.0.partial_cmp(&other.0) {
+            Some(x) => x,
+            None => self.0.to_le_bytes().cmp(&other.0.to_le_bytes()),
+        }
+    }
+}
+
+impl PartialOrd for MF64 {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Rational for MF64 {
+    fn from_i64(n: i64, d: i64) -> Self {
+        MF64(n as f64 / d as f64)
+    }
+
+    fn f_f64(i: f64) -> Self {
+        MF64(i)
+    }
+
+    fn to_f32(&self) -> f32 {
+        self.0 as f32
+    }
+
+    fn t_f64(&self) -> f64 {
+        self.0
+    }
+
+    fn mul(self, other: &Self) -> Self {
+        MF64(self.0 * other.0)
+    }
+
+    fn div(self, other: &Self) -> Self {
+        MF64(self.0 / other.0)
+    }
+
+    fn add(self, other: &Self) -> Self {
+        MF64(self.0 + other.0)
+    }
+
+    fn sub(self, other: &Self) -> Self {
+        MF64(self.0 - other.0)
+    }
+
+    fn is_z(&self) -> bool {
+        self.0 == 0.0
+    }
+
+    fn from_jratio(r: &JRatio) -> Self {
+        MF64(BigRational::from_jratio(r).to_f64().unwrap_or_default())
     }
 }

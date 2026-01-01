@@ -1,0 +1,63 @@
+{
+  "mbook": "Book05",
+  "msdisciplines": [
+    {
+      "WeaponSkill": "Sword"
+    },
+    "Tracking",
+    "Hunting",
+    "MindBlast",
+    "MindOverMatter",
+    "AnimalKinship",
+    "Healing",
+    "Camouflage",
+    "SixthSense"
+  ],
+  "variable": {
+    "items": [
+      [
+        {
+          "Weapon": "Sword"
+        },
+        1
+      ],
+      [
+        "Meal",
+        2
+      ],
+      [
+        "Helmet",
+        1
+      ],
+      [
+        "StrengthPotion4",
+        1
+      ],
+      [
+        "Shield",
+        1
+      ],
+      [
+        "Laumspur",
+        1
+      ]
+    ],
+    "gold": 15,
+    "flags": [
+      "HelmetIsSilver",
+      "FoughtElix"
+    ]
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.654325309929708,
+      "mratio": {
+        "radix": 16,
+        "value": "569967615b9fcb8932ab1/84595161401484a000000"
+      },
+      "states": 73038234
+    }
+  ]
+}
