@@ -33,7 +33,6 @@ import Control.Lens
 import Data.Aeson
 import Data.Data
 import Data.Data.Lens
-import qualified Data.Function.Memoize as M
 import GHC.Generics (Generic)
 import LoneWolf.Character
 
@@ -464,5 +463,3 @@ I also realized my previous encoding was imperfect in parts (I never realized th
 Next time will have actual code, with a rules interpreter!
 
 -}
-
-M.deriveMemoizable ''FightModifierG

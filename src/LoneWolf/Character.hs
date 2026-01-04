@@ -16,15 +16,17 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 module LoneWolf.Character where
 
 import Codec.Serialise (Serialise)
+import Control.Monad(guard)
 import Control.Applicative ((<|>))
 import Control.DeepSeq
 import Control.Lens
 import Data.Aeson (FromJSON, FromJSONKey, Options (fieldLabelModifier), ToJSON (toJSON), ToJSONKey, Value (String), defaultOptions, genericParseJSON, genericToJSON, withObject, withText, (.:))
+import qualified Data.Aeson.KeyMap as A
+import qualified Data.Aeson.Key as K
 import Data.Aeson.Types (FromJSON (parseJSON))
 import Data.Bits
 import Data.Bits.Lens (bitAt)
 import Data.Data
-import qualified Data.Function.Memoize as M
 import qualified Data.HashMap.Strict as HM
 import Data.Hashable
 import Data.Int (Int16)
@@ -62,13 +64,10 @@ instance Serialise Book
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 -}
 newtype CombatSkill = CombatSkill {getCombatSkill :: Int}
-  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise, M.Memoizable)
+  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise)
 
 newtype Endurance = Endurance {getEndurance :: Int16}
   deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise, Hashable, NFData, Bounded, FromJSONKey, ToJSONKey)
-
-instance M.Memoizable Endurance where
-  memoize = M.memoizeFinite
 
 data CharacterConstant = CharacterConstant
   { _maxendurance :: !Endurance,
@@ -209,11 +208,11 @@ instance ToJSON Discipline where
 instance FromJSON Discipline where
   parseJSON x = txtd x <|> (WeaponSkill <$> parseJSON x) <|> objd x
     where
-      objd = withObject "Discipline" $ \o -> case HM.toList o of
+      objd = withObject "Discipline" $ \o -> case A.toList o of
         [("WeaponSkill", w)] -> WeaponSkill <$> parseJSON w
         [(k, v)]
           | k == "tag" -> txtd v
-          | otherwise -> case readMaybe (T.unpack k) of
+          | otherwise -> case readMaybe (K.toString k) of
             Just d -> pure d
             Nothing -> fail ("unknown discipline " ++ show o)
         _ -> do
@@ -738,6 +737,3 @@ usedWeapon cconstant cvariable
     wskills = cconstant ^.. discipline . traverse . _WeaponSkill
     weapons = getWeapons inventory
 
-M.deriveMemoizable ''Weapon
-M.deriveMemoizable ''Discipline
-M.deriveMemoizable ''Flag

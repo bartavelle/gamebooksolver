@@ -10,6 +10,7 @@ import Control.Lens hiding (argument)
 import Control.Monad (forM, forM_, guard, when)
 import Data.Aeson (ToJSON (toJSON), eitherDecodeFileStrict, encode, encodeFile, object)
 import Data.Aeson.Types (Value)
+import qualified Data.Aeson.Key as K
 import Data.Bifunctor (first)
 import Data.Bits.Lens (bitAt)
 import qualified Data.ByteString.Lazy as BSL
@@ -451,7 +452,7 @@ loadResults (Just pth) ccst = do
         pure ((startitems `S.intersection` fitms, startflags `S.intersection` fflgs), s)
   pure (M.fromListWith max lst)
 
-loadSiteData :: Book -> IO (TS.Text, Value)
+loadSiteData :: Book -> IO (K.Key, Value)
 loadSiteData bk = do
   let bookn = fromEnum bk + 1
       chapterdata = pchapters bk & traverse . _2 %~ fmap ERatio
@@ -462,8 +463,8 @@ loadSiteData bk = do
         mspath = replaceSuffix ".compact" ".cbor.json" compactpath
     dsc <- S.deserialise <$> BSL.readFile descpath :: IO SolDesc
     Multistat _ _ _ [entry] <- either (error . show) id <$> eitherDecodeFileStrict mspath
-    pure (TS.pack compactpath, object [("desc", toJSON dsc), ("score", toJSON (_mscore entry)), ("states", toJSON (_states entry))])
-  pure (TS.pack (show bk), object [("content", object cnt), ("chapters", toJSON chapterdata)])
+    pure (K.fromString compactpath, object [("desc", toJSON dsc), ("score", toJSON (_mscore entry)), ("states", toJSON (_states entry))])
+  pure (K.fromString (show bk), object [("content", object cnt), ("chapters", toJSON chapterdata)])
 
 main :: IO ()
 main = do

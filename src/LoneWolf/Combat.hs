@@ -5,7 +5,6 @@
 module LoneWolf.Combat (fight, getRatio, Escaped (..), winchance, expectedEndurance, fightRound, rustResult) where
 
 import Control.Lens
-import qualified Data.Function.Memoize as M
 import Data.Maybe (mapMaybe)
 import qualified Data.MemoCombinators as Memo
 import Data.Monoid (Sum (Sum, getSum))
@@ -28,8 +27,6 @@ data CombatInfo = CombatInfo
     _lwendurance :: Endurance,
     _opendurance :: Endurance
   }
-
-M.deriveMemoizable ''CombatInfo
 
 decrementTimed :: FightModifier -> Maybe FightModifier
 decrementTimed m = case m of
@@ -187,7 +184,7 @@ fightRound' cinfo = regroup $ do
   return ((changeHp dmgLoneWolf (_lwendurance cinfo), changeHp dmgOpponent (_opendurance cinfo)), 1 / 10)
 
 fightM :: CombatInfo -> Probably (Escaped Endurance)
-fightM = M.memoize fight'
+fightM = fight'
 
 fight' :: CombatInfo -> Probably (Escaped Endurance)
 fight' cinfo

@@ -13,6 +13,7 @@ import Codec.Serialise (Serialise)
 import Control.Lens
 import Data.Aeson
 import qualified Data.Aeson.Types as A
+import qualified Data.Aeson.Key as K
 import Data.Bifunctor (first)
 import Data.Char (toLower)
 import Data.List (foldl', intercalate)
@@ -353,7 +354,7 @@ instance FromJSON DecisionStat where
       <*> mk Inventory "items" o
     where
       mk :: Ord a => (Word64 -> a) -> Text -> Object -> A.Parser (Bagged a)
-      mk f t o = Bagged . M.fromList . map (first f) . M.toList <$> o .: t
+      mk f t o = Bagged . M.fromList . map (first f) . M.toList <$> o .: (K.fromText t)
 
 instance Ord k => Semigroup (Bagged k) where
   Bagged a <> Bagged b = Bagged (M.unionWith (+) a b)

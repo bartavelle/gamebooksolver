@@ -3,6 +3,7 @@
 module Simplifier where
 
 import Control.Arrow ((&&&))
+import Control.Monad (guard)
 import Control.Monad.State.Strict
 import Data.Foldable (fold)
 import qualified Data.Graph as G
