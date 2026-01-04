@@ -99,11 +99,11 @@ data/B04:
 data/B05:
 	mkdir data/B05
 
-book05: low05c low05j low05d low05
-book04: low04c low04j low04d low04
-book03: low03c low03j low03d low03
-book02: low02c low02j low02d low02
-book01: low01c low01j low01d low01
+book05: low05co
+book04: low04co
+book03: low03co
+book02: low02co
+book01: low01co
 
 low05c: data/B05 $(TARGETSLOWB05)
 low05j: data/B05 $(patsubst %, %.jot, $(TARGETSLOWB05))
@@ -123,13 +123,13 @@ low03d: data/B03 json-chapters/display03.json $(patsubst %, %.dot, $(TARGETSLOWB
 low03: data/B03 $(patsubst %, %.svg, $(TARGETSLOWB03))
 low03co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB03))
 
-low02c: data/B02 $(TARGETSLOWB02)
+low02c: low03j data/B02 $(TARGETSLOWB02)
 low02j: data/B02 $(patsubst %, %.jot, $(TARGETSLOWB02))
 low02d: data/B02 json-chapters/display02.json $(patsubst %, %.dot, $(TARGETSLOWB02))
 low02: data/B02 $(patsubst %, %.svg, $(TARGETSLOWB02))
 low02co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB02))
 
-low01c: low01j data/B01 $(TARGETSLOWB01)
+low01c: low02j data/B01 $(TARGETSLOWB01)
 low01j: data/B01 $(patsubst %, %.jot, $(TARGETSLOWB01))
 low01d: data/B01 json-chapters/display01.json $(patsubst %, %.dot, $(TARGETSLOWB01))
 low01: data/B01 $(patsubst %, %.svg, $(TARGETSLOWB01))
