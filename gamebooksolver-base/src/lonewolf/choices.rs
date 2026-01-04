@@ -1,11 +1,9 @@
-use crate::lonewolf::cartwheel::{cartwheel, CARTWHEEL_LABEL, MAX_CARTWHEEL};
+use crate::lonewolf::cartwheel::{CARTWHEEL_LABEL, MAX_CARTWHEEL, cartwheel};
 use crate::lonewolf::chapter::{
-    ChapterId, ChapterOutcome, Decision, Endurance, FightDetails, FightModifier, SimpleOutcome,
-    SpecialChapter,
+    ChapterId, ChapterOutcome, Decision, Endurance, FightDetails, FightModifier, SimpleOutcome, SpecialChapter,
 };
 use crate::lonewolf::mini::{
-    max_hp, Book, CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Item, Slot,
-    Weapon,
+    Book, CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Item, Slot, Weapon, max_hp,
 };
 use crate::lonewolf::rules::{check, update_simple};
 use crate::solver::rational::Rational;
@@ -28,14 +26,8 @@ fn used_weapon<PREV: Into<Equipment> + From<Equipment>>(
             _ => None,
         })
         .next();
-    if cvar
-        .cequipment
-        .has_itemb(&Item::Weapon(Weapon::Sommerswerd))
-    {
-        if wskill == Some(Weapon::Sword)
-            || wskill == Some(Weapon::ShortSword)
-            || wskill == Some(Weapon::BroadSword)
-        {
+    if cvar.cequipment.has_itemb(&Item::Weapon(Weapon::Sommerswerd)) {
+        if wskill == Some(Weapon::Sword) || wskill == Some(Weapon::ShortSword) || wskill == Some(Weapon::BroadSword) {
             UsedWeapon::WithSkill(Weapon::Sommerswerd)
         } else {
             UsedWeapon::WithoutSkill
@@ -67,9 +59,7 @@ fn important_item<PREV: Into<Equipment> + From<Equipment>>(
                 match used_weapon(ccst, cvar) {
                     UsedWeapon::WithSkill(_) => false,
                     UsedWeapon::NoWeapon => true,
-                    UsedWeapon::WithoutSkill => {
-                        ccst.discipline.contains(&Discipline::WeaponSkill(*w))
-                    }
+                    UsedWeapon::WithoutSkill => ccst.discipline.contains(&Discipline::WeaponSkill(*w)),
                 }
             }
         }
@@ -149,20 +139,19 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
     cvar: &CharacterVariableG<PREV>,
     dec: &Decision<P>,
 ) -> Vec<(Vec<String>, ChapterOutcome<P>)> {
-    let with_effect =
-        |sos: &[SimpleOutcome], nxt: &Decision<P>| -> Vec<(Vec<String>, ChapterOutcome<P>)> {
-            let mut nv = cvar.clone();
-            for so in sos {
-                update_simple(&mut nv, ccst, so);
-            }
-            flatten_decision(ccst, &nv, nxt)
-                .into_iter()
-                .map(|(mut dsc, out)| {
-                    dsc.insert(0, format!("{:?}", sos));
-                    (dsc, ChapterOutcome::Simple(sos.to_vec(), Box::new(out)))
-                })
-                .collect()
-        };
+    let with_effect = |sos: &[SimpleOutcome], nxt: &Decision<P>| -> Vec<(Vec<String>, ChapterOutcome<P>)> {
+        let mut nv = cvar.clone();
+        for so in sos {
+            update_simple(&mut nv, ccst, so);
+        }
+        flatten_decision(ccst, &nv, nxt)
+            .into_iter()
+            .map(|(mut dsc, out)| {
+                dsc.insert(0, format!("{:?}", sos));
+                (dsc, ChapterOutcome::Simple(sos.to_vec(), Box::new(out)))
+            })
+            .collect()
+    };
     // can be healed!
     if cvar.flags.has(Flag::Poisonned2) && cvar.cequipment.has_itemb(&Item::Laumspur) {
         return with_effect(
@@ -215,9 +204,10 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
             let cur = nv.cequipment;
             nv.cequipment = nv.cprevequipment.into();
             let rdec: &Decision<P> = nxt;
-            let ndec: Decision<P> = cur.items().into_iter().fold(rdec.clone(), |acc, (i, q)| {
-                Decision::CanTake(i, q, Box::new(acc))
-            });
+            let ndec: Decision<P> = cur
+                .items()
+                .into_iter()
+                .fold(rdec.clone(), |acc, (i, q)| Decision::CanTake(i, q, Box::new(acc)));
             flatten_decision(ccst, &nv, &ndec)
         }
         Decision::AfterCombat(nxt) => {
@@ -253,10 +243,7 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
                 ));
                 return out;
             }
-            if ccst.bookid != Book::Book01
-                && missing_hp >= 4
-                && cvar.cequipment.has_itemb(&Item::Laumspur)
-            {
+            if ccst.bookid != Book::Book01 && missing_hp >= 4 && cvar.cequipment.has_itemb(&Item::Laumspur) {
                 out.extend(with_effect(
                     &[
                         SimpleOutcome::HealPlayer(Endurance(4)),
@@ -276,10 +263,7 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
                 ));
                 return out;
             }
-            if ccst.bookid == Book::Book05
-                && missing_hp >= 10
-                && cvar.cequipment.has_itemb(&Item::GenBackpack(2))
-            {
+            if ccst.bookid == Book::Book05 && missing_hp >= 10 && cvar.cequipment.has_itemb(&Item::GenBackpack(2)) {
                 out.extend(with_effect(
                     &[
                         SimpleOutcome::HealPlayer(Endurance(10)),
@@ -320,12 +304,10 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
         Decision::Decisions(lst) => lst
             .iter()
             .flat_map(|(cdesc, d2)| {
-                flatten_decision(ccst, cvar, d2)
-                    .into_iter()
-                    .map(|(mut adesc, res)| {
-                        adesc.insert(0, cdesc.clone());
-                        (adesc, res)
-                    })
+                flatten_decision(ccst, cvar, d2).into_iter().map(|(mut adesc, res)| {
+                    adesc.insert(0, cdesc.clone());
+                    (adesc, res)
+                })
             })
             .collect(),
         Decision::CanTake(i, q, nxt) => {
@@ -343,10 +325,7 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
                             let mut out = Vec::new();
                             for l in lst {
                                 out.extend(with_effect(
-                                    &[
-                                        SimpleOutcome::LoseItem(l, 1),
-                                        SimpleOutcome::GainItem(*i, 1),
-                                    ],
+                                    &[SimpleOutcome::LoseItem(l, 1), SimpleOutcome::GainItem(*i, 1)],
                                     nxt,
                                 ))
                             }
@@ -357,8 +336,7 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
                     }
                 }
             } else {
-                let n =
-                    Decision::CanTake(*i, 1, Box::new(Decision::CanTake(*i, q - 1, nxt.clone())));
+                let n = Decision::CanTake(*i, 1, Box::new(Decision::CanTake(*i, q - 1, nxt.clone())));
                 flatten_decision(ccst, cvar, &n)
             }
         }
@@ -366,11 +344,7 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
             if cvar.cequipment.in_backpack().len() < *n as usize {
                 Vec::new()
             } else {
-                flatten_decision(
-                    ccst,
-                    cvar,
-                    &Decision::LoseItemFrom(Slot::Backpack, *n, nxt.clone()),
-                )
+                flatten_decision(ccst, cvar, &Decision::LoseItemFrom(Slot::Backpack, *n, nxt.clone()))
             }
         }
         Decision::LoseItemFrom(Slot::Backpack, n, nxt) => {
@@ -408,9 +382,7 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
         }
         Decision::Canbuy(item, price, nxt) => {
             let mut out = flatten_decision(ccst, cvar, nxt);
-            if cvar.cequipment.get_item_count(&Item::Gold) >= price.0
-                && important_item(item, ccst, cvar)
-            {
+            if cvar.cequipment.get_item_count(&Item::Gold) >= price.0 && important_item(item, ccst, cvar) {
                 match can_take(item, ccst, cvar) {
                     CanTake::Nope => (),
                     CanTake::SpaceAvailable => out.extend(with_effect(
@@ -451,17 +423,13 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
         Decision::Special(SpecialChapter::Cartwheel) => {
             let gold = cvar.cequipment.get_item_count(&Item::Gold);
             if gold >= MAX_CARTWHEEL {
-                flatten_decision(
-                    ccst,
-                    cvar,
-                    &Decision::None(ChapterOutcome::Goto(ChapterId(136))),
-                )
-                .into_iter()
-                .map(|(mut dsc, out)| {
-                    dsc.insert(0, "cartwheel ok".into());
-                    (dsc, out)
-                })
-                .collect()
+                flatten_decision(ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(136))))
+                    .into_iter()
+                    .map(|(mut dsc, out)| {
+                        dsc.insert(0, "cartwheel ok".into());
+                        (dsc, out)
+                    })
+                    .collect()
             } else {
                 let start_target = std::cmp::min(std::cmp::max(20, gold), MAX_CARTWHEEL);
                 (start_target..=MAX_CARTWHEEL)
@@ -497,11 +465,9 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
             }
         }
         // do not play portholes!
-        Decision::Special(SpecialChapter::Portholes) => flatten_decision(
-            ccst,
-            cvar,
-            &Decision::None(ChapterOutcome::Goto(ChapterId(197))),
-        ),
+        Decision::Special(SpecialChapter::Portholes) => {
+            flatten_decision(ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(197))))
+        }
         _ => todo!("{:?}", dec),
     }
 }
@@ -552,19 +518,13 @@ mod test {
         assert_eq!(
             r1,
             vec![(
-                vec![
-                    "otherwise".to_string(),
-                    "if you do not possess a rope".to_string()
-                ],
+                vec!["otherwise".to_string(), "if you do not possess a rope".to_string()],
                 Goto(ChapterId(387))
             )]
         );
         assert_eq!(
             r2,
-            vec![(
-                vec!["If you possess a rope".to_string()],
-                Goto(ChapterId(305))
-            )]
+            vec![(vec!["If you possess a rope".to_string()], Goto(ChapterId(305)))]
         );
     }
 }

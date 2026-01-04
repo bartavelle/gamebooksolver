@@ -12,9 +12,7 @@ pub struct JRatio {
     value: String,
 }
 
-pub trait Rational:
-    Sized + Clone + Eq + Ord + std::fmt::Debug + std::hash::Hash + std::iter::Sum
-{
+pub trait Rational: Sized + Clone + Eq + Ord + std::fmt::Debug + std::hash::Hash + std::iter::Sum {
     fn from_i64(n: i64, d: i64) -> Self;
     fn f_f64(i: f64) -> Self;
     fn to_f32(&self) -> f32;
@@ -119,10 +117,7 @@ pub mod r {
     }
 
     impl Encode for MRational {
-        fn encode<E: bincode::enc::Encoder>(
-            &self,
-            encoder: &mut E,
-        ) -> Result<(), bincode::error::EncodeError> {
+        fn encode<E: bincode::enc::Encoder>(&self, encoder: &mut E) -> Result<(), bincode::error::EncodeError> {
             Encode::encode(&bincode::serde::Compat(&self.inner), encoder)
         }
     }

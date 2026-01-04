@@ -97,9 +97,7 @@ impl<K: Eq + std::hash::Hash, V> Cache<K, V> {
 }
 
 /// regroup identical outcomes, sort by decreasing probability
-pub fn optimize_outcome<T: Eq + std::hash::Hash + Ord, P: Rational>(
-    o: Outcome<P, T>,
-) -> Outcome<P, T> {
+pub fn optimize_outcome<T: Eq + std::hash::Hash + Ord, P: Rational>(o: Outcome<P, T>) -> Outcome<P, T> {
     // fist, convert to hashmap
     let mut hm: HashMap<T, P> = HashMap::new();
     for pb in o.into_iter() {

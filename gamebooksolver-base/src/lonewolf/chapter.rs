@@ -93,9 +93,7 @@ impl<'t, P: Rational> Iterator for OutcomeIt<'t, P> {
                         (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(169))),
                         (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(186))),
                     ]))),
-                    SpecialChapter::Portholes => {
-                        Some(Cow::Owned(ChapterOutcome::Goto(ChapterId(197))))
-                    }
+                    SpecialChapter::Portholes => Some(Cow::Owned(ChapterOutcome::Goto(ChapterId(197)))),
                     SpecialChapter::B05S127 => Some(Cow::Owned(ChapterOutcome::Randomly(vec![
                         (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(159))),
                         (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(93))),
@@ -105,8 +103,7 @@ impl<'t, P: Rational> Iterator for OutcomeIt<'t, P> {
                         (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(224))),
                     ]))),
                 },
-                Decision::None(chapter_outcome)
-                | Decision::EvadeFight(_, _, _, chapter_outcome) => {
+                Decision::None(chapter_outcome) | Decision::EvadeFight(_, _, _, chapter_outcome) => {
                     Some(Cow::Borrowed(chapter_outcome))
                 }
             },
@@ -135,11 +132,7 @@ impl<P: Clone> Decision<P> {
             })
         };
         match self {
-            Decisions(v) => Decisions(
-                v.into_iter()
-                    .map(|(t, sub)| (t, sub.map_proba(f)))
-                    .collect(),
-            ),
+            Decisions(v) => Decisions(v.into_iter().map(|(t, sub)| (t, sub.map_proba(f))).collect()),
             RetrieveEquipment(nxt) => RetrieveEquipment(convert(nxt)),
             CanTake(i, q, nxt) => CanTake(i, q, convert(nxt)),
             Canbuy(i, p, nxt) => Canbuy(i, p, convert(nxt)),
@@ -215,9 +208,7 @@ impl<'t, P> Iterator for SimpleOutcomeIt<'t, P> {
                     self.si.extend(simple_outcomes);
                     self.next()
                 }
-                ChapterOutcome::Goto(_) | ChapterOutcome::GameWon | ChapterOutcome::GameLost => {
-                    self.next()
-                }
+                ChapterOutcome::Goto(_) | ChapterOutcome::GameWon | ChapterOutcome::GameLost => self.next(),
             },
         }
     }
@@ -246,19 +237,9 @@ impl<P: Clone> ChapterOutcome<P> {
         use ChapterOutcome::*;
         match self {
             Fight(fd, co) => Fight(fd.map_proba(f), convert(co)),
-            OneRound(fd, cl, ce, cw) => {
-                OneRound(fd.map_proba(f), convert(cl), convert(ce), convert(cw))
-            }
-            Randomly(lst) => Randomly(
-                lst.into_iter()
-                    .map(|(p, co2)| (f(&p), co2.map_proba(f)))
-                    .collect(),
-            ),
-            Conditionally(lst) => Conditionally(
-                lst.into_iter()
-                    .map(|(c, co2)| (c, co2.map_proba(f)))
-                    .collect(),
-            ),
+            OneRound(fd, cl, ce, cw) => OneRound(fd.map_proba(f), convert(cl), convert(ce), convert(cw)),
+            Randomly(lst) => Randomly(lst.into_iter().map(|(p, co2)| (f(&p), co2.map_proba(f))).collect()),
+            Conditionally(lst) => Conditionally(lst.into_iter().map(|(c, co2)| (c, co2.map_proba(f))).collect()),
             Simple(sos, nxt) => Simple(sos, convert(nxt)),
             Goto(cid) => Goto(cid),
             GameLost => GameLost,

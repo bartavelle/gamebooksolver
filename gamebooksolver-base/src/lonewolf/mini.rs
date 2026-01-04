@@ -10,21 +10,7 @@ use std::hash::Hash;
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-#[derive(
-    Debug,
-    PartialEq,
-    Eq,
-    Default,
-    PartialOrd,
-    Ord,
-    Copy,
-    Clone,
-    Hash,
-    Encode,
-    Decode,
-    Serialize,
-    Deserialize,
-)]
+#[derive(Debug, PartialEq, Eq, Default, PartialOrd, Ord, Copy, Clone, Hash, Encode, Decode, Serialize, Deserialize)]
 pub struct NoPrevEq;
 
 impl std::fmt::Display for NoPrevEq {
@@ -68,17 +54,11 @@ pub struct SolDesc {
 }
 
 impl SolDesc {
-    pub fn cvariable<PREV: From<Equipment> + Into<Equipment> + Default>(
-        &self,
-    ) -> CharacterVariableG<PREV> {
+    pub fn cvariable<PREV: From<Equipment> + Into<Equipment> + Default>(&self) -> CharacterVariableG<PREV> {
         let mut cvar = CharacterVariableG::new(self.ccst.maxendurance);
         cvar.cequipment.add_item(&Item::Backpack, 1);
         cvar.cequipment.set_gold(self.cvar.gold);
-        let itms = self
-            .cvar
-            .items
-            .as_ref()
-            .expect("default items not yet implemented");
+        let itms = self.cvar.items.as_ref().expect("default items not yet implemented");
         for (i, q) in itms {
             cvar.cequipment.add_item(i, *q);
         }
@@ -112,18 +92,14 @@ pub struct CVarState {
     pub flags: Vec<Flag>,
 }
 
-#[derive(
-    Debug, PartialEq, Eq, Hash, Clone, PartialOrd, Ord, Serialize, Deserialize, Encode, Decode,
-)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, PartialOrd, Ord, Serialize, Deserialize, Encode, Decode)]
 pub enum NextStep<PREV: Into<Equipment> + From<Equipment>> {
     HasLost(u16),
     HasWon(CharacterVariableG<PREV>),
     NewChapter(u16, CharacterVariableG<PREV>),
 }
 
-impl<PREV: Into<Equipment> + From<Equipment> + std::fmt::Display + Copy> std::fmt::Display
-    for NextStep<PREV>
-{
+impl<PREV: Into<Equipment> + From<Equipment> + std::fmt::Display + Copy> std::fmt::Display for NextStep<PREV> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             NextStep::HasLost(cid) => write!(f, "lost:{}", cid),
@@ -203,9 +179,7 @@ impl FromStr for Equipment {
         for p in s.split("/") {
             let (iname, quantity) = p.split_once(':').unwrap_or((p, "1"));
             let itm = iname.parse()?;
-            let q = quantity
-                .parse()
-                .map_err(|rr: ParseIntError| rr.to_string())?;
+            let q = quantity.parse().map_err(|rr: ParseIntError| rr.to_string())?;
             base.add_item(&itm, q);
         }
 
@@ -400,9 +374,7 @@ impl Equipment {
     }
 }
 
-#[derive(
-    Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord, Copy, Deserialize, Encode, Decode,
-)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord, Copy, Deserialize, Encode, Decode)]
 pub struct Flags(pub u32);
 
 impl Flags {
@@ -423,17 +395,11 @@ impl Flags {
     }
 
     pub fn all(&self) -> Vec<Flag> {
-        Flag::VALUES
-            .iter()
-            .filter(|f| self.has(**f))
-            .copied()
-            .collect()
+        Flag::VALUES.iter().filter(|f| self.has(**f)).copied().collect()
     }
 }
 
-#[derive(
-    Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord, Deserialize, Encode, Decode,
-)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord, Deserialize, Encode, Decode)]
 pub struct CharacterVariableG<PREV: Into<Equipment> + From<Equipment>> {
     pub curendurance: i8,
     pub flags: Flags,
@@ -444,9 +410,7 @@ pub struct CharacterVariableG<PREV: Into<Equipment> + From<Equipment>> {
 
 pub type CharacterVariable = CharacterVariableG<Equipment>;
 
-impl<PREV: From<Equipment> + Into<Equipment> + Copy> std::fmt::Display
-    for CharacterVariableG<PREV>
-{
+impl<PREV: From<Equipment> + Into<Equipment> + Copy> std::fmt::Display for CharacterVariableG<PREV> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
             f,
@@ -538,18 +502,12 @@ impl std::str::FromStr for Item {
             "BroadSword" => Ok(Item::Weapon(Weapon::BroadSword)),
             "MagicSpear" => Ok(Item::Weapon(Weapon::MagicSpear)),
             "Sommerswerd" => Ok(Item::Weapon(Weapon::Sommerswerd)),
-            _ => match s
-                .strip_prefix("BGenCounter ")
-                .or_else(|| s.strip_prefix("BGen"))
-            {
+            _ => match s.strip_prefix("BGenCounter ").or_else(|| s.strip_prefix("BGen")) {
                 Some(n) => n
                     .parse::<u8>()
                     .map(Item::GenBackpack)
                     .map_err(|rr| format!("unexpected item {}: {}", s, rr)),
-                None => match s
-                    .strip_prefix("SGenCounter ")
-                    .or_else(|| s.strip_prefix("SGen"))
-                {
+                None => match s.strip_prefix("SGenCounter ").or_else(|| s.strip_prefix("SGen")) {
                     Some(n) => n
                         .parse::<u8>()
                         .map(Item::GenSpecial)
@@ -573,18 +531,12 @@ impl<'de> Visitor<'de> for ItemVisitor {
         let mk: Option<String> = mmap.next_key()?;
         let key = mk.unwrap();
         if key != "Weapon" {
-            return Err(serde::de::Error::invalid_value(
-                serde::de::Unexpected::Str(&key),
-                &self,
-            ));
+            return Err(serde::de::Error::invalid_value(serde::de::Unexpected::Str(&key), &self));
         }
         let v: String = mmap.next_value()?;
         match v.parse() {
             Ok(d) => Ok(d),
-            _ => Err(serde::de::Error::invalid_value(
-                serde::de::Unexpected::Str(&v),
-                &self,
-            )),
+            _ => Err(serde::de::Error::invalid_value(serde::de::Unexpected::Str(&v), &self)),
         }
     }
 
@@ -594,10 +546,7 @@ impl<'de> Visitor<'de> for ItemVisitor {
     {
         match s.parse() {
             Ok(x) => Ok(x),
-            Err(_) => Err(serde::de::Error::invalid_value(
-                serde::de::Unexpected::Str(s),
-                &self,
-            )),
+            Err(_) => Err(serde::de::Error::invalid_value(serde::de::Unexpected::Str(s), &self)),
         }
     }
 }
@@ -779,10 +728,7 @@ impl<'de> Visitor<'de> for DisciplineVisitor {
     {
         match s.parse() {
             Ok(d) => Ok(d),
-            _ => Err(serde::de::Error::invalid_value(
-                serde::de::Unexpected::Str(s),
-                &self,
-            )),
+            _ => Err(serde::de::Error::invalid_value(serde::de::Unexpected::Str(s), &self)),
         }
     }
 
@@ -791,18 +737,12 @@ impl<'de> Visitor<'de> for DisciplineVisitor {
         let mk: Option<String> = mmap.next_key()?;
         let key = mk.unwrap();
         if key != "WeaponSkill" {
-            return Err(serde::de::Error::invalid_value(
-                serde::de::Unexpected::Str(&key),
-                &self,
-            ));
+            return Err(serde::de::Error::invalid_value(serde::de::Unexpected::Str(&key), &self));
         }
         let v: String = mmap.next_value()?;
         match v.parse() {
             Ok(d) => Ok(d),
-            _ => Err(serde::de::Error::invalid_value(
-                serde::de::Unexpected::Str(&v),
-                &self,
-            )),
+            _ => Err(serde::de::Error::invalid_value(serde::de::Unexpected::Str(&v), &self)),
         }
     }
 }
@@ -996,13 +936,11 @@ impl<PREV: Into<Equipment> + From<Equipment>> CompactState<PREV> {
     ) -> Option<Self> {
         let score = cs.score().to_f32();
         match cur {
-            NextStep::NewChapter(cid, cv) if !useless_chapters.contains(&cid) => {
-                Some(CompactState {
-                    chapter: cid,
-                    character: cv,
-                    score,
-                })
-            }
+            NextStep::NewChapter(cid, cv) if !useless_chapters.contains(&cid) => Some(CompactState {
+                chapter: cid,
+                character: cv,
+                score,
+            }),
             _ => None,
         }
     }
@@ -1015,23 +953,15 @@ pub struct CompactSolution<PREV: Into<Equipment> + From<Equipment>> {
 }
 
 impl<PREV: Into<Equipment> + From<Equipment> + Eq> CompactSolution<PREV> {
-    fn find_scored_chapter(
-        &self,
-        cid: u16,
-        cv: &CharacterVariableG<PREV>,
-    ) -> Option<&CompactState<PREV>> {
-        self.content
-            .iter()
-            .find(|x| x.chapter == cid && &x.character == cv)
+    fn find_scored_chapter(&self, cid: u16, cv: &CharacterVariableG<PREV>) -> Option<&CompactState<PREV>> {
+        self.content.iter().find(|x| x.chapter == cid && &x.character == cv)
     }
 
     pub fn get_score(&self, v: &NextStep<PREV>) -> Option<f64> {
         match v {
             NextStep::HasLost(_) => Some(0.0),
             NextStep::HasWon(_) => Some(1.0),
-            NextStep::NewChapter(cid, cv) => {
-                self.find_scored_chapter(*cid, cv).map(|s| s.score as f64)
-            }
+            NextStep::NewChapter(cid, cv) => self.find_scored_chapter(*cid, cv).map(|s| s.score as f64),
         }
     }
 }

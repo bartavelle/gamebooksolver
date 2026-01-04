@@ -1,7 +1,7 @@
 use gamebooksolver_base::lonewolf::chapter::{Chapter, ChapterId};
 use gamebooksolver_base::lonewolf::combat::Memoz;
 use gamebooksolver_base::lonewolf::mini::{
-    mkchar, CharacterConstant, CompactSolution, Equipment, NextStep, SolutionDump,
+    CharacterConstant, CompactSolution, Equipment, NextStep, SolutionDump, mkchar,
 };
 use gamebooksolver_base::lonewolf::solve::step;
 use gamebooksolver_base::solver::base::{ChoppedSolution, Proba};
@@ -29,17 +29,14 @@ pub fn explore_compact<
     soldump: &CompactSolution<PREV>,
     book: &[(ChapterId, Chapter<Rational>)],
 ) {
+    println!("DESC: {:?}", &soldump.soldesc);
     fn convert_chapter(c: Chapter<Rational>) -> Chapter<MF64> {
         c.map_proba(&rational_to_mf64)
     }
 
     let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
     let mut memo = Memoz::default();
-    let mbook: HashMap<ChapterId, Chapter<MF64>> = book
-        .iter()
-        .cloned()
-        .map(|(k, c)| (k, convert_chapter(c)))
-        .collect();
+    let mbook: HashMap<ChapterId, Chapter<MF64>> = book.iter().cloned().map(|(k, c)| (k, convert_chapter(c))).collect();
     let order: HashMap<ChapterId, u32> = HashMap::new();
     let mut memo_score = HashMap::new();
 
@@ -75,14 +72,7 @@ pub fn explore_solution<
     let content: HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>> =
         soldump.content.into_iter().collect();
 
-    go(
-        &mut memo,
-        &soldump.soldesc.ccst,
-        &mbook,
-        &order,
-        &content,
-        &ini,
-    );
+    go(&mut memo, &soldump.soldesc.ccst, &mbook, &order, &content, &ini);
 }
 
 fn select_between<A, F>(choices: &[A], fmt: F) -> &A
@@ -126,14 +116,7 @@ fn compute_score<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Eq>
 }
 
 fn go<
-    PREV: Into<Equipment>
-        + From<Equipment>
-        + Copy
-        + std::hash::Hash
-        + Eq
-        + std::fmt::Debug
-        + Ord
-        + std::fmt::Display,
+    PREV: Into<Equipment> + From<Equipment> + Copy + std::hash::Hash + Eq + std::fmt::Debug + Ord + std::fmt::Display,
 >(
     memo: &mut Memoz<Rational>,
     ccst: &CharacterConstant,
@@ -189,14 +172,7 @@ fn go<
 }
 
 fn go_compact<
-    PREV: Into<Equipment>
-        + From<Equipment>
-        + Eq
-        + Copy
-        + std::fmt::Debug
-        + std::hash::Hash
-        + Ord
-        + std::fmt::Display,
+    PREV: Into<Equipment> + From<Equipment> + Eq + Copy + std::fmt::Debug + std::hash::Hash + Ord + std::fmt::Display,
 >(
     memo: &mut Memoz<MF64>,
     memo_score: &mut HashMap<NextStep<PREV>, f64>,
@@ -229,9 +205,7 @@ fn go_compact<
         steps.push((step, score));
     }
 
-    let next_step = select_between(&steps, |(s, score)| {
-        format!("{:2.2}% {:?}", score * 100.0, s.desc)
-    });
+    let next_step = select_between(&steps, |(s, score)| format!("{:2.2}% {:?}", score * 100.0, s.desc));
 
     let highest_proba = next_step
         .0
@@ -261,9 +235,7 @@ fn go_compact<
     go_compact(memo, memo_score, ccst, mbook, order, solmap, &outcome.0.v);
 }
 
-fn score_of_step<
-    PREV: Into<Equipment> + From<Equipment> + Eq + std::fmt::Debug + Copy + std::hash::Hash + Ord,
->(
+fn score_of_step<PREV: Into<Equipment> + From<Equipment> + Eq + std::fmt::Debug + Copy + std::hash::Hash + Ord>(
     solmap: &CompactSolution<PREV>,
     memo: &mut Memoz<MF64>,
     memo_score: &mut HashMap<NextStep<PREV>, f64>,
@@ -278,8 +250,7 @@ fn score_of_step<
             let v = step(memo, order, mbook, ccst, ns);
             let mut max = 0.0;
             for s in v {
-                let cur =
-                    compute_score_compact(solmap, memo, memo_score, ccst, mbook, order, &s.res);
+                let cur = compute_score_compact(solmap, memo, memo_score, ccst, mbook, order, &s.res);
                 if cur > max {
                     max = cur
                 }

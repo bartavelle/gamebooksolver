@@ -1,10 +1,8 @@
-use crate::lonewolf::chapter::{
-    BoolCond, CanHunt, ChapterId, ChapterOutcome, Endurance, FightModifier, SimpleOutcome,
-};
+use crate::lonewolf::chapter::{BoolCond, CanHunt, ChapterId, ChapterOutcome, Endurance, FightModifier, SimpleOutcome};
 use crate::lonewolf::combat::{CombatInfo, Escaped, Memoz};
-use crate::lonewolf::mini::{max_hp, CharacterVariableG, Discipline, Flag};
 use crate::lonewolf::mini::{Book, CharacterConstant, Equipment, Item, NextStep};
-use crate::solver::base::{optimize_outcome, Outcome, Proba};
+use crate::lonewolf::mini::{CharacterVariableG, Discipline, Flag, max_hp};
+use crate::solver::base::{Outcome, Proba, optimize_outcome};
 use crate::solver::rational::Rational;
 
 pub fn check<PREV: Into<Equipment> + From<Equipment>>(
@@ -75,10 +73,7 @@ pub fn update_simple<PREV: Into<Equipment> + From<Equipment>>(
     }
 }
 
-pub fn update<
-    P: Rational,
-    PREV: Into<Equipment> + From<Equipment> + Clone + std::hash::Hash + Ord + Eq,
->(
+pub fn update<P: Rational, PREV: Into<Equipment> + From<Equipment> + Clone + std::hash::Hash + Ord + Eq>(
     memo: &mut Memoz<P>,
     ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
@@ -94,11 +89,7 @@ pub fn update<
             if cvar.curendurance <= 0 {
                 return vec![Proba::certain(NextStep::HasLost(cid.0))];
             }
-            let max_chapter = ChapterId(if ccst.bookid == Book::Book05 {
-                400
-            } else {
-                350
-            });
+            let max_chapter = ChapterId(if ccst.bookid == Book::Book05 { 400 } else { 350 });
             let mut nv = cvar.clone();
             if cid < max_chapter && cvar.flags.has(Flag::Poisonned2) {
                 update_simple(&mut nv, ccst, &SimpleOutcome::DamagePlayer(Endurance(2)));
@@ -140,10 +131,7 @@ pub fn update<
                 .flat_map(|(pb, o)| {
                     update(memo, ccst, cvar, cid, o)
                         .into_iter()
-                        .map(move |r| Proba {
-                            p: r.p.mul(pb),
-                            v: r.v,
-                        })
+                        .map(move |r| Proba { p: r.p.mul(pb), v: r.v })
                 })
                 .collect();
             optimize_outcome(out)
@@ -154,10 +142,10 @@ pub fn update<
                 .fight_round()
                 .into_iter()
                 .flat_map(|r| {
-                    let lwloss = cvar.curendurance - r.v.0 .0;
-                    let oploss = fd.endurance.0 - r.v.1 .0;
+                    let lwloss = cvar.curendurance - r.v.0.0;
+                    let oploss = fd.endurance.0 - r.v.1.0;
                     let mut nv: CharacterVariableG<PREV> = cvar.clone();
-                    nv.curendurance = r.v.0 .0;
+                    nv.curendurance = r.v.0.0;
                     nv.flags.unset(Flag::StrengthPotionActive);
                     nv.flags.unset(Flag::PotentStrengthPotionActive);
                     nv.flags.set(Flag::HadCombat);
@@ -166,12 +154,10 @@ pub fn update<
                         std::cmp::Ordering::Equal => eq,
                         std::cmp::Ordering::Less => win,
                     };
-                    update(memo, ccst, &nv, cid, nxt)
-                        .into_iter()
-                        .map(move |r2| Proba {
-                            p: r2.p.mul(&r.p),
-                            v: r2.v,
-                        })
+                    update(memo, ccst, &nv, cid, nxt).into_iter().map(move |r2| Proba {
+                        p: r2.p.mul(&r.p),
+                        v: r2.v,
+                    })
                 })
                 .collect();
             optimize_outcome(out)
@@ -319,10 +305,7 @@ mod test {
             bookid: Book::Book04,
             combat_skill: 10,
             maxendurance: 20,
-            discipline: vec![
-                Discipline::WeaponSkill(Weapon::Sword),
-                Discipline::MindBlast,
-            ],
+            discipline: vec![Discipline::WeaponSkill(Weapon::Sword), Discipline::MindBlast],
         };
         let mut cvar = CharacterVariable::new(20);
         cvar.add_item(&Item::Weapon(Weapon::Sword), 1);

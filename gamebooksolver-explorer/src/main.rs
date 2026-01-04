@@ -21,8 +21,8 @@ use std::fs::File;
 use std::io::BufReader;
 
 use gamebooksolver_base::lonewolf::mini::{
-    Book, CVarState, CharacterConstant, CompactSolution, CompactState, Discipline, Equipment, Flag,
-    Flags, Item, NextStep, SolDesc, SolutionDump, Weapon, mkchar,
+    Book, CVarState, CharacterConstant, CompactSolution, CompactState, Discipline, Equipment, Flag, Flags, Item,
+    NextStep, SolDesc, SolutionDump, Weapon, mkchar,
 };
 
 use crate::lwexplore::explore_compact;
@@ -123,18 +123,14 @@ impl Default for ChapterStats {
     }
 }
 
-fn mksol<
-    PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + std::fmt::Debug + Clone,
->(
+fn mksol<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + std::fmt::Debug + Clone>(
     ini: NextStep<PREV>,
     sttmap: HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>>,
 ) -> BTreeMap<u16, ChapterStats> {
     type Imap<PREV> = HashMap<NextStep<PREV>, BTreeMap<u16, ChapterStats>>;
     let mut memo: Imap<PREV> = HashMap::new();
 
-    fn go<
-        PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + std::fmt::Debug + Clone,
-    >(
+    fn go<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + std::fmt::Debug + Clone>(
         curmap: &mut Imap<PREV>,
         searchmap: &HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>>,
         curns: &NextStep<PREV>,
@@ -163,36 +159,35 @@ fn mksol<
             Some(x) => x,
         };
 
-        let mut update_choice =
-            |p: Rational, cstt: &NextStep<PREV>, memo: &mut BTreeMap<u16, ChapterStats>| {
-                let curmemo = go(curmap, searchmap, cstt);
-                for (cid, curstats) in curmemo.into_iter() {
-                    let e = memo.entry(cid).or_default();
-                    for (i, ip) in curstats.items.into_iter() {
-                        let ei = e.items.entry(i).or_default();
-                        *ei += ip * &p;
-                    }
-                    for (f, ip) in curstats.flags.into_iter() {
-                        let ei = e.flags.entry(f).or_default();
-                        *ei += ip * &p;
-                    }
-                    for (en, ip) in curstats.endurance.into_iter() {
-                        let ei = e.endurance.entry(en).or_default();
-                        *ei += ip * &p;
-                    }
-                    for (dst, ip) in curstats.transitions.into_iter() {
-                        let ei = e.transitions.entry(dst).or_default();
-                        *ei += ip * &p;
-                    }
-                    e.score += curstats.score * &p;
+        let mut update_choice = |p: Rational, cstt: &NextStep<PREV>, memo: &mut BTreeMap<u16, ChapterStats>| {
+            let curmemo = go(curmap, searchmap, cstt);
+            for (cid, curstats) in curmemo.into_iter() {
+                let e = memo.entry(cid).or_default();
+                for (i, ip) in curstats.items.into_iter() {
+                    let ei = e.items.entry(i).or_default();
+                    *ei += ip * &p;
                 }
+                for (f, ip) in curstats.flags.into_iter() {
+                    let ei = e.flags.entry(f).or_default();
+                    *ei += ip * &p;
+                }
+                for (en, ip) in curstats.endurance.into_iter() {
+                    let ei = e.endurance.entry(en).or_default();
+                    *ei += ip * &p;
+                }
+                for (dst, ip) in curstats.transitions.into_iter() {
+                    let ei = e.transitions.entry(dst).or_default();
+                    *ei += ip * &p;
+                }
+                e.score += curstats.score * &p;
+            }
 
-                if let Some(dst) = cstt.chapter() {
-                    let e = memo.get_mut(&src).expect("there should be an entry here");
-                    let e2 = e.transitions.entry(dst).or_default();
-                    *e2 += p;
-                }
-            };
+            if let Some(dst) = cstt.chapter() {
+                let e = memo.get_mut(&src).expect("there should be an entry here");
+                let e2 = e.transitions.entry(dst).or_default();
+                *e2 += p;
+            }
+        };
 
         match cs {
             ChoppedSolution::CLeafLost => {}
@@ -222,9 +217,7 @@ fn mksol<
     go(&mut memo, &sttmap, &ini)
 }
 
-fn count_states<A, PREV: Into<Equipment> + From<Equipment>>(
-    cnt: &BTreeMap<NextStep<PREV>, A>,
-) -> BTreeMap<u16, u64> {
+fn count_states<A, PREV: Into<Equipment> + From<Equipment>>(cnt: &BTreeMap<NextStep<PREV>, A>) -> BTreeMap<u16, u64> {
     let mut o = BTreeMap::new();
     for (ns, _) in cnt.iter() {
         if let Some(cid) = ns.chapter() {
@@ -242,9 +235,7 @@ struct Output {
     sttmap: BTreeMap<u16, u64>,
 }
 
-fn load_soldump(
-    pth: &str,
-) -> anyhow::Result<gamebooksolver_base::lonewolf::mini::GSolDump<Rational>> {
+fn load_soldump(pth: &str) -> anyhow::Result<gamebooksolver_base::lonewolf::mini::GSolDump<Rational>> {
     let file = File::open(pth)?;
     let mut dec = zstd::Decoder::new(file)?;
     let o = bincode::decode_from_std_read(&mut dec, bincode::config::standard())?;
@@ -268,10 +259,7 @@ fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
     use Item::{BodyArmor, Gold, Helmet, StrengthPotion4};
 
     match bookid {
-        Book::Book01 => (
-            [Helmet, BodyArmor, Gold].into_iter().collect(),
-            HashSet::new(),
-        ),
+        Book::Book01 => ([Helmet, BodyArmor, Gold].into_iter().collect(), HashSet::new()),
         Book::Book02 => ([Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
         Book::Book03 => (
             [Item::Weapon(Weapon::Sommerswerd), Helmet, StrengthPotion4]
@@ -280,14 +268,9 @@ fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
             [HelmetIsSilver].into_iter().collect(),
         ),
         Book::Book04 => (
-            [
-                Item::Weapon(Weapon::Sommerswerd),
-                Helmet,
-                BodyArmor,
-                StrengthPotion4,
-            ]
-            .into_iter()
-            .collect(),
+            [Item::Weapon(Weapon::Sommerswerd), Helmet, BodyArmor, StrengthPotion4]
+                .into_iter()
+                .collect(),
             [FoughtElix, PermanentSkillReduction2, HelmetIsSilver]
                 .into_iter()
                 .collect(),
@@ -324,13 +307,7 @@ fn load_results(
             flags.set(f);
         }
         let mut items = Equipment::default();
-        for (i, q) in ms
-            .variable
-            .items
-            .iter()
-            .flatten()
-            .filter(|(i, _)| iitems.contains(i))
-        {
+        for (i, q) in ms.variable.items.iter().flatten().filter(|(i, _)| iitems.contains(i)) {
             items.add_item(i, *q);
         }
         if iitems.contains(&Item::Gold) {
@@ -385,11 +362,7 @@ fn score_with(
             }
             match scoremap.get(&(re, rf)) {
                 None => {
-                    eprintln!(
-                        "Could not find matching combination for {:?} {:?}",
-                        re.items(),
-                        rf
-                    );
+                    eprintln!("Could not find matching combination for {:?} {:?}", re.items(), rf);
                     eprintln!("know combinations are:");
                     for (ke, kf) in scoremap.keys() {
                         eprintln!(" * {:?} {:?}", ke.items(), kf);
@@ -402,17 +375,12 @@ fn score_with(
     }
 }
 
-fn compare_sols<
-    PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + Copy + std::fmt::Display,
->(
+fn compare_sols<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + Copy + std::fmt::Display>(
     m1: HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>>,
     m2: HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>>,
 ) {
     type Ocs<PREV> = Vec<(Rational, NextStep<PREV>)>;
-    fn deloss<PREV: Into<Equipment> + From<Equipment>>(
-        chapter: Option<u16>,
-        ns: NextStep<PREV>,
-    ) -> NextStep<PREV> {
+    fn deloss<PREV: Into<Equipment> + From<Equipment>>(chapter: Option<u16>, ns: NextStep<PREV>) -> NextStep<PREV> {
         match &ns {
             NextStep::NewChapter(cid, cvar) => {
                 if cvar.curendurance <= 0 {
@@ -440,10 +408,7 @@ fn compare_sols<
                         })
                     })
                     .collect();
-                let mut o = optimize_outcome(po)
-                    .into_iter()
-                    .map(|p| (p.p, p.v))
-                    .collect::<Vec<_>>();
+                let mut o = optimize_outcome(po).into_iter().map(|p| (p.p, p.v)).collect::<Vec<_>>();
                 o.sort();
                 o
             }
@@ -590,11 +555,8 @@ fn mkjot<
     eprintln!("Starting condition: {:?} - {}", soldump.soldesc, ini);
     let sttmap = count_states(&soldump.content);
     let bookid = soldump.soldesc.ccst.bookid;
-    let searchmap: HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>> = soldump
-        .content
-        .iter()
-        .map(|(a, b)| (a.clone(), b))
-        .collect();
+    let searchmap: HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>> =
+        soldump.content.iter().map(|(a, b)| (a.clone(), b)).collect();
     eprintln!("{} : {} states", solpath, searchmap.len());
     let res = mksol(ini, searchmap);
     let output = Output {
@@ -626,13 +588,7 @@ fn optimize<PREV: From<Equipment> + Into<Equipment> + Ord + Encode>(
             let fl = File::open(bookpath).unwrap();
             let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl).unwrap();
             book.into_iter()
-                .filter_map(|(a, b)| {
-                    if has_no_choice(&b.pchoice) {
-                        None
-                    } else {
-                        Some(a.0)
-                    }
-                })
+                .filter_map(|(a, b)| if has_no_choice(&b.pchoice) { None } else { Some(a.0) })
                 .collect::<HashSet<_>>()
         })
         .unwrap_or_default();
@@ -658,13 +614,7 @@ fn optimize<PREV: From<Equipment> + Into<Equipment> + Ord + Encode>(
 }
 
 fn dump_states<
-    PREV: From<Equipment>
-        + Into<Equipment>
-        + Ord
-        + Serialize
-        + std::fmt::Display
-        + Copy
-        + std::fmt::Debug,
+    PREV: From<Equipment> + Into<Equipment> + Ord + Serialize + std::fmt::Display + Copy + std::fmt::Debug,
 >(
     soldump: SolutionDump<Rational, PREV>,
     cid: u16,
@@ -672,27 +622,21 @@ fn dump_states<
     for (ns, sol) in &soldump.content {
         if Some(cid) == ns.chapter() {
             match (ns, sol) {
-                (
-                    NextStep::NewChapter(_, pcvar),
-                    ChoppedSolution::CJump(sc, NextStep::NewChapter(nid, ncvar)),
-                ) => println!(
-                    "{} -> JUMP {:.2}% ch:{} {}",
-                    ns,
-                    sc.to_f64() * 100.0,
-                    nid,
-                    &diff_cvar(pcvar, ncvar)
-                ),
+                (NextStep::NewChapter(_, pcvar), ChoppedSolution::CJump(sc, NextStep::NewChapter(nid, ncvar))) => {
+                    println!(
+                        "{} -> JUMP {:.2}% ch:{} {}",
+                        ns,
+                        sc.to_f64() * 100.0,
+                        nid,
+                        &diff_cvar(pcvar, ncvar)
+                    )
+                }
                 (NextStep::NewChapter(_, pcvar), ChoppedSolution::CNode(sc, outcomes)) => {
                     println!("{} - {:.2}% ", ns, sc.to_f64() * 100.0);
                     for (mns, pb) in outcomes {
                         match mns {
                             Some(NextStep::NewChapter(nid, ncvar)) => {
-                                println!(
-                                    " [{:.2}%] ch:{} {}",
-                                    pb.to_f64() * 100.0,
-                                    nid,
-                                    &diff_cvar(pcvar, ncvar)
-                                )
+                                println!(" [{:.2}%] ch:{} {}", pb.to_f64() * 100.0, nid, &diff_cvar(pcvar, ncvar))
                             }
                             _ => println!(" [{:.2}%] {:?}", pb.to_f64() * 100.0, mns),
                         }
@@ -705,9 +649,7 @@ fn dump_states<
     Ok(())
 }
 
-fn compare_states<
-    PREV: From<Equipment> + Into<Equipment> + Eq + std::hash::Hash + Ord + Copy + std::fmt::Display,
->(
+fn compare_states<PREV: From<Equipment> + Into<Equipment> + Eq + std::hash::Hash + Ord + Copy + std::fmt::Display>(
     dump1: SolutionDump<Rational, PREV>,
     dump2: SolutionDump<Rational, PREV>,
     cid: u16,
@@ -729,29 +671,17 @@ fn compare_states<
 }
 
 fn soldump<
-    PREV: From<Equipment>
-        + Into<Equipment>
-        + Default
-        + std::fmt::Debug
-        + std::hash::Hash
-        + Copy
-        + Ord
-        + Serialize,
+    PREV: From<Equipment> + Into<Equipment> + Default + std::fmt::Debug + std::hash::Hash + Copy + Ord + Serialize,
 >(
     cnt: &OSolDesc,
     book: Vec<(ChapterId, Chapter<Rational>)>,
     json_path: &str,
 ) -> anyhow::Result<SolutionDump<Rational, PREV>> {
     let (iitems, iflags) = get_boundary(cnt.bookid);
-    let mscoremap = cnt.resultspath.as_ref().and_then(|pth| {
-        load_results(
-            cnt.discipline.iter().copied().collect(),
-            &iitems,
-            &iflags,
-            pth,
-        )
-        .ok()
-    });
+    let mscoremap = cnt
+        .resultspath
+        .as_ref()
+        .and_then(|pth| load_results(cnt.discipline.iter().copied().collect(), &iitems, &iflags, pth).ok());
 
     let ccst = CharacterConstant {
         bookid: cnt.bookid,
@@ -800,10 +730,7 @@ fn soldump<
     );
     let soldump = SolutionDump {
         soldesc,
-        content: sol
-            .into_iter()
-            .map(|(ns, x)| (ns, chop_solution(x)))
-            .collect(),
+        content: sol.into_iter().map(|(ns, x)| (ns, chop_solution(x))).collect(),
     };
 
     // save json summary
@@ -841,12 +768,8 @@ fn cmd_optimize(
     bookpath: Option<&str>,
 ) -> anyhow::Result<()> {
     let compact = match soldump {
-        GSolDump::Prev(sd) => {
-            optimize(sd, jname, dummy, bookpath).map(CompactSolutionG::WithStorage)?
-        }
-        GSolDump::Noprev(sd) => {
-            optimize(sd, jname, dummy, bookpath).map(CompactSolutionG::NoStorage)?
-        }
+        GSolDump::Prev(sd) => optimize(sd, jname, dummy, bookpath).map(CompactSolutionG::WithStorage)?,
+        GSolDump::Noprev(sd) => optimize(sd, jname, dummy, bookpath).map(CompactSolutionG::NoStorage)?,
     };
     // save compact solution
     let file = File::create(target)?;
@@ -896,8 +819,7 @@ fn main() -> anyhow::Result<()> {
             let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl)?;
             let solfile = File::open(&opt.solpath)?;
             let mut dec = zstd::Decoder::new(solfile)?;
-            let soldump: CompactSolutionG =
-                bincode::decode_from_std_read(&mut dec, bincode::config::standard())?;
+            let soldump: CompactSolutionG = bincode::decode_from_std_read(&mut dec, bincode::config::standard())?;
             match soldump {
                 CompactSolutionG::WithStorage(cs) => explore_compact(&cs, &book),
                 CompactSolutionG::NoStorage(cs) => explore_compact(&cs, &book),
@@ -920,12 +842,8 @@ fn main() -> anyhow::Result<()> {
             let dump1 = load_soldump(&opt.solpath)?;
             let dump2 = load_soldump(otherpath)?;
             match (dump1, dump2) {
-                (GSolDump::Prev(dump1), GSolDump::Prev(dump2)) => {
-                    compare_states(dump1, dump2, *cid)?
-                }
-                (GSolDump::Noprev(dump1), GSolDump::Noprev(dump2)) => {
-                    compare_states(dump1, dump2, *cid)?
-                }
+                (GSolDump::Prev(dump1), GSolDump::Prev(dump2)) => compare_states(dump1, dump2, *cid)?,
+                (GSolDump::Noprev(dump1), GSolDump::Noprev(dump2)) => compare_states(dump1, dump2, *cid)?,
                 _ => panic!("can't handle mixed solution dumps"),
             }
         }
@@ -962,9 +880,7 @@ fn has_no_choice(d: &Decision<Rational>) -> bool {
         | Decision::EvadeFight(_, _, _, _)
         | Decision::RemoveItemFrom(_, _, _)
         | Decision::Cansell(_, _, _) => false,
-        Decision::AfterCombat(d)
-        | Decision::LoseItemFrom(_, _, d)
-        | Decision::Conditional(_, d) => has_no_choice(d),
+        Decision::AfterCombat(d) | Decision::LoseItemFrom(_, _, d) | Decision::Conditional(_, d) => has_no_choice(d),
         Decision::None(_) => true,
     }
 }

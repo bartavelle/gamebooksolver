@@ -2,18 +2,15 @@ use crate::lonewolf::chapter::{Chapter, ChapterId};
 use crate::lonewolf::choices::flatten_decision;
 use crate::lonewolf::combat::Memoz;
 use crate::lonewolf::data::order_chapters;
-use crate::lonewolf::mini::{max_hp, CharacterVariableG, Flags};
 use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep};
+use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
 use crate::solver::base::{Choice, Outcome, Proba, Solution};
 use crate::solver::rational::Rational;
 use crate::solver::solve;
 use std::collections::HashMap;
 
-pub fn step<
-    P: Rational,
-    PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug + Copy + std::hash::Hash + Ord,
->(
+pub fn step<P: Rational, PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug + Copy + std::hash::Hash + Ord>(
     memo: &mut Memoz<P>,
     order: &HashMap<ChapterId, u32>,
     chapters: &HashMap<ChapterId, Chapter<P>>,
@@ -25,19 +22,16 @@ pub fn step<
             if cvar.curendurance > max_hp(ccst, cvar) {
                 panic!("Too many HPs!!");
             }
-            let chapter = chapters
-                .get(&ChapterId(*cid))
-                .expect("could not find chapter");
+            let chapter = chapters.get(&ChapterId(*cid)).expect("could not find chapter");
             let mut nv = cvar.clone();
             nv.flags.unset(Flag::HadCombat);
-            let mut out: Vec<Choice<P, String, NextStep<PREV>>> =
-                flatten_decision(ccst, cvar, &chapter.pchoice)
-                    .into_iter()
-                    .map(|(d, outcome)| Choice {
-                        desc: d.join(" "),
-                        res: update(memo, ccst, &nv, ChapterId(*cid), &outcome),
-                    })
-                    .collect();
+            let mut out: Vec<Choice<P, String, NextStep<PREV>>> = flatten_decision(ccst, cvar, &chapter.pchoice)
+                .into_iter()
+                .map(|(d, outcome)| Choice {
+                    desc: d.join(" "),
+                    res: update(memo, ccst, &nv, ChapterId(*cid), &outcome),
+                })
+                .collect();
             let scorei = |ns: &NextStep<PREV>| -> u32 {
                 match ns {
                     NextStep::HasLost(_) => 0,
@@ -45,9 +39,7 @@ pub fn step<
                     NextStep::NewChapter(cid, _) => *order.get(&ChapterId(*cid)).unwrap_or(&0),
                 }
             };
-            let scorer = |outcome: &Outcome<P, NextStep<PREV>>| {
-                outcome.iter().map(|r| scorei(&r.v)).max().unwrap_or(0)
-            };
+            let scorer = |outcome: &Outcome<P, NextStep<PREV>>| outcome.iter().map(|r| scorei(&r.v)).max().unwrap_or(0);
             out.sort_by(|a, b| scorer(&a.res).cmp(&scorer(&b.res)));
             if out.is_empty() {
                 panic!("Empty! {:?}", ns);
@@ -150,10 +142,7 @@ mod test {
                     title: "1".to_string(),
                     desc: "1".to_string(),
                     pchoice: Decision::None(ChapterOutcome::Conditionally(vec![
-                        (
-                            BoolCond::HasItem(Item::GenBackpack(1), 1),
-                            ChapterOutcome::GameWon,
-                        ),
+                        (BoolCond::HasItem(Item::GenBackpack(1), 1), ChapterOutcome::GameWon),
                         (BoolCond::Always(true), ChapterOutcome::GameLost),
                     ])),
                 },
