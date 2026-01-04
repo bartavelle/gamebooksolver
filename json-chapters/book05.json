@@ -701,131 +701,140 @@
       "desc": "The climb would be easy if it were not for the scalding steam. It stings your face and hands, making the skin puffed and sore. Lose 1 ENDURANCE point.\nPick a number from the Random Number Table. If you have lost the use of one arm, deduct 3 points from the number you have picked. If you possess the Kai Discipline of Hunting, add 2 points to your total.\n",
       "pchoice": {
         "NoDecision": {
-          "Conditionally": [
+          "Simple": [
             [
               {
-                "CAnd": [
+                "DamagePlayer": 1
+              }
+            ],
+            {
+              "Conditionally": [
+                [
+                  {
+                    "CAnd": [
+                      {
+                        "HasDiscipline": "Hunting"
+                      },
+                      {
+                        "HasFlag": "LimbDeath"
+                      }
+                    ]
+                  },
+                  {
+                    "Randomly": [
+                      [
+                        {
+                          "radix": 10,
+                          "value": "1/10"
+                        },
+                        {
+                          "Goto": 77
+                        }
+                      ],
+                      [
+                        {
+                          "radix": 10,
+                          "value": "7/10"
+                        },
+                        {
+                          "Goto": 192
+                        }
+                      ],
+                      [
+                        {
+                          "radix": 10,
+                          "value": "1/5"
+                        },
+                        {
+                          "Goto": 114
+                        }
+                      ]
+                    ]
+                  }
+                ],
+                [
                   {
                     "HasDiscipline": "Hunting"
                   },
                   {
+                    "Randomly": [
+                      [
+                        {
+                          "radix": 10,
+                          "value": "1/2"
+                        },
+                        {
+                          "Goto": 192
+                        }
+                      ],
+                      [
+                        {
+                          "radix": 10,
+                          "value": "1/2"
+                        },
+                        {
+                          "Goto": 114
+                        }
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  {
                     "HasFlag": "LimbDeath"
+                  },
+                  {
+                    "Randomly": [
+                      [
+                        {
+                          "radix": 10,
+                          "value": "3/10"
+                        },
+                        {
+                          "Goto": 77
+                        }
+                      ],
+                      [
+                        {
+                          "radix": 10,
+                          "value": "7/10"
+                        },
+                        {
+                          "Goto": 192
+                        }
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  {
+                    "Always": true
+                  },
+                  {
+                    "Randomly": [
+                      [
+                        {
+                          "radix": 10,
+                          "value": "7/10"
+                        },
+                        {
+                          "Goto": 77
+                        }
+                      ],
+                      [
+                        {
+                          "radix": 10,
+                          "value": "3/10"
+                        },
+                        {
+                          "Goto": 114
+                        }
+                      ]
+                    ]
                   }
                 ]
-              },
-              {
-                "Randomly": [
-                  [
-                    {
-                      "radix": 10,
-                      "value": "1/10"
-                    },
-                    {
-                      "Goto": 77
-                    }
-                  ],
-                  [
-                    {
-                      "radix": 10,
-                      "value": "7/10"
-                    },
-                    {
-                      "Goto": 192
-                    }
-                  ],
-                  [
-                    {
-                      "radix": 10,
-                      "value": "1/5"
-                    },
-                    {
-                      "Goto": 114
-                    }
-                  ]
-                ]
-              }
-            ],
-            [
-              {
-                "HasDiscipline": "Hunting"
-              },
-              {
-                "Randomly": [
-                  [
-                    {
-                      "radix": 10,
-                      "value": "1/2"
-                    },
-                    {
-                      "Goto": 192
-                    }
-                  ],
-                  [
-                    {
-                      "radix": 10,
-                      "value": "1/2"
-                    },
-                    {
-                      "Goto": 114
-                    }
-                  ]
-                ]
-              }
-            ],
-            [
-              {
-                "HasFlag": "LimbDeath"
-              },
-              {
-                "Randomly": [
-                  [
-                    {
-                      "radix": 10,
-                      "value": "3/10"
-                    },
-                    {
-                      "Goto": 77
-                    }
-                  ],
-                  [
-                    {
-                      "radix": 10,
-                      "value": "7/10"
-                    },
-                    {
-                      "Goto": 192
-                    }
-                  ]
-                ]
-              }
-            ],
-            [
-              {
-                "Always": true
-              },
-              {
-                "Randomly": [
-                  [
-                    {
-                      "radix": 10,
-                      "value": "7/10"
-                    },
-                    {
-                      "Goto": 77
-                    }
-                  ],
-                  [
-                    {
-                      "radix": 10,
-                      "value": "3/10"
-                    },
-                    {
-                      "Goto": 114
-                    }
-                  ]
-                ]
-              }
-            ]
+              ]
+            }
           ]
         }
       },
@@ -5837,7 +5846,16 @@
             "If you wish to climb the ladder, turn to 31.",
             {
               "NoDecision": {
-                "Goto": 31
+                "Simple": [
+                  [
+                    {
+                      "DamagePlayer": 1
+                    }
+                  ],
+                  {
+                    "Goto": 31
+                  }
+                ]
               }
             }
           ],
@@ -5845,7 +5863,16 @@
             "If you wish to ignore the ladder and press on along in the insect-choked tunnel, turn to 139.",
             {
               "NoDecision": {
-                "Goto": 139
+                "Simple": [
+                  [
+                    {
+                      "DamagePlayer": 1
+                    }
+                  ],
+                  {
+                    "Goto": 139
+                  }
+                ]
               }
             }
           ]
