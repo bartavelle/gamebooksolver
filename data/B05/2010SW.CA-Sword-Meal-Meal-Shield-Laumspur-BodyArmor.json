@@ -4,25 +4,17 @@
     {
       "WeaponSkill": "Sword"
     },
-    "AnimalKinship",
+    "SixthSense",
     "MindShield",
     "Healing",
+    "Tracking",
     "MindBlast",
     "Hunting",
-    "MindOverMatter",
-    "SixthSense",
-    "Tracking"
+    "AnimalKinship",
+    "MindOverMatter"
   ],
   "variable": {
     "items": [
-      [
-        "BodyArmor",
-        1
-      ],
-      [
-        "Laumspur",
-        1
-      ],
       [
         {
           "Weapon": "Sword"
@@ -35,6 +27,14 @@
       ],
       [
         "Shield",
+        1
+      ],
+      [
+        "Laumspur",
+        1
+      ],
+      [
+        "BodyArmor",
         1
       ]
     ],
@@ -50,7 +50,7 @@
         "radix": 16,
         "value": "810e4915078bcea4bbea9799/1f8def8808b02452c9a000000"
       },
-      "states": 78275316
+      "states": 78275850
     }
   ]
 }

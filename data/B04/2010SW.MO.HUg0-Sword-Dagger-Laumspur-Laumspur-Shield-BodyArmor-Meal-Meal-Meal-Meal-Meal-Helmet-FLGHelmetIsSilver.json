@@ -4,18 +4,22 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Tracking",
-    "MindShield",
     "Healing",
     "Camouflage",
     "AnimalKinship",
+    "Tracking",
     "MindBlast",
-    "SixthSense"
+    "SixthSense",
+    "MindShield"
   ],
   "variable": {
     "items": [
       [
         "BodyArmor",
+        1
+      ],
+      [
+        "Shield",
         1
       ],
       [
@@ -27,18 +31,14 @@
         1
       ],
       [
-        "Shield",
-        1
-      ],
-      [
         {
-          "Weapon": "Sword"
+          "Weapon": "Dagger"
         },
         1
       ],
       [
         {
-          "Weapon": "Dagger"
+          "Weapon": "Sword"
         },
         1
       ],
@@ -61,7 +61,7 @@
         "radix": 16,
         "value": "1c2957eda8fd03f19df34d24be98bc8f4cd339e39116eb9b1bf908fd/2f7a53a390f4323b0f54bbbb472fa8c5db448df40000000000000000"
       },
-      "states": 13249104
+      "states": 12744410
     }
   ]
 }

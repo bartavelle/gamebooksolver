@@ -4,27 +4,17 @@
     {
       "WeaponSkill": "Sword"
     },
-    "MindShield",
-    "MindBlast",
-    "AnimalKinship",
-    "MindOverMatter",
     "Camouflage",
     "Tracking",
+    "MindOverMatter",
+    "Healing",
+    "MindShield",
+    "AnimalKinship",
     "Hunting",
-    "Healing"
+    "MindBlast"
   ],
   "variable": {
     "items": [
-      [
-        "Meal",
-        2
-      ],
-      [
-        {
-          "Weapon": "Sommerswerd"
-        },
-        1
-      ],
       [
         "Laumspur",
         1
@@ -34,12 +24,22 @@
         1
       ],
       [
-        "BodyArmor",
+        {
+          "Weapon": "Sommerswerd"
+        },
         1
       ],
       [
         "Shield",
         1
+      ],
+      [
+        "BodyArmor",
+        1
+      ],
+      [
+        "Meal",
+        2
       ]
     ],
     "gold": 15,
@@ -56,7 +56,7 @@
         "radix": 16,
         "value": "b5804e89f1f7cca1c87/d3c21bcecceda100000"
       },
-      "states": 67676919
+      "states": 67677483
     }
   ]
 }

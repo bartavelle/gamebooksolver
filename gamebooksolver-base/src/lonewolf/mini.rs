@@ -37,10 +37,12 @@ pub enum GSolDump<P> {
     Noprev(SolutionDump<P, NoPrevEq>),
 }
 
+pub type SoldumpContent<P, PREV> = BTreeMap<NextStep<PREV>, ChoppedSolution<P, NextStep<PREV>>>;
+
 #[derive(Debug, PartialEq, Eq, Decode, Encode)]
 pub struct SolutionDump<P, PREV: Into<Equipment> + From<Equipment> + Ord> {
     pub soldesc: SolDesc,
-    pub content: BTreeMap<NextStep<PREV>, ChoppedSolution<P, NextStep<PREV>>>,
+    pub content: SoldumpContent<P, PREV>,
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Encode, Decode)]
@@ -187,6 +189,7 @@ impl FromStr for Equipment {
     }
 }
 
+#[derive(PartialEq, Eq)]
 pub enum ItemStorageSlot {
     A(u8),
     B(u8),
@@ -586,8 +589,11 @@ impl Item {
         Item::Weapon(Weapon::BroadSword),
         Item::Weapon(Weapon::MagicSpear),
         Item::Weapon(Weapon::Sommerswerd),
+        // B04 Brass key
         Item::GenSpecial(0),
+        // B04 Firesphere
         Item::GenSpecial(1),
+        // B04 scroll
         Item::GenSpecial(2),
         Item::GenSpecial(3),
         Item::GenSpecial(4),
@@ -597,9 +603,13 @@ impl Item {
         Item::GenSpecial(8),
         Item::GenSpecial(9),
         Item::GenSpecial(10),
+        // B04 Onyx medaillon
         Item::GenSpecial(11),
+        // B04 Flask of holy water
         Item::GenBackpack(0),
+        // B04 torch/tinderbox
         Item::GenBackpack(1),
+        // B04 torch/tinderbox
         Item::GenBackpack(2),
         Item::GenBackpack(3),
         Item::GenBackpack(4),
@@ -625,6 +635,7 @@ impl Item {
             Item::Potion6Hp => A(7),
             Item::StrengthPotion => A(8),
             Item::Helmet => A(9),
+            // those three should not be uised
             Item::Laumspur => A(10),
             Item::Gold => A(11),
             Item::Meal => A(12),
@@ -635,7 +646,7 @@ impl Item {
                     _ => B(n - 3),
                 }
             }
-            Item::GenSpecial(n) => B(*n + 9),
+            Item::GenSpecial(n) => B(*n + 8),
             Item::GenBackpack(n) => B(*n + 20),
         }
     }
@@ -987,6 +998,18 @@ mod test {
             let encoded = serde_json::to_string(&base).unwrap();
             let decoded = serde_json::from_str::<Equipment>(&encoded).unwrap();
             assert_eq!(base, decoded);
+        }
+    }
+
+    #[test]
+    fn all_items_distinct() {
+        let mut found = Vec::new();
+        for i in Item::VALUES {
+            let idx = i.get_idx();
+            if found.contains(&idx) {
+                panic!("duplicate idx: {i:?}")
+            }
+            found.push(idx);
         }
     }
 }

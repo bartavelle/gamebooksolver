@@ -28,7 +28,6 @@ import Data.List (foldl', intercalate, isSuffixOf)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, isJust, mapMaybe)
 import qualified Data.Set as S
-import qualified Data.Text as TS
 import qualified Data.Text.Lazy as T
 import qualified Data.Text.Lazy.IO as T
 import Data.Word (Word64)
@@ -538,7 +537,7 @@ main = do
             Book04 -> "json-chapters/display04.json"
             Book05 -> "json-chapters/display05.json"
         case d of
-          Left rr -> error rr
+          Left rr -> error ("can't load book: " ++ rr)
           Right y -> pure (rx, y)
       let dstats = fmap getERatio rdstats
       todot rdesc dstats

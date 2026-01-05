@@ -4,19 +4,23 @@
     {
       "WeaponSkill": "Sword"
     },
-    "AnimalKinship",
     "MindBlast",
     "Healing",
-    "MindShield",
+    "AnimalKinship",
     "Tracking",
-    "Hunting",
-    "SixthSense"
+    "SixthSense",
+    "MindShield",
+    "Hunting"
   ],
   "variable": {
     "items": [
       [
-        "Laumspur",
-        2
+        "Meal",
+        5
+      ],
+      [
+        "Helmet",
+        1
       ],
       [
         {
@@ -39,12 +43,8 @@
         1
       ],
       [
-        "Meal",
-        5
-      ],
-      [
-        "Helmet",
-        1
+        "Laumspur",
+        2
       ]
     ],
     "gold": 0,
@@ -61,7 +61,7 @@
         "radix": 16,
         "value": "17858bb1d900c1967e189/211654585005212800000"
       },
-      "states": 12678113
+      "states": 12138063
     }
   ]
 }

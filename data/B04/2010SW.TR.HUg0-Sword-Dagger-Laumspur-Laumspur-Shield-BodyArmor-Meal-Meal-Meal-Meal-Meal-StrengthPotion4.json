@@ -4,20 +4,28 @@
     {
       "WeaponSkill": "Sword"
     },
-    "AnimalKinship",
-    "SixthSense",
-    "Healing",
-    "MindShield",
-    "MindBlast",
+    "MindOverMatter",
     "Camouflage",
-    "MindOverMatter"
+    "MindBlast",
+    "SixthSense",
+    "MindShield",
+    "AnimalKinship",
+    "Healing"
   ],
   "variable": {
     "items": [
       [
         {
-          "Weapon": "Sword"
+          "Weapon": "Dagger"
         },
+        1
+      ],
+      [
+        "Meal",
+        5
+      ],
+      [
+        "StrengthPotion4",
         1
       ],
       [
@@ -33,17 +41,9 @@
         1
       ],
       [
-        "Meal",
-        5
-      ],
-      [
         {
-          "Weapon": "Dagger"
+          "Weapon": "Sword"
         },
-        1
-      ],
-      [
-        "StrengthPotion4",
         1
       ]
     ],
@@ -59,7 +59,7 @@
         "radix": 16,
         "value": "1069d0ba50009fd0abbac12dd5ec4e46509d6bdb97/2168d8d9badc7c1051e9b68adfe191d40000000000"
       },
-      "states": 27385709
+      "states": 26363801
     }
   ]
 }

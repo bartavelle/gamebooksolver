@@ -91,6 +91,7 @@ pub fn solve_lws<
     ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
     startat: u16,
+    verbose: bool,
 ) -> Solution<P, NextStep<PREV>>
 where
     F: Fn(Equipment, Flags) -> P,
@@ -102,14 +103,20 @@ where
         &mut |ns| step(&mut memo, &order, &mbook, ccst, ns),
         &|ns| get_score(&scorer, tgt, ns),
         &NextStep::NewChapter(startat, cvar.clone()),
-        &|c| eprintln!("State cache efficiency {:.2}%", c.efficiency() * 100.0),
+        &|c| {
+            if verbose {
+                eprintln!("State cache efficiency {:.2}%", c.efficiency() * 100.0)
+            }
+        },
     );
-    eprintln!(
-        "Cache efficiency: wholefight[{:.2}%] vanilla[{:.2}%] mindblasted[{:.2}%]",
-        memo.whole_fight.efficiency() * 100.0,
-        memo.fight_vanilla.efficiency() * 100.0,
-        memo.fight_mindblasted.efficiency() * 100.0
-    );
+    if verbose {
+        eprintln!(
+            "Cache efficiency: wholefight[{:.2}%] vanilla[{:.2}%] mindblasted[{:.2}%]",
+            memo.whole_fight.efficiency() * 100.0,
+            memo.fight_vanilla.efficiency() * 100.0,
+            memo.fight_mindblasted.efficiency() * 100.0
+        );
+    }
     o
 }
 
@@ -161,6 +168,7 @@ mod test {
             },
             &cvar,
             1,
+            false,
         );
 
         let mut nvar = cvar.clone();

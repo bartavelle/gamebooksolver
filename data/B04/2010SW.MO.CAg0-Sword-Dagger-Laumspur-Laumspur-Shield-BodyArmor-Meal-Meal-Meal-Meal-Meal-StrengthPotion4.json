@@ -4,13 +4,13 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Healing",
-    "MindShield",
-    "MindBlast",
-    "Hunting",
-    "SixthSense",
     "Tracking",
-    "AnimalKinship"
+    "AnimalKinship",
+    "Hunting",
+    "MindBlast",
+    "MindShield",
+    "Healing",
+    "SixthSense"
   ],
   "variable": {
     "items": [
@@ -19,7 +19,9 @@
         5
       ],
       [
-        "StrengthPotion4",
+        {
+          "Weapon": "Dagger"
+        },
         1
       ],
       [
@@ -27,11 +29,11 @@
         2
       ],
       [
-        "Shield",
+        "BodyArmor",
         1
       ],
       [
-        "BodyArmor",
+        "StrengthPotion4",
         1
       ],
       [
@@ -41,9 +43,7 @@
         1
       ],
       [
-        {
-          "Weapon": "Dagger"
-        },
+        "Shield",
         1
       ]
     ],
@@ -59,7 +59,7 @@
         "radix": 16,
         "value": "6a83e71138b60a373e586cd30b6dedb140e9b37/daf3f04651d47b4c3c0cdd765f1140000000000"
       },
-      "states": 27705756
+      "states": 26598614
     }
   ]
 }

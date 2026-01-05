@@ -6,20 +6,20 @@
     },
     "Healing",
     "AnimalKinship",
-    "MindBlast",
+    "SixthSense",
     "Tracking",
-    "SixthSense"
+    "MindBlast"
   ],
   "variable": {
     "items": [
       [
-        {
-          "Weapon": "Sword"
-        },
+        "Shield",
         1
       ],
       [
-        "Shield",
+        {
+          "Weapon": "Sword"
+        },
         1
       ]
     ],
@@ -35,7 +35,7 @@
         "radix": 16,
         "value": "1d385380f15f329184970ccf7e424952401dc2593804f638404b/309e07d27ff3e9b54f2fdadc71dac97ed43e0200000000000000"
       },
-      "states": 3205443
+      "states": 3098726
     }
   ]
 }

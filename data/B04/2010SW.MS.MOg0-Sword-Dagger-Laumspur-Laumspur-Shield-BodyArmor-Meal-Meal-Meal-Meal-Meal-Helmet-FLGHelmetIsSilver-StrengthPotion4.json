@@ -4,30 +4,18 @@
     {
       "WeaponSkill": "Sword"
     },
+    "Camouflage",
     "MindBlast",
-    "AnimalKinship",
     "Healing",
     "Hunting",
     "SixthSense",
-    "Tracking",
-    "Camouflage"
+    "AnimalKinship",
+    "Tracking"
   ],
   "variable": {
     "items": [
       [
         "Helmet",
-        1
-      ],
-      [
-        {
-          "Weapon": "Sword"
-        },
-        1
-      ],
-      [
-        {
-          "Weapon": "Dagger"
-        },
         1
       ],
       [
@@ -39,11 +27,23 @@
         1
       ],
       [
+        "BodyArmor",
+        1
+      ],
+      [
+        {
+          "Weapon": "Sword"
+        },
+        1
+      ],
+      [
         "Laumspur",
         2
       ],
       [
-        "BodyArmor",
+        {
+          "Weapon": "Dagger"
+        },
         1
       ],
       [
@@ -65,7 +65,7 @@
         "radix": 16,
         "value": "cdeb3e431e0ac41c0a500e6ede5d706cd6e518e4d8adf6f5846407/12fdbb0e39fb474ad2eeb17e1c7976b58ae838c8000000000000000"
       },
-      "states": 26854015
+      "states": 25781637
     }
   ]
 }

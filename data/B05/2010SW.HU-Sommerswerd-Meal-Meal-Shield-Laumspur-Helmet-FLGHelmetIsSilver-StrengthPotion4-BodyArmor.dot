@@ -17,7 +17,7 @@ digraph G {
       ,style=filled
       ,fontcolor="/svg/white"];
     6 [shape=record
-      ,label="{6|22\ states}"
+      ,label="{6|24\ states}"
       ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect6.htm"
       ,style=filled];
     7 [shape=record
@@ -90,7 +90,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect24.htm"
        ,color="/svg/gray"];
     25 [shape=record
-       ,label="{25|238\ states}"
+       ,label="{25|268\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect25.htm"
        ,style=filled];
     26 [shape=record
@@ -114,7 +114,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect30.htm"
        ,style=filled];
     31 [shape=record
-       ,label="{31|24\ states}"
+       ,label="{31|26\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect31.htm"
        ,style=filled];
     32 [shape=record
@@ -202,7 +202,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect53.htm"
        ,color="/svg/gray"];
     54 [shape=record
-       ,label="{54|18\ states}"
+       ,label="{54|20\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect54.htm"
        ,style=filled];
     55 [shape=record
@@ -262,7 +262,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect68.htm"
        ,color="/svg/gray"];
     69 [shape=record
-       ,label="{69|204\ states}"
+       ,label="{69|234\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect69.htm"
        ,style=filled];
     70 [shape=record
@@ -270,7 +270,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect70.htm"
        ,style=filled];
     71 [shape=record
-       ,label="{71|20\ states}"
+       ,label="{71|22\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect71.htm"
        ,style=filled];
     72 [shape=record
@@ -347,11 +347,11 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect89.htm"
        ,style=filled];
     90 [shape=record
-       ,label="{90|22\ states}"
+       ,label="{90|24\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect90.htm"
        ,style=filled];
     92 [shape=record
-       ,label="{92|194\ states}"
+       ,label="{92|226\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect92.htm"
        ,style=filled];
     93 [shape=record
@@ -395,7 +395,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect102.htm"
         ,style=filled];
     103 [shape=record
-        ,label="{103|20\ states}"
+        ,label="{103|22\ states}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect103.htm"
         ,style=filled];
     104 [shape=record
@@ -528,7 +528,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect138.htm"
         ,style=filled];
     139 [shape=record
-        ,label="{139|24\ states}"
+        ,label="{139|26\ states}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect139.htm"
         ,style=filled];
     140 [shape=record
@@ -588,7 +588,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect153.htm"
         ,color="/svg/gray"];
     154 [shape=record
-        ,label="{154|16\ states}"
+        ,label="{154|18\ states}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect154.htm"
         ,style=filled];
     155 [shape=record
@@ -684,7 +684,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect178.htm"
         ,color="/svg/red"];
     179 [shape=record
-        ,label="{179|226\ states}"
+        ,label="{179|258\ states}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect179.htm"
         ,style=filled];
     180 [shape=record
@@ -700,7 +700,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect182.htm"
         ,style=filled];
     183 [shape=record
-        ,label="{183|22\ states}"
+        ,label="{183|24\ states}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect183.htm"
         ,style=filled];
     184 [shape=record
@@ -752,7 +752,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect196.htm"
         ,style=filled];
     197 [shape=record
-        ,label="{197|194\ states}"
+        ,label="{197|226\ states}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect197.htm"
         ,style=filled];
     198 [shape=record
@@ -1877,11 +1877,11 @@ digraph G {
     22 -> 107 [color="/svg/darkgray"
               ,label=" \"-8HP\""];
     23 -> 77 [color="/svg/darkgray"
-             ,label=" \"\" \"r(7/10)\""];
+             ,label=" \"-1HP\" \"\" \"r(7/10)\""];
     23 -> 114 [color="/svg/darkgray"
-              ,label=" \"\" \"r(3/10)\""];
+              ,label=" \"-1HP\" \"\" \"r(3/10)\""];
     23 -> 192 [color="/svg/darkgray"
-              ,label=" \"f:LimbDeath\" \"r(7/10)\""];
+              ,label=" \"-1HP\" \"f:LimbDeath\" \"r(7/10)\""];
     24 -> 196 [color="/svg/darkgray"
               ,label=" \"!?6th\""];
     25 -> 69 [color="/svg/darkgray"
@@ -2305,9 +2305,9 @@ digraph G {
     163 -> 174 [color="/svg/darkgray"
                ,label=" \"!?6th\" \"-1HP\""];
     164 -> 31 [color="/svg/darkgray"
-              ,label=""];
+              ,label=" \"-1HP\""];
     164 -> 139 [color="/svg/darkgray"
-               ,label=""];
+               ,label=" \"-1HP\""];
     165 -> 78 [color="/svg/darkgray"
               ,label=""];
     165 -> 199 [color="/svg/darkgray"

@@ -4,13 +4,13 @@
     {
       "WeaponSkill": "Sword"
     },
-    "MindOverMatter",
-    "MindBlast",
     "Camouflage",
-    "Tracking",
-    "Healing",
+    "MindBlast",
+    "AnimalKinship",
     "SixthSense",
-    "AnimalKinship"
+    "Healing",
+    "MindOverMatter",
+    "Tracking"
   ],
   "variable": {
     "items": [
@@ -21,11 +21,15 @@
         1
       ],
       [
-        "Laumspur",
-        2
+        "BodyArmor",
+        1
       ],
       [
         "Shield",
+        1
+      ],
+      [
+        "StrengthPotion4",
         1
       ],
       [
@@ -35,16 +39,12 @@
         1
       ],
       [
-        "BodyArmor",
-        1
+        "Laumspur",
+        2
       ],
       [
         "Meal",
         5
-      ],
-      [
-        "StrengthPotion4",
-        1
       ]
     ],
     "gold": 0,
@@ -59,7 +59,7 @@
         "radix": 16,
         "value": "1069d0ba50009fd0abbac12dd5ec4e46509d6bdb97/2168d8d9badc7c1051e9b68adfe191d40000000000"
       },
-      "states": 26363607
+      "states": 25365679
     }
   ]
 }

@@ -4,12 +4,12 @@
     {
       "WeaponSkill": "Sword"
     },
-    "MindShield",
-    "MindBlast",
-    "MindOverMatter",
+    "Hunting",
     "AnimalKinship",
+    "MindBlast",
     "Healing",
-    "Hunting"
+    "MindOverMatter",
+    "MindShield"
   ],
   "variable": {
     "items": [
@@ -18,13 +18,13 @@
         1
       ],
       [
-        {
-          "Weapon": "Sommerswerd"
-        },
+        "BodyArmor",
         1
       ],
       [
-        "BodyArmor",
+        {
+          "Weapon": "Sommerswerd"
+        },
         1
       ]
     ],

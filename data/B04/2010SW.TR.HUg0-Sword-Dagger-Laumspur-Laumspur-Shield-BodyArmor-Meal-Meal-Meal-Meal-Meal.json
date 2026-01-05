@@ -6,31 +6,23 @@
     },
     "SixthSense",
     "MindOverMatter",
-    "MindBlast",
-    "AnimalKinship",
-    "MindShield",
     "Camouflage",
-    "Healing"
+    "Healing",
+    "MindBlast",
+    "MindShield",
+    "AnimalKinship"
   ],
   "variable": {
     "items": [
-      [
-        {
-          "Weapon": "Dagger"
-        },
-        1
-      ],
       [
         "Shield",
         1
       ],
       [
-        "BodyArmor",
+        {
+          "Weapon": "Dagger"
+        },
         1
-      ],
-      [
-        "Laumspur",
-        2
       ],
       [
         {
@@ -41,6 +33,14 @@
       [
         "Meal",
         5
+      ],
+      [
+        "Laumspur",
+        2
+      ],
+      [
+        "BodyArmor",
+        1
       ]
     ],
     "gold": 0,
@@ -55,7 +55,7 @@
         "radix": 16,
         "value": "4e539ba1e143e891f0ed03bad1dc40c1cd51c3ef3f5654206473bfd00dfab/11afd6ec0e14115d9f83c3bcb9ea87945f91518df477400000000000000000"
       },
-      "states": 13633451
+      "states": 13123745
     }
   ]
 }

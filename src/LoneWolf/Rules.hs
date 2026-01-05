@@ -8,7 +8,6 @@ import Control.DeepSeq
 import Control.Lens
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Hashable
-import Data.List
 import GHC.Generics
 import LoneWolf.Chapter
 import LoneWolf.Character

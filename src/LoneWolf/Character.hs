@@ -16,26 +16,25 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 module LoneWolf.Character where
 
 import Codec.Serialise (Serialise)
-import Control.Monad(guard)
 import Control.Applicative ((<|>))
-import Control.DeepSeq
+import Control.DeepSeq (NFData)
 import Control.Lens
-import Data.Aeson (FromJSON, FromJSONKey, Options (fieldLabelModifier), ToJSON (toJSON), ToJSONKey, Value (String), defaultOptions, genericParseJSON, genericToJSON, withObject, withText, (.:))
-import qualified Data.Aeson.KeyMap as A
+import Control.Monad (foldM)
+import Data.Aeson (FromJSON (..), FromJSONKey (..), Options (fieldLabelModifier), ToJSON (toJSON), ToJSONKey (..), Value (String), defaultOptions, genericParseJSON, genericToJSON, withObject, withText, (.:))
 import qualified Data.Aeson.Key as K
-import Data.Aeson.Types (FromJSON (parseJSON))
+import qualified Data.Aeson.KeyMap as A
+import Data.Aeson.Types (FromJSONKeyFunction (..), Parser, unexpected, typeMismatch)
 import Data.Bits
 import Data.Bits.Lens (bitAt)
-import Data.Data
-import qualified Data.HashMap.Strict as HM
-import Data.Hashable
+import Data.Data (Data, Typeable)
+import Data.Hashable (Hashable)
 import Data.Int (Int16)
-import Data.List
 import qualified Data.Map.Strict as M
 import qualified Data.Text as T
+import qualified Data.Text.Read as T
 import Data.Tuple (swap)
-import Data.Word
-import GHC.Generics
+import Data.Word (Word32, Word64, Word8)
+import GHC.Generics (Generic)
 import Text.Read (readMaybe)
 
 {-
@@ -136,7 +135,51 @@ flags f (CharacterVariable e flgs i p) = (\flgs' -> CharacterVariable e flgs' i 
 {-# INLINE flags #-}
 
 newtype Inventory = Inventory {getInventory :: Word64}
-  deriving (Generic, Eq, Bits, Ord, Num, Hashable, NFData, ToJSON, FromJSON, Serialise, FromJSONKey, ToJSONKey)
+  deriving (Generic, Eq, Bits, Ord, Num, Hashable, NFData, Serialise)
+
+instance ToJSON Inventory where
+  toJSON = undefined
+
+instance FromJSON Inventory where
+  parseJSON = withText "Inventory" parseInventory
+
+instance ToJSONKey Inventory where
+  toJSONKey = undefined
+
+instance FromJSONKey Inventory where
+  fromJSONKey = FromJSONKeyTextParser parseInventory
+
+parseInventory :: T.Text -> Parser Inventory
+parseInventory "" = pure emptyInventory
+parseInventory inv = foldM parseI emptyInventory (T.splitOn "/" inv)
+  where
+    parseI currI kp = do
+      (i, q) <- case T.splitOn ":" kp of
+        [s] -> do
+          item <- parseItem s
+          pure (item, 1)
+        [k, n] -> do
+          item <- parseItem k
+          case T.decimal n of
+            Left rr -> typeMismatch rr (toJSON n)
+            Right (x, "") -> pure (item, x)
+            Right _ -> unexpected (toJSON n)
+        lst -> unexpected (toJSON lst)
+      pure (addItem i q currI)
+
+parseItem :: T.Text -> Parser Item
+parseItem t
+  | Just n <- T.stripPrefix "SGen" t = case readMaybe (T.unpack n) of
+                                          Just x -> pure (GenSpecial (GenCounter x))
+                                          _ -> typeMismatch "Counter" (toJSON n)
+  | Just n <- T.stripPrefix "BGen" t = case readMaybe (T.unpack n) of
+                                          Just x -> pure (GenBackpack (GenCounter x))
+                                          _ -> typeMismatch "Counter" (toJSON n)
+  | otherwise =  case readMaybe (T.unpack t) of
+                Just itm -> pure itm
+                _ -> case readMaybe (T.unpack t) of
+                        Just wpn -> pure (Weapon wpn)
+                        _ -> typeMismatch "Item" (toJSON t)
 
 instance Show Inventory where
   show i = "(inventoryFromList " ++ show (items i) ++ ")"
@@ -174,7 +217,7 @@ instance Serialise Flag
 flag :: Flag -> Lens' CharacterVariable Bool
 flag flg = flags . bitAt (fromEnum flg)
 
-setFlags :: Foldable t => t Flag -> CharacterVariable -> CharacterVariable
+setFlags :: (Foldable t) => t Flag -> CharacterVariable -> CharacterVariable
 setFlags flgs cvar = foldl' setFlag cvar flgs
   where
     setFlag c f = c & flag f .~ True
@@ -213,8 +256,8 @@ instance FromJSON Discipline where
         [(k, v)]
           | k == "tag" -> txtd v
           | otherwise -> case readMaybe (K.toString k) of
-            Just d -> pure d
-            Nothing -> fail ("unknown discipline " ++ show o)
+              Just d -> pure d
+              Nothing -> fail ("unknown discipline " ++ show o)
         _ -> do
           t <- o .: "tag"
           case t of
@@ -665,20 +708,20 @@ addItem i count inv
   | count < 0 = delItem i (negate count) inv
   | count == 0 = inv
   | otherwise = case i of
-    Gold -> inv & gold %~ \curgold -> min 50 (curgold + fromIntegral count)
-    Meal -> inv & meals +~ fromIntegral count
-    Laumspur -> inv & laumspur +~ fromIntegral count
-    _ -> inv & singleItems %~ flip setBit (fromEnum i)
+      Gold -> inv & gold %~ \curgold -> min 50 (curgold + fromIntegral count)
+      Meal -> inv & meals +~ fromIntegral count
+      Laumspur -> inv & laumspur +~ fromIntegral count
+      _ -> inv & singleItems %~ flip setBit (fromEnum i)
 
 delItem :: Item -> Int -> Inventory -> Inventory
 delItem i count inv
   | count < 0 = addItem i (negate count) inv
   | count == 0 = inv
   | otherwise = case i of
-    Gold -> inv & gold %~ drp
-    Meal -> inv & meals %~ drp
-    Laumspur -> inv & laumspur %~ drp
-    _ -> inv & singleItems %~ flip clearBit (fromEnum i)
+      Gold -> inv & gold %~ drp
+      Meal -> inv & meals %~ drp
+      Laumspur -> inv & laumspur %~ drp
+      _ -> inv & singleItems %~ flip clearBit (fromEnum i)
   where
     drp cur = max 0 (cur - fromIntegral count)
 
@@ -696,10 +739,10 @@ items :: Inventory -> [(Item, Int)]
 items inventory =
   filter
     ((> 0) . snd)
-    ( (Gold, inventory ^. gold) :
-      (Meal, inventory ^. meals) :
-      (Laumspur, inventory ^. laumspur) :
-        [(item, if hasItem item inventory then 1 else 0) | item <- standardItems]
+    ( (Gold, inventory ^. gold)
+        : (Meal, inventory ^. meals)
+        : (Laumspur, inventory ^. laumspur)
+        : [(item, if hasItem item inventory then 1 else 0) | item <- standardItems]
     )
   where
     standardItems = filter (`notElem` [Gold, Meal, Laumspur]) [minBound .. maxBound]
@@ -723,17 +766,15 @@ makePrisms ''Discipline
 usedWeapon :: CharacterConstant -> CharacterVariable -> UsedWeapon
 usedWeapon cconstant cvariable
   | hasItem (Weapon Sommerswerd) inventory =
-    if any (`elem` wskills) [Sword, ShortSword, BroadSword]
-      then WithSkill Sommerswerd
-      else WithoutSkill Sommerswerd
+      if any (`elem` wskills) [Sword, ShortSword, BroadSword]
+        then WithSkill Sommerswerd
+        else WithoutSkill Sommerswerd
   | otherwise = case filter ((`hasItem` inventory) . Weapon) wskills of
-    (x : _) -> WithSkill x
-    [] ->
-      if null weapons
-        then NoWeapon
-        else WithoutSkill (head weapons)
+      (x : _) -> WithSkill x
+      [] -> case weapons of
+              [] -> NoWeapon
+              (w:_) -> WithoutSkill w
   where
     inventory = cvariable ^. equipment
     wskills = cconstant ^.. discipline . traverse . _WeaponSkill
     weapons = getWeapons inventory
-

@@ -6,26 +6,22 @@
     },
     "SixthSense",
     "Healing",
-    "MindShield",
-    "Tracking",
-    "Hunting",
-    "MindBlast",
+    "Camouflage",
     "AnimalKinship",
-    "Camouflage"
+    "Hunting",
+    "MindShield",
+    "MindBlast",
+    "Tracking"
   ],
   "variable": {
     "items": [
       [
-        "Shield",
-        1
-      ],
-      [
-        "Laumspur",
-        1
-      ],
-      [
         "Meal",
         2
+      ],
+      [
+        "Shield",
+        1
       ],
       [
         {
@@ -34,11 +30,15 @@
         1
       ],
       [
-        "Helmet",
+        "Laumspur",
         1
       ],
       [
         "BodyArmor",
+        1
+      ],
+      [
+        "Helmet",
         1
       ]
     ],
@@ -57,7 +57,7 @@
         "radix": 16,
         "value": "3dad0bd57491d27742536fbafcf91/604be73de4838ad9a5cf880000000"
       },
-      "states": 53876645
+      "states": 53877179
     }
   ]
 }

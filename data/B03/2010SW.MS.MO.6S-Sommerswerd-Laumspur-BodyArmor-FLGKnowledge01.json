@@ -4,19 +4,17 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Healing",
-    "MindBlast",
-    "AnimalKinship",
     "Camouflage",
     "Hunting",
-    "Tracking"
+    "AnimalKinship",
+    "MindBlast",
+    "Tracking",
+    "Healing"
   ],
   "variable": {
     "items": [
       [
-        {
-          "Weapon": "Sommerswerd"
-        },
+        "BodyArmor",
         1
       ],
       [
@@ -24,7 +22,9 @@
         1
       ],
       [
-        "BodyArmor",
+        {
+          "Weapon": "Sommerswerd"
+        },
         1
       ]
     ],

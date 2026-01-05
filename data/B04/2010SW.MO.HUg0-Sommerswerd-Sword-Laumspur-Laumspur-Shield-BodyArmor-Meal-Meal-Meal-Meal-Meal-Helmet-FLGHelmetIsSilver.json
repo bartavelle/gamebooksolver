@@ -6,14 +6,18 @@
     },
     "MindBlast",
     "Camouflage",
-    "AnimalKinship",
-    "Healing",
+    "SixthSense",
     "MindShield",
-    "Tracking",
-    "SixthSense"
+    "Healing",
+    "AnimalKinship",
+    "Tracking"
   ],
   "variable": {
     "items": [
+      [
+        "Meal",
+        5
+      ],
       [
         {
           "Weapon": "Sommerswerd"
@@ -21,15 +25,9 @@
         1
       ],
       [
-        "Shield",
-        1
-      ],
-      [
-        "Meal",
-        5
-      ],
-      [
-        "Helmet",
+        {
+          "Weapon": "Sword"
+        },
         1
       ],
       [
@@ -37,13 +35,15 @@
         2
       ],
       [
+        "Shield",
+        1
+      ],
+      [
         "BodyArmor",
         1
       ],
       [
-        {
-          "Weapon": "Sword"
-        },
+        "Helmet",
         1
       ]
     ],
@@ -61,7 +61,7 @@
         "radix": 16,
         "value": "17858bb1d900c1967e189/211654585005212800000"
       },
-      "states": 12213818
+      "states": 11725266
     }
   ]
 }

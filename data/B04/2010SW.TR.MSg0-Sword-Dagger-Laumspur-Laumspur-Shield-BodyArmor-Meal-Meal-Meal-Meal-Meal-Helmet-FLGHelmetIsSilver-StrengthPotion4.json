@@ -4,18 +4,30 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Hunting",
-    "Healing",
-    "MindBlast",
-    "SixthSense",
-    "MindOverMatter",
     "AnimalKinship",
-    "Camouflage"
+    "Healing",
+    "Camouflage",
+    "SixthSense",
+    "MindBlast",
+    "MindOverMatter",
+    "Hunting"
   ],
   "variable": {
     "items": [
       [
         "BodyArmor",
+        1
+      ],
+      [
+        "Laumspur",
+        2
+      ],
+      [
+        "Meal",
+        5
+      ],
+      [
+        "Shield",
         1
       ],
       [
@@ -27,18 +39,6 @@
           "Weapon": "Dagger"
         },
         1
-      ],
-      [
-        "Laumspur",
-        2
-      ],
-      [
-        "Shield",
-        1
-      ],
-      [
-        "Meal",
-        5
       ],
       [
         {
@@ -65,7 +65,7 @@
         "radix": 16,
         "value": "11841791223413639616e47be8e962ed321cb2b74e493a04320ecc9b/17bd29d1c87a191d87aa5ddda397d462eda246fa0000000000000000"
       },
-      "states": 27033691
+      "states": 25955185
     }
   ]
 }

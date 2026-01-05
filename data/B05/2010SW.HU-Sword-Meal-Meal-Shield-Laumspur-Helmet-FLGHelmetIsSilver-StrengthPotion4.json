@@ -5,18 +5,18 @@
       "WeaponSkill": "Sword"
     },
     "MindShield",
-    "Camouflage",
+    "SixthSense",
     "Tracking",
     "MindBlast",
+    "Healing",
     "MindOverMatter",
-    "SixthSense",
-    "AnimalKinship",
-    "Healing"
+    "Camouflage",
+    "AnimalKinship"
   ],
   "variable": {
     "items": [
       [
-        "Laumspur",
+        "StrengthPotion4",
         1
       ],
       [
@@ -38,7 +38,7 @@
         1
       ],
       [
-        "StrengthPotion4",
+        "Laumspur",
         1
       ]
     ],
@@ -56,7 +56,7 @@
         "radix": 16,
         "value": "3ac7e74c583a70a5423731/52b7d2dcc80cd2e4000000"
       },
-      "states": 79971656
+      "states": 79972190
     }
   ]
 }

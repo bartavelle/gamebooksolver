@@ -4,21 +4,19 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Healing",
-    "AnimalKinship",
     "SixthSense",
+    "Camouflage",
     "MindBlast",
-    "Tracking",
-    "MindOverMatter",
     "MindShield",
-    "Camouflage"
+    "AnimalKinship",
+    "MindOverMatter",
+    "Healing",
+    "Tracking"
   ],
   "variable": {
     "items": [
       [
-        {
-          "Weapon": "Sword"
-        },
+        "StrengthPotion4",
         1
       ],
       [
@@ -26,7 +24,9 @@
         1
       ],
       [
-        "StrengthPotion4",
+        {
+          "Weapon": "Sword"
+        },
         1
       ],
       [
@@ -50,7 +50,7 @@
         "radix": 16,
         "value": "5ccca06f896fecc58c811/108b2a2c28029094000000"
       },
-      "states": 79958759
+      "states": 79959293
     }
   ]
 }

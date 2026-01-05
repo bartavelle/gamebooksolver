@@ -4,12 +4,12 @@
     {
       "WeaponSkill": "Sword"
     },
-    "AnimalKinship",
     "MindBlast",
-    "MindOverMatter",
     "Healing",
     "Hunting",
-    "Tracking"
+    "MindOverMatter",
+    "Tracking",
+    "AnimalKinship"
   ],
   "variable": {
     "items": [
@@ -18,13 +18,13 @@
         1
       ],
       [
-        "Laumspur",
-        1
-      ],
-      [
         {
           "Weapon": "Sommerswerd"
         },
+        1
+      ],
+      [
+        "Laumspur",
         1
       ]
     ],

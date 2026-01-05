@@ -4,22 +4,16 @@
     {
       "WeaponSkill": "Sword"
     },
-    "AnimalKinship",
     "MindShield",
+    "AnimalKinship",
     "Hunting",
-    "SixthSense",
+    "Healing",
     "Tracking",
-    "MindBlast",
-    "Healing"
+    "SixthSense",
+    "MindBlast"
   ],
   "variable": {
     "items": [
-      [
-        {
-          "Weapon": "Sword"
-        },
-        1
-      ],
       [
         "Shield",
         1
@@ -33,8 +27,10 @@
         1
       ],
       [
-        "Laumspur",
-        2
+        {
+          "Weapon": "Sword"
+        },
+        1
       ],
       [
         "BodyArmor",
@@ -43,6 +39,10 @@
       [
         "StrengthPotion4",
         1
+      ],
+      [
+        "Laumspur",
+        2
       ],
       [
         {
@@ -60,12 +60,12 @@
     {
       "meendurance": 20,
       "mskill": 10,
-      "mscore": 0.7359918684189154,
+      "mscore": 0.7359918220496035,
       "mratio": {
         "radix": 16,
-        "value": "8bc5f1487990fd9c88cbe7f043239700a6f609da3464311b3b951c3/bde94e8e43d0c8ec3d52eeed1cbea3176d1237d0000000000000000"
+        "value": "8bc5f0b4bbd4e3edfc44649cb8d4c9c49ae6acb0a4f2e880256d807/bde94e8e43d0c8ec3d52eeed1cbea3176d1237d0000000000000000"
       },
-      "states": 27481319
+      "states": 26380317
     }
   ]
 }

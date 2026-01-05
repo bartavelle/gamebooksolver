@@ -4,22 +4,22 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Camouflage",
-    "Healing",
-    "Hunting",
     "MindBlast",
-    "AnimalKinship"
+    "Healing",
+    "AnimalKinship",
+    "Hunting",
+    "Camouflage"
   ],
   "variable": {
     "items": [
       [
-        {
-          "Weapon": "Sword"
-        },
+        "Shield",
         1
       ],
       [
-        "Shield",
+        {
+          "Weapon": "Sword"
+        },
         1
       ]
     ],
@@ -35,7 +35,7 @@
         "radix": 16,
         "value": "1e6761592b58b3341308e2e3ae809f8ff503851c1a2fac13e9351729cc429c1eb0000000000000000000000000000000000000000000000000000000000000000000000001f96fcf42e86f64e42fa8c40fc35e9def5d21788bd58f1d5e21935f8c12f0c1/309e07d27ff3e9b54f2fdadc71dac97ed43e02000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
       },
-      "states": 10125941
+      "states": 10080138
     }
   ]
 }

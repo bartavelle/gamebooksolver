@@ -4,34 +4,18 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Camouflage",
-    "MindShield",
-    "MindBlast",
-    "SixthSense",
+    "Hunting",
     "AnimalKinship",
     "Healing",
-    "Hunting"
+    "SixthSense",
+    "MindShield",
+    "Camouflage",
+    "MindBlast"
   ],
   "variable": {
     "items": [
       [
-        "Meal",
-        5
-      ],
-      [
-        {
-          "Weapon": "Sword"
-        },
-        1
-      ],
-      [
         "StrengthPotion4",
-        1
-      ],
-      [
-        {
-          "Weapon": "Sommerswerd"
-        },
         1
       ],
       [
@@ -44,6 +28,22 @@
       ],
       [
         "BodyArmor",
+        1
+      ],
+      [
+        {
+          "Weapon": "Sommerswerd"
+        },
+        1
+      ],
+      [
+        "Meal",
+        5
+      ],
+      [
+        {
+          "Weapon": "Sword"
+        },
         1
       ]
     ],
@@ -59,7 +59,7 @@
         "radix": 16,
         "value": "197da169a727d744a27a5/211654585005212800000"
       },
-      "states": 25649031
+      "states": 24575223
     }
   ]
 }

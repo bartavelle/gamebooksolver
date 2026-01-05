@@ -4,14 +4,14 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Hunting",
-    "AnimalKinship",
-    "Camouflage",
-    "Healing",
-    "SixthSense",
     "MindBlast",
     "MindOverMatter",
-    "Tracking"
+    "Healing",
+    "Camouflage",
+    "SixthSense",
+    "AnimalKinship",
+    "Tracking",
+    "Hunting"
   ],
   "variable": {
     "items": [
@@ -24,13 +24,11 @@
         1
       ],
       [
-        "Shield",
+        "StrengthPotion4",
         1
       ],
       [
-        {
-          "Weapon": "Sommerswerd"
-        },
+        "BodyArmor",
         1
       ],
       [
@@ -38,11 +36,13 @@
         2
       ],
       [
-        "StrengthPotion4",
+        "Shield",
         1
       ],
       [
-        "BodyArmor",
+        {
+          "Weapon": "Sommerswerd"
+        },
         1
       ]
     ],
@@ -60,7 +60,7 @@
         "radix": 16,
         "value": "17d4ff0312233/1c6bf52634000"
       },
-      "states": 83714786
+      "states": 83714960
     }
   ]
 }

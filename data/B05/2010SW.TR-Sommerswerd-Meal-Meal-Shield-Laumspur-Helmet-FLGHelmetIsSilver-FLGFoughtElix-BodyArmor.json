@@ -4,29 +4,23 @@
     {
       "WeaponSkill": "Sword"
     },
-    "AnimalKinship",
-    "Healing",
-    "Camouflage",
-    "MindOverMatter",
     "MindShield",
-    "MindBlast",
     "SixthSense",
-    "Hunting"
+    "AnimalKinship",
+    "MindBlast",
+    "Hunting",
+    "Healing",
+    "MindOverMatter",
+    "Camouflage"
   ],
   "variable": {
     "items": [
       [
-        "Helmet",
-        1
-      ],
-      [
-        {
-          "Weapon": "Sommerswerd"
-        },
-        1
-      ],
-      [
         "Laumspur",
+        1
+      ],
+      [
+        "Shield",
         1
       ],
       [
@@ -34,11 +28,17 @@
         1
       ],
       [
+        "Helmet",
+        1
+      ],
+      [
         "Meal",
         2
       ],
       [
-        "Shield",
+        {
+          "Weapon": "Sommerswerd"
+        },
         1
       ]
     ],
@@ -57,7 +57,7 @@
         "radix": 16,
         "value": "42e7fcf63dad184971f/54b40b1f852bda00000"
       },
-      "states": 81621051
+      "states": 81621225
     }
   ]
 }

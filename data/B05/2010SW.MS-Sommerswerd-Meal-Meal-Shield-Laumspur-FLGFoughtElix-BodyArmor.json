@@ -5,13 +5,13 @@
       "WeaponSkill": "Sword"
     },
     "Camouflage",
-    "Tracking",
+    "SixthSense",
     "AnimalKinship",
     "MindBlast",
-    "SixthSense",
+    "Tracking",
     "Healing",
-    "Hunting",
-    "MindOverMatter"
+    "MindOverMatter",
+    "Hunting"
   ],
   "variable": {
     "items": [
@@ -19,6 +19,10 @@
         {
           "Weapon": "Sommerswerd"
         },
+        1
+      ],
+      [
+        "BodyArmor",
         1
       ],
       [
@@ -31,10 +35,6 @@
       ],
       [
         "Laumspur",
-        1
-      ],
-      [
-        "BodyArmor",
         1
       ]
     ],
@@ -52,7 +52,7 @@
         "radix": 16,
         "value": "5f6ee42d26a4d/11c37937e08000"
       },
-      "states": 76738372
+      "states": 76738966
     }
   ]
 }

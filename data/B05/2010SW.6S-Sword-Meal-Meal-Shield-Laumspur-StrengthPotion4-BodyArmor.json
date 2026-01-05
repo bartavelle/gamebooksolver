@@ -5,13 +5,13 @@
       "WeaponSkill": "Sword"
     },
     "MindShield",
+    "Healing",
     "Hunting",
     "MindOverMatter",
     "Tracking",
-    "AnimalKinship",
     "Camouflage",
-    "MindBlast",
-    "Healing"
+    "AnimalKinship",
+    "MindBlast"
   ],
   "variable": {
     "items": [
@@ -24,18 +24,18 @@
         1
       ],
       [
+        {
+          "Weapon": "Sword"
+        },
+        1
+      ],
+      [
         "Shield",
         1
       ],
       [
         "Meal",
         2
-      ],
-      [
-        {
-          "Weapon": "Sword"
-        },
-        1
       ],
       [
         "Laumspur",
@@ -54,7 +54,7 @@
         "radix": 16,
         "value": "2a83b8e41289e8ac0fe7375a097/4d0985cb1d3608ae1e3fa000000"
       },
-      "states": 59624399
+      "states": 59624933
     }
   ]
 }

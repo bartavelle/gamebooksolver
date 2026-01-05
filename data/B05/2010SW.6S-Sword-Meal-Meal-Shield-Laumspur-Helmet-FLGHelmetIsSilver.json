@@ -4,17 +4,21 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Camouflage",
-    "Hunting",
-    "MindBlast",
-    "MindShield",
-    "MindOverMatter",
     "Healing",
+    "Hunting",
+    "Camouflage",
+    "MindShield",
+    "Tracking",
     "AnimalKinship",
-    "Tracking"
+    "MindBlast",
+    "MindOverMatter"
   ],
   "variable": {
     "items": [
+      [
+        "Shield",
+        1
+      ],
       [
         "Helmet",
         1
@@ -27,10 +31,6 @@
         {
           "Weapon": "Sword"
         },
-        1
-      ],
-      [
-        "Shield",
         1
       ],
       [
@@ -52,7 +52,7 @@
         "radix": 16,
         "value": "b3cc1d68546d538a9a7827/19d971e4fe8401e74000000"
       },
-      "states": 53605363
+      "states": 53605897
     }
   ]
 }

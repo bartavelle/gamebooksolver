@@ -4,29 +4,19 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Tracking",
-    "AnimalKinship",
     "Camouflage",
-    "Hunting",
-    "MindBlast",
     "SixthSense",
-    "Healing"
+    "AnimalKinship",
+    "Healing",
+    "Tracking",
+    "Hunting",
+    "MindBlast"
   ],
   "variable": {
     "items": [
       [
-        "Helmet",
-        1
-      ],
-      [
         {
           "Weapon": "Dagger"
-        },
-        1
-      ],
-      [
-        {
-          "Weapon": "Sword"
         },
         1
       ],
@@ -35,7 +25,11 @@
         2
       ],
       [
-        "BodyArmor",
+        "Shield",
+        1
+      ],
+      [
+        "Helmet",
         1
       ],
       [
@@ -43,7 +37,13 @@
         5
       ],
       [
-        "Shield",
+        {
+          "Weapon": "Sword"
+        },
+        1
+      ],
+      [
+        "BodyArmor",
         1
       ]
     ],
@@ -61,7 +61,7 @@
         "radix": 16,
         "value": "2813c58d0a989f934fe43b6aa7ae01abfaadb1f3f8bbef6408385d3/4bf6ec38e7ed1d2b4bbac5f871e5dad62ba0e320000000000000000"
       },
-      "states": 13381563
+      "states": 12846985
     }
   ]
 }

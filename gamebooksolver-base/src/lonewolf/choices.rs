@@ -73,7 +73,7 @@ enum CanTake {
     Nope,
 }
 
-fn can_take<PREV: Into<Equipment> + From<Equipment>>(
+fn can_take<PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug>(
     item: &Item,
     ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
@@ -108,7 +108,7 @@ fn can_take<PREV: Into<Equipment> + From<Equipment>>(
         Slot::Backpack => {
             let mut bpitems = cvar.cequipment.in_backpack();
             if bpitems.len() > 8 {
-                panic!("too many items in backpack :(")
+                panic!("too many items in backpack :( bp={bpitems:?} cvar={cvar:?}")
             }
             if bpitems.len() < 8 {
                 CanTake::SpaceAvailable
@@ -134,7 +134,7 @@ fn has_combat<P>(o: &ChapterOutcome<P>) -> Option<&FightDetails<P>> {
     }
 }
 
-pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + Copy>(
+pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + Copy + std::fmt::Debug>(
     ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
     dec: &Decision<P>,
@@ -324,12 +324,14 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
                         if important_item(i, ccst, cvar) {
                             let mut out = Vec::new();
                             for l in lst {
-                                out.extend(with_effect(
-                                    &[SimpleOutcome::LoseItem(l, 1), SimpleOutcome::GainItem(*i, 1)],
-                                    nxt,
-                                ))
+                                if l != *i {
+                                    out.extend(with_effect(
+                                        &[SimpleOutcome::LoseItem(l, 1), SimpleOutcome::GainItem(*i, 1)],
+                                        nxt,
+                                    ))
+                                }
                             }
-                            out
+                            if out.is_empty() { notake() } else { out }
                         } else {
                             notake()
                         }

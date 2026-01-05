@@ -5,21 +5,21 @@
       "WeaponSkill": "Sword"
     },
     "Healing",
-    "Camouflage",
-    "MindBlast",
     "SixthSense",
-    "AnimalKinship"
+    "MindBlast",
+    "AnimalKinship",
+    "Camouflage"
   ],
   "variable": {
     "items": [
       [
-        "Shield",
-        1
-      ],
-      [
         {
           "Weapon": "Sword"
         },
+        1
+      ],
+      [
+        "Shield",
         1
       ]
     ],
@@ -35,7 +35,7 @@
         "radix": 16,
         "value": "23f4637481bc9a3d20765f93ae3c208b7a0b1ce89dfdda38bd3ab7f830048ef8ff000000000000000000000000000000000000000000000000000000000000000000000002ce36939a03660cfbdbbb7a9039f9eb6f02babf053cb708158f69e099d7779c3/3cc589c71ff0e422a2fbd1938e517bde894d828000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
       },
-      "states": 6741746
+      "states": 6662869
     }
   ]
 }

@@ -6,19 +6,15 @@
     },
     "MindShield",
     "AnimalKinship",
-    "MindOverMatter",
-    "Healing",
-    "Tracking",
     "MindBlast",
     "SixthSense",
+    "Tracking",
+    "Healing",
+    "MindOverMatter",
     "Hunting"
   ],
   "variable": {
     "items": [
-      [
-        "StrengthPotion4",
-        1
-      ],
       [
         {
           "Weapon": "Sword"
@@ -30,11 +26,15 @@
         2
       ],
       [
+        "Shield",
+        1
+      ],
+      [
         "Laumspur",
         1
       ],
       [
-        "Shield",
+        "StrengthPotion4",
         1
       ]
     ],
@@ -50,7 +50,7 @@
         "radix": 16,
         "value": "5ccca06f896fecc58c811/108b2a2c28029094000000"
       },
-      "states": 88780659
+      "states": 88781193
     }
   ]
 }

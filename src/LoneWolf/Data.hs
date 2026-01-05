@@ -16,7 +16,7 @@ import qualified Data.Aeson.Types as A
 import qualified Data.Aeson.Key as K
 import Data.Bifunctor (first)
 import Data.Char (toLower)
-import Data.List (foldl', intercalate)
+import Data.List (intercalate)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe)
 import Data.Ratio (denominator, numerator, (%))
@@ -346,6 +346,7 @@ instance ToJSON DecisionStat where
 
 instance FromJSON DecisionStat where
   parseJSON = withObject "DecisionStat" $ \o ->
+
     DecisionStat
       <$> mk fromIntegral "hp" o
       <*> mk fromIntegral "gold" o

@@ -4,19 +4,25 @@
     {
       "WeaponSkill": "Sword"
     },
-    "MindBlast",
     "Hunting",
     "SixthSense",
     "AnimalKinship",
-    "Tracking",
+    "MindBlast",
+    "Healing",
     "Camouflage",
-    "Healing"
+    "Tracking"
   ],
   "variable": {
     "items": [
       [
         {
           "Weapon": "Sommerswerd"
+        },
+        1
+      ],
+      [
+        {
+          "Weapon": "Sword"
         },
         1
       ],
@@ -30,12 +36,6 @@
       ],
       [
         "BodyArmor",
-        1
-      ],
-      [
-        {
-          "Weapon": "Sword"
-        },
         1
       ],
       [
@@ -55,7 +55,7 @@
         "radix": 16,
         "value": "29c0c2f52fd55f921a2036631ac9/604be73de4838ad9a5cf88000000"
       },
-      "states": 12573043
+      "states": 12046967
     }
   ]
 }

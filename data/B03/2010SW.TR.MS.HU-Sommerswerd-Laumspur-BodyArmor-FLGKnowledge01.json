@@ -4,27 +4,27 @@
     {
       "WeaponSkill": "Sword"
     },
-    "Healing",
-    "SixthSense",
-    "MindOverMatter",
     "MindBlast",
+    "SixthSense",
+    "Healing",
     "AnimalKinship",
+    "MindOverMatter",
     "Camouflage"
   ],
   "variable": {
     "items": [
+      [
+        {
+          "Weapon": "Sommerswerd"
+        },
+        1
+      ],
       [
         "Laumspur",
         1
       ],
       [
         "BodyArmor",
-        1
-      ],
-      [
-        {
-          "Weapon": "Sommerswerd"
-        },
         1
       ]
     ],

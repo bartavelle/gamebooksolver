@@ -79,9 +79,9 @@ low05_6: $(LOW05_6)
 
 TARGETSLOWB05 = $(LOW05_0) $(LOW05_1) $(LOW05_2) $(LOW05_3) $(LOW05_4) $(LOW05_5) $(LOW05_6)
 
-.PHONY: all low01 medium01 high01 book01 low05 book05 low04 book04 
+.PHONY: all low01 book01 low05 book05 low04 book04 
 
-all: book05 book04
+all: book05 book04 book03 book02 book01
 	echo ok
 
 data/B01:
@@ -99,46 +99,46 @@ data/B04:
 data/B05:
 	mkdir data/B05
 
-book05: low05co
-book04: low04co
-book03: low03co
-book02: low02co
-book01: low01co
+book05: low05co low05d
+book04: low04co low04d
+book03: low03co low03d
+book02: low02co low02d
+book01: low01co low01d
 
 low05c: data/B05 $(TARGETSLOWB05)
 low05j: data/B05 $(patsubst %, %.jot, $(TARGETSLOWB05))
-low05d: data/B05 json-chapters/display05.json $(patsubst %, %.dot, $(TARGETSLOWB05))
+low05d: data/B05 json-chapters/display05.json $(patsubst %.bin, %.dot, $(TARGETSLOWB05))
 low05: data/B05 $(patsubst %, %.svg, $(TARGETSLOWB05))
 low05co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB05))
 
 low04c: low05j data/B04 $(TARGETSLOWB04)
 low04j: data/B04 $(patsubst %, %.jot, $(TARGETSLOWB04))
-low04d: data/B04 json-chapters/display04.json $(patsubst %, %.dot, $(TARGETSLOWB04))
+low04d: data/B04 json-chapters/display04.json $(patsubst %.bin, %.dot, $(TARGETSLOWB04))
 low04: data/B04 $(patsubst %, %.svg, $(TARGETSLOWB04))
 low04co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB04))
 
 low03c: low04j data/B03 $(TARGETSLOWB03)
 low03j: data/B03 $(patsubst %, %.jot, $(TARGETSLOWB03))
-low03d: data/B03 json-chapters/display03.json $(patsubst %, %.dot, $(TARGETSLOWB03))
+low03d: data/B03 json-chapters/display03.json $(patsubst %.bin, %.dot, $(TARGETSLOWB03))
 low03: data/B03 $(patsubst %, %.svg, $(TARGETSLOWB03))
 low03co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB03))
 
 low02c: low03j data/B02 $(TARGETSLOWB02)
 low02j: data/B02 $(patsubst %, %.jot, $(TARGETSLOWB02))
-low02d: data/B02 json-chapters/display02.json $(patsubst %, %.dot, $(TARGETSLOWB02))
+low02d: data/B02 json-chapters/display02.json $(patsubst %.bin, %.dot, $(TARGETSLOWB02))
 low02: data/B02 $(patsubst %, %.svg, $(TARGETSLOWB02))
 low02co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB02))
 
 low01c: low02j data/B01 $(TARGETSLOWB01)
 low01j: data/B01 $(patsubst %, %.jot, $(TARGETSLOWB01))
-low01d: data/B01 json-chapters/display01.json $(patsubst %, %.dot, $(TARGETSLOWB01))
+low01d: data/B01 json-chapters/display01.json $(patsubst %.bin, %.dot, $(TARGETSLOWB01))
 low01: data/B01 $(patsubst %, %.svg, $(TARGETSLOWB01))
 low01co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB01))
 
 data/%.bin:
 	time python3 buildsol-rust.py $@
 
-data/%.compact.zstd data/%.desc data/%.jot data/%.json:
+data/%.compact.zstd data/%.desc data/%.jot data/%.json &:
 	time python3 buildsol-rust.py $@
 
 data/B05/%.dot: data/B05/%.jot json-chapters/display05.json

@@ -8,6 +8,7 @@ use gamebooksolver_base::lonewolf::mini::CharacterVariableG;
 use gamebooksolver_base::lonewolf::mini::CompactSolutionG;
 use gamebooksolver_base::lonewolf::mini::GSolDump;
 use gamebooksolver_base::lonewolf::mini::NoPrevEq;
+use gamebooksolver_base::lonewolf::mini::SoldumpContent;
 use gamebooksolver_base::lonewolf::solve::solve_lws;
 use gamebooksolver_base::solver::base::Proba;
 use gamebooksolver_base::solver::base::optimize_outcome;
@@ -547,17 +548,14 @@ fn mkjot<
         + std::fmt::Debug
         + Ord,
 >(
-    solpath: &str,
     soldump: &SolutionDump<Rational, PREV>,
     out: Option<&str>,
 ) -> anyhow::Result<()> {
     let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
-    eprintln!("Starting condition: {:?} - {}", soldump.soldesc, ini);
     let sttmap = count_states(&soldump.content);
     let bookid = soldump.soldesc.ccst.bookid;
     let searchmap: HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>> =
         soldump.content.iter().map(|(a, b)| (a.clone(), b)).collect();
-    eprintln!("{} : {} states", solpath, searchmap.len());
     let res = mksol(ini, searchmap);
     let output = Output {
         bookid: format!("{:?}", bookid),
@@ -676,6 +674,7 @@ fn soldump<
     cnt: &OSolDesc,
     book: Vec<(ChapterId, Chapter<Rational>)>,
     json_path: &str,
+    verbose: bool,
 ) -> anyhow::Result<SolutionDump<Rational, PREV>> {
     let (iitems, iflags) = get_boundary(cnt.bookid);
     let mscoremap = cnt
@@ -719,7 +718,6 @@ fn soldump<
         finalchapters,
     };
     let cvar = soldesc.cvariable::<PREV>();
-    eprintln!("ini: {:?}", cvar);
     let sol = solve_lws(
         |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f),
         &fchapters,
@@ -727,6 +725,7 @@ fn soldump<
         &soldesc.ccst,
         &cvar,
         cnt.startat,
+        verbose,
     );
     let soldump = SolutionDump {
         soldesc,
@@ -740,7 +739,7 @@ fn soldump<
     Ok(soldump)
 }
 
-fn cmd_soldump(cnt: &OSolDesc, jsonpath: &str) -> anyhow::Result<GSolDump<Rational>> {
+fn cmd_soldump(cnt: &OSolDesc, jsonpath: &str, verbose: bool) -> anyhow::Result<GSolDump<Rational>> {
     let fl = File::open(&cnt.bookpath)?;
     let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl)?;
     let cos = book
@@ -753,9 +752,9 @@ fn cmd_soldump(cnt: &OSolDesc, jsonpath: &str) -> anyhow::Result<GSolDump<Ration
         .any(|so| matches!(so, SimpleOutcome::StoreEquipment));
 
     let sd = if has_prev_eq {
-        soldump::<Equipment>(cnt, book, jsonpath).map(GSolDump::Prev)?
+        soldump::<Equipment>(cnt, book, jsonpath, verbose).map(GSolDump::Prev)?
     } else {
-        soldump::<NoPrevEq>(cnt, book, jsonpath).map(GSolDump::Noprev)?
+        soldump::<NoPrevEq>(cnt, book, jsonpath, verbose).map(GSolDump::Noprev)?
     };
     Ok(sd)
 }
@@ -786,8 +785,8 @@ fn main() -> anyhow::Result<()> {
         None => {
             let soldump = load_soldump(&opt.solpath)?;
             match soldump {
-                GSolDump::Prev(sd) => mkjot(&opt.solpath, &sd, opt.jot.as_deref())?,
-                GSolDump::Noprev(sd) => mkjot(&opt.solpath, &sd, opt.jot.as_deref())?,
+                GSolDump::Prev(sd) => mkjot(&sd, opt.jot.as_deref())?,
+                GSolDump::Noprev(sd) => mkjot(&sd, opt.jot.as_deref())?,
             }
         }
         Some(PSub::Optimize {
@@ -849,7 +848,7 @@ fn main() -> anyhow::Result<()> {
         }
         Some(PSub::Soldump(cnt)) => {
             let json_path = opt.json.unwrap_or_else(|| opt.solpath.to_owned() + ".json");
-            let sd = cmd_soldump(cnt, &json_path)?;
+            let sd = cmd_soldump(cnt, &json_path, false)?;
             // save whole stuff
             let file = File::create(&opt.solpath)?;
             let mut zwriter = zstd::Encoder::new(file, 3)?;
@@ -859,12 +858,32 @@ fn main() -> anyhow::Result<()> {
         Some(PSub::SoldumpOptimize(cnt)) => {
             let json_path = opt.json.unwrap_or_else(|| opt.solpath.to_owned() + ".json");
             let jname = opt.desc.unwrap_or_else(|| opt.solpath.to_owned() + ".desc");
-            let sd = cmd_soldump(cnt, &json_path)?;
+            let sd = cmd_soldump(cnt, &json_path, false)?;
+            fn statsfor<PREV: From<Equipment> + Into<Equipment>>(
+                content: &SoldumpContent<Rational, PREV>,
+            ) -> (usize, f64) {
+                let win = content
+                    .iter()
+                    .filter_map(|(ns, cs)| {
+                        if ns.chapter() == Some(1) {
+                            Some(cs.score())
+                        } else {
+                            None
+                        }
+                    })
+                    .next();
+                (content.len(), win.map(|r| r.to_f64()).unwrap_or(-1.0))
+            }
+            let (nstates, winrate) = match &sd {
+                GSolDump::Prev(solution_dump) => statsfor(&solution_dump.content),
+                GSolDump::Noprev(solution_dump) => statsfor(&solution_dump.content),
+            };
             match &sd {
-                GSolDump::Prev(sd) => mkjot(&opt.solpath, sd, opt.jot.as_deref())?,
-                GSolDump::Noprev(sd) => mkjot(&opt.solpath, sd, opt.jot.as_deref())?,
+                GSolDump::Prev(sd) => mkjot(sd, opt.jot.as_deref())?,
+                GSolDump::Noprev(sd) => mkjot(sd, opt.jot.as_deref())?,
             }
             cmd_optimize(sd, &opt.solpath, &jname, false, Some(&cnt.bookpath))?;
+            println!("states:{nstates} win:{:.2}%", winrate * 100.0)
         }
     }
     Ok(())

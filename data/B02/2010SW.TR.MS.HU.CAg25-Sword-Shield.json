@@ -4,22 +4,22 @@
     {
       "WeaponSkill": "Sword"
     },
-    "MindOverMatter",
+    "AnimalKinship",
     "SixthSense",
     "MindBlast",
-    "AnimalKinship",
+    "MindOverMatter",
     "Healing"
   ],
   "variable": {
     "items": [
       [
-        {
-          "Weapon": "Sword"
-        },
+        "Shield",
         1
       ],
       [
-        "Shield",
+        {
+          "Weapon": "Sword"
+        },
         1
       ]
     ],
@@ -35,7 +35,7 @@
         "radix": 16,
         "value": "e9ce6a65fc06492668a66d75e0f4733c928b90591f20cd8a2432d5e9a70964f8ff000000000000000000000000000000000000000000000000000000000000000000000005a39dfca9f15b7724916f20ad233cdd9418bbf0971b731be915f6f923d25d7c9/184f03e93ff9f4daa797ed6e38ed64bf6a1f0100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
       },
-      "states": 6384475
+      "states": 6305634
     }
   ]
 }
