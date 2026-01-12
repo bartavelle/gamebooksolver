@@ -119,7 +119,7 @@ mkCombatInfo cconstant cvariable fdetails = CombatInfo skill specialization weap
     discs = S.toList $ S.fromList (cconstant ^. discipline) `S.intersection` relevantDiscs
     cflags = S.toList $ S.fromList (allFlags cvariable) `S.intersection` relevantFlags
     shield = hasItem Shield (cvariable ^. equipment)
-    silverhelm = hasItem Helmet (cvariable ^. equipment) && hasFlag HelmetIsSilver cvariable
+    silverhelm = hasItem silverHelmet (cvariable ^. equipment)
     nlwendurance = cvariable ^. curendurance
     nopendurance = fdetails ^. fendurance
 

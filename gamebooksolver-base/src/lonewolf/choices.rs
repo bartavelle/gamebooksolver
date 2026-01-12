@@ -82,6 +82,10 @@ fn can_take<PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug>(
         Slot::Special => {
             if cvar.cequipment.has_itemb(item) {
                 CanTake::Nope
+            } else if item == &Item::SILVERHELMET && cvar.cequipment.has_itemb(&Item::Helmet) {
+                CanTake::MustDrop(vec![Item::Helmet])
+            } else if item == &Item::Helmet && cvar.cequipment.has_itemb(&Item::SILVERHELMET) {
+                CanTake::MustDrop(vec![Item::SILVERHELMET])
             } else {
                 CanTake::SpaceAvailable
             }
@@ -213,65 +217,50 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
         Decision::AfterCombat(nxt) => {
             let missing_hp = max_hp(ccst, cvar) - cvar.curendurance;
             let mut out = flatten_decision(ccst, cvar, nxt);
-            if missing_hp >= 6 && cvar.cequipment.has_itemb(&Item::Potion6Hp) {
-                out.extend(with_effect(
-                    &[
-                        SimpleOutcome::HealPlayer(Endurance(6)),
-                        SimpleOutcome::LoseItem(Item::Potion6Hp, 1),
-                    ],
-                    dec,
-                ));
-                return out;
-            }
-            if missing_hp >= 5 && cvar.cequipment.has_itemb(&Item::Potion5Hp) {
-                out.extend(with_effect(
-                    &[
-                        SimpleOutcome::HealPlayer(Endurance(5)),
-                        SimpleOutcome::LoseItem(Item::Potion5Hp, 1),
-                    ],
-                    dec,
-                ));
-                return out;
-            }
-            if missing_hp >= 4 && cvar.cequipment.has_itemb(&Item::Potion4Hp) {
-                out.extend(with_effect(
-                    &[
-                        SimpleOutcome::HealPlayer(Endurance(4)),
-                        SimpleOutcome::LoseItem(Item::Potion4Hp, 1),
-                    ],
-                    dec,
-                ));
-                return out;
-            }
-            if ccst.bookid != Book::Book01 && missing_hp >= 4 && cvar.cequipment.has_itemb(&Item::Laumspur) {
-                out.extend(with_effect(
-                    &[
-                        SimpleOutcome::HealPlayer(Endurance(4)),
-                        SimpleOutcome::LoseItem(Item::Laumspur, 1),
-                    ],
-                    dec,
-                ));
-                return out;
-            }
-            if missing_hp >= 2 && cvar.cequipment.has_itemb(&Item::Potion2Hp) {
-                out.extend(with_effect(
-                    &[
-                        SimpleOutcome::HealPlayer(Endurance(2)),
-                        SimpleOutcome::LoseItem(Item::Potion6Hp, 1),
-                    ],
-                    dec,
-                ));
-                return out;
-            }
-            if ccst.bookid == Book::Book05 && missing_hp >= 10 && cvar.cequipment.has_itemb(&Item::GenBackpack(2)) {
-                out.extend(with_effect(
-                    &[
-                        SimpleOutcome::HealPlayer(Endurance(10)),
-                        SimpleOutcome::LoseItem(Item::GenBackpack(2), 1),
-                    ],
-                    dec,
-                ));
-                return out;
+
+            if missing_hp > 0 {
+                let usable_potions = [
+                    (ccst.bookid == Book::Book05, Item::GenBackpack(2), 10),
+                    (true, Item::Potion6Hp, 6),
+                    (true, Item::Potion5Hp, 5),
+                    (true, Item::Potion4Hp, 4),
+                    (ccst.bookid != Book::Book01, Item::Laumspur, 4),
+                    (true, Item::Potion2Hp, 2),
+                ]
+                .into_iter()
+                .filter_map(|(usable, item, hpgained)| {
+                    if usable && cvar.cequipment.has_itemb(&item) {
+                        Some((item, hpgained))
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<_>>();
+                // il faut conserver les potions qui restaurent trop de hp, si il y en a trop
+                let (wasted, not_wasted) = usable_potions
+                    .into_iter()
+                    .partition::<Vec<_>, _>(|(_, hpgained)| *hpgained < missing_hp);
+                if wasted.is_empty() || not_wasted.len() > 1 {
+                    for (item, hpgained) in wasted {
+                        out.extend(with_effect(
+                            &[
+                                SimpleOutcome::HealPlayer(Endurance(hpgained)),
+                                SimpleOutcome::LoseItem(item, 1),
+                            ],
+                            dec,
+                        ));
+                    }
+                } else {
+                    for (item, hpgained) in wasted.into_iter().chain(not_wasted) {
+                        out.extend(with_effect(
+                            &[
+                                SimpleOutcome::HealPlayer(Endurance(hpgained)),
+                                SimpleOutcome::LoseItem(item, 1),
+                            ],
+                            dec,
+                        ));
+                    }
+                }
             }
             out
         }
@@ -310,37 +299,34 @@ pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + C
                 })
             })
             .collect(),
-        Decision::CanTake(i, q, nxt) => {
-            if i == &Item::Gold {
-                with_effect(&[SimpleOutcome::GainItem(Item::Gold, *q)], nxt)
-            } else if *q == 0 {
-                flatten_decision(ccst, cvar, nxt)
-            } else if *q == 1 {
-                let notake = || flatten_decision(ccst, cvar, nxt);
-                match can_take(i, ccst, cvar) {
-                    CanTake::Nope => notake(),
-                    CanTake::SpaceAvailable => with_effect(&[SimpleOutcome::GainItem(*i, 1)], nxt),
-                    CanTake::MustDrop(lst) => {
-                        if important_item(i, ccst, cvar) {
-                            let mut out = Vec::new();
-                            for l in lst {
-                                if l != *i {
-                                    out.extend(with_effect(
-                                        &[SimpleOutcome::LoseItem(l, 1), SimpleOutcome::GainItem(*i, 1)],
-                                        nxt,
-                                    ))
-                                }
+        Decision::CanTake(Item::Gold, q, nxt) => with_effect(&[SimpleOutcome::GainItem(Item::Gold, *q)], nxt),
+        Decision::CanTake(_, 0, nxt) => flatten_decision(ccst, cvar, nxt),
+        Decision::CanTake(i, 1, nxt) => {
+            let notake = || flatten_decision(ccst, cvar, nxt);
+            match can_take(i, ccst, cvar) {
+                CanTake::Nope => notake(),
+                CanTake::SpaceAvailable => with_effect(&[SimpleOutcome::GainItem(*i, 1)], nxt),
+                CanTake::MustDrop(lst) => {
+                    if important_item(i, ccst, cvar) {
+                        let mut out = Vec::new();
+                        for l in lst {
+                            if l != *i {
+                                out.extend(with_effect(
+                                    &[SimpleOutcome::LoseItem(l, 1), SimpleOutcome::GainItem(*i, 1)],
+                                    nxt,
+                                ))
                             }
-                            if out.is_empty() { notake() } else { out }
-                        } else {
-                            notake()
                         }
+                        if out.is_empty() { notake() } else { out }
+                    } else {
+                        notake()
                     }
                 }
-            } else {
-                let n = Decision::CanTake(*i, 1, Box::new(Decision::CanTake(*i, q - 1, nxt.clone())));
-                flatten_decision(ccst, cvar, &n)
             }
+        }
+        Decision::CanTake(i, q, nxt) => {
+            let n = Decision::CanTake(*i, 1, Box::new(Decision::CanTake(*i, q - 1, nxt.clone())));
+            flatten_decision(ccst, cvar, &n)
         }
         Decision::RemoveItemFrom(Slot::Backpack, n, nxt) => {
             if cvar.cequipment.in_backpack().len() < *n as usize {

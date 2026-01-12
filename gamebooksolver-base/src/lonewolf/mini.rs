@@ -1,11 +1,12 @@
 use crate::solver::base::ChoppedSolution;
 use crate::solver::rational::Rational;
+use crate::solver::rational::r::MRational;
 use bincode::{Decode, Encode};
 use serde::Deserializer;
 use serde::de::Visitor;
 use serde::{Deserialize, Serialize};
 use serde_with::{DeserializeFromStr, SerializeDisplay};
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::hash::Hash;
 use std::num::ParseIntError;
 use std::str::FromStr;
@@ -45,7 +46,7 @@ pub struct SolutionDump<P, PREV: Into<Equipment> + From<Equipment> + Ord> {
     pub content: SoldumpContent<P, PREV>,
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Encode, Decode)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Encode, Decode, Clone)]
 pub struct SolDesc {
     #[serde(alias = "_finalchapters")]
     pub finalchapters: Vec<u16>,
@@ -53,6 +54,7 @@ pub struct SolDesc {
     pub ccst: CharacterConstant,
     #[serde(alias = "_cvar")]
     pub cvar: CVarState,
+    pub mscoremap: Option<Vec<(Equipment, Flags, MRational)>>,
 }
 
 impl SolDesc {
@@ -87,11 +89,11 @@ pub struct CharacterConstant {
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Encode, Decode)]
 pub struct CVarState {
     #[serde(alias = "_cvitems")]
-    pub items: Option<Vec<(Item, i64)>>,
+    pub items: Option<BTreeMap<Item, i64>>,
     #[serde(alias = "_cvgold")]
     pub gold: u8,
     #[serde(alias = "_cvflags")]
-    pub flags: Vec<Flag>,
+    pub flags: BTreeSet<Flag>,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, PartialOrd, Ord, Serialize, Deserialize, Encode, Decode)]
@@ -351,13 +353,18 @@ impl Equipment {
     }
 
     pub fn items(&self) -> Vec<(Item, u8)> {
-        Item::VALUES
+        let mut o: Vec<(Item, u8)> = Item::VALUES
             .iter()
             .filter_map(|i| {
                 let cnt = self.get_item_count(i);
                 if cnt > 0 { Some((*i, cnt)) } else { None }
             })
-            .collect()
+            .collect();
+        let gold = self.get_gold();
+        if gold > 0 {
+            o.push((Item::Gold, gold))
+        }
+        o
     }
 
     pub fn has_item(&self, i: &Item, q: u8) -> bool {
@@ -419,9 +426,9 @@ impl<PREV: From<Equipment> + Into<Equipment> + Copy> std::fmt::Display for Chara
             f,
             "{} {:?} {:?} {:?}",
             self.curendurance,
-            self.flags,
-            self.cequipment.items(),
-            self.cprevequipment.into().items()
+            self.flags.all(),
+            self.cequipment,
+            self.cprevequipment.into()
         )
     }
 }
@@ -455,7 +462,7 @@ impl<PREV: From<Equipment> + Into<Equipment>> CharacterVariableG<PREV> {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Hash, Clone, Copy, Encode, Decode)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Encode, Decode, PartialOrd, Ord)]
 pub enum Item {
     Weapon(Weapon),
     Backpack,
@@ -505,6 +512,7 @@ impl std::str::FromStr for Item {
             "BroadSword" => Ok(Item::Weapon(Weapon::BroadSword)),
             "MagicSpear" => Ok(Item::Weapon(Weapon::MagicSpear)),
             "Sommerswerd" => Ok(Item::Weapon(Weapon::Sommerswerd)),
+            "SilverHelmet" => Ok(Item::SILVERHELMET),
             _ => match s.strip_prefix("BGenCounter ").or_else(|| s.strip_prefix("BGen")) {
                 Some(n) => n
                     .parse::<u8>()
@@ -563,7 +571,35 @@ impl<'de> Deserialize<'de> for Item {
     }
 }
 
+impl Serialize for Item {
+    fn serialize<S>(&self, s: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            Item::Weapon(weapon) => weapon.serialize(s),
+            Item::Backpack => "Backpack".serialize(s),
+            Item::StrengthPotion4 => "StrengthPotion4".serialize(s),
+            Item::Shield => "Shield".serialize(s),
+            Item::BodyArmor => "BodyArmor".serialize(s),
+            Item::Potion2Hp => "Potion2Hp".serialize(s),
+            Item::Potion4Hp => "Potion4Hp".serialize(s),
+            Item::Potion5Hp => "Potion5Hp".serialize(s),
+            Item::Potion6Hp => "Potion6Hp".serialize(s),
+            Item::StrengthPotion => "StrengthPotion".serialize(s),
+            Item::GenSpecial(10) => "SilverHelmet".serialize(s),
+            Item::GenSpecial(n) => format!("SGen{n}").serialize(s),
+            Item::GenBackpack(n) => format!("BGen{n}").serialize(s),
+            Item::Meal => "Meal".serialize(s),
+            Item::Gold => "Gold".serialize(s),
+            Item::Laumspur => "Laumspur".serialize(s),
+            Item::Helmet => "Helmet".serialize(s),
+        }
+    }
+}
+
 impl Item {
+    pub const SILVERHELMET: Item = Item::GenSpecial(10);
     pub const VALUES: [Item; 48] = [
         Item::Backpack,
         Item::StrengthPotion4,
@@ -575,8 +611,8 @@ impl Item {
         Item::Potion6Hp,
         Item::StrengthPotion,
         Item::Meal,
-        Item::Gold,
         Item::Laumspur,
+        Item::Gold,
         Item::Helmet,
         Item::Weapon(Weapon::Dagger),
         Item::Weapon(Weapon::Spear),
@@ -602,6 +638,7 @@ impl Item {
         Item::GenSpecial(7),
         Item::GenSpecial(8),
         Item::GenSpecial(9),
+        // silver helmet
         Item::GenSpecial(10),
         // B04 Onyx medaillon
         Item::GenSpecial(11),
@@ -668,7 +705,7 @@ impl Item {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Hash, Clone, Copy, Encode, Decode)]
+#[derive(Debug, PartialEq, Eq, Serialize, Hash, Clone, Copy, Encode, Decode, PartialOrd, Ord)]
 #[repr(u8)]
 pub enum Discipline {
     Camouflage,
@@ -767,7 +804,7 @@ impl<'de> Deserialize<'de> for Discipline {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize, Hash, Encode, Decode)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize, Hash, Encode, Decode, PartialOrd, Ord)]
 pub enum Weapon {
     Dagger = 0,
     Spear = 1,
@@ -826,7 +863,7 @@ impl std::str::FromStr for Book {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize, Hash, Encode, Decode)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize, Hash, Encode, Decode, PartialOrd, Ord)]
 pub enum Flag {
     PermanentSkillReduction = 0,
     StrengthPotionActive = 1,
@@ -844,12 +881,12 @@ pub enum Flag {
     Poisonned2 = 13,
     HadCombat = 14,
     PermanentSkillReduction2 = 15,
-    HelmetIsSilver = 16,
+    // empty 16,
     PotentStrengthPotionActive = 17,
 }
 
 impl Flag {
-    pub const VALUES: [Flag; 18] = [
+    pub const VALUES: [Flag; 17] = [
         Flag::PermanentSkillReduction,
         Flag::StrengthPotionActive,
         Flag::FoughtElix,
@@ -866,7 +903,6 @@ impl Flag {
         Flag::Poisonned2,
         Flag::HadCombat,
         Flag::PermanentSkillReduction2,
-        Flag::HelmetIsSilver,
         Flag::PotentStrengthPotionActive,
     ];
 }
@@ -891,7 +927,6 @@ impl std::str::FromStr for Flag {
             "Poisonned2" => Ok(Flag::Poisonned2),
             "HadCombat" => Ok(Flag::HadCombat),
             "PermanentSkillReduction2" => Ok(Flag::PermanentSkillReduction2),
-            "HelmetIsSilver" => Ok(Flag::HelmetIsSilver),
             "PotentStrengthPotionActive" => Ok(Flag::PotentStrengthPotionActive),
             _ => Err(format!("Invalid flag: {}", s)),
         }
@@ -908,11 +943,7 @@ pub fn max_hp<PREV: From<Equipment> + Into<Equipment>>(
         } else {
             0
         })
-        + (if cvar.cequipment.has_itemb(&Item::Helmet) && !cvar.flags.has(Flag::HelmetIsSilver) {
-            2
-        } else {
-            0
-        })
+        + (if cvar.cequipment.has_itemb(&Item::Helmet) { 2 } else { 0 })
 }
 
 pub fn mkchar<PREV: Into<Equipment> + From<Equipment> + Default>(
@@ -939,17 +970,17 @@ pub struct CompactState<PREV: Into<Equipment> + From<Equipment>> {
     pub score: f32,
 }
 
-impl<PREV: Into<Equipment> + From<Equipment>> CompactState<PREV> {
+impl<PREV: Into<Equipment> + From<Equipment> + Clone> CompactState<PREV> {
     pub fn from_choppedsolution<P: Rational>(
-        cur: NextStep<PREV>,
-        cs: ChoppedSolution<P, NextStep<PREV>>,
+        cur: &NextStep<PREV>,
+        cs: &ChoppedSolution<P, NextStep<PREV>>,
         useless_chapters: &HashSet<u16>,
     ) -> Option<Self> {
         let score = cs.score().to_f32();
         match cur {
-            NextStep::NewChapter(cid, cv) if !useless_chapters.contains(&cid) => Some(CompactState {
-                chapter: cid,
-                character: cv,
+            NextStep::NewChapter(cid, cv) if !useless_chapters.contains(cid) => Some(CompactState {
+                chapter: *cid,
+                character: cv.clone(),
                 score,
             }),
             _ => None,
@@ -1010,6 +1041,15 @@ mod test {
                 panic!("duplicate idx: {i:?}")
             }
             found.push(idx);
+        }
+    }
+
+    #[test]
+    fn all_items_ser_deser() {
+        for i in Item::VALUES {
+            let str = serde_json::to_string(&i).unwrap();
+            let back = serde_json::from_str::<Item>(&str).unwrap();
+            assert_eq!(i, back)
         }
     }
 }

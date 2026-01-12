@@ -1,5 +1,6 @@
 mod lwexplore;
 
+use anyhow::Context;
 use bincode::Encode;
 use clap::{Parser, Subcommand};
 use gamebooksolver_base::lonewolf::chapter::*;
@@ -20,6 +21,8 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
+use std::sync::Arc;
+use std::time::Duration;
 
 use gamebooksolver_base::lonewolf::mini::{
     Book, CVarState, CharacterConstant, CompactSolution, CompactState, Discipline, Equipment, Flag, Flags, Item,
@@ -60,7 +63,7 @@ struct OSolDesc {
 enum PSub {
     LoadChapter,
     DumpStates {
-        cid: u16,
+        cid: Vec<u16>,
     },
     CompareStates {
         otherpath: String,
@@ -98,9 +101,14 @@ struct Opt {
     /// Optional path to the .json file
     #[structopt(long)]
     json: Option<String>,
+    /// Optional path to the full .bin solution
+    #[structopt(long)]
+    fullsol: Option<String>,
     /// Alternate commands
     #[structopt(subcommand)]
     cmd: Option<PSub>,
+    #[structopt(long)]
+    verbose: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -263,18 +271,21 @@ fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
         Book::Book01 => ([Helmet, BodyArmor, Gold].into_iter().collect(), HashSet::new()),
         Book::Book02 => ([Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
         Book::Book03 => (
-            [Item::Weapon(Weapon::Sommerswerd), Helmet, StrengthPotion4]
+            [Item::Weapon(Weapon::Sommerswerd), StrengthPotion4, Item::SILVERHELMET]
                 .into_iter()
                 .collect(),
-            [HelmetIsSilver].into_iter().collect(),
+            HashSet::new(),
         ),
         Book::Book04 => (
-            [Item::Weapon(Weapon::Sommerswerd), Helmet, BodyArmor, StrengthPotion4]
-                .into_iter()
-                .collect(),
-            [FoughtElix, PermanentSkillReduction2, HelmetIsSilver]
-                .into_iter()
-                .collect(),
+            [
+                Item::Weapon(Weapon::Sommerswerd),
+                Item::SILVERHELMET,
+                BodyArmor,
+                StrengthPotion4,
+            ]
+            .into_iter()
+            .collect(),
+            [FoughtElix, PermanentSkillReduction2].into_iter().collect(),
         ),
         Book::Book05 => (HashSet::new(), HashSet::new()),
     }
@@ -285,7 +296,11 @@ fn load_results(
     iitems: &HashSet<Item>,
     iflags: &HashSet<Flag>,
     resdir: &str,
+    verbose: bool,
 ) -> anyhow::Result<HashMap<(Equipment, Flags), Rational>> {
+    if verbose {
+        eprintln!("looking of results compatible with {disciplines:?}")
+    }
     let mut o = HashMap::new();
     for fpath in std::fs::read_dir(resdir)? {
         let rpath = fpath?.path();
@@ -294,13 +309,17 @@ fn load_results(
             continue;
         }
         let f = File::open(pth)?;
-        let ms: Multistat<Rational> = serde_json::de::from_reader(f)?;
+        let ms: Multistat<Rational> =
+            serde_json::de::from_reader(f).with_context(|| anyhow::anyhow!("loading {pth}"))?;
         if ms.msentries.len() != 1 {
             eprintln!("invalid amount of entries in {}", pth);
             continue;
         }
         let curdiscs: HashSet<Discipline> = ms.msdisciplines.into_iter().collect();
         if curdiscs.difference(&disciplines).count() > 1 {
+            if verbose {
+                eprintln!(" * ignoring  {}, invalid disciplines {curdiscs:?}", rpath.display())
+            }
             continue;
         }
         let mut flags = Flags(0);
@@ -317,10 +336,50 @@ fn load_results(
         let mentry: &Rational = &ms.msentries[0].mratio;
         let oentry: &mut Rational = o.entry((items, flags)).or_default();
         if mentry.cmp(oentry) == std::cmp::Ordering::Greater {
+            if verbose {
+                eprintln!(" * accepting {}, invalid disciplines {curdiscs:?}", rpath.display())
+            }
             *oentry = mentry.clone();
         }
     }
     Ok(o)
+}
+
+fn filter_final_state(
+    bookid: Book,
+    iitems: &HashSet<Item>,
+    iflags: &HashSet<Flag>,
+    e: Equipment,
+    f: Flags,
+) -> (Equipment, Flags) {
+    let mut re = Equipment::default();
+    for i in iitems {
+        let ramount = e.get_item_count(i);
+        let amount = if i == &Item::Gold {
+            match bookid {
+                Book::Book04 => {
+                    if ramount < 4 {
+                        0
+                    } else {
+                        15
+                    }
+                }
+                _ => ramount,
+            }
+        } else {
+            ramount
+        };
+        if amount > 0 {
+            re.add_item(i, amount as i64);
+        }
+    }
+    let mut rf = Flags(0);
+    for i in iflags {
+        if f.has(*i) {
+            rf.set(*i);
+        }
+    }
+    (re, rf)
 }
 
 fn score_with(
@@ -334,39 +393,17 @@ fn score_with(
     match mscoremap {
         None => Rational::from(1),
         Some(scoremap) => {
-            let mut re = Equipment::default();
-            for i in iitems {
-                let ramount = e.get_item_count(i);
-                let amount = if i == &Item::Gold {
-                    match bookid {
-                        Book::Book04 => {
-                            if ramount < 4 {
-                                0
-                            } else {
-                                15
-                            }
-                        }
-                        _ => ramount,
-                    }
-                } else {
-                    ramount
-                };
-                if amount > 0 {
-                    re.add_item(i, amount as i64);
-                }
-            }
-            let mut rf = Flags(0);
-            for i in iflags {
-                if f.has(*i) {
-                    rf.set(*i);
-                }
-            }
+            let (re, rf) = filter_final_state(bookid, iitems, iflags, e, f);
             match scoremap.get(&(re, rf)) {
                 None => {
-                    eprintln!("Could not find matching combination for {:?} {:?}", re.items(), rf);
+                    eprintln!(
+                        "Could not find matching combination for {:?} {:?}",
+                        re.items(),
+                        rf.all()
+                    );
                     eprintln!("know combinations are:");
                     for (ke, kf) in scoremap.keys() {
-                        eprintln!(" * {:?} {:?}", ke.items(), kf);
+                        eprintln!(" * {:?} {:?}", ke.items(), kf.all());
                     }
                     panic!("failed :(");
                 }
@@ -575,8 +612,8 @@ fn mkjot<
     Ok(())
 }
 
-fn optimize<PREV: From<Equipment> + Into<Equipment> + Ord + Encode>(
-    soldump: SolutionDump<Rational, PREV>,
+fn optimize<PREV: From<Equipment> + Into<Equipment> + Ord + Encode + Clone>(
+    soldump: &SolutionDump<Rational, PREV>,
     jname: &str,
     dummy: bool,
     bookpath: Option<&str>,
@@ -595,13 +632,13 @@ fn optimize<PREV: From<Equipment> + Into<Equipment> + Ord + Encode>(
     } else {
         soldump
             .content
-            .into_iter()
+            .iter()
             .filter_map(|(k, v)| CompactState::from_choppedsolution(k, v, &useless_chapters))
             .collect::<Vec<_>>()
     };
-    content.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    content.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
     let compact = CompactSolution {
-        soldesc: soldump.soldesc,
+        soldesc: soldump.soldesc.clone(),
         content,
     };
     // save json recap
@@ -615,32 +652,35 @@ fn dump_states<
     PREV: From<Equipment> + Into<Equipment> + Ord + Serialize + std::fmt::Display + Copy + std::fmt::Debug,
 >(
     soldump: SolutionDump<Rational, PREV>,
-    cid: u16,
+    cids: &[u16],
 ) -> anyhow::Result<()> {
-    for (ns, sol) in &soldump.content {
-        if Some(cid) == ns.chapter() {
-            match (ns, sol) {
-                (NextStep::NewChapter(_, pcvar), ChoppedSolution::CJump(sc, NextStep::NewChapter(nid, ncvar))) => {
-                    println!(
-                        "{} -> JUMP {:.2}% ch:{} {}",
-                        ns,
-                        sc.to_f64() * 100.0,
-                        nid,
-                        &diff_cvar(pcvar, ncvar)
-                    )
-                }
-                (NextStep::NewChapter(_, pcvar), ChoppedSolution::CNode(sc, outcomes)) => {
-                    println!("{} - {:.2}% ", ns, sc.to_f64() * 100.0);
-                    for (mns, pb) in outcomes {
-                        match mns {
-                            Some(NextStep::NewChapter(nid, ncvar)) => {
-                                println!(" [{:.2}%] ch:{} {}", pb.to_f64() * 100.0, nid, &diff_cvar(pcvar, ncvar))
+    for &cid in cids {
+        println!("CID{cid}");
+        for (ns, sol) in &soldump.content {
+            if Some(cid) == ns.chapter() {
+                match (ns, sol) {
+                    (NextStep::NewChapter(_, pcvar), ChoppedSolution::CJump(sc, NextStep::NewChapter(nid, ncvar))) => {
+                        println!(
+                            "{} -> JUMP {:.2}% ch:{} {}",
+                            ns,
+                            sc.to_f64() * 100.0,
+                            nid,
+                            &diff_cvar(pcvar, ncvar)
+                        )
+                    }
+                    (NextStep::NewChapter(_, pcvar), ChoppedSolution::CNode(sc, outcomes)) => {
+                        println!("{} - {:.2}% ", ns, sc.to_f64() * 100.0);
+                        for (mns, pb) in outcomes {
+                            match mns {
+                                Some(NextStep::NewChapter(nid, ncvar)) => {
+                                    println!(" [{:.2}%] ch:{} {}", pb.to_f64() * 100.0, nid, &diff_cvar(pcvar, ncvar))
+                                }
+                                _ => println!(" [{:.2}%] {:?}", pb.to_f64() * 100.0, mns),
                             }
-                            _ => println!(" [{:.2}%] {:?}", pb.to_f64() * 100.0, mns),
                         }
                     }
+                    _ => println!("{} -> {:?}", ns, sol),
                 }
-                _ => println!("{} -> {:?}", ns, sol),
             }
         }
     }
@@ -680,7 +720,14 @@ fn soldump<
     let mscoremap = cnt
         .resultspath
         .as_ref()
-        .and_then(|pth| load_results(cnt.discipline.iter().copied().collect(), &iitems, &iflags, pth).ok());
+        .map(|pth| load_results(cnt.discipline.iter().copied().collect(), &iitems, &iflags, pth, verbose))
+        .transpose()?;
+    if verbose && let Some(ms) = &mscoremap {
+        eprintln!("mscoremap");
+        for ((e, f), s) in ms {
+            eprintln!("* {:?} {:?} {:.3}", e.items(), f.all(), 100.0 * s.to_f64());
+        }
+    }
 
     let ccst = CharacterConstant {
         bookid: cnt.bookid,
@@ -689,17 +736,17 @@ fn soldump<
         maxendurance: cnt.maxendurance,
     };
     let cvar = CVarState {
-        flags: cnt.flags.clone(),
+        flags: cnt.flags.iter().cloned().collect(),
         gold: cnt.gold,
         items: if cnt.items.is_empty() {
             None
         } else {
-            let mut mp: HashMap<Item, i64> = HashMap::new();
+            let mut mp: BTreeMap<Item, i64> = BTreeMap::new();
             for i in cnt.items.iter() {
                 let e = mp.entry(*i).or_insert(0);
                 *e += 1;
             }
-            Some(mp.into_iter().collect())
+            Some(mp)
         },
     };
     let finalchapters = if cnt.finalchapters.is_empty() {
@@ -716,6 +763,9 @@ fn soldump<
         ccst,
         cvar,
         finalchapters,
+        mscoremap: mscoremap
+            .as_ref()
+            .map(|mp| mp.iter().map(|((k1, k2), v)| (*k1, *k2, v.clone())).collect()),
     };
     let cvar = soldesc.cvariable::<PREV>();
     let sol = solve_lws(
@@ -760,7 +810,7 @@ fn cmd_soldump(cnt: &OSolDesc, jsonpath: &str, verbose: bool) -> anyhow::Result<
 }
 
 fn cmd_optimize(
-    soldump: GSolDump<Rational>,
+    soldump: &GSolDump<Rational>,
     target: &str,
     jname: &str,
     dummy: bool,
@@ -796,7 +846,7 @@ fn main() -> anyhow::Result<()> {
         }) => {
             let soldump = load_soldump(&opt.solpath)?;
             let jname = opt.desc.unwrap_or_else(|| target.to_owned() + ".desc");
-            cmd_optimize(soldump, target, &jname, *dummy, bookpath.as_deref())?;
+            cmd_optimize(&soldump, target, &jname, *dummy, bookpath.as_deref())?;
         }
         Some(PSub::Explore { bookpath }) => {
             let fl = File::open(bookpath)?;
@@ -833,8 +883,8 @@ fn main() -> anyhow::Result<()> {
         Some(PSub::DumpStates { cid }) => {
             let soldump = load_soldump(&opt.solpath)?;
             match soldump {
-                GSolDump::Prev(sd) => dump_states(sd, *cid)?,
-                GSolDump::Noprev(sd) => dump_states(sd, *cid)?,
+                GSolDump::Prev(sd) => dump_states(sd, cid)?,
+                GSolDump::Noprev(sd) => dump_states(sd, cid)?,
             }
         }
         Some(PSub::CompareStates { cid, otherpath }) => {
@@ -848,7 +898,7 @@ fn main() -> anyhow::Result<()> {
         }
         Some(PSub::Soldump(cnt)) => {
             let json_path = opt.json.unwrap_or_else(|| opt.solpath.to_owned() + ".json");
-            let sd = cmd_soldump(cnt, &json_path, false)?;
+            let sd = cmd_soldump(cnt, &json_path, opt.verbose)?;
             // save whole stuff
             let file = File::create(&opt.solpath)?;
             let mut zwriter = zstd::Encoder::new(file, 3)?;
@@ -856,9 +906,11 @@ fn main() -> anyhow::Result<()> {
             zwriter.finish()?;
         }
         Some(PSub::SoldumpOptimize(cnt)) => {
+            let cur = std::time::Instant::now();
             let json_path = opt.json.unwrap_or_else(|| opt.solpath.to_owned() + ".json");
             let jname = opt.desc.unwrap_or_else(|| opt.solpath.to_owned() + ".desc");
-            let sd = cmd_soldump(cnt, &json_path, false)?;
+            let sd = Arc::new(cmd_soldump(cnt, &json_path, opt.verbose)?);
+            let soldump_duration = cur.elapsed();
             fn statsfor<PREV: From<Equipment> + Into<Equipment>>(
                 content: &SoldumpContent<Rational, PREV>,
             ) -> (usize, f64) {
@@ -874,16 +926,88 @@ fn main() -> anyhow::Result<()> {
                     .next();
                 (content.len(), win.map(|r| r.to_f64()).unwrap_or(-1.0))
             }
-            let (nstates, winrate) = match &sd {
-                GSolDump::Prev(solution_dump) => statsfor(&solution_dump.content),
-                GSolDump::Noprev(solution_dump) => statsfor(&solution_dump.content),
-            };
-            match &sd {
-                GSolDump::Prev(sd) => mkjot(sd, opt.jot.as_deref())?,
-                GSolDump::Noprev(sd) => mkjot(sd, opt.jot.as_deref())?,
+
+            fn write_fullsol(fullsol: String, sd: &GSolDump<Rational>) -> anyhow::Result<Duration> {
+                let cur = std::time::Instant::now();
+                let file = File::create(fullsol)?;
+                let mut zwriter = zstd::Encoder::new(file, 6)?;
+                bincode::encode_into_std_write(sd, &mut zwriter, bincode::config::standard())?;
+                zwriter.finish()?;
+                Ok(cur.elapsed())
             }
-            cmd_optimize(sd, &opt.solpath, &jname, false, Some(&cnt.bookpath))?;
-            println!("states:{nstates} win:{:.2}%", winrate * 100.0)
+            let sd = sd.clone();
+            fn statsf(sd: &GSolDump<Rational>) -> (Duration, usize, f64) {
+                let cur = std::time::Instant::now();
+                let (nstates, winrate) = match sd {
+                    GSolDump::Prev(solution_dump) => statsfor(&solution_dump.content),
+                    GSolDump::Noprev(solution_dump) => statsfor(&solution_dump.content),
+                };
+                (cur.elapsed(), nstates, winrate)
+            }
+            fn jotf(sd: &GSolDump<Rational>, jotpath: Option<&str>) -> anyhow::Result<Duration> {
+                let cur = std::time::Instant::now();
+                match &sd {
+                    GSolDump::Prev(sd) => mkjot(sd, jotpath)?,
+                    GSolDump::Noprev(sd) => mkjot(sd, jotpath)?,
+                }
+                let jot_duration = cur.elapsed();
+                Ok(jot_duration)
+            }
+            fn optimizef(
+                sd: &GSolDump<Rational>,
+                solpath: &str,
+                jname: &str,
+                bookpath: &str,
+            ) -> anyhow::Result<Duration> {
+                let cur = std::time::Instant::now();
+                cmd_optimize(sd, solpath, jname, false, Some(bookpath))?;
+                Ok(cur.elapsed())
+            }
+            let fst = if let Some(fullsol) = &opt.fullsol {
+                let sd = sd.clone();
+                let fullsol = fullsol.to_owned();
+                Some(std::thread::spawn(move || write_fullsol(fullsol, &sd)))
+            } else {
+                None
+            };
+            let statst = {
+                let sd = sd.clone();
+                std::thread::spawn(move || statsf(&sd))
+            };
+            let jott = {
+                let sd = sd.clone();
+                std::thread::spawn(move || jotf(&sd, opt.jot.as_deref()))
+            };
+            let optimizet = {
+                let sd = sd.clone();
+                let solpath = opt.solpath.clone();
+                let bookpath = cnt.bookpath.clone();
+                std::thread::spawn(move || optimizef(&sd, &solpath, &jname, &bookpath))
+            };
+            let fullsol_write_duration = if let Some(jh) = fst {
+                match jh.join() {
+                    Ok(x) => x?,
+                    Err(rr) => panic!("{rr:?}"),
+                }
+            } else {
+                Duration::default()
+            };
+            let (stats_duration, nstates, winrate) = match statst.join() {
+                Ok(x) => x,
+                Err(rr) => panic!("{rr:?}"),
+            };
+            let jot_duration = match jott.join() {
+                Ok(x) => x?,
+                Err(rr) => panic!("{rr:?}"),
+            };
+            let optimize_duration = match optimizet.join() {
+                Ok(x) => x?,
+                Err(rr) => panic!("{rr:?}"),
+            };
+            println!(
+                "states:{nstates} win:{:.2}% sd[{soldump_duration:?}] fsol[{fullsol_write_duration:?}] stt[{stats_duration:?}] jot[{jot_duration:?}] opt[{optimize_duration:?}]",
+                winrate * 100.0
+            )
         }
     }
     Ok(())

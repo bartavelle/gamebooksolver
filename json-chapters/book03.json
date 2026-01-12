@@ -10042,20 +10042,11 @@
       "desc": "Despite its size, the Silver Helm feels light and comfortable. Mark it on your Action Chart as a Special Item. If you are already wearing another Helmet, you must discard it if you wish to keep the Silver Helm. If worn during combat, it will increase your COMBAT SKILL by 2 points. The lid of the chest slowly closes and you leave the chamber, elated by your magnificent discovery. You continue along the corridor and explore the staircase ahead.\n",
       "pchoice": {
         "CanTake": [
-          "Helmet",
+          "SGenCounter 10",
           1,
           {
             "NoDecision": {
-              "Simple": [
-                [
-                  {
-                    "SetFlag": "HelmetIsSilver"
-                  }
-                ],
-                {
-                  "Goto": 323
-                }
-              ]
+              "Goto": 323
             }
           }
         ]

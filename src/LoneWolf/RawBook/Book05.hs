@@ -795,7 +795,7 @@ chapters =
       Chapter
         "131"
         "You sift through the vast number of items that litter the dais, separating the following articles, which may or may not be of use:\n * Silver Comb\n * Hourglass\n * Dagger\n * Healing Potion of Laumspur (restores 4  *  *  points if swallowed after combat)\n * Prism\n * Enough food for 3 Meals (each Meal counts as 1 Backpack Item)\nRemember to make the necessary changes to your Action Chart before leaving the chamber.\n"
-        (CanTake Potion2Hp 1 (CanTake Meal 3 (CanTake (GenSpecial (GenCounter 5)) 1 (CanTake Laumspur 1 (CanTake (Weapon Dagger) 1 (NoDecision (Goto 58)))))))
+        (CanTake Meal 3 (CanTake (GenSpecial (GenCounter 5)) 1 (CanTake Laumspur 1 (CanTake (Weapon Dagger) 1 (NoDecision (Goto 58))))))
     ),
     ( 132,
       Chapter
@@ -1527,7 +1527,30 @@ chapters =
       Chapter
         "253"
         "Suddenly, the pain subsides, but a new horror is taking shape before your eyes. Out of the darkness, a green whorl of vapour is forming slowly into the shape of a glistening, serpent-like monster. A grey mist issues forth from the Darklord's mouth, floating towards the core of this horror, infusing it with the power of death. The serpent writhes and convulses as the grey mist fills its body, changing it from a dream-like illusion into a living nightmare. Two pinpoints of crimson glow from its eyes, as it slithers towards you.\nIf you possess a Jewelled Mace, you may add 5 to your COMBAT SKILL for the duration of the combat, for it is an enchanted weapon, especially effective against such a creature.\n"
-        (NoDecision (Conditionally [(CAnd (HasItem (Weapon Mace) 1) (HasFlag Special01), Conditionally [(HasItem (Weapon Sommerswerd) 1, Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = []}) (Goto 335)), (HasDiscipline (WeaponSkill Mace), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 5})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill Dagger)) (HasItem (Weapon Dagger) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill Spear)) (HasItem (Weapon Spear) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill ShortSword)) (HasItem (Weapon ShortSword) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill Warhammer)) (HasItem (Weapon Warhammer) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill Sword)) (HasItem (Weapon Sword) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill Axe)) (HasItem (Weapon Axe) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill Quarterstaff)) (HasItem (Weapon Quarterstaff) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill BroadSword)) (HasItem (Weapon BroadSword) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (CAnd (HasDiscipline (WeaponSkill MagicSpear)) (HasItem (Weapon MagicSpear) 1), Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 3})]}) (Goto 335)), (Always True, Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = [CombatBonus (CombatSkill {getCombatSkill = 5})]}) (Goto 335))]), (Always True, Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill {getCombatSkill = 20}, _fendurance = Endurance {getEndurance = 40}, _fightMod = []}) (Goto 335))]))
+        ( NoDecision
+            ( Conditionally $
+                let fight fm = Fight (FightDetails {_opponent = "Dhorgaan", _fcombatSkill = CombatSkill 20, _fendurance = Endurance 40, _fightMod = fm}) (Goto 335)
+                    cw wpn = (CAnd (HasDiscipline (WeaponSkill wpn)) (HasItem (Weapon wpn) 1), fight [CombatBonus (CombatSkill 3)])
+                 in [ ( CAnd (HasItem (Weapon Mace) 1) (HasFlag Special01),
+                        Conditionally
+                          [ (HasItem (Weapon Sommerswerd) 1, fight []),
+                            (HasDiscipline (WeaponSkill Mace), fight [CombatBonus (CombatSkill 5)]),
+                            cw Dagger,
+                            cw Spear,
+                            cw ShortSword,
+                            cw Warhammer,
+                            cw Sword,
+                            cw Axe,
+                            cw Quarterstaff,
+                            cw BroadSword,
+                            cw MagicSpear,
+                            (Always True, fight [CombatBonus (CombatSkill 5)])
+                          ]
+                      ),
+                      (Always True, fight [])
+                    ]
+            )
+        )
     ),
     ( 254,
       Chapter

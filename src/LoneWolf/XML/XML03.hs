@@ -314,7 +314,7 @@ book03gen cid _ computedDecision =
         )
     303 -> Just (computedDecision & _Outcome %~ Simple [LoseItem ornateSilverKeyB03 1])
     304 -> Just (computedDecision & _Outcome . _Fight . _1 . fightMod .~ [MindblastImmune, EnemyMindblast, Undead])
-    308 -> takeItems [(Helmet, 1)] (computedDecision & _Outcome %~ Simple [SetFlag HelmetIsSilver])
+    308 -> takeItems [(silverHelmet, 1)] computedDecision
     309 -> takeItems [(blueStoneTriangleB03, 1), (fireSphereB03, 1)] computedDecision
     311 -> Nothing
     321 -> takeItems [(blueStoneTriangleB03, 1)] computedDecision

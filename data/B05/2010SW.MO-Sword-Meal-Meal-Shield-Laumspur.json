@@ -1,39 +1,25 @@
 {
   "mbook": "Book05",
   "msdisciplines": [
+    "Camouflage",
+    "Hunting",
+    "SixthSense",
+    "Tracking",
+    "Healing",
     {
       "WeaponSkill": "Sword"
     },
-    "Hunting",
-    "Tracking",
-    "SixthSense",
-    "Healing",
     "MindShield",
     "MindBlast",
-    "AnimalKinship",
-    "Camouflage"
+    "AnimalKinship"
   ],
   "variable": {
-    "items": [
-      [
-        {
-          "Weapon": "Sword"
-        },
-        1
-      ],
-      [
-        "Meal",
-        2
-      ],
-      [
-        "Shield",
-        1
-      ],
-      [
-        "Laumspur",
-        1
-      ]
-    ],
+    "items": {
+      "Sword": 1,
+      "Shield": 1,
+      "Meal": 2,
+      "Laumspur": 1
+    },
     "gold": 15,
     "flags": []
   },
@@ -41,12 +27,12 @@
     {
       "meendurance": 20,
       "mskill": 10,
-      "mscore": 0.21408443421182494,
+      "mscore": 0.19540719331534867,
       "mratio": {
         "radix": 16,
-        "value": "8a594c76ad8b47c01379f/2863c1f5cdae42f9540000"
+        "value": "c0afb5e546f3f859fec833983a2f/3da137d5b0f806f1b1cc800000000"
       },
-      "states": 53232999
+      "states": 59253920
     }
   ]
 }

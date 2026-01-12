@@ -379,7 +379,7 @@ b03stats astts = do
           ("Passage", fmtr . visitrate 6),
           ("280", fmtr . visitrate 280),
           ("Baknar oil", fmtr . finalFlag baknarOilB03),
-          ("End SH", fmtr . finalFlag HelmetIsSilver),
+          ("End SH", fmtr . finalItem silverHelmet),
           ("End +4", fmtr . finalItem StrengthPotion4)
         ]
   blogpostStats astts cols
@@ -391,7 +391,7 @@ b04stats astts = do
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . sum . _cendurance . finalStat),
           ("SS", fmtb . hasitem (Weapon Sommerswerd)),
-          ("SH", fmtb . hasflag HelmetIsSilver),
+          ("SH", fmtb . hasitem silverHelmet),
           ("+4", fmtb . hasitem StrengthPotion4),
           ("Fought Elix", fmtr . finalFlag FoughtElix),
           ("Laumspur collect", mvisitrate [12, 268, 302]),
@@ -408,7 +408,7 @@ b05stats :: [Stats] -> Html ()
 b05stats astts = do
   let cols =
         [ ("SS", fmtb . not . hasitem (Weapon Sword)),
-          ("SH", fmtb . hasflag HelmetIsSilver),
+          ("SH", fmtb . hasitem silverHelmet),
           ("+4", fmtb . hasitem StrengthPotion4),
           ("BA", fmtb . hasitem BodyArmor),
           ("EX", fmtb . hasflag FoughtElix),

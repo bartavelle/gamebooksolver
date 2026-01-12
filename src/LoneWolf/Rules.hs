@@ -159,4 +159,4 @@ getMaxHp cconstant cvariable =
   let eq = cvariable ^. equipment
    in cconstant ^. maxendurance
         + (if hasItem BodyArmor eq then 4 else 0)
-        + (if hasItem Helmet eq && not (hasFlag HelmetIsSilver cvariable) then 2 else 0)
+        + (if hasItem Helmet eq then 2 else 0)

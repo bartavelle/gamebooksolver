@@ -1,0 +1,36 @@
+{
+  "mbook": "Book03",
+  "msdisciplines": [
+    "Hunting",
+    "Tracking",
+    "Healing",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindBlast",
+    "AnimalKinship",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Sommerswerd": 1,
+      "BodyArmor": 1,
+      "Laumspur": 1,
+      "Helmet": 1
+    },
+    "gold": 15,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.749648760767912,
+      "mratio": {
+        "radix": 16,
+        "value": "690c5496c46869c3e59c49da5faff10aad2fd9d/8c213d9da502de454526f422cc3400000000000"
+      },
+      "states": 19699024
+    }
+  ]
+}

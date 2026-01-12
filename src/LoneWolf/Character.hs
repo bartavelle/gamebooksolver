@@ -204,7 +204,6 @@ data Flag
   | Poisonned2
   | HadCombat
   | PermanentSkillReduction2 -- happens in book 02
-  | HelmetIsSilver
   | PotentStrengthPotionActive -- +4 bonus
   deriving (Show, Eq, Ord, Enum, Bounded, Data, Read, Generic)
 
@@ -319,7 +318,7 @@ data Item
   | Meal
   | Gold
   | Laumspur
-  | Helmet -- standard helmet, except in conjunction with the HelmetIsSilver flag
+  | Helmet
   deriving (Show, Eq, Generic, Ord, Read, Typeable, Data)
 
 itemNames :: M.Map Book (M.Map String Item)
@@ -346,6 +345,7 @@ itemNames =
             ("Effigy", effigyB03),
             ("Red Potion of Laumspur", Potion5Hp),
             ("Sommerswerd", Weapon Sommerswerd),
+            ("Silver Helmet", silverHelmet),
             ("Glowing Crystal", glowingCrystalB03)
           ]
       ),
@@ -360,6 +360,7 @@ itemNames =
             ("Scroll", scrollB04),
             ("Rope", ropeB04),
             ("Torch", torchB04),
+            ("Silver Helmet", silverHelmet),
             ("Tinderbox", tinderBoxB04)
           ]
       ),
@@ -379,6 +380,7 @@ itemNames =
             ("Prism", prismB05), -- can be retrieved anyway
             ("FireSphere", fireSphereB05), -- useless
             ("Sommerswerd", Weapon Sommerswerd),
+            ("Silver Helmet", silverHelmet),
             ("Onyx Medallion", onyxMedallion) -- useful if you do not have animal kinship
           ]
       )
@@ -394,6 +396,9 @@ showItem bk i = case (i, M.lookup bk itemIds >>= M.lookup i) of
   (Weapon w, _) -> show w
   (_, Just d) -> d
   _ -> show i
+
+-- all books
+silverHelmet = GenSpecial 10
 
 -- book 01
 vordakGem :: Item

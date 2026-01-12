@@ -24,7 +24,7 @@ import Data.GraphViz.Printing (renderDot)
 import Data.GraphViz.Types.Canonical
 import qualified Data.HashMap.Strict as HM
 import qualified Data.IntMap.Strict as IM
-import Data.List (foldl', intercalate, isSuffixOf)
+import Data.List (intercalate, isSuffixOf)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, isJust, mapMaybe)
 import qualified Data.Set as S
@@ -43,7 +43,7 @@ import LoneWolf.Data
 import LoneWolf.Rules (NextStep (..))
 import LoneWolf.Solve (orderChapters, solveLWs, step)
 import LoneWolf.StateSelector (Log (..), Selector (..), parseSelector, selectChar)
-import LoneWolf.Various (getDestinations)
+import LoneWolf.Various (getDestinations, showFlag)
 import Options.Applicative
   ( Alternative (many, (<|>)),
     Parser,
@@ -90,8 +90,8 @@ getBoundary :: Book -> Maybe (S.Set Item, S.Set Flag)
 getBoundary b = case b of
   Book01 -> Just (S.fromList [Helmet, BodyArmor, Gold], S.fromList [])
   Book02 -> Just (S.fromList [Helmet, BodyArmor], S.fromList [])
-  Book03 -> Just (S.fromList [Weapon Sommerswerd, Helmet, StrengthPotion4], S.fromList [HelmetIsSilver])
-  Book04 -> Just (S.fromList [Weapon Sommerswerd, Helmet, BodyArmor, StrengthPotion4], S.fromList [FoughtElix, PermanentSkillReduction, PermanentSkillReduction2, HelmetIsSilver])
+  Book03 -> Just (S.fromList [Weapon Sommerswerd, silverHelmet, StrengthPotion4], S.fromList [])
+  Book04 -> Just (S.fromList [Weapon Sommerswerd, silverHelmet, BodyArmor, StrengthPotion4], S.fromList [FoughtElix, PermanentSkillReduction, PermanentSkillReduction2])
   _ -> Nothing
 
 simpleSol :: Maybe (M.Map (S.Set Item, S.Set Flag) Rational) -> Book -> CharacterConstant -> CharacterVariable -> [Int] -> (Rational, [(NextStep, Solution NextStep ())])
@@ -273,7 +273,7 @@ mkdot dsc (DecisionStats book res sttmap) =
               stts <- chapterstats
               let amount = sum (M.filterWithKey (const . view (bitAt (fromEnum flg))) (_cflags stts))
               if amount > 0
-                then Just (FlipFields [FieldLabel (T.pack (show flg)), FieldLabel (T.pack (percent amount))])
+                then Just (FlipFields [FieldLabel (T.pack (showFlag book flg)), FieldLabel (T.pack (percent amount))])
                 else Nothing
             DHasItem itm -> do
               stts <- chapterstats

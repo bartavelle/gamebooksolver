@@ -105,7 +105,7 @@ impl Rational for rug::Rational {
 
 #[cfg(feature = "rug")]
 pub mod r {
-    use bincode::{Decode, Encode};
+    use bincode::{BorrowDecode, Decode, Encode};
 
     use super::*;
 
@@ -119,6 +119,14 @@ pub mod r {
     impl Encode for MRational {
         fn encode<E: bincode::enc::Encoder>(&self, encoder: &mut E) -> Result<(), bincode::error::EncodeError> {
             Encode::encode(&bincode::serde::Compat(&self.inner), encoder)
+        }
+    }
+
+    impl<'de, CTX> BorrowDecode<'de, CTX> for MRational {
+        fn borrow_decode<D: bincode::de::BorrowDecoder<'de, Context = CTX>>(
+            decoder: &mut D,
+        ) -> Result<Self, bincode::error::DecodeError> {
+            bincode::serde::BorrowCompat::borrow_decode(decoder).map(|x| Self { inner: x.0 })
         }
     }
 

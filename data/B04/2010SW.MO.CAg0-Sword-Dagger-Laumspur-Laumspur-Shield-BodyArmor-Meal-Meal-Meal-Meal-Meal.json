@@ -1,48 +1,26 @@
 {
   "mbook": "Book04",
   "msdisciplines": [
+    "Hunting",
+    "SixthSense",
+    "Tracking",
+    "Healing",
     {
       "WeaponSkill": "Sword"
     },
     "MindShield",
     "MindBlast",
-    "Healing",
-    "SixthSense",
-    "Tracking",
-    "AnimalKinship",
-    "Hunting"
+    "AnimalKinship"
   ],
   "variable": {
-    "items": [
-      [
-        "Meal",
-        5
-      ],
-      [
-        "Laumspur",
-        2
-      ],
-      [
-        {
-          "Weapon": "Sword"
-        },
-        1
-      ],
-      [
-        {
-          "Weapon": "Dagger"
-        },
-        1
-      ],
-      [
-        "BodyArmor",
-        1
-      ],
-      [
-        "Shield",
-        1
-      ]
-    ],
+    "items": {
+      "Dagger": 1,
+      "Sword": 1,
+      "Shield": 1,
+      "BodyArmor": 1,
+      "Meal": 5,
+      "Laumspur": 2
+    },
     "gold": 0,
     "flags": []
   },
@@ -50,12 +28,12 @@
     {
       "meendurance": 20,
       "mskill": 10,
-      "mscore": 0.2697743992379448,
+      "mscore": 0.26769409333571104,
       "mratio": {
         "radix": 16,
-        "value": "c82138c0112c608dc68bf3da2a2e5477fb5a07e3f2d7ce28d256f4cd/2e5d75adbb8e790dacf8bf54e3848ad13820f2a048000000000000000"
+        "value": "3f8c3514e0ad2ea344ebe31165a759609d0100708a043bd793ddd99/ed63a231d4c4fb274ca7aaa863ee4bdd4856c5c4000000000000000"
       },
-      "states": 13239710
+      "states": 13234530
     }
   ]
 }

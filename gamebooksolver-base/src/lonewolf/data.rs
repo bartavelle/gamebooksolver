@@ -4,13 +4,13 @@ use crate::lonewolf::chapter::{
 use crate::lonewolf::mini::{Book, CVarState, Discipline, Equipment, NextStep, SolutionDump};
 use crate::solver::rational::Rational;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::collections::HashSet;
+use std::collections::{BTreeSet, HashMap};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Multistat<P> {
     pub mbook: Book,
-    pub msdisciplines: Vec<Discipline>,
+    pub msdisciplines: BTreeSet<Discipline>,
     pub variable: CVarState,
     pub msentries: Vec<MultistatEntry<P>>,
 }
@@ -43,7 +43,7 @@ impl<P: Rational> Multistat<P> {
 
         Some(Multistat {
             mbook: dump.soldesc.ccst.bookid,
-            msdisciplines: dump.soldesc.ccst.discipline.clone(),
+            msdisciplines: dump.soldesc.ccst.discipline.iter().cloned().collect(),
             variable: dump.soldesc.cvar.clone(),
             msentries: vec![MultistatEntry {
                 meendurance: Endurance(dump.soldesc.ccst.maxendurance),

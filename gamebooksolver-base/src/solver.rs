@@ -20,7 +20,14 @@ impl<P, STT> NodeState<P, STT> {
     }
 }
 
-pub fn solve<STT: Eq + Hash + Clone + std::fmt::Debug, FC, FS, INSPECT, DESC: std::fmt::Debug, P: Rational>(
+pub fn solve<
+    STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd,
+    FC,
+    FS,
+    INSPECT,
+    DESC: std::fmt::Debug,
+    P: Rational,
+>(
     get_choices: &mut FC,
     get_score: &FS,
     inistate: &STT,
@@ -42,7 +49,7 @@ where
         .collect()
 }
 
-fn go<STT: Eq + Hash + Clone + std::fmt::Debug, FC, FS, DESC: std::fmt::Debug, P: Rational>(
+fn go<STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd, FC, FS, DESC: std::fmt::Debug, P: Rational>(
     get_choices: &mut FC,
     get_score: &FS,
     search_state: &mut Cache<STT, NodeState<P, STT>>,
@@ -61,9 +68,7 @@ where
         return match ns {
             NodeState::Searching => panic!("loop at {:?}", curstate),
             NodeState::Solved(yeah) => match yeah {
-                SolNode::Win(r) => r.clone(),
-                SolNode::Chosen(s, _) => s.clone(),
-                SolNode::Single(s, _) => s.clone(),
+                SolNode::Win(s) | SolNode::Chosen(s, _) | SolNode::Single(s, _) => s.clone(),
             },
         };
     }
@@ -84,6 +89,15 @@ where
         if cur_score > best_score {
             best_choice = Some(SolNode::from_choices(cur_score.clone(), choice.res));
             best_score = cur_score;
+        } else if cur_score == best_score {
+            let newchoice = SolNode::from_choices(cur_score.clone(), choice.res);
+            if let Some(bc) = &best_choice {
+                if &newchoice > bc {
+                    best_choice = Some(newchoice);
+                }
+            } else {
+                best_choice = Some(newchoice);
+            }
         }
     }
 

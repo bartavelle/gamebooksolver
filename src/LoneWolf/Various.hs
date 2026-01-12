@@ -29,8 +29,8 @@ getDestinations book d =
   case d of
     Decisions lst -> concatMap (getDestinations book . snd) lst
     CanTake i c d' -> append (takeDesc i c) $ getDestinations book d'
-    Cansell _ _ d' -> append "sell" $ getDestinations book d'
-    Canbuy _ _ d' -> append "buy" $ getDestinations book d'
+    Cansell _ _ d' -> append ("sell" :: String) $ getDestinations book d'
+    Canbuy i c d' -> append ("$$" ++ itemDesc i c) $ getDestinations book d'
     Conditional c d' -> append (condDesc c) $ getDestinations book d'
     EvadeFight _ cid _ co -> (cid, ["evade"]) : append "fight" (getDestinationsO co)
     AfterCombat d' -> getDestinations book d'
@@ -46,7 +46,7 @@ getDestinations book d =
   where
     itemDesc i c = case i of
       Gold -> show c ++ "$"
-      Weapon _ -> "w"
+      Weapon w -> show w
       Meal -> show c ++ "M"
       _ -> showItem book i
     takeDesc i c = '+' : itemDesc i c
@@ -70,7 +70,7 @@ getDestinations book d =
           Camouflage -> "camo"
           AnimalKinship -> "ak"
           _ -> show di
-      HasFlag f -> "f:" ++ show f
+      HasFlag f -> "f:" ++ showFlag book f
     append s = map (fmap (s :))
     sdesc s = case s of
       LoseItemKind k | length k == 4 -> Just "LOSEALL"
@@ -80,6 +80,8 @@ getDestinations book d =
       DamagePlayer h -> Just ('-' : show (getEndurance h) ++ "HP")
       FullHeal -> Just "+100%HP"
       HalfHeal -> Just "+50%HP"
+      SetFlag f -> Just ('+' : showFlag book f)
+      ClearFlag f -> Just ('-' : showFlag book f)
       _ -> Just (show s)
     getDestinationsO co = case co of
       OneRound _ w e l -> getDestinationsO w ++ getDestinationsO e ++ getDestinationsO l
@@ -97,3 +99,8 @@ getDestinations book d =
       Goto c -> [(c, [])]
       GameLost -> []
       GameWon -> []
+
+showFlag :: Book -> Flag -> String
+showFlag Book05 Special01 = "Jewelled Mace"
+showFlag Book05 Knowledge01 = "Scroll"
+showFlag _ f = show f

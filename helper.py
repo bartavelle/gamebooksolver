@@ -53,7 +53,7 @@ def extra_builds(d: Dict[Fraction, List[str]], options: List[str]):
         for grp in d.values():
             aheadjson = grp[0]
             aheadraw = aheadjson[:-10]
-            mcbor.append(aheadraw + "-" + o + ".cbor")
+            mcbor.append(aheadraw + "-" + o + ".bin")
 
         for g in chunks(mcbor, 16):
             print("make -j2 " + " ".join(g))
@@ -64,11 +64,11 @@ def extra_builds(d: Dict[Fraction, List[str]], options: List[str]):
             headjson = grp[0]
             headraw = headjson[:-10]
             nxt = grp[1:]
-            cbor = headraw + "-" + o + ".cbor"
+            cbor = headraw + "-" + o + ".bin"
             json = cbor + ".json"
             for n in nxt:
                 nraw = n[:-10]
-                ncbor = nraw + "-" + o + ".cbor"
+                ncbor = nraw + "-" + o + ".bin"
                 njson = ncbor + ".json"
                 print("touch " + ncbor)
                 print("cp " + json + " " + njson)
@@ -83,7 +83,7 @@ def adjust_jsons(dir: str, options: List[str]):
         fullpath = os.path.join(dir, f)
         orig_content = json.load(open(fullpath, "r"))
         for o in options:
-            newpath = fullpath[:-10] + "-" + o + ".cbor.json"
+            newpath = fullpath[:-10] + "-" + o + ".json"
             new_content = json.load(open(newpath, "r"))
             new_content["_msdisciplines"] = orig_content["_msdisciplines"]
             new_content["_variable"]["_cvflags"].append("PermanentSkillReduction2")
@@ -94,20 +94,20 @@ B02BASE = [
     "-Sword-Shield",
 ]
 
-B03OPTIONS = ["FLGKnowledge01"]
+B03OPTIONS = ["FLGKnowledge01", "Helmet"]
 B03BASE = [
-    # "-Sommerswerd-Laumspur-Meal-Meal",
-    # "-Sommerswerd-BodyArmor-Meal-Meal",
+    "-Sommerswerd-Laumspur-Meal-Meal",
+    "-Sommerswerd-BodyArmor-Meal-Meal",
     "-Sommerswerd-Laumspur-BodyArmor",
 ]
 
-B04OPTIONS = ["Helmet-FLGHelmetIsSilver", "StrengthPotion4"]
+B04OPTIONS = ["SilverHelmet", "StrengthPotion4"]
 B04BASE = [
     "g0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
     "g0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
 ]
 
-B05OPTIONS = ["Helmet-FLGHelmetIsSilver", "StrengthPotion4", "FLGFoughtElix", "BodyArmor"]
+B05OPTIONS = ["SilverHelmet", "StrengthPotion4", "FLGFoughtElix", "BodyArmor"]
 B05BASE = [
     "-Sword-Meal-Meal-Shield-Laumspur",
     "-Sommerswerd-Meal-Meal-Shield-Laumspur",
@@ -145,10 +145,10 @@ for t in B02BASE:
                             if d3 > d4:
                                 for gold in range(10, 28):
                                     if gold == 15:
-                                        TGTS2.append("data/B02/2010SW.%s.%s.%s.%s%s.cbor" % (d1, d2, d3, d4, t))
+                                        TGTS2.append("data/B02/2010SW.%s.%s.%s.%s%s.bin" % (d1, d2, d3, d4, t))
                                     else:
                                         TGTS2.append(
-                                            "data/B02/2010SW.%s.%s.%s.%sg%d%s.cbor" % (d1, d2, d3, d4, gold, t)
+                                            "data/B02/2010SW.%s.%s.%s.%sg%d%s.bin" % (d1, d2, d3, d4, gold, t)
                                         )
 
 TGTS3: List[str] = []
@@ -158,19 +158,19 @@ for t in geneqps(B03BASE, B03OPTIONS):
             if d1 > d2:
                 for d3 in RDISCS:
                     if d2 > d3:
-                        TGTS3.append("data/B03/2010SW.%s.%s.%s%s.cbor" % (d1, d2, d3, t))
+                        TGTS3.append("data/B03/2010SW.%s.%s.%s%s.bin" % (d1, d2, d3, t))
 
 TGTS4: List[str] = []
 for d1 in RDISCS:
     for d2 in RDISCS:
         if d1 > d2:
             for t in geneqps(B04BASE, B04OPTIONS):
-                TGTS4.append("data/B04/2010SW.%s.%s%s.cbor" % (d1, d2, t))
+                TGTS4.append("data/B04/2010SW.%s.%s%s.bin" % (d1, d2, t))
 
 TGTS5: List[str] = []
 for d1 in RDISCS:
     for t in geneqps(B05BASE, B05OPTIONS):
-        TGTS5.append("data/B05/2010SW.%s%s.cbor" % (d1, t))
+        TGTS5.append("data/B05/2010SW.%s%s.bin" % (d1, t))
 
 
 def chunked_makefile(n: int, l: List[str], cs: int):

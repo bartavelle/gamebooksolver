@@ -1,43 +1,26 @@
 {
   "mbook": "Book05",
   "msdisciplines": [
+    "Hunting",
+    "SixthSense",
+    "Tracking",
+    "Healing",
     {
       "WeaponSkill": "Sword"
     },
-    "Healing",
     "MindShield",
-    "SixthSense",
-    "MindOverMatter",
-    "Tracking",
     "MindBlast",
-    "Hunting",
-    "AnimalKinship"
+    "AnimalKinship",
+    "MindOverMatter"
   ],
   "variable": {
-    "items": [
-      [
-        "Laumspur",
-        1
-      ],
-      [
-        "BodyArmor",
-        1
-      ],
-      [
-        {
-          "Weapon": "Sword"
-        },
-        1
-      ],
-      [
-        "Meal",
-        2
-      ],
-      [
-        "Shield",
-        1
-      ]
-    ],
+    "items": {
+      "Sword": 1,
+      "Shield": 1,
+      "BodyArmor": 1,
+      "Meal": 2,
+      "Laumspur": 1
+    },
     "gold": 15,
     "flags": [
       "FoughtElix"
@@ -47,12 +30,12 @@
     {
       "meendurance": 20,
       "mskill": 10,
-      "mscore": 0.42619338017846925,
+      "mscore": 0.4231636375096973,
       "mratio": {
         "radix": 16,
-        "value": "1ae58681a41bf6bb1c02e4ac9/3f1bdf10116048a5934000000"
+        "value": "88bb4693863fd8e0d6d2ba5/1431e0fae6d7217caa000000"
       },
-      "states": 78275850
+      "states": 86593987
     }
   ]
 }

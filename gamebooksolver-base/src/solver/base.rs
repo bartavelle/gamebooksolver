@@ -27,7 +27,7 @@ pub struct Choice<P, DESC, STT> {
     pub res: Outcome<P, STT>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd)]
 pub enum SolNode<P, S> {
     Chosen(P, Outcome<P, S>),
     Single(P, S),

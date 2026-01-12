@@ -4445,30 +4445,24 @@
       "desc": "You sift through the vast number of items that litter the dais, separating the following articles, which may or may not be of use:\n * Silver Comb\n * Hourglass\n * Dagger\n * Healing Potion of Laumspur (restores 4  *  *  points if swallowed after combat)\n * Prism\n * Enough food for 3 Meals (each Meal counts as 1 Backpack Item)\nRemember to make the necessary changes to your Action Chart before leaving the chamber.\n",
       "pchoice": {
         "CanTake": [
-          "Potion2Hp",
-          1,
+          "Meal",
+          3,
           {
             "CanTake": [
-              "Meal",
+              "SGenCounter 5",
               1,
               {
                 "CanTake": [
-                  "SGenCounter 5",
+                  "Laumspur",
                   1,
                   {
                     "CanTake": [
-                      "Laumspur",
+                      "Dagger",
                       1,
                       {
-                        "CanTake": [
-                          "Dagger",
-                          1,
-                          {
-                            "NoDecision": {
-                              "Goto": 58
-                            }
-                          }
-                        ]
+                        "NoDecision": {
+                          "Goto": 58
+                        }
                       }
                     ]
                   }

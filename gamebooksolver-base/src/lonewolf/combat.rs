@@ -128,7 +128,7 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
         let mindshield = cconstant.discipline.contains(&Discipline::MindShield);
         let cflags = Flags(cvariable.flags.0 & RFLAGS.0);
         let shield = cvariable.cequipment.has_item(&Item::Shield, 1);
-        let silverhelm = cvariable.cequipment.has_item(&Item::Helmet, 1) & cvariable.flags.has(Flag::HelmetIsSilver);
+        let silverhelm = cvariable.cequipment.has_item(&Item::SILVERHELMET, 1);
         CombatInfo {
             skilldiff,
             specialization,

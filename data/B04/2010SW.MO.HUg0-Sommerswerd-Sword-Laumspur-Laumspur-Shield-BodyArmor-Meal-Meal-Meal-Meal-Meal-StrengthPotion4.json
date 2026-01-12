@@ -1,52 +1,27 @@
 {
   "mbook": "Book04",
   "msdisciplines": [
+    "Camouflage",
+    "SixthSense",
+    "Tracking",
+    "Healing",
     {
       "WeaponSkill": "Sword"
     },
-    "Healing",
-    "SixthSense",
-    "MindBlast",
     "MindShield",
-    "Tracking",
-    "Camouflage",
+    "MindBlast",
     "AnimalKinship"
   ],
   "variable": {
-    "items": [
-      [
-        "Shield",
-        1
-      ],
-      [
-        {
-          "Weapon": "Sommerswerd"
-        },
-        1
-      ],
-      [
-        {
-          "Weapon": "Sword"
-        },
-        1
-      ],
-      [
-        "BodyArmor",
-        1
-      ],
-      [
-        "Meal",
-        5
-      ],
-      [
-        "StrengthPotion4",
-        1
-      ],
-      [
-        "Laumspur",
-        2
-      ]
-    ],
+    "items": {
+      "Sword": 1,
+      "Sommerswerd": 1,
+      "StrengthPotion4": 1,
+      "Shield": 1,
+      "BodyArmor": 1,
+      "Meal": 5,
+      "Laumspur": 2
+    },
     "gold": 0,
     "flags": []
   },
@@ -54,12 +29,12 @@
     {
       "meendurance": 20,
       "mskill": 10,
-      "mscore": 0.770410470990445,
+      "mscore": 0.7719948242233056,
       "mratio": {
         "radix": 16,
-        "value": "197da169a727d744a27a5/211654585005212800000"
+        "value": "198b0cee5f40c7cc90017/211654585005212800000"
       },
-      "states": 23680854
+      "states": 23672326
     }
   ]
 }

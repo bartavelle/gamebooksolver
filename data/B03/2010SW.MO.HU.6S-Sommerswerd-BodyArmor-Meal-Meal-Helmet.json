@@ -1,0 +1,36 @@
+{
+  "mbook": "Book03",
+  "msdisciplines": [
+    "Camouflage",
+    "Tracking",
+    "Healing",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": {
+      "Sommerswerd": 1,
+      "BodyArmor": 1,
+      "Meal": 2,
+      "Helmet": 1
+    },
+    "gold": 15,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.7017393285747142,
+      "mratio": {
+        "radix": 16,
+        "value": "1ebac51b4e4de4c2620f5af94f4887e5e0b2ef27/2bca63414390e575a59c2c4adfd0400000000000"
+      },
+      "states": 12998007
+    }
+  ]
+}

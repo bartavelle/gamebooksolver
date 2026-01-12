@@ -1,33 +1,22 @@
 {
   "mbook": "Book03",
   "msdisciplines": [
+    "SixthSense",
+    "Tracking",
+    "Healing",
     {
       "WeaponSkill": "Sword"
     },
-    "SixthSense",
-    "MindBlast",
-    "Healing",
-    "AnimalKinship",
     "MindShield",
-    "Tracking"
+    "MindBlast",
+    "AnimalKinship"
   ],
   "variable": {
-    "items": [
-      [
-        {
-          "Weapon": "Sommerswerd"
-        },
-        1
-      ],
-      [
-        "Laumspur",
-        1
-      ],
-      [
-        "BodyArmor",
-        1
-      ]
-    ],
+    "items": {
+      "Sommerswerd": 1,
+      "BodyArmor": 1,
+      "Laumspur": 1
+    },
     "gold": 15,
     "flags": [
       "Knowledge01"
@@ -37,12 +26,12 @@
     {
       "meendurance": 20,
       "mskill": 10,
-      "mscore": 0.701070778294461,
+      "mscore": 0.7017883639767803,
       "mratio": {
         "radix": 16,
-        "value": "311ed7236966b38c03d25b842d2a091fd4fd1b1/46109eced2816f22a2937a11661a00000000000"
+        "value": "312bb62153d865e068655039b5db9fa86f98869/46109eced2816f22a2937a11661a00000000000"
       },
-      "states": 34188137
+      "states": 34188748
     }
   ]
 }
