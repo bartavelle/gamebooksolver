@@ -360,10 +360,6 @@ impl Equipment {
                 if cnt > 0 { Some((*i, cnt)) } else { None }
             })
             .collect();
-        let gold = self.get_gold();
-        if gold > 0 {
-            o.push((Item::Gold, gold))
-        }
         o
     }
 
@@ -1051,5 +1047,22 @@ mod test {
             let back = serde_json::from_str::<Item>(&str).unwrap();
             assert_eq!(i, back)
         }
+    }
+
+    #[test]
+    fn exepcted_gold_all_items() {
+        let mut eq = Equipment::empty();
+        eq.add_item(&Item::Gold, 20);
+        let items = eq.items();
+        assert_eq!(items, [(Item::Gold, 20)])
+
+    }
+
+    #[test]
+    fn expected_gold_encoding() {
+        let mut eq = Equipment::empty();
+        eq.add_item(&Item::Gold, 20);
+        let str = serde_json::to_string(&eq).unwrap();
+        assert_eq!(str, "\"Gold:20\"")
     }
 }
