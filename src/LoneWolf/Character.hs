@@ -9,6 +9,7 @@ Nothing much to say here, except perhaps the not that common option `DeriveDataT
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -23,7 +24,7 @@ import Control.Monad (foldM)
 import Data.Aeson (FromJSON (..), FromJSONKey (..), Options (fieldLabelModifier), ToJSON (toJSON), ToJSONKey (..), Value (String), defaultOptions, genericParseJSON, genericToJSON, withObject, withText, (.:))
 import qualified Data.Aeson.Key as K
 import qualified Data.Aeson.KeyMap as A
-import Data.Aeson.Types (FromJSONKeyFunction (..), Parser, unexpected, typeMismatch)
+import Data.Aeson.Types (FromJSONKeyFunction (..), Parser, unexpected, typeMismatch, toJSONKeyText)
 import Data.Bits
 import Data.Bits.Lens (bitAt)
 import Data.Data (Data, Typeable)
@@ -397,7 +398,30 @@ showItem bk i = case (i, M.lookup bk itemIds >>= M.lookup i) of
   (_, Just d) -> d
   _ -> show i
 
+instance ToJSONKey Item where
+  toJSONKey = toJSONKeyText $ \case
+   Weapon w -> T.pack (show w)
+   GenSpecial (GenCounter n) -> T.pack ("SGen" ++ show n)
+   GenBackpack (GenCounter n) -> T.pack ("BGen" ++ show n)
+   x -> T.pack (show x)
+
+
+instance FromJSONKey Item where
+  fromJSONKey = FromJSONKeyTextParser $
+        \t -> case readMaybe (T.unpack t) of
+          Just x -> pure x
+          Nothing -> case readMaybe (T.unpack t) of
+              Just w -> pure (Weapon w)
+              Nothing -> case T.stripPrefix "SGen" t of
+                    Just n -> pure (GenSpecial (GenCounter (read (T.unpack n))))
+                    Nothing -> case T.stripPrefix "BGen" t of
+                      Just n -> pure (GenBackpack (GenCounter (read (T.unpack n))))
+                      Nothing -> if t == "SilverHelmet"
+                              then pure silverHelmet
+                              else error (show t)
+
 -- all books
+silverHelmet :: Item
 silverHelmet = GenSpecial 10
 
 -- book 01

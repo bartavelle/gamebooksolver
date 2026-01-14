@@ -3,7 +3,8 @@ use crate::lonewolf::chapter::{
     ChapterId, ChapterOutcome, Decision, Endurance, FightDetails, FightModifier, SimpleOutcome, SpecialChapter,
 };
 use crate::lonewolf::mini::{
-    Book, CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Item, Slot, Weapon, max_hp,
+    Book, CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Item, Slot, StoredEquipment, Weapon,
+    max_hp,
 };
 use crate::lonewolf::rules::{check, update_simple};
 use crate::solver::rational::Rational;
@@ -138,7 +139,7 @@ fn has_combat<P>(o: &ChapterOutcome<P>) -> Option<&FightDetails<P>> {
     }
 }
 
-pub fn flatten_decision<P: Rational, PREV: From<Equipment> + Into<Equipment> + Copy + std::fmt::Debug>(
+pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
     ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
     dec: &Decision<P>,

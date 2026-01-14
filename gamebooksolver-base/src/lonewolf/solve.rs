@@ -2,7 +2,7 @@ use crate::lonewolf::chapter::{Chapter, ChapterId};
 use crate::lonewolf::choices::flatten_decision;
 use crate::lonewolf::combat::Memoz;
 use crate::lonewolf::data::order_chapters;
-use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep};
+use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
 use crate::solver::base::{Choice, Outcome, Proba, Solution};
@@ -10,7 +10,7 @@ use crate::solver::rational::Rational;
 use crate::solver::solve;
 use std::collections::HashMap;
 
-pub fn step<P: Rational, PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug + Copy + std::hash::Hash + Ord>(
+pub fn step<P: Rational, PREV: StoredEquipment>(
     memo: &mut Memoz<P>,
     order: &HashMap<ChapterId, u32>,
     chapters: &HashMap<ChapterId, Chapter<P>>,
@@ -58,11 +58,7 @@ pub fn step<P: Rational, PREV: Into<Equipment> + From<Equipment> + std::fmt::Deb
     }
 }
 
-fn get_score<P: Rational, F, PREV: Into<Equipment> + From<Equipment>>(
-    scorer: F,
-    tgt: &[ChapterId],
-    ns: &NextStep<PREV>,
-) -> Option<P>
+fn get_score<P: Rational, F, PREV: StoredEquipment>(scorer: F, tgt: &[ChapterId], ns: &NextStep<PREV>) -> Option<P>
 where
     F: Fn(Equipment, Flags) -> P,
 {
@@ -80,11 +76,7 @@ where
     }
 }
 
-pub fn solve_lws<
-    P: Rational + Eq + std::hash::Hash,
-    F,
-    PREV: Into<Equipment> + From<Equipment> + Eq + std::hash::Hash + Copy + std::fmt::Debug + Ord,
->(
+pub fn solve_lws<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
     scorer: F,
     tgt: &[ChapterId],
     book: &[(ChapterId, Chapter<P>)],

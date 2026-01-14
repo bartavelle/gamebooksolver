@@ -119,6 +119,8 @@ executable gamebooksolver-blogpost
                      , text
                      , optparse-applicative
                      , bytestring
+                     , hashable
+                     , vector
   default-language:    Haskell2010
 
 test-suite gamebooksolver-test

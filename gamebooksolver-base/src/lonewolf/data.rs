@@ -1,7 +1,7 @@
 use crate::lonewolf::chapter::{
     Chapter, ChapterId, ChapterOutcome, CombatSkill, Decision, Endurance, FightModifier, SpecialChapter,
 };
-use crate::lonewolf::mini::{Book, CVarState, Discipline, Equipment, NextStep, SolutionDump};
+use crate::lonewolf::mini::{Book, CVarState, Discipline, NextStep, SolutionDump, StoredEquipment};
 use crate::solver::rational::Rational;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -25,7 +25,7 @@ pub struct MultistatEntry<P> {
 }
 
 impl<P: Rational> Multistat<P> {
-    pub fn from_soldump<PREV: Into<Equipment> + From<Equipment> + Ord>(dump: &SolutionDump<P, PREV>) -> Option<Self> {
+    pub fn from_soldump<PREV: StoredEquipment>(dump: &SolutionDump<P, PREV>) -> Option<Self> {
         let score = dump
             .content
             .iter()

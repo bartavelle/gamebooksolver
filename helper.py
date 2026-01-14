@@ -107,7 +107,7 @@ B04BASE = [
     "g0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
 ]
 
-B05OPTIONS = ["SilverHelmet", "StrengthPotion4", "FLGFoughtElix", "BodyArmor"]
+B05OPTIONS = ["SilverHelmet", "StrengthPotion4", "FLGFoughtElix", "BodyArmor", "StrengthPotion"]
 B05BASE = [
     "-Sword-Meal-Meal-Shield-Laumspur",
     "-Sommerswerd-Meal-Meal-Shield-Laumspur",

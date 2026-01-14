@@ -15,7 +15,7 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: lts-24.26
+resolver: nightly-2025-12-20
 
 ghc-options:
   linear: -fno-prof-auto

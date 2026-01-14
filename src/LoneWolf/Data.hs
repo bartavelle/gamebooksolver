@@ -93,7 +93,7 @@ instance FromJSON MultistatEntry where
   parseJSON = genericParseJSON (defaultOptions {fieldLabelModifier = drop 1})
 
 data CVarState = CVarState
-  { _cvitems :: Maybe [(Item, Int)],
+  { _cvitems :: M.Map Item Int,
     _cvgold :: Int,
     _cvflags :: [Flag]
   }
@@ -141,7 +141,7 @@ mkchar autoweapon cst (CVarState sitems gld flgs) = chr
     chr_beforeflags = mkCharacter (_maxendurance cst) (inventoryFromList allitems)
     chr_afterflags = foldl' (\c f -> c & LoneWolf.Character.flag f .~ True) chr_beforeflags flgs
     chr = chr_afterflags & curendurance .~ getMaxHp cst chr_afterflags
-    allitems_pre = (Backpack, 1) : fromMaybe (defaultItems (_bookid cst)) sitems ++ [(Gold, gld)]
+    allitems_pre = (Backpack, 1) : M.toList sitems ++ [(Gold, gld)]
     allitems
       | autoweapon && notElem (Weapon Sommerswerd) (map fst allitems_pre) =
         case specialties of
@@ -170,7 +170,7 @@ defaultItems Book04 = [(Weapon Sommerswerd, 1), (Laumspur, 1), (Meal, 4), (Shiel
 defaultItems Book05 = [(Weapon Sommerswerd, 1), (Laumspur, 1), (Shield, 1), (Meal, 2)]
 
 defaultCVarState :: CVarState
-defaultCVarState = CVarState Nothing 15 []
+defaultCVarState = CVarState M.empty 15 []
 
 pbook :: Parser Book
 pbook = option (eitherReader bookreader) (long "book" <> help "Book")
@@ -201,12 +201,9 @@ pbook = option (eitherReader bookreader) (long "book" <> help "Book")
 cvariable :: Parser CVarState
 cvariable =
   CVarState
-    <$> fmap (cdefaultItems . M.toList . M.fromListWith (+) . map (,1)) (many (option (eitherReader readItem) (long "item" <> short 'i' <> help "Starting items (default items if empty)")))
+    <$> fmap (M.fromListWith (+) . map (,1)) (many (option (eitherReader readItem) (long "item" <> short 'i' <> help "Starting items (default items if empty)")))
     <*> option auto (long "gold" <> help "Starting gold" <> value 15)
     <*> many (option auto (long "flag" <> help "Starting flags"))
-  where
-    cdefaultItems [] = Nothing
-    cdefaultItems itms = Just itms
 
 readItem :: String -> Either String Item
 readItem s = case readMaybe s of
@@ -224,10 +221,7 @@ readItem s = case readMaybe s of
       _ -> Left ("Unknown item: " ++ s)
 
 eqcvarstate :: Book -> CVarState -> CVarState -> Bool
-eqcvarstate book (CVarState i1 g1 f1) (CVarState i2 g2 f2) = g1 == g2 && f1 == f2 && M.fromListWith (+) itms1 == M.fromListWith (+) itms2
-  where
-    itms1 = fromMaybe (defaultItems book) i1
-    itms2 = fromMaybe (defaultItems book) i2
+eqcvarstate book (CVarState i1 g1 f1) (CVarState i2 g2 f2) = g1 == g2 && f1 == f2 && i1 == i2
 
 makeLenses ''Multistat
 makeLenses ''MultistatEntry

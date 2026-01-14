@@ -444,7 +444,7 @@ loadResults (Just pth) ccst = do
         guard (succ bk == nbk)
         let diff = S.fromList ndiscs `S.difference` curdiscs
         guard (length diff <= 1)
-        let startitems = S.fromList (map fst (fromMaybe (defaultItems bk) (_cvitems cvar)))
+        let startitems = S.fromList (M.keys (_cvitems cvar))
             startflags = S.fromList (_cvflags cvar)
         MultistatEntry en sk _ (ERatio s) _ <- entries
         guard (en == _maxendurance ccst && sk == _combatSkill ccst)

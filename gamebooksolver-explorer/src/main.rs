@@ -1,7 +1,6 @@
 mod lwexplore;
 
 use anyhow::Context;
-use bincode::Encode;
 use clap::{Parser, Subcommand};
 use gamebooksolver_base::lonewolf::chapter::*;
 use gamebooksolver_base::lonewolf::data::Multistat;
@@ -10,12 +9,12 @@ use gamebooksolver_base::lonewolf::mini::CompactSolutionG;
 use gamebooksolver_base::lonewolf::mini::GSolDump;
 use gamebooksolver_base::lonewolf::mini::NoPrevEq;
 use gamebooksolver_base::lonewolf::mini::SoldumpContent;
+use gamebooksolver_base::lonewolf::mini::StoredEquipment;
 use gamebooksolver_base::lonewolf::solve::solve_lws;
 use gamebooksolver_base::solver::base::Proba;
 use gamebooksolver_base::solver::base::optimize_outcome;
 use gamebooksolver_base::solver::base::{ChoppedSolution, SolNode};
 use lwexplore::explore_solution;
-use serde::Serialize;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -132,14 +131,14 @@ impl Default for ChapterStats {
     }
 }
 
-fn mksol<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + std::fmt::Debug + Clone>(
+fn mksol<PREV: StoredEquipment>(
     ini: NextStep<PREV>,
     sttmap: HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>>,
 ) -> BTreeMap<u16, ChapterStats> {
     type Imap<PREV> = HashMap<NextStep<PREV>, BTreeMap<u16, ChapterStats>>;
     let mut memo: Imap<PREV> = HashMap::new();
 
-    fn go<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + std::fmt::Debug + Clone>(
+    fn go<PREV: StoredEquipment>(
         curmap: &mut Imap<PREV>,
         searchmap: &HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>>,
         curns: &NextStep<PREV>,
@@ -226,7 +225,7 @@ fn mksol<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + std::
     go(&mut memo, &sttmap, &ini)
 }
 
-fn count_states<A, PREV: Into<Equipment> + From<Equipment>>(cnt: &BTreeMap<NextStep<PREV>, A>) -> BTreeMap<u16, u64> {
+fn count_states<A, PREV: StoredEquipment>(cnt: &BTreeMap<NextStep<PREV>, A>) -> BTreeMap<u16, u64> {
     let mut o = BTreeMap::new();
     for (ns, _) in cnt.iter() {
         if let Some(cid) = ns.chapter() {
@@ -251,7 +250,7 @@ fn load_soldump(pth: &str) -> anyhow::Result<gamebooksolver_base::lonewolf::mini
     Ok(o)
 }
 
-fn chop_solution<PREV: Into<Equipment> + From<Equipment>>(
+fn chop_solution<PREV: StoredEquipment>(
     sol: SolNode<Rational, NextStep<PREV>>,
 ) -> ChoppedSolution<Rational, NextStep<PREV>> {
     match sol {
@@ -265,7 +264,7 @@ fn chop_solution<PREV: Into<Equipment> + From<Equipment>>(
 
 fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
     use Flag::*;
-    use Item::{BodyArmor, Gold, Helmet, StrengthPotion4};
+    use Item::{BodyArmor, Gold, Helmet, StrengthPotion, StrengthPotion4};
 
     match bookid {
         Book::Book01 => ([Helmet, BodyArmor, Gold].into_iter().collect(), HashSet::new()),
@@ -281,6 +280,7 @@ fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
                 Item::Weapon(Weapon::Sommerswerd),
                 Item::SILVERHELMET,
                 BodyArmor,
+                StrengthPotion,
                 StrengthPotion4,
             ]
             .into_iter()
@@ -413,12 +413,12 @@ fn score_with(
     }
 }
 
-fn compare_sols<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + Copy + std::fmt::Display>(
+fn compare_sols<PREV: StoredEquipment>(
     m1: HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>>,
     m2: HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>>,
 ) {
     type Ocs<PREV> = Vec<(Rational, NextStep<PREV>)>;
-    fn deloss<PREV: Into<Equipment> + From<Equipment>>(chapter: Option<u16>, ns: NextStep<PREV>) -> NextStep<PREV> {
+    fn deloss<PREV: StoredEquipment>(chapter: Option<u16>, ns: NextStep<PREV>) -> NextStep<PREV> {
         match &ns {
             NextStep::NewChapter(cid, cvar) => {
                 if cvar.curendurance <= 0 {
@@ -430,7 +430,7 @@ fn compare_sols<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord 
             _ => ns,
         }
     }
-    fn descored<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord + Clone>(
+    fn descored<PREV: StoredEquipment>(
         chapter: Option<u16>,
         cs: ChoppedSolution<Rational, NextStep<PREV>>,
     ) -> Ocs<PREV> {
@@ -454,18 +454,13 @@ fn compare_sols<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Ord 
         }
     }
 
-    fn pretty_outcomes<PREV: Into<Equipment> + From<Equipment> + std::fmt::Display + Copy>(
-        outcomes: &[(Rational, NextStep<PREV>)],
-    ) {
+    fn pretty_outcomes<PREV: StoredEquipment>(outcomes: &[(Rational, NextStep<PREV>)]) {
         for (s, p) in outcomes {
             println!(" - {} {}", p, s);
         }
     }
 
-    fn pretty_step<PREV: Into<Equipment> + From<Equipment> + std::fmt::Display + Copy>(
-        ns: &NextStep<PREV>,
-        outcomes: &[(Rational, NextStep<PREV>)],
-    ) {
+    fn pretty_step<PREV: StoredEquipment>(ns: &NextStep<PREV>, outcomes: &[(Rational, NextStep<PREV>)]) {
         println!("{}", ns);
         pretty_outcomes(outcomes);
     }
@@ -574,20 +569,7 @@ fn diff_cvar<PREV: From<Equipment> + Into<Equipment>>(
     o.join(" ")
 }
 
-fn mkjot<
-    PREV: From<Equipment>
-        + Into<Equipment>
-        + Default
-        + std::fmt::Display
-        + Copy
-        + Eq
-        + std::hash::Hash
-        + std::fmt::Debug
-        + Ord,
->(
-    soldump: &SolutionDump<Rational, PREV>,
-    out: Option<&str>,
-) -> anyhow::Result<()> {
+fn mkjot<PREV: StoredEquipment>(soldump: &SolutionDump<Rational, PREV>, out: Option<&str>) -> anyhow::Result<()> {
     let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
     let sttmap = count_states(&soldump.content);
     let bookid = soldump.soldesc.ccst.bookid;
@@ -612,7 +594,7 @@ fn mkjot<
     Ok(())
 }
 
-fn optimize<PREV: From<Equipment> + Into<Equipment> + Ord + Encode + Clone>(
+fn optimize<PREV: StoredEquipment>(
     soldump: &SolutionDump<Rational, PREV>,
     jname: &str,
     dummy: bool,
@@ -648,12 +630,7 @@ fn optimize<PREV: From<Equipment> + Into<Equipment> + Ord + Encode + Clone>(
     Ok(compact)
 }
 
-fn dump_states<
-    PREV: From<Equipment> + Into<Equipment> + Ord + Serialize + std::fmt::Display + Copy + std::fmt::Debug,
->(
-    soldump: SolutionDump<Rational, PREV>,
-    cids: &[u16],
-) -> anyhow::Result<()> {
+fn dump_states<PREV: StoredEquipment>(soldump: SolutionDump<Rational, PREV>, cids: &[u16]) -> anyhow::Result<()> {
     for &cid in cids {
         println!("CID{cid}");
         for (ns, sol) in &soldump.content {
@@ -687,7 +664,7 @@ fn dump_states<
     Ok(())
 }
 
-fn compare_states<PREV: From<Equipment> + Into<Equipment> + Eq + std::hash::Hash + Ord + Copy + std::fmt::Display>(
+fn compare_states<PREV: StoredEquipment>(
     dump1: SolutionDump<Rational, PREV>,
     dump2: SolutionDump<Rational, PREV>,
     cid: u16,
@@ -708,9 +685,7 @@ fn compare_states<PREV: From<Equipment> + Into<Equipment> + Eq + std::hash::Hash
     Ok(())
 }
 
-fn soldump<
-    PREV: From<Equipment> + Into<Equipment> + Default + std::fmt::Debug + std::hash::Hash + Copy + Ord + Serialize,
->(
+fn soldump<PREV: StoredEquipment>(
     cnt: &OSolDesc,
     book: Vec<(ChapterId, Chapter<Rational>)>,
     json_path: &str,
@@ -911,9 +886,7 @@ fn main() -> anyhow::Result<()> {
             let jname = opt.desc.unwrap_or_else(|| opt.solpath.to_owned() + ".desc");
             let sd = Arc::new(cmd_soldump(cnt, &json_path, opt.verbose)?);
             let soldump_duration = cur.elapsed();
-            fn statsfor<PREV: From<Equipment> + Into<Equipment>>(
-                content: &SoldumpContent<Rational, PREV>,
-            ) -> (usize, f64) {
+            fn statsfor<PREV: StoredEquipment>(content: &SoldumpContent<Rational, PREV>) -> (usize, f64) {
                 let win = content
                     .iter()
                     .filter_map(|(ns, cs)| {

@@ -41,7 +41,7 @@ pub enum GSolDump<P> {
 pub type SoldumpContent<P, PREV> = BTreeMap<NextStep<PREV>, ChoppedSolution<P, NextStep<PREV>>>;
 
 #[derive(Debug, PartialEq, Eq, Decode, Encode)]
-pub struct SolutionDump<P, PREV: Into<Equipment> + From<Equipment> + Ord> {
+pub struct SolutionDump<P, PREV: StoredEquipment> {
     pub soldesc: SolDesc,
     pub content: SoldumpContent<P, PREV>,
 }
@@ -58,7 +58,7 @@ pub struct SolDesc {
 }
 
 impl SolDesc {
-    pub fn cvariable<PREV: From<Equipment> + Into<Equipment> + Default>(&self) -> CharacterVariableG<PREV> {
+    pub fn cvariable<PREV: StoredEquipment>(&self) -> CharacterVariableG<PREV> {
         let mut cvar = CharacterVariableG::new(self.ccst.maxendurance);
         cvar.cequipment.add_item(&Item::Backpack, 1);
         cvar.cequipment.set_gold(self.cvar.gold);
@@ -97,13 +97,13 @@ pub struct CVarState {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, PartialOrd, Ord, Serialize, Deserialize, Encode, Decode)]
-pub enum NextStep<PREV: Into<Equipment> + From<Equipment>> {
+pub enum NextStep<PREV: StoredEquipment> {
     HasLost(u16),
     HasWon(CharacterVariableG<PREV>),
     NewChapter(u16, CharacterVariableG<PREV>),
 }
 
-impl<PREV: Into<Equipment> + From<Equipment> + std::fmt::Display + Copy> std::fmt::Display for NextStep<PREV> {
+impl<PREV: StoredEquipment> std::fmt::Display for NextStep<PREV> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             NextStep::HasLost(cid) => write!(f, "lost:{}", cid),
@@ -113,7 +113,7 @@ impl<PREV: Into<Equipment> + From<Equipment> + std::fmt::Display + Copy> std::fm
     }
 }
 
-impl<PREV: Into<Equipment> + From<Equipment>> NextStep<PREV> {
+impl<PREV: StoredEquipment> NextStep<PREV> {
     pub fn chapter(&self) -> Option<u16> {
         match self {
             NextStep::HasLost(c) => Some(*c),
@@ -353,7 +353,7 @@ impl Equipment {
     }
 
     pub fn items(&self) -> Vec<(Item, u8)> {
-        let mut o: Vec<(Item, u8)> = Item::VALUES
+        let o: Vec<(Item, u8)> = Item::VALUES
             .iter()
             .filter_map(|i| {
                 let cnt = self.get_item_count(i);
@@ -405,8 +405,36 @@ impl Flags {
     }
 }
 
+pub trait StoredEquipment:
+    Into<Equipment>
+    + From<Equipment>
+    + Copy
+    + std::fmt::Display
+    + std::fmt::Debug
+    + Default
+    + Serialize
+    + Encode
+    + PartialOrd
+    + Ord
+    + Hash
+{
+    fn exists() -> bool;
+}
+
+impl StoredEquipment for Equipment {
+    fn exists() -> bool {
+        true
+    }
+}
+
+impl StoredEquipment for NoPrevEq {
+    fn exists() -> bool {
+        false
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord, Deserialize, Encode, Decode)]
-pub struct CharacterVariableG<PREV: Into<Equipment> + From<Equipment>> {
+pub struct CharacterVariableG<PREV> {
     pub curendurance: i8,
     pub flags: Flags,
     pub cequipment: Equipment,
@@ -416,20 +444,17 @@ pub struct CharacterVariableG<PREV: Into<Equipment> + From<Equipment>> {
 
 pub type CharacterVariable = CharacterVariableG<Equipment>;
 
-impl<PREV: From<Equipment> + Into<Equipment> + Copy> std::fmt::Display for CharacterVariableG<PREV> {
+impl<PREV: StoredEquipment> std::fmt::Display for CharacterVariableG<PREV> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(
-            f,
-            "{} {:?} {:?} {:?}",
-            self.curendurance,
-            self.flags.all(),
-            self.cequipment,
-            self.cprevequipment.into()
-        )
+        write!(f, "e:{} {:?} {}", self.curendurance, self.flags.all(), self.cequipment,)?;
+        if PREV::exists() {
+            write!(f, " {}", self.cprevequipment.into())?;
+        }
+        Ok(())
     }
 }
 
-impl<PREV: From<Equipment> + Into<Equipment> + Default> CharacterVariableG<PREV> {
+impl<PREV: StoredEquipment> CharacterVariableG<PREV> {
     pub fn new(endurance: i8) -> Self {
         CharacterVariableG {
             curendurance: endurance,
@@ -440,7 +465,7 @@ impl<PREV: From<Equipment> + Into<Equipment> + Default> CharacterVariableG<PREV>
     }
 }
 
-impl<PREV: From<Equipment> + Into<Equipment>> CharacterVariableG<PREV> {
+impl<PREV: StoredEquipment> CharacterVariableG<PREV> {
     pub fn add_item(&mut self, i: &Item, q: i64) {
         self.cequipment.add_item(i, q);
     }
@@ -942,10 +967,7 @@ pub fn max_hp<PREV: From<Equipment> + Into<Equipment>>(
         + (if cvar.cequipment.has_itemb(&Item::Helmet) { 2 } else { 0 })
 }
 
-pub fn mkchar<PREV: Into<Equipment> + From<Equipment> + Default>(
-    ccst: &CharacterConstant,
-    cvar: &CVarState,
-) -> CharacterVariableG<PREV> {
+pub fn mkchar<PREV: StoredEquipment>(ccst: &CharacterConstant, cvar: &CVarState) -> CharacterVariableG<PREV> {
     let mut cv = CharacterVariableG::new(ccst.maxendurance);
     for (itm, qty) in cvar.items.as_ref().unwrap().iter() {
         cv.add_item(itm, *qty);
@@ -960,13 +982,13 @@ pub fn mkchar<PREV: Into<Equipment> + From<Equipment> + Default>(
 }
 
 #[derive(Debug, PartialEq, PartialOrd, Clone, Serialize, Deserialize, Encode, Decode)]
-pub struct CompactState<PREV: Into<Equipment> + From<Equipment>> {
+pub struct CompactState<PREV: StoredEquipment> {
     pub chapter: u16,
     pub character: CharacterVariableG<PREV>,
     pub score: f32,
 }
 
-impl<PREV: Into<Equipment> + From<Equipment> + Clone> CompactState<PREV> {
+impl<PREV: StoredEquipment> CompactState<PREV> {
     pub fn from_choppedsolution<P: Rational>(
         cur: &NextStep<PREV>,
         cs: &ChoppedSolution<P, NextStep<PREV>>,
@@ -985,12 +1007,12 @@ impl<PREV: Into<Equipment> + From<Equipment> + Clone> CompactState<PREV> {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Encode, Decode)]
-pub struct CompactSolution<PREV: Into<Equipment> + From<Equipment>> {
+pub struct CompactSolution<PREV: StoredEquipment> {
     pub soldesc: SolDesc,
     pub content: Vec<CompactState<PREV>>,
 }
 
-impl<PREV: Into<Equipment> + From<Equipment> + Eq> CompactSolution<PREV> {
+impl<PREV: StoredEquipment> CompactSolution<PREV> {
     fn find_scored_chapter(&self, cid: u16, cv: &CharacterVariableG<PREV>) -> Option<&CompactState<PREV>> {
         self.content.iter().find(|x| x.chapter == cid && &x.character == cv)
     }
@@ -1055,7 +1077,6 @@ mod test {
         eq.add_item(&Item::Gold, 20);
         let items = eq.items();
         assert_eq!(items, [(Item::Gold, 20)])
-
     }
 
     #[test]

@@ -1,7 +1,7 @@
 use gamebooksolver_base::lonewolf::chapter::{Chapter, ChapterId};
 use gamebooksolver_base::lonewolf::combat::Memoz;
 use gamebooksolver_base::lonewolf::mini::{
-    CharacterConstant, CompactSolution, Equipment, NextStep, SolutionDump, mkchar,
+    CharacterConstant, CompactSolution, NextStep, SolutionDump, StoredEquipment, mkchar,
 };
 use gamebooksolver_base::lonewolf::solve::step;
 use gamebooksolver_base::solver::base::{ChoppedSolution, Proba};
@@ -15,17 +15,7 @@ fn rational_to_mf64(r: &Rational) -> MF64 {
     <MF64 as gamebooksolver_base::solver::rational::Rational>::f_f64(r.to_f64())
 }
 
-pub fn explore_compact<
-    PREV: Into<Equipment>
-        + From<Equipment>
-        + Eq
-        + std::hash::Hash
-        + Default
-        + Copy
-        + std::fmt::Debug
-        + Ord
-        + std::fmt::Display,
->(
+pub fn explore_compact<PREV: StoredEquipment>(
     soldump: &CompactSolution<PREV>,
     book: &[(ChapterId, Chapter<Rational>)],
 ) {
@@ -51,17 +41,7 @@ pub fn explore_compact<
     );
 }
 
-pub fn explore_solution<
-    PREV: Into<Equipment>
-        + From<Equipment>
-        + Eq
-        + std::hash::Hash
-        + Default
-        + Copy
-        + std::fmt::Debug
-        + Ord
-        + std::fmt::Display,
->(
+pub fn explore_solution<PREV: StoredEquipment>(
     soldump: SolutionDump<Rational, PREV>,
     book: &[(ChapterId, Chapter<Rational>)],
 ) {
@@ -102,7 +82,7 @@ where
     }
 }
 
-fn compute_score<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Eq>(
+fn compute_score<PREV: StoredEquipment>(
     solmap: &HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>>,
     outcome: &[Proba<Rational, NextStep<PREV>>],
 ) -> Rational {
@@ -115,9 +95,7 @@ fn compute_score<PREV: Into<Equipment> + From<Equipment> + std::hash::Hash + Eq>
     o
 }
 
-fn go<
-    PREV: Into<Equipment> + From<Equipment> + Copy + std::hash::Hash + Eq + std::fmt::Debug + Ord + std::fmt::Display,
->(
+fn go<PREV: StoredEquipment>(
     memo: &mut Memoz<Rational>,
     ccst: &CharacterConstant,
     mbook: &HashMap<ChapterId, Chapter<Rational>>,
@@ -171,9 +149,7 @@ fn go<
     go(memo, ccst, mbook, order, solmap, &outcome.v);
 }
 
-fn go_compact<
-    PREV: Into<Equipment> + From<Equipment> + Eq + Copy + std::fmt::Debug + std::hash::Hash + Ord + std::fmt::Display,
->(
+fn go_compact<PREV: StoredEquipment>(
     memo: &mut Memoz<MF64>,
     memo_score: &mut HashMap<NextStep<PREV>, f64>,
     ccst: &CharacterConstant,
@@ -235,7 +211,7 @@ fn go_compact<
     go_compact(memo, memo_score, ccst, mbook, order, solmap, &outcome.0.v);
 }
 
-fn score_of_step<PREV: Into<Equipment> + From<Equipment> + Eq + std::fmt::Debug + Copy + std::hash::Hash + Ord>(
+fn score_of_step<PREV: StoredEquipment>(
     solmap: &CompactSolution<PREV>,
     memo: &mut Memoz<MF64>,
     memo_score: &mut HashMap<NextStep<PREV>, f64>,
@@ -262,9 +238,7 @@ fn score_of_step<PREV: Into<Equipment> + From<Equipment> + Eq + std::fmt::Debug 
     out
 }
 
-fn compute_score_compact<
-    PREV: Into<Equipment> + From<Equipment> + Eq + std::fmt::Debug + Copy + std::hash::Hash + Ord,
->(
+fn compute_score_compact<PREV: StoredEquipment>(
     solmap: &CompactSolution<PREV>,
     memo: &mut Memoz<MF64>,
     memo_score: &mut HashMap<NextStep<PREV>, f64>,

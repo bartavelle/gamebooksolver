@@ -13,6 +13,7 @@ import Control.Monad (forM_, guard)
 import Data.Aeson (eitherDecodeFileStrict)
 import Data.Bifunctor (first)
 import Data.Bits.Lens (bitAt)
+import Data.Hashable (hash)
 import Data.List (intercalate, isSuffixOf, sortOn)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe)
@@ -20,10 +21,12 @@ import qualified Data.Set as S
 import Data.String (fromString)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Vector as V
 import Debug.Trace (traceM)
 import LoneWolf.Chapter (ChapterId)
 import LoneWolf.Character
 import LoneWolf.Data
+import LoneWolf.Various (showFlag)
 import Lucid
 import Lucid.Base (TermRaw)
 import Options.Applicative
@@ -34,14 +37,17 @@ import Options.Applicative
     fullDesc,
     helper,
     info,
+    long,
     progDesc,
+    strOption,
     subparser,
+    value,
     (<**>),
   )
 import System.Directory (getDirectoryContents)
 import Text.Printf (printf)
 
-data Opts = Opts Book Mode
+data Opts = Opts Book Mode String
 
 data Mode
   = ChapterStats
@@ -49,11 +55,10 @@ data Mode
 mode :: Parser Mode
 mode =
   subparser
-    ( command "chapterstats" (info (pure ChapterStats) (progDesc "Stats for chapter"))
-    )
+    (command "chapterstats" (info (pure ChapterStats) (progDesc "Stats for chapter")))
 
 options :: Parser Opts
-options = Opts <$> pbook <*> mode
+options = Opts <$> pbook <*> mode <*> strOption (long "imgsuffix" <> value "")
 
 programOpts :: ParserInfo Opts
 programOpts =
@@ -120,12 +125,22 @@ percent = printf "%.3f%%" . (* 100)
 rpercent :: Rational -> String
 rpercent = printf "%.3f%%" . (* 100) . fromRational @Double
 
-rowStyleRG :: TermRaw Text arg => Double -> arg
+rowStyleRG :: (TermRaw Text arg) => Double -> arg
 rowStyleRG d =
   let color = truncate (d * 255.0) :: Int
    in style_ (fromString (printf "background-color: #%02x%02x00; color: #000;" (255 - color) color))
 
-rowStyleGreen :: TermRaw Text arg => Double -> arg
+optColors :: V.Vector Text
+optColors = V.fromList ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6", "#bcf60c", "#fabebe", "#008080", "#e6beff", "#9a6324", "#fffac8", "#800000", "#aaffc3", "#808000", "#ffd8b1", "#000075", "#808080", "#ffffff", "#000000"]
+
+rowHash :: (TermRaw Text arg) => String -> arg
+rowHash str = style_ ("background-color: " <> picked <> ";")
+  where
+    h = hash str
+    ncolors = V.length optColors
+    picked = optColors V.! mod h ncolors
+
+rowStyleGreen :: (TermRaw Text arg) => Double -> arg
 rowStyleGreen d =
   let color = truncate (d * 255.0) :: Int
       textcolor :: String
@@ -135,10 +150,10 @@ rowStyleGreen d =
           else "#fff"
    in style_ (fromString (printf "background-color: #00%02x00; color: %s;" color textcolor))
 
-heatmap :: (forall arg. TermRaw Text arg => Double -> arg) -> Maybe String -> [xs] -> [ys] -> (xs -> String) -> (ys -> String) -> (ys -> xs -> Maybe (Html (), Double)) -> Html ()
+heatmap :: (forall arg. (TermRaw Text arg) => Double -> arg) -> Maybe String -> [xs] -> [ys] -> (xs -> String) -> (ys -> String) -> (ys -> xs -> Maybe (Html (), Double)) -> Html ()
 heatmap rowStyle mname xs ys showX showY = heatmapH rowStyle (fmap fromString mname) xs ys (fromString . showX) (\n -> ([], fromString (showY n)))
 
-heatmapH :: (forall arg. TermRaw Text arg => Double -> arg) -> Maybe (Html ()) -> [xs] -> [ys] -> (xs -> Html ()) -> (ys -> ([Attribute], Html ())) -> (ys -> xs -> Maybe (Html (), Double)) -> Html ()
+heatmapH :: (forall arg. (TermRaw Text arg) => Double -> arg) -> Maybe (Html ()) -> [xs] -> [ys] -> (xs -> Html ()) -> (ys -> ([Attribute], Html ())) -> (ys -> xs -> Maybe (Html (), Double)) -> Html ()
 heatmapH rowStyle mname xs ys showX showY scorer = table_ [class_ "pure-table"] $ do
   thead_ $
     tr_ $ do
@@ -156,7 +171,7 @@ heatmapH rowStyle mname xs ys showX showY scorer = table_ [class_ "pure-table"] 
 skemap :: (Endurance -> CombatSkill -> Maybe (Html (), Double)) -> Html ()
 skemap = heatmap rowStyleGreen Nothing [10 .. 19] [20 .. 29] (show . getCombatSkill) (show . getEndurance)
 
-disciplineMap :: (forall arg. TermRaw Text arg => Double -> arg) -> (Discipline -> Discipline -> Maybe (Html (), Double)) -> Html ()
+disciplineMap :: (forall arg. (TermRaw Text arg) => Double -> arg) -> (Discipline -> Discipline -> Maybe (Html (), Double)) -> Html ()
 disciplineMap rowStyle scorer =
   let sdiscs = sortOn (\d -> fmap (negate . snd) (scorer d d)) disciplines
    in heatmap rowStyle Nothing sdiscs sdiscs showDisc showDisc scorer
@@ -199,7 +214,7 @@ mdiscname :: Stats -> String
 mdiscname = intercalate " / " . map show . S.toList . missingdiscs
 
 hasitem :: Item -> Stats -> Bool
-hasitem i = maybe False (elem i . map fst) . _cvitems . _svariable
+hasitem i = (> 0) . M.findWithDefault 0 i . _cvitems . _svariable
 
 hasflag :: Flag -> Stats -> Bool
 hasflag f = elem f . _cvflags . _svariable
@@ -275,8 +290,35 @@ humanNumber = go units
     units :: [String]
     units = ["", "K", "M", "G"]
 
-blogpostStats :: [Stats] -> [(String, Stats -> (Html (), Double))] -> Html ()
-blogpostStats astts cols = heatmapH rowStyleGreen (Just ("Missing disc" *> br_ [] *> "#states")) (map fst cols) (map _fp ordered) fromString colshow getentry
+blogpostStatsDG :: String -> [Stats] -> [(String, Stats -> (Html (), Double))] -> Html ()
+blogpostStatsDG imgsuffix astts rawcols = heatmapH rowStyleGreen (Just "Missing disc") (map fst cols) (map _fp ordered) fromString colshow getentry
+  where
+    cols = ("states", \stt -> let st = _states (_sentry stt) in (fromString (humanNumber (fromIntegral st)), 1 - fromIntegral (st - minstates) / fromIntegral (maxstates - minstates))) : rawcols
+    maxstates = maximum (map (_states . _sentry) astts)
+    minstates = minimum (map (_states . _sentry) astts)
+    colshow :: String -> ([Attribute], Html ())
+    colshow n =
+      let stt = mpo M.! n
+          mdisc = mdiscname stt
+       in ( [rowHash mdisc],
+            a_ [href_ (T.pack ("/images/lonewolf" ++ imgsuffix ++ "/" ++ drop 5 (_fp stt) ++ ".svg"))] (fromString mdisc)
+          )
+    mpo = M.fromList [(_fp x, x) | x <- ordered]
+    cmap = M.fromList cols
+    max_score_by_discipline = M.fromListWith max $ do
+      st <- astts
+      pure (mdiscname st, winrate st)
+    getmaxscore d = M.findWithDefault 0 (mdiscname d) max_score_by_discipline
+    ordered = sortOn (\x -> (getmaxscore x, mdiscname x, negate (winrate x), _fp x)) astts
+    getentry entry col =
+      let e = mpo M.! entry
+          fn = case M.lookup col cmap of
+            Just f -> f
+            _ -> error col
+       in Just (fn e)
+
+blogpostStats :: String -> [Stats] -> [(String, Stats -> (Html (), Double))] -> Html ()
+blogpostStats imgsuffix astts cols = heatmapH rowStyleGreen (Just ("Missing disc" *> br_ [] *> "#states")) (map fst cols) (map _fp ordered) fromString colshow getentry
   where
     maxstates = maximum (map (_states . _sentry) astts)
     colshow n =
@@ -285,7 +327,7 @@ blogpostStats astts cols = heatmapH rowStyleGreen (Just ("Missing disc" *> br_ [
           ratio = fromIntegral nstates / fromIntegral maxstates
        in ( [rowStyleRG (1 - ratio)],
             do
-              a_ [href_ (T.pack ("/images/lonewolf/" ++ drop 5 (_fp stt) ++ ".svg"))] (fromString (mdiscname stt))
+              a_ [href_ (T.pack ("/images/lonewolf" ++ imgsuffix ++ "/" ++ drop 5 (_fp stt) ++ ".svg"))] (fromString (mdiscname stt))
               br_ []
               fromString (fromString (humanNumber (fromIntegral nstates)) <> " states")
           )
@@ -293,7 +335,7 @@ blogpostStats astts cols = heatmapH rowStyleGreen (Just ("Missing disc" *> br_ [
     cmap = M.fromList cols
     ordered = sortOn (\x -> (negate (winrate x), _fp x)) astts
     getentry entry col =
-      let Just e = M.lookup entry mpo
+      let e = mpo M.! entry
           fn = case M.lookup col cmap of
             Just f -> f
             _ -> error col
@@ -340,22 +382,22 @@ finalStateRecap = mapM_ showi
         forM_ (M.toList (regroupItems stt)) $ \(itm, p) -> li_ (fromString (showItem Book04 itm ++ " - " ++ rpercent (p / rawrate)))
         forM_ (M.toList (regroupFlags stt)) $ \(flg, p) -> li_ (fromString (show flg ++ " - " ++ rpercent (p / rawrate)))
 
-finalStateRecap' :: Book -> [Stats] -> Html ()
-finalStateRecap' bk astts = blogpostStats astts cols
+finalStateRecap' :: String -> Book -> [Stats] -> Html ()
+finalStateRecap' imgsuffix bk astts = blogpostStats imgsuffix astts cols
   where
     allitems = foldMap (S.fromList . map fst . concatMap items . M.keys . finalItems) astts
     allflags :: S.Set Flag
     allflags = foldMap (S.fromList . concatMap getallflags . M.keys . finalFlags) astts
     itemcols = [(showItem bk i, fmtq (iq i) . finalItem i) | i <- S.toList allitems]
-    flagcols = [(show f, fmtr . finalFlag f) | f <- S.toList allflags]
+    flagcols = [(showFlag bk f, fmtr . finalFlag f) | f <- S.toList allflags]
     cols = itemcols ++ flagcols
     iq Meal = 6
     iq Gold = 50
     iq Laumspur = 5
     iq _ = 1
 
-b02stats :: [Stats] -> Html ()
-b02stats astts = do
+b02stats :: String -> [Stats] -> Html ()
+b02stats imgsuffix astts = do
   let cols =
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . sum . _cendurance . finalStat),
@@ -363,11 +405,11 @@ b02stats astts = do
           ("S BA", fmtb . hasitem BodyArmor),
           ("S Shield", fmtb . hasitem Shield)
         ]
-  blogpostStats astts cols
-  finalStateRecap' Book02 astts
+  blogpostStats imgsuffix astts cols
+  finalStateRecap' imgsuffix Book02 astts
 
-b03stats :: [Stats] -> Html ()
-b03stats astts = do
+b03stats :: String -> [Stats] -> Html ()
+b03stats imgsuffix astts = do
   let cols =
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . sum . _cendurance . finalStat),
@@ -382,33 +424,41 @@ b03stats astts = do
           ("End SH", fmtr . finalItem silverHelmet),
           ("End +4", fmtr . finalItem StrengthPotion4)
         ]
-  blogpostStats astts cols
-  finalStateRecap' Book03 astts
+  blogpostStats imgsuffix astts cols
+  finalStateRecap' imgsuffix Book03 astts
 
-b04stats :: [Stats] -> Html ()
-b04stats astts = do
+b04stats :: String -> [Stats] -> Html ()
+b04stats imgsuffix astts = do
   let cols =
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . sum . _cendurance . finalStat),
           ("SS", fmtb . hasitem (Weapon Sommerswerd)),
           ("SH", fmtb . hasitem silverHelmet),
-          ("+4", fmtb . hasitem StrengthPotion4),
+          ("kept +4", keptp4),
           ("Fought Elix", fmtr . finalFlag FoughtElix),
           ("Laumspur collect", mvisitrate [12, 268, 302]),
           ("Final gold", fmtq 50 . finalItem Gold),
           ("V302", fmtr . visitrate 302),
           ("G302", fmtr . itemAt 131 StrengthPotion),
-          ("End with +2 Strength Potion", fmtr . finalItem StrengthPotion),
-          ("End with +4 Strength Potion", fmtr . finalItem StrengthPotion4)
+          ("End with +2 Strength Potion", fmtr . finalItem StrengthPotion)
         ]
-  blogpostStats astts cols
-  finalStateRecap' Book04 astts
+      keptp4 s =
+        let started = hasitem StrengthPotion4 s
+            finish = finalItem StrengthPotion4 s
+         in case (started, finish) of
+              (True, 1.0) -> fmtb True
+              (False, 0.0) -> ("never had it", 0.8)
+              (True, _) -> ("used a bit", fromRational @Double finish)
+              (False, _) -> ("impossible", fromRational @Double finish)
+  blogpostStats imgsuffix astts cols
+  finalStateRecap' imgsuffix Book04 astts
 
-b05stats :: [Stats] -> Html ()
-b05stats astts = do
+b05stats :: String -> [Stats] -> Html ()
+b05stats imgsuffix astts = do
   let cols =
         [ ("SS", fmtb . not . hasitem (Weapon Sword)),
           ("SH", fmtb . hasitem silverHelmet),
+          ("+2", fmtb . hasitem StrengthPotion),
           ("+4", fmtb . hasitem StrengthPotion4),
           ("BA", fmtb . hasitem BodyArmor),
           ("EX", fmtb . hasflag FoughtElix),
@@ -417,22 +467,23 @@ b05stats astts = do
           ("Offer Oede", fmtr . visitrate 344),
           ("Limbdeath", fmtr . visitrate 81),
           ("Prism", fmtr . finalItem prismB05),
-          ("Sash", fmtr . finalItem sashB05),
-          ("c27 +2HP", fmtr . itemAt 160 Potion2Hp),
+          ("c27 +2HP", fmtb . (> 0) . itemAt 160 Potion2Hp),
+          ("c27 +LS", fmtb . (> 1) . itemAt 160 Laumspur),
+          ("c27 +6HP", fmtb . (> 0) . itemAt 160 Potion6Hp),
           ("Dhorgaan", fmtr . visitrate 253),
           ("Keep SS", fmtr . finalItem (Weapon Sommerswerd))
         ]
-  blogpostStats astts cols
-  finalStateRecap' Book05 astts
+  blogpostStatsDG imgsuffix astts cols
+  finalStateRecap' imgsuffix Book05 astts
 
 main :: IO ()
 main = do
-  Opts book mde <- execParser programOpts
+  Opts book mde imgsuffix <- execParser programOpts
   dt <- loadData book
   case mde of
     ChapterStats -> case book of
-      Book02 -> print (b02stats dt)
-      Book03 -> print (b03stats dt)
-      Book04 -> print (b04stats dt)
-      Book05 -> print (b05stats dt)
+      Book02 -> print (b02stats imgsuffix dt)
+      Book03 -> print (b03stats imgsuffix dt)
+      Book04 -> print (b04stats imgsuffix dt)
+      Book05 -> print (b05stats imgsuffix dt)
       _ -> error ("unsupported book stats for " ++ show book)

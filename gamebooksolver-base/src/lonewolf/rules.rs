@@ -1,6 +1,6 @@
 use crate::lonewolf::chapter::{BoolCond, CanHunt, ChapterId, ChapterOutcome, Endurance, FightModifier, SimpleOutcome};
 use crate::lonewolf::combat::{CombatInfo, Escaped, Memoz};
-use crate::lonewolf::mini::{Book, CharacterConstant, Equipment, Item, NextStep};
+use crate::lonewolf::mini::{Book, CharacterConstant, Equipment, Item, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Discipline, Flag, max_hp};
 use crate::solver::base::{Outcome, Proba, optimize_outcome};
 use crate::solver::rational::Rational;
@@ -24,7 +24,7 @@ pub fn check<PREV: Into<Equipment> + From<Equipment>>(
     }
 }
 
-pub fn update_simple<PREV: Into<Equipment> + From<Equipment>>(
+pub fn update_simple<PREV: StoredEquipment>(
     cvar: &mut CharacterVariableG<PREV>,
     ccst: &CharacterConstant,
     soutcome: &SimpleOutcome,
@@ -73,7 +73,7 @@ pub fn update_simple<PREV: Into<Equipment> + From<Equipment>>(
     }
 }
 
-pub fn update<P: Rational, PREV: Into<Equipment> + From<Equipment> + Clone + std::hash::Hash + Ord + Eq>(
+pub fn update<P: Rational, PREV: StoredEquipment>(
     memo: &mut Memoz<P>,
     ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
