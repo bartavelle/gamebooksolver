@@ -54,9 +54,9 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect13.htm"
        ,style=filled];
     15 [shape=record
-       ,label="{15|6280\ states}"
+       ,label="{15|{6280stts|0.000%|20.00\ hp}|{Backpack\ items|3.00}|{StrengthPotion4|100.000%}|{Red\ Potion\ of\ Laumspur|100.000%}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect15.htm"
-       ,style=filled];
+       ,color="/svg/gray"];
     16 [shape=record
        ,label="{16|1616\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect16.htm"
@@ -82,9 +82,9 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect21.htm"
        ,style=filled];
     22 [shape=record
-       ,label="{22|5236\ states}"
+       ,label="{22|{5236stts|0.000%|20.00\ hp}|{Backpack\ items|3.00}|{StrengthPotion4|100.000%}|{Red\ Potion\ of\ Laumspur|100.000%}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect22.htm"
-       ,style=filled];
+       ,color="/svg/gray"];
     23 [shape=record
        ,label="{23|739\ states}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect23.htm"
@@ -368,7 +368,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect100.htm"
         ,style=filled];
     101 [shape=record
-        ,label="{101|{739stts|0.169%|15.00\ hp}|{Backpack\ items|2.00}}"
+        ,label="{101|{739stts|0.169%|15.01\ hp}|{Backpack\ items|2.00}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect101.htm"
         ,color="/svg/gray"];
     102 [shape=record
@@ -416,7 +416,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect113.htm"
         ,style=filled];
     114 [shape=record
-        ,label="{114|{767stts|0.169%|14.00\ hp}|{Backpack\ items|2.00}}"
+        ,label="{114|{767stts|0.169%|14.01\ hp}|{Backpack\ items|2.00}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect114.htm"
         ,color="/svg/gray"];
     115 [shape=record
@@ -622,7 +622,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect168.htm"
         ,style=filled];
     169 [shape=record
-        ,label="{169|{1040stts|0.008%|19.00\ hp}|{Backpack\ items|2.00}}"
+        ,label="{169|{1040stts|0.008%|18.91\ hp}|{Backpack\ items|2.00}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect169.htm"
         ,color="/svg/gray"];
     170 [shape=record
@@ -675,9 +675,9 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect184.htm"
         ,style=filled];
     185 [shape=record
-        ,label="{185|5758\ states}"
+        ,label="{185|{5758stts|0.000%|20.00\ hp}|{Backpack\ items|3.00}|{StrengthPotion4|100.000%}|{Red\ Potion\ of\ Laumspur|100.000%}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect185.htm"
-        ,style=filled];
+        ,color="/svg/gray"];
     186 [shape=record
         ,label="{186|{80stts|99.921%|16.10\ hp}|{Backpack\ items|2.32}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect186.htm"
@@ -1187,9 +1187,9 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect325.htm"
         ,color="/svg/gray"];
     326 [shape=record
-        ,label="{326|5236\ states}"
+        ,label="{326|{5236stts|0.000%|20.00\ hp}|{Backpack\ items|3.00}|{StrengthPotion4|100.000%}|{Red\ Potion\ of\ Laumspur|100.000%}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect326.htm"
-        ,style=filled];
+        ,color="/svg/gray"];
     327 [shape=record
         ,label="{327|6\ states}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect327.htm"
@@ -1280,7 +1280,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect349.htm"
         ,style=filled];
     350 [shape=record
-        ,label="{350|{80274stts|70.132%|20.00\ hp}|{Backpack\ items|2.14}|{StrengthPotion4|100.000%}|{Red\ Potion\ of\ Laumspur|100.000%}|{Silver\ Helmet|100.000%}}"
+        ,label="{350|{80274stts|70.700%|20.00\ hp}|{Backpack\ items|2.14}|{StrengthPotion4|100.000%}|{Red\ Potion\ of\ Laumspur|100.000%}|{Silver\ Helmet|100.000%}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/03tcok/sect350.htm"
         ,color="/svg/gray"];
     360 [shape=record
@@ -1657,8 +1657,6 @@ digraph G {
               ,label=""];
     15 -> 86 [color="/svg/darkgray"
              ,label=" \"?Dagger||?Sword\""];
-    15 -> 185 [color="/svg/darkgray"
-              ,label=" \"?MoM\""];
     15 -> 323 [color="/svg/darkgray"
               ,label=" \"\""];
     16 -> 63 [color="/svg/darkgray"
@@ -1679,8 +1677,6 @@ digraph G {
               ,label=""];
     21 -> 325 [color="/svg/darkgray"
               ,label=" \"-3HP\""];
-    22 -> 323 [color="/svg/darkgray"
-              ,label=""];
     23 -> 235 [color="/svg/darkgray"
               ,label=""];
     24 -> 332 [color="/svg/darkgray"
@@ -1749,8 +1745,6 @@ digraph G {
              ,label=" \"?Potion of Black Graveweed\""];
     44 -> 270 [color="/svg/darkgray"
               ,label=" \"!?Potion of Black Graveweed\" \"!?Potion of Green Gallowbrush\""];
-    45 -> 15 [color="/svg/darkgray"
-             ,label=" \"!?Ornate Silver Key\""];
     47 -> 323 [color="/svg/darkgray"
               ,label=""];
     48 -> 215 [color="/svg/darkgray"
@@ -2073,8 +2067,6 @@ digraph G {
                ,label=" \"r(3/10)\""];
     168 -> 60 [color="/svg/darkgray"
               ,label=""];
-    169 -> 41 [color="/svg/darkgray"
-              ,label=" \"?Blue Stone Triangle\""];
     170 -> 175 [color="/svg/darkgray"
                ,label=" \"!?Sommerswerd\" \"-6HP\""];
     170 -> 304 [color="/svg/darkgray"
@@ -2113,10 +2105,6 @@ digraph G {
                ,label=""];
     184 -> 315 [color="/svg/darkgray"
                ,label=""];
-    185 -> 22 [color="/svg/darkgray"
-              ,label=" \"\" \"r(1/2)\""];
-    185 -> 326 [color="/svg/darkgray"
-               ,label=" \"\" \"r(1/2)\""];
     187 -> 93 [color="/svg/darkgray"
               ,label=" \"!?MindShield\""];
     187 -> 258 [color="/svg/darkgray"
@@ -2463,8 +2451,6 @@ digraph G {
                ,label=" \"r(3/10)\""];
     324 -> 61 [color="/svg/darkgray"
               ,label=""];
-    326 -> 127 [color="/svg/darkgray"
-               ,label=" \"?6th\" \"-1HP\""];
     326 -> 308 [color="/svg/darkgray"
                ,label=" \"!?6th\" \"-1HP\""];
     326 -> 323 [color="/svg/darkgray"
@@ -2673,6 +2659,10 @@ digraph G {
               ,label="100.000% \"+Backpack\""];
     14 -> 371 [color="/svg/black"
               ,label="100.000% \"+HadCombat\""];
+    15 -> 185 [color="/svg/black"
+              ,label="100.000% \"?MoM\""];
+    22 -> 323 [color="/svg/black"
+              ,label="100.000%"];
     29 -> 43 [color="/svg/black"
              ,label="100.000% \"?Sommerswerd\""];
     30 -> 203 [color="/svg/black"
@@ -2687,6 +2677,8 @@ digraph G {
               ,label="100.000% \"-1HP\""];
     44 -> 157 [color="/svg/black"
               ,label="100.000% \"!?Potion of Black Graveweed\" \"?Potion of Green Gallowbrush\""];
+    45 -> 15 [color="/svg/black"
+             ,label="0.000% \"!?Ornate Silver Key\""];
     45 -> 303 [color="/svg/black"
               ,label="100.000% \"?Ornate Silver Key\""];
     46 -> 269 [color="/svg/black"
@@ -2753,8 +2745,10 @@ digraph G {
               ,label="100.000%"];
     166 -> 336 [color="/svg/black"
                ,label="100.000%"];
+    169 -> 41 [color="/svg/black"
+              ,label="1.303% \"?Blue Stone Triangle\""];
     169 -> 265 [color="/svg/black"
-               ,label="100.000% \"!?Blue Stone Triangle\""];
+               ,label="98.697% \"!?Blue Stone Triangle\""];
     173 -> 34 [color="/svg/black"
               ,label="100.000% \"?Effigy\""];
     176 -> 5 [color="/svg/black"
@@ -2763,6 +2757,10 @@ digraph G {
                ,label="0.192% \"!?trk\""];
     182 -> 235 [color="/svg/black"
                ,label="99.808% \"!?trk\""];
+    185 -> 22 [color="/svg/black"
+              ,label="30.000% \"\" \"r(1/2)\""];
+    185 -> 326 [color="/svg/black"
+               ,label="70.000% \"\" \"r(1/2)\""];
     186 -> 320 [color="/svg/black"
                ,label="100.000%"];
     190 -> 348 [color="/svg/black"
@@ -2861,6 +2859,8 @@ digraph G {
               ,label="20.000% \"\" \"r(1/2)\""];
     325 -> 216 [color="/svg/black"
                ,label="100.000%"];
+    326 -> 127 [color="/svg/black"
+               ,label="100.000% \"?6th\" \"-1HP\""];
     333 -> 68 [color="/svg/black"
               ,label="100.000%"];
     335 -> 182 [color="/svg/black"

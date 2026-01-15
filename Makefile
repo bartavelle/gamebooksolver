@@ -176,7 +176,7 @@ json-chapters/book0%.json: ./dist/gamebooksolver-solvebook
 data/%.bin:
 	time python3 buildsol-rust.py $@
 
-data/%.compact.zstd data/%.desc data/%.jot data/%.json &:
+data/%.compact.zstd data/%.desc data/%.jot data/%.json data/%.bin.zstd &:
 	time python3 buildsol-rust.py $@
 
 data/B05/%.dot: data/B05/%.jot json-chapters/display05.json
