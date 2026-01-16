@@ -199,7 +199,7 @@ scommand =
         <> command "extract" (info (ExtractFile <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> charfilter) (progDesc "Extract solution data from a file"))
         <> command "decisiontracker" (info (DecisionTracker <$> strArgument (metavar "PATH" <> help "saved cbor game") <*> fightdetails <*> charfilter) (progDesc "Displays stats about how a decision is taken"))
         <> command "decodeitems" (info (DecodeItems <$> pbook <*> argument auto (metavar "ITEMS" <> help "numerical representation of items")) (progDesc "Decode numerical inventory"))
-        <> command "dot" (info (Dot <$> strArgument (help "path to the json dump") <*> optional (strArgument (help "path to description file"))) (progDesc "Generate a dot file from the json dump"))
+        <> command "dot" (info (Dot <$> strArgument (help "path to the json dump") <*> optional (strArgument (help "path to the display specification"))) (progDesc "Generate a dot file from the json dump"))
         <> command "dumpbook" (info (DumpBook <$> pbook) (progDesc "Dump a book as JSON"))
         <> command "dumpbooks" (info (pure DumpBooks) (progDesc "Dump all book data, for consumption with the web site"))
     )

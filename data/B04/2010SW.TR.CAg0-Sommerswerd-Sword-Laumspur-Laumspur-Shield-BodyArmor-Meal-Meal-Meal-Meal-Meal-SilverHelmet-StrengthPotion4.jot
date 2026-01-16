@@ -33,25 +33,9 @@
     },
     "2": {
       "endurance": {
-        "20": {
-          "radix": 10,
-          "value": "69/1000"
-        },
-        "21": {
-          "radix": 10,
-          "value": "179/1000"
-        },
-        "22": {
-          "radix": 10,
-          "value": "249/1000"
-        },
-        "23": {
-          "radix": 10,
-          "value": "163/1000"
-        },
         "24": {
           "radix": 10,
-          "value": "17/50"
+          "value": "1"
         }
       },
       "flags": {
@@ -61,29 +45,37 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal/Laumspur:2/Gold:4/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal/Laumspur/Gold:4/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal/Laumspur:2/Gold:4/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal/Laumspur:3/Gold:4/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "163/2000"
+          "value": "31/125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal/Laumspur:4/Gold:4/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "209/500"
+          "value": "17/100"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "163/2000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "31/125"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "209/500"
+          "value": "17/100"
         }
       },
       "score": {
@@ -117,11 +109,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -137,49 +129,65 @@
     },
     "12": {
       "endurance": {
-        "14": {
+        "10": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "15": {
+        "11": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "16": {
+        "12": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "17": {
+        "13": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "14": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "15": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "16": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "17": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "18": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "19": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "20": {
           "radix": 16,
-          "value": "ff057/ba43b7400"
+          "value": "43acf7/4a817c800"
         },
         "21": {
           "radix": 16,
-          "value": "24efa9/5d21dba00"
+          "value": "ed6ef1/ba43b7400"
         },
         "22": {
           "radix": 16,
-          "value": "86ce77/5d21dba00"
+          "value": "cfacb9/4a817c800"
         },
         "23": {
-          "radix": 10,
-          "value": "16319817/500000000"
+          "radix": 16,
+          "value": "132d7d3/2e90edd00"
         },
         "24": {
-          "radix": 10,
-          "value": "541802493/625000000"
+          "radix": 16,
+          "value": "a711d3829/ba43b7400"
         }
       },
       "flags": {
@@ -191,31 +199,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -273,21 +281,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/4000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/4000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/4000"
+          "value": "209/1000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/4000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/4000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/4000"
+          "value": "209/1000"
         }
       },
       "score": {
@@ -385,15 +401,15 @@
         },
         "22": {
           "radix": 10,
-          "value": "741/50000"
+          "value": "291/50000"
         },
         "23": {
           "radix": 10,
-          "value": "373/12500"
+          "value": "251/25000"
         },
         "24": {
           "radix": 10,
-          "value": "47693/50000"
+          "value": "49133/50000"
         }
       },
       "flags": {
@@ -409,11 +425,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -429,25 +445,41 @@
     },
     "34": {
       "endurance": {
-        "13": {
+        "9": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "14": {
+        "10": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "15": {
+        "11": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "16": {
+        "12": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "17": {
+        "13": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "14": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "15": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "16": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "17": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -459,31 +491,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -523,21 +555,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/50000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/50000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/50000"
+          "value": "1881/12500"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/50000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/50000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/50000"
+          "value": "1881/12500"
         }
       },
       "score": {
@@ -587,17 +627,9 @@
     },
     "45": {
       "endurance": {
-        "22": {
-          "radix": 10,
-          "value": "69/1000"
-        },
-        "23": {
-          "radix": 10,
-          "value": "179/1000"
-        },
         "24": {
           "radix": 10,
-          "value": "94/125"
+          "value": "1"
         }
       },
       "flags": {
@@ -607,21 +639,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/2000"
+          "value": "209/500"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/2000"
+          "value": "209/500"
         }
       },
       "score": {
@@ -655,19 +695,19 @@
         },
         "21": {
           "radix": 10,
-          "value": "21/625"
+          "value": "63/5000"
         },
         "22": {
           "radix": 10,
-          "value": "693/10000"
+          "value": "231/10000"
         },
         "23": {
           "radix": 10,
-          "value": "1911/20000"
+          "value": "581/20000"
         },
         "24": {
           "radix": 10,
-          "value": "319/800"
+          "value": "10649/20000"
         }
       },
       "flags": {
@@ -683,11 +723,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "973/10000"
+          "value": "63/250"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "2527/10000"
+          "value": "49/500"
         }
       },
       "score": {
@@ -715,21 +755,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -773,21 +821,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -833,25 +889,41 @@
     },
     "73": {
       "endurance": {
-        "18": {
+        "14": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "19": {
+        "15": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "20": {
+        "16": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "21": {
+        "17": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "22": {
+        "18": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "19": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "20": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "21": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "22": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -863,31 +935,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -937,25 +1009,41 @@
     },
     "100": {
       "endurance": {
-        "15": {
+        "11": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "16": {
+        "12": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "17": {
+        "13": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "18": {
+        "14": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "19": {
+        "15": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "16": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "17": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "18": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "19": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -967,31 +1055,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -1025,11 +1113,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -1093,11 +1181,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -1125,21 +1213,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -1155,25 +1251,41 @@
     },
     "119": {
       "endurance": {
-        "17": {
+        "13": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "18": {
+        "14": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "19": {
+        "15": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "20": {
+        "16": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "21": {
+        "17": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "18": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "20": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "21": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -1185,31 +1297,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -1243,19 +1355,19 @@
         },
         "21": {
           "radix": 10,
-          "value": "741/50000"
+          "value": "291/50000"
         },
         "22": {
           "radix": 10,
-          "value": "373/12500"
+          "value": "251/25000"
         },
         "23": {
           "radix": 10,
-          "value": "4291/100000"
+          "value": "1441/100000"
         },
         "24": {
           "radix": 10,
-          "value": "18219/20000"
+          "value": "3873/4000"
         }
       },
       "flags": {
@@ -1271,11 +1383,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -1315,21 +1427,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -1413,53 +1533,69 @@
     },
     "137": {
       "endurance": {
-        "13": {
+        "9": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "14": {
+        "10": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "15": {
+        "11": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "16": {
+        "12": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "13": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "14": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "15": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "16": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "17": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "18": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "19": {
           "radix": 16,
-          "value": "ff057/ba43b7400"
+          "value": "43acf7/4a817c800"
         },
         "20": {
           "radix": 16,
-          "value": "24efa9/5d21dba00"
+          "value": "ed6ef1/ba43b7400"
         },
         "21": {
           "radix": 16,
-          "value": "86ce77/5d21dba00"
+          "value": "cfacb9/4a817c800"
         },
         "22": {
-          "radix": 10,
-          "value": "16319817/500000000"
+          "radix": 16,
+          "value": "132d7d3/2e90edd00"
         },
         "23": {
           "radix": 16,
-          "value": "377e5b43/4a817c800"
+          "value": "1d2013d3/ba43b7400"
         },
         "24": {
           "radix": 16,
-          "value": "3d1e9a45d/4a817c800"
+          "value": "529fe922b/5d21dba00"
         }
       },
       "flags": {
@@ -1471,31 +1607,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -1511,45 +1647,61 @@
     },
     "140": {
       "endurance": {
-        "15": {
+        "11": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "16": {
+        "12": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "17": {
+        "13": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "18": {
+        "14": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "15": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "16": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "17": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "18": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "19": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "20": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "21": {
           "radix": 16,
-          "value": "ff057/ba43b7400"
+          "value": "43acf7/4a817c800"
         },
         "22": {
           "radix": 16,
-          "value": "24efa9/5d21dba00"
+          "value": "ed6ef1/ba43b7400"
         },
         "23": {
           "radix": 16,
-          "value": "86ce77/5d21dba00"
+          "value": "cfacb9/4a817c800"
         },
         "24": {
-          "radix": 10,
-          "value": "2248809057/2500000000"
+          "radix": 16,
+          "value": "a75e89775/ba43b7400"
         }
       },
       "flags": {
@@ -1561,31 +1713,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -1631,33 +1783,49 @@
     },
     "142": {
       "endurance": {
-        "18": {
+        "14": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "19": {
+        "15": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "20": {
+        "16": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "21": {
+        "17": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "18": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "19": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "20": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "21": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "22": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "23": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "24": {
           "radix": 16,
-          "value": "a7a317c2b/ba43b7400"
+          "value": "10c270a43/12a05f200"
         }
       },
       "flags": {
@@ -1669,31 +1837,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -1709,57 +1877,73 @@
     },
     "148": {
       "endurance": {
-        "12": {
+        "8": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "13": {
+        "9": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "14": {
+        "10": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "15": {
+        "11": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "12": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "13": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "14": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "15": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "16": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "17": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "18": {
           "radix": 16,
-          "value": "ff057/ba43b7400"
+          "value": "43acf7/4a817c800"
         },
         "19": {
           "radix": 16,
-          "value": "24efa9/5d21dba00"
+          "value": "ed6ef1/ba43b7400"
         },
         "20": {
           "radix": 16,
-          "value": "86ce77/5d21dba00"
+          "value": "cfacb9/4a817c800"
         },
         "21": {
-          "radix": 10,
-          "value": "16319817/500000000"
+          "radix": 16,
+          "value": "132d7d3/2e90edd00"
         },
         "22": {
           "radix": 16,
-          "value": "377e5b43/4a817c800"
+          "value": "1d2013d3/ba43b7400"
         },
         "23": {
           "radix": 16,
-          "value": "c2cbfad3/ba43b7400"
+          "value": "24f4eda1/5d21dba00"
         },
         "24": {
           "radix": 16,
-          "value": "1193f8402b/174876e800"
+          "value": "28284d245/2e90edd00"
         }
       },
       "flags": {
@@ -1771,31 +1955,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -1841,11 +2025,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -1879,11 +2063,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -1923,21 +2107,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/100000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/100000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/100000"
+          "value": "1881/25000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/100000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/100000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/100000"
+          "value": "1881/25000"
         }
       },
       "score": {
@@ -1971,11 +2163,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -1991,33 +2183,49 @@
     },
     "159": {
       "endurance": {
-        "18": {
+        "14": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "19": {
+        "15": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "20": {
+        "16": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "21": {
+        "17": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "18": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "19": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "20": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "21": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "22": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "23": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "24": {
           "radix": 16,
-          "value": "a7a317c2b/ba43b7400"
+          "value": "10c270a43/12a05f200"
         }
       },
       "flags": {
@@ -2029,31 +2237,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -2101,21 +2309,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -2161,61 +2377,77 @@
     },
     "174": {
       "endurance": {
-        "11": {
+        "7": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "12": {
+        "8": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "13": {
+        "9": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "14": {
+        "10": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "11": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "12": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "13": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "14": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "15": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "16": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "17": {
           "radix": 16,
-          "value": "ff057/ba43b7400"
+          "value": "43acf7/4a817c800"
         },
         "18": {
           "radix": 16,
-          "value": "24efa9/5d21dba00"
+          "value": "ed6ef1/ba43b7400"
         },
         "19": {
           "radix": 16,
-          "value": "86ce77/5d21dba00"
+          "value": "cfacb9/4a817c800"
         },
         "20": {
-          "radix": 10,
-          "value": "16319817/500000000"
+          "radix": 16,
+          "value": "132d7d3/2e90edd00"
         },
         "21": {
           "radix": 16,
-          "value": "2ee91743/4a817c800"
+          "value": "7aae9d3/ba43b7400"
         },
         "22": {
           "radix": 16,
-          "value": "826c7cd3/ba43b7400"
+          "value": "4c52ea1/5d21dba00"
         },
         "23": {
           "radix": 16,
-          "value": "ebe6b02b/174876e800"
+          "value": "63186f9/5d21dba00"
         },
         "24": {
-          "radix": 10,
-          "value": "378/15625"
+          "radix": 16,
+          "value": "f8e03d91/5d21dba00"
         }
       },
       "flags": {
@@ -2227,31 +2459,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d6c0fe9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "35b3114b/5d21dba00"
+          "radix": 10,
+          "value": "629613/19531250"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "15077907/312500000"
+          "value": "39501/3906250"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "1861389/39062500"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "35b3114b/5d21dba00"
+          "radix": 10,
+          "value": "629613/19531250"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "15077907/312500000"
+          "value": "39501/3906250"
         }
       },
       "score": {
@@ -2279,21 +2511,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/20000"
+          "value": "209/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/20000"
+          "value": "209/5000"
         }
       },
       "score": {
@@ -2355,21 +2595,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -2385,21 +2633,9 @@
     },
     "200": {
       "endurance": {
-        "21": {
-          "radix": 10,
-          "value": "69/1000"
-        },
-        "22": {
-          "radix": 10,
-          "value": "179/1000"
-        },
-        "23": {
-          "radix": 10,
-          "value": "249/1000"
-        },
         "24": {
           "radix": 10,
-          "value": "503/1000"
+          "value": "1"
         }
       },
       "flags": {
@@ -2409,21 +2645,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/2000"
+          "value": "209/500"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/2000"
+          "value": "209/500"
         }
       },
       "score": {
@@ -2439,33 +2683,49 @@
     },
     "204": {
       "endurance": {
-        "17": {
+        "13": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "18": {
+        "14": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "19": {
+        "15": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "20": {
+        "16": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "17": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "18": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "20": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "21": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "22": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "23": {
           "radix": 16,
-          "value": "a7a317c2b/ba43b7400"
+          "value": "10c270a43/12a05f200"
         }
       },
       "flags": {
@@ -2477,31 +2737,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -2551,25 +2811,41 @@
     },
     "215": {
       "endurance": {
-        "16": {
+        "12": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "17": {
+        "13": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "18": {
+        "14": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "19": {
+        "15": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "20": {
+        "16": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "17": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "19": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "20": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -2581,31 +2857,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -2657,21 +2933,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -2699,21 +2983,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/2000"
+          "value": "209/500"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/2000"
+          "value": "209/500"
         }
       },
       "score": {
@@ -2755,15 +3047,15 @@
         },
         "22": {
           "radix": 10,
-          "value": "21/625"
+          "value": "63/5000"
         },
         "23": {
           "radix": 10,
-          "value": "693/10000"
+          "value": "231/10000"
         },
         "24": {
           "radix": 10,
-          "value": "4943/10000"
+          "value": "1123/2000"
         }
       },
       "flags": {
@@ -2779,11 +3071,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "973/10000"
+          "value": "63/250"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "2527/10000"
+          "value": "49/500"
         }
       },
       "score": {
@@ -2863,25 +3155,41 @@
     },
     "235": {
       "endurance": {
-        "14": {
+        "10": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "15": {
+        "11": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "16": {
+        "12": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "17": {
+        "13": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "18": {
+        "14": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "15": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "16": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "17": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "18": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -2893,31 +3201,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -2933,25 +3241,41 @@
     },
     "246": {
       "endurance": {
-        "20": {
+        "16": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "21": {
+        "17": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "22": {
+        "18": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "23": {
+        "19": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "24": {
+        "20": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "21": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "22": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "23": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "24": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -2963,31 +3287,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -3031,21 +3355,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -3087,11 +3419,11 @@
         },
         "23": {
           "radix": 10,
-          "value": "741/50000"
+          "value": "291/50000"
         },
         "24": {
           "radix": 10,
-          "value": "9837/10000"
+          "value": "9927/10000"
         }
       },
       "flags": {
@@ -3107,11 +3439,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -3179,11 +3511,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -3211,21 +3543,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -3275,37 +3615,53 @@
     },
     "258": {
       "endurance": {
-        "17": {
+        "13": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "18": {
+        "14": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "19": {
+        "15": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "20": {
+        "16": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "17": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "18": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "20": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "21": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "22": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "23": {
           "radix": 16,
-          "value": "ff057/ba43b7400"
+          "value": "43acf7/4a817c800"
         },
         "24": {
-          "radix": 16,
-          "value": "29e8862f5/2e90edd00"
+          "radix": 10,
+          "value": "3598194897/4000000000"
         }
       },
       "flags": {
@@ -3317,31 +3673,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -3375,11 +3731,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -3395,29 +3751,45 @@
     },
     "270": {
       "endurance": {
-        "19": {
+        "15": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "20": {
+        "16": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "21": {
+        "17": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "22": {
+        "18": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "19": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "21": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "22": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "23": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "24": {
           "radix": 16,
-          "value": "a7a34dfd3/ba43b7400"
+          "value": "14f3ec1a9/174876e80"
         }
       },
       "flags": {
@@ -3429,31 +3801,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -3533,25 +3905,41 @@
     },
     "283": {
       "endurance": {
-        "19": {
+        "15": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "20": {
+        "16": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "21": {
+        "17": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "22": {
+        "18": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "23": {
+        "19": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "20": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "21": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "22": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "23": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -3563,31 +3951,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -3629,11 +4017,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -3661,21 +4049,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -3789,11 +4185,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -3821,21 +4217,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/5000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/5000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/5000"
+          "value": "209/1250"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/5000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/5000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/5000"
+          "value": "209/1250"
         }
       },
       "score": {
@@ -3885,13 +4289,9 @@
     },
     "307": {
       "endurance": {
-        "23": {
-          "radix": 10,
-          "value": "69/1000"
-        },
         "24": {
           "radix": 10,
-          "value": "931/1000"
+          "value": "1"
         }
       },
       "flags": {
@@ -3901,21 +4301,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/2000"
+          "value": "209/500"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "1/2000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "163/2000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "999/2000"
+          "value": "209/500"
         }
       },
       "score": {
@@ -3949,23 +4357,23 @@
         },
         "20": {
           "radix": 10,
-          "value": "6/125"
+          "value": "9/500"
         },
         "21": {
           "radix": 10,
-          "value": "99/1000"
+          "value": "33/1000"
         },
         "22": {
           "radix": 10,
-          "value": "273/2000"
+          "value": "83/2000"
         },
         "23": {
           "radix": 10,
-          "value": "29/400"
+          "value": "17/400"
         },
         "24": {
           "radix": 10,
-          "value": "7/50"
+          "value": "361/1000"
         }
       },
       "flags": {
@@ -3977,11 +4385,11 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -4001,41 +4409,57 @@
     },
     "314": {
       "endurance": {
-        "16": {
+        "12": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "17": {
+        "13": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "18": {
+        "14": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "19": {
+        "15": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
+        "16": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "17": {
+          "radix": 10,
+          "value": "1791/1250000000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "19": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
         "20": {
           "radix": 16,
-          "value": "115c5/174876e800"
+          "value": "b6ba1/2e90edd00"
         },
         "21": {
-          "radix": 10,
-          "value": "5553/1250000000"
+          "radix": 16,
+          "value": "37d355/5d21dba00"
         },
         "22": {
           "radix": 16,
-          "value": "ff057/ba43b7400"
+          "value": "43acf7/4a817c800"
         },
         "23": {
           "radix": 16,
-          "value": "24efa9/5d21dba00"
+          "value": "ed6ef1/ba43b7400"
         },
         "24": {
           "radix": 16,
-          "value": "53cebd641/5d21dba00"
+          "value": "14efdf8e87/174876e800"
         }
       },
       "flags": {
@@ -4047,31 +4471,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -4099,21 +4523,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -4147,11 +4579,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "139/1000"
+          "value": "9/25"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "361/1000"
+          "value": "7/50"
         }
       },
       "score": {
@@ -4191,21 +4623,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/50000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/50000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/50000"
+          "value": "1881/12500"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/50000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/50000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/50000"
+          "value": "1881/12500"
         }
       },
       "score": {
@@ -4239,11 +4679,11 @@
         },
         "23": {
           "radix": 10,
-          "value": "21/625"
+          "value": "63/5000"
         },
         "24": {
           "radix": 10,
-          "value": "1409/2500"
+          "value": "2923/5000"
         }
       },
       "flags": {
@@ -4259,11 +4699,11 @@
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "973/10000"
+          "value": "63/250"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/Meal:6/Laumspur/Gold:12/Sword/Sommerswerd/SGen10": {
           "radix": 10,
-          "value": "2527/10000"
+          "value": "49/500"
         }
       },
       "score": {
@@ -4299,21 +4739,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -4341,21 +4789,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/20000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/20000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/20000"
+          "value": "1881/5000"
         }
       },
       "score": {
@@ -4371,25 +4827,41 @@
     },
     "350": {
       "endurance": {
-        "17": {
+        "13": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "18": {
+        "14": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "19": {
+        "15": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "20": {
+        "16": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "21": {
+        "17": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "18": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "20": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "21": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -4401,60 +4873,76 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
         "radix": 16,
-        "value": "3533bfe9f7b140dc1ab5/422ca8b0a00a42500000"
+        "value": "6a770ef035cf788eacb7/84595161401484a00000"
       },
       "transitions": {}
     },
     "361": {
       "endurance": {
-        "20": {
+        "16": {
           "radix": 16,
           "value": "9/5d21dba00"
         },
-        "21": {
+        "17": {
           "radix": 10,
           "value": "9/2500000000"
         },
-        "22": {
+        "18": {
           "radix": 16,
           "value": "7b3/174876e800"
         },
-        "23": {
+        "19": {
           "radix": 16,
           "value": "12ab/ba43b7400"
         },
-        "24": {
+        "20": {
+          "radix": 16,
+          "value": "a035/174876e800"
+        },
+        "21": {
           "radix": 10,
-          "value": "3599999523/4000000000"
+          "value": "1791/1250000000"
+        },
+        "22": {
+          "radix": 16,
+          "value": "35e11/ba43b7400"
+        },
+        "23": {
+          "radix": 16,
+          "value": "67473/5d21dba00"
+        },
+        "24": {
+          "radix": 16,
+          "value": "29e88eef3/2e90edd00"
         }
       },
       "flags": {
@@ -4466,31 +4954,31 @@
       "items": {
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "16ad051/ba43b7400"
+          "value": "4545837/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 16,
-          "value": "f9c4e39/ba43b7400"
+          "value": "d8e64f9/174876e80"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:2/Laumspur:4/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "8838f45/5d21dba00"
+          "radix": 10,
+          "value": "3750903/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
-          "radix": 16,
-          "value": "363c658b/5d21dba00"
+          "radix": 10,
+          "value": "7102827/78125000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "127465407/312500000"
+          "value": "607563/1953125"
         }
       },
       "score": {
@@ -4634,21 +5122,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/100000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/100000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/100000"
+          "value": "1881/25000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/100000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/100000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/100000"
+          "value": "1881/25000"
         }
       },
       "score": {
@@ -4744,21 +5240,29 @@
         }
       },
       "items": {
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/100000"
+        },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:2/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/100000"
         },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:3/Laumspur:3/Gold:16/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/100000"
+          "value": "1881/25000"
         },
-        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
           "value": "9/100000"
         },
+        "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
+          "radix": 10,
+          "value": "1467/100000"
+        },
         "Backpack/StrengthPotion4/Shield/BodyArmor/StrengthPotion/Meal:4/Laumspur:2/Gold:28/Sword/Sommerswerd/SGen10/BGen0": {
           "radix": 10,
-          "value": "8991/100000"
+          "value": "1881/25000"
         }
       },
       "score": {
@@ -4883,39 +5387,39 @@
   },
   "sttmap": {
     "1": 1,
-    "2": 62726,
+    "2": 63446,
     "3": 303600,
     "4": 3592,
     "6": 240,
     "8": 1582,
-    "9": 25868,
+    "9": 25912,
     "10": 158400,
     "12": 290400,
     "13": 2,
     "15": 286,
     "16": 1246,
     "19": 4,
-    "20": 135280,
+    "20": 135904,
     "21": 240,
     "22": 1396,
     "23": 1720,
     "24": 158400,
     "25": 4,
     "26": 1206,
-    "27": 38532,
+    "27": 38576,
     "29": 95048,
-    "32": 10996,
+    "32": 11280,
     "33": 478,
-    "34": 425392,
-    "36": 66860,
+    "34": 425480,
+    "36": 67160,
     "37": 2,
     "38": 342,
     "39": 303600,
-    "40": 46072,
+    "40": 46116,
     "41": 1366,
-    "42": 23029,
+    "42": 23073,
     "44": 4,
-    "45": 76324,
+    "45": 76624,
     "46": 2580,
     "47": 1470,
     "50": 1608,
@@ -4923,23 +5427,23 @@
     "52": 194,
     "53": 209912,
     "54": 3804,
-    "55": 43588,
-    "56": 27288,
-    "57": 61668,
+    "55": 43632,
+    "56": 27332,
+    "57": 61918,
     "59": 303600,
     "60": 17892,
     "61": 1630,
     "62": 303600,
     "63": 4,
     "64": 1342,
-    "66": 136568,
+    "66": 137068,
     "67": 342,
     "68": 194,
-    "69": 31740,
+    "69": 31960,
     "70": 220960,
-    "71": 9732,
+    "71": 10140,
     "72": 4,
-    "73": 617944,
+    "73": 618384,
     "74": 408,
     "75": 1246,
     "76": 1342,
@@ -4948,43 +5452,43 @@
     "80": 194,
     "81": 34600,
     "82": 286,
-    "83": 3736,
+    "83": 3780,
     "84": 1,
     "88": 1206,
     "90": 303600,
     "91": 194,
     "92": 478,
-    "93": 41032,
+    "93": 41076,
     "94": 1502,
     "95": 4,
     "96": 1390,
     "98": 297000,
     "99": 1185,
-    "100": 720912,
+    "100": 721352,
     "101": 1526,
     "102": 4,
     "103": 138601,
-    "104": 25868,
+    "104": 25912,
     "105": 1720,
     "106": 286,
-    "107": 144352,
-    "109": 369656,
-    "112": 24448,
+    "107": 144360,
+    "109": 375736,
+    "112": 24492,
     "113": 240,
     "114": 4,
     "115": 1842,
-    "116": 123336,
+    "116": 123836,
     "117": 2720,
     "118": 570,
-    "119": 652200,
+    "119": 652640,
     "120": 548,
     "121": 1766,
-    "122": 617945,
+    "122": 618385,
     "123": 3126,
-    "124": 150952,
-    "125": 30240,
+    "124": 150960,
+    "125": 30416,
     "126": 2,
-    "127": 4272,
+    "127": 4556,
     "128": 145200,
     "129": 3804,
     "130": 194,
@@ -4997,8 +5501,8 @@
     "139": 408,
     "140": 232008,
     "141": 4,
-    "142": 523060,
-    "144": 38533,
+    "142": 523148,
+    "144": 38577,
     "145": 3000,
     "148": 620400,
     "149": 4,
@@ -5006,13 +5510,13 @@
     "151": 1502,
     "152": 22384,
     "153": 303600,
-    "155": 147224,
+    "155": 149104,
     "156": 1526,
     "157": 3960,
     "158": 1502,
-    "159": 275596,
+    "159": 275640,
     "160": 1,
-    "161": 41032,
+    "161": 41076,
     "162": 2860,
     "163": 151432,
     "164": 240,
@@ -5025,15 +5529,15 @@
     "173": 32936,
     "174": 316800,
     "175": 342,
-    "177": 720913,
-    "178": 4124,
+    "177": 721353,
+    "178": 4168,
     "180": 812,
-    "181": 135281,
+    "181": 135905,
     "182": 2,
-    "183": 593048,
+    "183": 593224,
     "184": 1496,
-    "185": 47441,
-    "186": 110169,
+    "185": 47485,
+    "186": 110669,
     "187": 194,
     "188": 4,
     "189": 1550,
@@ -5044,11 +5548,11 @@
     "195": 4,
     "196": 4,
     "197": 1422,
-    "198": 565016,
-    "199": 46456,
-    "200": 81132,
+    "198": 565192,
+    "199": 46724,
+    "200": 81432,
     "202": 1385,
-    "204": 537076,
+    "204": 537164,
     "205": 1,
     "206": 342,
     "207": 151800,
@@ -5058,8 +5562,8 @@
     "212": 1446,
     "213": 152,
     "214": 2720,
-    "215": 686456,
-    "217": 128,
+    "215": 686896,
+    "217": 144,
     "218": 145200,
     "219": 564,
     "220": 158032,
@@ -5067,25 +5571,25 @@
     "222": 2,
     "223": 151800,
     "224": 32936,
-    "225": 141880,
+    "225": 142504,
     "226": 286,
     "227": 478,
     "228": 1832,
-    "229": 783744,
+    "229": 790264,
     "232": 152,
     "233": 12,
     "234": 1470,
-    "235": 755368,
+    "235": 755808,
     "236": 240,
-    "237": 17480,
+    "237": 17888,
     "238": 151800,
     "239": 4,
     "240": 1582,
     "241": 652,
-    "243": 157552,
+    "243": 157560,
     "244": 15872,
-    "245": 4124,
-    "246": 461153,
+    "245": 4168,
+    "246": 461241,
     "247": 2,
     "248": 1686,
     "249": 461632,
@@ -5094,10 +5598,10 @@
     "252": 240,
     "253": 4,
     "254": 1606,
-    "255": 116752,
+    "255": 117252,
     "256": 1184,
     "257": 474,
-    "258": 568376,
+    "258": 568464,
     "259": 4,
     "260": 290400,
     "261": 37056,
@@ -5105,98 +5609,98 @@
     "267": 2083,
     "268": 1342,
     "269": 1576,
-    "270": 494928,
-    "271": 27288,
+    "270": 495016,
+    "271": 27332,
     "273": 2,
     "275": 17892,
     "276": 1286,
-    "277": 64924,
-    "279": 61668,
-    "281": 4632,
+    "277": 65596,
+    "279": 61918,
+    "281": 4704,
     "282": 506,
     "283": 252560,
     "285": 1608,
-    "286": 41032,
+    "286": 41076,
     "287": 286,
     "288": 240,
-    "289": 123336,
+    "289": 123836,
     "290": 4,
-    "291": 43524,
+    "291": 43568,
     "292": 342,
     "293": 342,
-    "294": 38532,
-    "295": 164,
-    "296": 652200,
+    "294": 38576,
+    "295": 180,
+    "296": 652640,
     "297": 286,
     "299": 194,
-    "300": 135280,
+    "300": 135904,
     "301": 342,
     "302": 442,
-    "303": 24448,
+    "303": 24492,
     "304": 1550,
-    "305": 275596,
+    "305": 275640,
     "306": 1,
-    "307": 71540,
+    "307": 71840,
     "308": 538,
     "309": 16832,
-    "310": 137752,
+    "310": 137760,
     "311": 316800,
-    "312": 436,
+    "312": 468,
     "313": 1470,
     "314": 220960,
     "315": 1648,
-    "317": 19964,
-    "318": 123336,
+    "317": 20008,
+    "318": 123836,
     "319": 2,
     "320": 1422,
     "321": 1920,
     "322": 2860,
     "323": 303600,
     "324": 4,
-    "325": 331128,
+    "325": 331568,
     "328": 408,
     "330": 342,
     "331": 152,
     "332": 2,
-    "333": 144353,
+    "333": 144361,
     "334": 1311,
-    "335": 21240,
+    "335": 21284,
     "336": 145200,
     "337": 240,
-    "338": 565016,
-    "341": 128681,
-    "342": 28556,
+    "338": 565192,
+    "341": 129305,
+    "342": 28600,
     "343": 1842,
     "345": 156,
-    "346": 3736,
-    "347": 358465,
-    "348": 47676,
-    "350": 1066472,
-    "361": 371848,
+    "346": 3780,
+    "347": 358553,
+    "348": 47720,
+    "350": 1066912,
+    "361": 371936,
     "363": 1207,
     "364": 1920,
-    "365": 66861,
-    "366": 107838,
+    "365": 67161,
+    "366": 109254,
     "367": 2581,
     "368": 3360,
     "369": 1471,
     "370": 6144,
     "371": 209913,
     "372": 268608,
-    "373": 27289,
-    "374": 31652,
+    "373": 27333,
+    "374": 31960,
     "375": 303601,
     "376": 316800,
     "379": 1207,
     "380": 1920,
     "383": 303601,
     "384": 316800,
-    "385": 41033,
-    "386": 60564,
+    "385": 41077,
+    "386": 61004,
     "387": 4,
     "388": 92,
-    "389": 30241,
-    "390": 54921,
+    "389": 30417,
+    "390": 55097,
     "391": 55585,
     "392": 37056,
     "397": 303601,
@@ -5206,8 +5710,8 @@
     "401": 290400,
     "403": 4,
     "404": 80,
-    "405": 565017,
-    "406": 681024,
+    "405": 565193,
+    "406": 683136,
     "407": 8333,
     "408": 15985,
     "409": 15985,
@@ -5222,8 +5726,8 @@
     "418": 276,
     "419": 290401,
     "420": 316800,
-    "421": 64925,
-    "422": 80160,
+    "421": 65597,
+    "422": 82020,
     "423": 1609,
     "424": 6920,
     "425": 286,
@@ -5232,9 +5736,9 @@
     "428": 1766,
     "429": 539,
     "430": 2272,
-    "431": 137753,
+    "431": 137761,
     "432": 158400,
-    "433": 331129,
-    "434": 474048
+    "433": 331569,
+    "434": 476160
   }
 }

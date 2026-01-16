@@ -238,29 +238,21 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                 })
                 .collect::<Vec<_>>();
                 // il faut conserver les potions qui restaurent trop de hp, si il y en a trop
-                let (wasted, not_wasted) = usable_potions
+                let (mut wasted, not_wasted) = usable_potions
                     .into_iter()
                     .partition::<Vec<_>, _>(|(_, hpgained)| *hpgained < missing_hp);
-                if wasted.is_empty() || not_wasted.len() > 1 {
-                    for (item, hpgained) in wasted {
-                        out.extend(with_effect(
-                            &[
-                                SimpleOutcome::HealPlayer(Endurance(hpgained)),
-                                SimpleOutcome::LoseItem(item, 1),
-                            ],
-                            dec,
-                        ));
-                    }
-                } else {
-                    for (item, hpgained) in wasted.into_iter().chain(not_wasted) {
-                        out.extend(with_effect(
-                            &[
-                                SimpleOutcome::HealPlayer(Endurance(hpgained)),
-                                SimpleOutcome::LoseItem(item, 1),
-                            ],
-                            dec,
-                        ));
-                    }
+                let mut drinkable = not_wasted;
+                if let Some(p) = wasted.pop() {
+                    drinkable.push(p)
+                }
+                for (item, hpgained) in drinkable {
+                    out.extend(with_effect(
+                        &[
+                            SimpleOutcome::HealPlayer(Endurance(hpgained)),
+                            SimpleOutcome::LoseItem(item, 1),
+                        ],
+                        dec,
+                    ));
                 }
             }
             out
