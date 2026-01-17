@@ -103,4 +103,9 @@ getDestinations book d =
 showFlag :: Book -> Flag -> String
 showFlag Book05 Special01 = "Jewelled Mace"
 showFlag Book05 Knowledge01 = "Scroll"
+showFlag Book03 Special01 = "KillKK1"
+showFlag Book03 Special02 = "KillKK2"
+showFlag Book03 Special03 = "KillKK3"
+showFlag Book03 Special04 = "Backnar oil"
+showFlag Book03 Knowledge01 = "GotA"
 showFlag _ f = show f

@@ -9,8 +9,8 @@ import qualified Codec.Serialise as S
 import Control.Lens hiding (argument)
 import Control.Monad (forM, forM_, guard, when)
 import Data.Aeson (ToJSON (toJSON), eitherDecodeFileStrict, encode, encodeFile, object)
-import Data.Aeson.Types (Value)
 import qualified Data.Aeson.Key as K
+import Data.Aeson.Types (Value)
 import Data.Bifunctor (first)
 import Data.Bits.Lens (bitAt)
 import qualified Data.ByteString.Lazy as BSL
@@ -27,6 +27,7 @@ import qualified Data.IntMap.Strict as IM
 import Data.List (intercalate, isSuffixOf)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe, isJust, mapMaybe)
+import Data.Ratio (denominator, numerator)
 import qualified Data.Set as S
 import qualified Data.Text.Lazy as T
 import qualified Data.Text.Lazy.IO as T
@@ -189,9 +190,9 @@ scommand =
           ( info
               ( SolDump
                   <$> dumpmode
-                    <*> soldesc
-                    <*> optional (strArgument (metavar "PATH" <> help "Dumped file path"))
-                    <*> switch (long "oneshot" <> help "Do not load further scores")
+                  <*> soldesc
+                  <*> optional (strArgument (metavar "PATH" <> help "Dumped file path"))
+                  <*> switch (long "oneshot" <> help "Do not load further scores")
               )
               (progDesc "Dump a solution")
           )
@@ -272,22 +273,27 @@ mkdot dsc (DecisionStats book res sttmap) =
             DHasFlag flg -> do
               stts <- chapterstats
               let amount = sum (M.filterWithKey (const . view (bitAt (fromEnum flg))) (_cflags stts))
-              if amount > 0
-                then Just (FlipFields [FieldLabel (T.pack (showFlag book flg)), FieldLabel (T.pack (percent amount))])
-                else Nothing
+              case amount of
+                0 -> Nothing
+                1 -> Just (FlipFields [FieldLabel (T.pack (showFlag book flg)), FieldLabel "yes"])
+                _ -> Just (FlipFields [FieldLabel (T.pack (showFlag book flg)), FieldLabel (T.pack (percent amount))])
             DHasItem itm -> do
               stts <- chapterstats
               let amount = sum (M.filterWithKey (const . hasItem itm) (_citems stts)) / if ttl == 0 then 1 else ttl
                   ttl = sum (_citems stts)
-              if amount > 0
-                then Just (FlipFields [FieldLabel (T.pack (showItem book itm)), FieldLabel (T.pack (percent amount))])
-                else Nothing
+              case amount of
+                0 -> Nothing
+                1 -> Just (FlipFields [FieldLabel (T.pack (showItem book itm)), FieldLabel "yes"])
+                _ -> Just (FlipFields [FieldLabel (T.pack (showItem book itm)), FieldLabel (T.pack (percent amount))])
             DExpectedAmount itm -> do
               stts <- chapterstats
               let amount = sum (map (\(inv, r) -> fromIntegral (itemCount itm inv) * r) $ M.toList (_citems stts)) / if ttl == 0 then 1 else ttl
                   ttl = sum (_citems stts)
               if amount > 0
-                then Just (FlipFields [FieldLabel (T.pack (showItem book itm)), FieldLabel (T.pack (printf "%.2f" (fromRational @Double amount)))])
+                then
+                  if denominator amount == 1
+                    then Just (FlipFields [FieldLabel (T.pack (showItem book itm)), FieldLabel (T.pack (show (numerator amount)))])
+                    else Just (FlipFields [FieldLabel (T.pack (showItem book itm)), FieldLabel (T.pack (printf "%.2f" (fromRational @Double amount)))])
                 else Nothing
             BackpackSize -> do
               stts <- chapterstats

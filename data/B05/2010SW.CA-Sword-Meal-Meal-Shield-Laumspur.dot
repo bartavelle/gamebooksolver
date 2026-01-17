@@ -1,6 +1,6 @@
 digraph G {
     1 [shape=record
-      ,label="{1|{1stts|100.000%|20.00\ hp}|{Gold|15.00}|{Laumspur|1.00}}"
+      ,label="{1|{1stts|100.000%|20.00\ hp}|{Gold|15}|{Laumspur|1}}"
       ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect1.htm"
       ,color="/svg/gray"];
     2 [shape=record
@@ -130,7 +130,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect34.htm"
        ,color="/svg/gray"];
     35 [shape=record
-       ,label="{35|{13600stts|61.542%|8.89\ hp}|{Scroll|61.542%}|{Gold|8.39}|{Gaoler's\ Keys|100.000%}}"
+       ,label="{35|{13600stts|61.542%|8.89\ hp}|{Scroll|61.542%}|{Gold|8.39}|{Gaoler's\ Keys|yes}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect35.htm"
        ,color="/svg/gray"];
     36 [shape=record
@@ -218,7 +218,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect57.htm"
        ,style=filled];
     58 [shape=record
-       ,label="{58|{43672stts|80.557%|12.96\ hp}|{Scroll|67.087%}|{Jewelled\ Mace|61.542%}|{Gold|13.97}|{Mace|76.396%}|{Laumspur|1.00}|{Gaoler's\ Keys|83.279%}}"
+       ,label="{58|{43672stts|80.557%|12.96\ hp}|{Scroll|67.087%}|{Jewelled\ Mace|61.542%}|{Gold|13.97}|{Mace|76.396%}|{Laumspur|1}|{Gaoler's\ Keys|83.279%}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect58.htm"
        ,color="/svg/gray"];
     59 [shape=record
@@ -262,7 +262,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect68.htm"
        ,style=filled];
     69 [shape=record
-       ,label="{69|{298stts|100.000%|20.00\ hp}|{Gold|15.00}|{Laumspur|1.00}}"
+       ,label="{69|{298stts|100.000%|20.00\ hp}|{Gold|15}|{Laumspur|1}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect69.htm"
        ,color="/svg/gray"];
     70 [shape=record
@@ -319,7 +319,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect82.htm"
        ,style=filled];
     83 [shape=record
-       ,label="{83|{5546stts|78.747%|12.39\ hp}|{Gold|8.37}|{Gaoler's\ Keys|100.000%}}"
+       ,label="{83|{5546stts|78.747%|12.39\ hp}|{Gold|8.37}|{Gaoler's\ Keys|yes}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect83.htm"
        ,color="/svg/gray"];
     84 [shape=record
@@ -371,11 +371,11 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect96.htm"
        ,style=filled];
     97 [shape=record
-       ,label="{97|{10072stts|78.747%|14.25\ hp}|{Scroll|78.747%}|{Gold|8.37}|{Gaoler's\ Keys|100.000%}}"
+       ,label="{97|{10072stts|78.747%|14.25\ hp}|{Scroll|78.747%}|{Gold|8.37}|{Gaoler's\ Keys|yes}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect97.htm"
        ,color="/svg/gray"];
     98 [shape=record
-       ,label="{98|{21564stts|13.470%|20.00\ hp}|{Laumspur|1.00}}"
+       ,label="{98|{21564stts|13.470%|20.00\ hp}|{Laumspur|1}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect98.htm"
        ,color="/svg/gray"];
     99 [shape=record
@@ -532,7 +532,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect139.htm"
         ,style=filled];
     140 [shape=record
-        ,label="{140|{3332stts|78.747%|11.42\ hp}|{Gold|8.37}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{140|{3332stts|78.747%|11.42\ hp}|{Gold|8.37}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect140.htm"
         ,color="/svg/gray"];
     141 [shape=record
@@ -672,7 +672,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect175.htm"
         ,style=filled];
     176 [shape=record
-        ,label="{176|{2stts|100.000%|20.00\ hp}|{Gold|15.00}|{Laumspur|1.00}}"
+        ,label="{176|{2stts|100.000%|20.00\ hp}|{Gold|15}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect176.htm"
         ,color="/svg/gray"];
     177 [shape=record
@@ -692,7 +692,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect180.htm"
         ,color="/svg/gray"];
     181 [shape=record
-        ,label="{181|{10752stts|78.747%|13.34\ hp}|{Scroll|78.747%}|{Gold|8.37}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{181|{10752stts|78.747%|13.34\ hp}|{Scroll|78.747%}|{Gold|8.37}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect181.htm"
         ,color="/svg/gray"];
     182 [shape=record
@@ -740,7 +740,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect193.htm"
         ,style=filled];
     194 [shape=record
-        ,label="{194|{9393stts|73.203%|15.75\ hp}|{Scroll|73.203%}|{Gold|8.37}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{194|{9393stts|73.203%|15.75\ hp}|{Scroll|73.203%}|{Gold|8.37}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect194.htm"
         ,color="/svg/gray"];
     195 [shape=record
@@ -824,7 +824,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect214.htm"
         ,color="/svg/gray"];
     215 [shape=record
-        ,label="{215|{99104stts|58.158%|16.00\ hp}|{Scroll|58.158%}|{Jewelled\ Mace|58.158%}|{Gold|16.79}|{Mace|100.000%}|{Laumspur|1.00}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{215|{99104stts|58.158%|16.00\ hp}|{Scroll|58.158%}|{Jewelled\ Mace|58.158%}|{Gold|16.79}|{Mace|yes}|{Laumspur|1}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect215.htm"
         ,color="/svg/gray"];
     216 [shape=record
@@ -844,7 +844,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect219.htm"
         ,color="/svg/gray"];
     220 [shape=record
-        ,label="{220|{364094stts|58.158%|17.43\ hp}|{Scroll|58.158%}|{Jewelled\ Mace|58.158%}|{Gold|16.79}|{Mace|100.000%}|{Laumspur|1.00}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{220|{364094stts|58.158%|17.43\ hp}|{Scroll|58.158%}|{Jewelled\ Mace|58.158%}|{Gold|16.79}|{Mace|yes}|{Laumspur|1}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect220.htm"
         ,color="/svg/gray"];
     221 [shape=record
@@ -938,7 +938,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect245.htm"
         ,style=filled];
     246 [shape=record
-        ,label="{246|{329154stts|58.158%|16.75\ hp}|{Scroll|58.158%}|{Jewelled\ Mace|58.158%}|{Gold|16.79}|{Mace|100.000%}|{Laumspur|1.00}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{246|{329154stts|58.158%|16.75\ hp}|{Scroll|58.158%}|{Jewelled\ Mace|58.158%}|{Gold|16.79}|{Mace|yes}|{Laumspur|1}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect246.htm"
         ,color="/svg/gray"];
     247 [shape=record
@@ -962,7 +962,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect251.htm"
         ,style=filled];
     252 [shape=record
-        ,label="{252|{93888stts|42.339%|16.36\ hp}|{Scroll|42.339%}|{Jewelled\ Mace|42.339%}|{Gold|16.83}|{Mace|100.000%}|{Laumspur|1.00}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{252|{93888stts|42.339%|16.36\ hp}|{Scroll|42.339%}|{Jewelled\ Mace|42.339%}|{Gold|16.83}|{Mace|yes}|{Laumspur|1}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect252.htm"
         ,color="/svg/gray"];
     253 [shape=record
@@ -1068,7 +1068,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect278.htm"
         ,style=filled];
     279 [shape=record
-        ,label="{279|{88672stts|5.234%|9.53\ hp}|{Scroll|5.234%}|{Jewelled\ Mace|5.234%}|{Gold|16.41}|{Mace|100.000%}|{Laumspur|1.00}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{279|{88672stts|5.234%|9.53\ hp}|{Scroll|5.234%}|{Jewelled\ Mace|5.234%}|{Gold|16.41}|{Mace|yes}|{Laumspur|1}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect279.htm"
         ,color="/svg/gray"];
     281 [shape=record
@@ -1239,11 +1239,11 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect323.htm"
         ,color="/svg/gray"];
     325 [shape=record
-        ,label="{325|{183668stts|8.207%|17.85\ hp}|{Scroll|8.207%}|{Gold|4.00}|{StrengthPotion|100.000%}|{Laumspur|0.01}|{Blowpipe\ and\ Sleep\ Dart|100.000%}}"
+        ,label="{325|{183668stts|8.207%|17.85\ hp}|{Scroll|8.207%}|{Gold|4}|{StrengthPotion|yes}|{Laumspur|0.01}|{Blowpipe\ and\ Sleep\ Dart|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect325.htm"
         ,color="/svg/gray"];
     326 [shape=record
-        ,label="{326|{335304stts|40.965%|19.96\ hp}|{Scroll|40.965%}|{Jewelled\ Mace|37.579%}|{Gold|11.78}|{Mace|91.735%}|{Laumspur|0.92}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{326|{335304stts|40.965%|19.96\ hp}|{Scroll|40.965%}|{Jewelled\ Mace|37.579%}|{Gold|11.78}|{Mace|91.735%}|{Laumspur|0.92}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect326.htm"
         ,color="/svg/gray"];
     327 [shape=record
@@ -1396,7 +1396,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect367.htm"
         ,style=filled];
     368 [shape=record
-        ,label="{368|{93889stts|10.585%|16.36\ hp}|{Scroll|10.585%}|{Jewelled\ Mace|10.585%}|{Gold|16.83}|{Mace|100.000%}|{Laumspur|1.00}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{368|{93889stts|10.585%|16.36\ hp}|{Scroll|10.585%}|{Jewelled\ Mace|10.585%}|{Gold|16.83}|{Mace|yes}|{Laumspur|1}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect368.htm"
         ,color="/svg/gray"];
     369 [shape=record
@@ -1444,7 +1444,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect380.htm"
         ,color="/svg/gray"];
     381 [shape=record
-        ,label="{381|{99104stts|52.924%|15.36\ hp}|{Scroll|52.924%}|{Jewelled\ Mace|52.924%}|{Gold|16.83}|{Mace|100.000%}|{Laumspur|1.00}|{Gaoler's\ Keys|100.000%}}"
+        ,label="{381|{99104stts|52.924%|15.36\ hp}|{Scroll|52.924%}|{Jewelled\ Mace|52.924%}|{Gold|16.83}|{Mace|yes}|{Laumspur|1}|{Gaoler's\ Keys|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect381.htm"
         ,color="/svg/gray"];
     382 [shape=record
@@ -1456,7 +1456,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect383.htm"
         ,color="/svg/gray"];
     384 [shape=record
-        ,label="{384|{172788stts|1.641%|18.32\ hp}|{Scroll|1.641%}|{Gold|4.00}|{StrengthPotion|100.000%}|{Laumspur|0.01}|{Blowpipe\ and\ Sleep\ Dart|100.000%}}"
+        ,label="{384|{172788stts|1.641%|18.32\ hp}|{Scroll|1.641%}|{Gold|4}|{StrengthPotion|yes}|{Laumspur|0.01}|{Blowpipe\ and\ Sleep\ Dart|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect384.htm"
         ,color="/svg/gray"];
     385 [shape=record
@@ -1509,7 +1509,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect397.htm"
         ,style=filled];
     398 [shape=record
-        ,label="{398|{172788stts|6.566%|18.32\ hp}|{Scroll|6.566%}|{Gold|4.00}|{StrengthPotion|100.000%}|{Laumspur|0.01}|{Blowpipe\ and\ Sleep\ Dart|100.000%}}"
+        ,label="{398|{172788stts|6.566%|18.32\ hp}|{Scroll|6.566%}|{Gold|4}|{StrengthPotion|yes}|{Laumspur|0.01}|{Blowpipe\ and\ Sleep\ Dart|yes}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect398.htm"
         ,color="/svg/gray"];
     399 [shape=record
@@ -1561,15 +1561,15 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect409.htm"
         ,style=filled];
     46 [shape=record
-       ,label="{46|{22984stts|8.824%|7.84\ hp}|{Laumspur|1.00}}"
+       ,label="{46|{22984stts|8.824%|7.84\ hp}|{Laumspur|1}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect46.htm"
        ,color="/svg/gray"];
     410 [shape=record
-        ,label="{410|{22985stts|8.824%|7.84\ hp}|{Laumspur|1.00}}"
+        ,label="{410|{22985stts|8.824%|7.84\ hp}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect410.htm"
         ,color="/svg/red"];
     411 [shape=record
-        ,label="{411|{22984stts|4.395%|4.85\ hp}|{Laumspur|1.00}}"
+        ,label="{411|{22984stts|4.395%|4.85\ hp}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect411.htm"
         ,color="/svg/gray"];
     91 [shape=record
@@ -1621,15 +1621,15 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect419.htm"
         ,style=filled];
     168 [shape=record
-        ,label="{168|{20068stts|13.470%|20.00\ hp}|{Laumspur|1.00}}"
+        ,label="{168|{20068stts|13.470%|20.00\ hp}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect168.htm"
         ,color="/svg/gray"];
     420 [shape=record
-        ,label="{420|{20069stts|13.470%|20.00\ hp}|{Laumspur|1.00}}"
+        ,label="{420|{20069stts|13.470%|20.00\ hp}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect420.htm"
         ,color="/svg/red"];
     421 [shape=record
-        ,label="{421|{27616stts|3.812%|15.96\ hp}|{Laumspur|1.00}}"
+        ,label="{421|{27616stts|3.812%|15.96\ hp}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/05sots/sect421.htm"
         ,color="/svg/gray"];
     190 [shape=record

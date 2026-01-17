@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -10,13 +11,15 @@
 
 module Main (main, flagAt) where
 
-import Control.Lens
+import Control.Applicative (many)
+import Control.Lens hiding (argument)
 import Control.Monad (forM_, guard)
 import Data.Aeson (eitherDecodeFileStrict)
 import Data.Bits.Lens (bitAt)
-import Data.List (intercalate, isSuffixOf, sort, sortOn)
+import Data.List (intercalate, isSuffixOf, maximumBy, sort, sortBy, sortOn)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe)
+import Data.Ord (Down (Down), comparing)
 import Data.Ratio (denominator, numerator)
 import qualified Data.Set as S
 import Data.String (fromString)
@@ -31,14 +34,21 @@ import LoneWolf.Various (showFlag)
 import Lucid
 import Lucid.Base (TermRaw)
 import Options.Applicative
-  ( Parser,
+  ( Alternative ((<|>)),
+    Parser,
     ParserInfo,
+    argument,
+    auto,
     command,
     execParser,
+    flag',
     fullDesc,
+    help,
     helper,
     info,
     long,
+    metavar,
+    option,
     progDesc,
     strOption,
     subparser,
@@ -52,14 +62,39 @@ data Opts = Opts Book Mode String
 
 data Mode
   = ChapterStats
+  | Console [CQuery] [Int]
+
+data CQuery
+  = ItemAt Item
+  | FlagAt Flag
+  | Passage
+  | Winrate
+  | Rawwinrate
 
 mode :: Parser Mode
 mode =
   subparser
     (command "chapterstats" (info (pure ChapterStats) (progDesc "Stats for chapter")))
+    <|> subparser (command "console" (info pConsole (progDesc "Item at")))
+
+pConsole :: Parser Mode
+pConsole = Console <$> many pQuery <*> many (argument auto (metavar "CHAPTER"))
+
+pQuery :: Parser CQuery
+pQuery = i <|> f <|> p <|> w <|> r
+  where
+    i = ItemAt <$> option auto (long "item")
+    f = FlagAt <$> option auto (long "flag")
+    p = flag' Passage (long "passage")
+    w = flag' Winrate (long "win" <> help "Win rate (including next book stats)")
+    r = flag' Rawwinrate (long "raw" <> help "Raw win rate (only this book)")
 
 options :: Parser Opts
-options = Opts <$> pbook <*> mode <*> strOption (long "imgsuffix" <> value "")
+options =
+  Opts
+    <$> pbook
+    <*> mode
+    <*> strOption (long "imgsuffix" <> value "")
 
 programOpts :: ParserInfo Opts
 programOpts =
@@ -294,7 +329,7 @@ blogpostStatsDG imgsuffix astts rawcols = heatmapH Nothing rowStyleGreen (Just "
       pure (mdiscname st, winrate st)
     ordered_discs = M.fromList $ zip (M.keys max_score_by_discipline) optColors
     getmaxscore d = M.findWithDefault 0 (mdiscname d) max_score_by_discipline
-    ordered = sortOn (\x -> (getmaxscore x, mdiscname x, negate (winrate x), _fp x)) astts
+    ordered = sortOn (\x -> (negate (getmaxscore x), mdiscname x, negate (winrate x), _fp x)) astts
     getentry entry col =
       let e = mpo M.! entry
           fn = case M.lookup col cmap of
@@ -382,46 +417,83 @@ finalStateRecap' imgsuffix bk astts = blogpostStats (Just "vertical") imgsuffix 
       Book05 -> (S.fromList [], S.fromList [Backpack, Shield, BodyArmor])
       _ -> (S.empty, S.empty)
 
+erawrate :: Stats -> Rational
+erawrate = sum . _cendurance . finalStat
+
+summary :: String -> Book -> [Stats] -> [(String, Stats -> (Html (), Double))] -> Html ()
+summary imgsuffix book astts cols = do
+  let bydesc = M.fromListWith (++) [(mdiscname stt, [stt]) | stt <- astts]
+      best = fmap (maximumBy (comparing erawrate)) bydesc
+  h2_ "Best raw rates"
+  blogpostStatsDG imgsuffix (M.elems best) cols
+  h2_ "Recap"
+  blogpostStatsDG imgsuffix astts cols
+  h2_ "End state details"
+  finalStateRecap' imgsuffix book astts
+
 b02stats :: String -> [Stats] -> Html ()
 b02stats imgsuffix astts = do
   let cols =
         [ ("Win rate", fmtr . winrate),
-          ("Raw rate", fmtr . sum . _cendurance . finalStat),
+          ("Raw rate", fmtr . erawrate),
           ("S money", fmtq 30 . itemAt 1 Gold),
           ("S BA", fmtb . hasitem BodyArmor),
           ("S Shield", fmtb . hasitem Shield)
         ]
-  h3_ "Recap"
-  blogpostStats Nothing imgsuffix astts cols
-  h3_ "End state details"
-  finalStateRecap' imgsuffix Book02 astts
+  summary imgsuffix Book02 astts cols
 
 b03stats :: String -> [Stats] -> Html ()
 b03stats imgsuffix astts = do
+  let vss xs = ('C' : show xs, \n -> fmtr (sum (map (`visitrate` n) xs)))
+      vs x = vss [x]
   let cols =
         [ ("Win rate", fmtr . winrate),
-          ("Raw rate", fmtr . sum . _cendurance . finalStat),
-          ("S LM", fmtb . hasitem Laumspur),
-          ("S ML", fmtqi 2 . itemAt 1 Meal),
+          ("Raw rate", fmtr . erawrate),
+          ("DM", (\c -> if c then (fromString "LM", 1) else (fromString "2M", 1)) . hasitem Laumspur),
           ("Armor", fmtb . hasitem BodyArmor),
-          ("Visited GotA", fmtb . hasflag Knowledge01),
-          ("Corridor", fmtr . visitrate 206),
-          ("Passage", fmtr . visitrate 6),
-          ("280", fmtr . visitrate 280),
-          ("Baknar oil", fmtr . finalFlag baknarOilB03),
+          ("GotA", fmtb . hasflag Knowledge01),
+          ("Corridor (206)", fmtr . visitrate 206),
+          ("Passage (6)", fmtr . visitrate 6),
           ("End SH", fmtr . finalItem silverHelmet),
-          ("End +4", fmtr . finalItem StrengthPotion4)
+          ("End +4", fmtr . finalItem StrengthPotion4),
+          ("Triangle", fmtr . finalItem blueStoneTriangleB03),
+          vs 201,
+          vs 297
         ]
-  h3_ "Recap"
-  blogpostStats Nothing imgsuffix astts cols
-  h3_ "End state details"
+  let fights =
+        map
+          (\(n, c) -> (n ++ " (" ++ show c ++ ")", fmtr . visitrate c))
+          [ ("Baknar", 103),
+            ("IB", 158),
+            ("IB", 241),
+            ("IB", 68),
+            ("IB", 14),
+            ("Frostwyrm", 265),
+            ("Kalkoth", 147),
+            ("IB", 161),
+            ("IB", 260),
+            ("IB", 296)
+          ]
+      bydesc = M.fromListWith (++) [(mdiscname stt, [stt]) | stt <- astts]
+      best = fmap (maximumBy (comparing erawrate)) bydesc
+  h2_ "Best raw rates"
+  blogpostStatsDG imgsuffix (M.elems best) cols
+  h2_ "Fights"
+  "Note: IB stands for Ice Barbarian"
+  blogpostStatsDG imgsuffix (M.elems best) fights
+  h2_ "Recap"
+  blogpostStatsDG imgsuffix astts cols
+  h2_ "All fights"
+  "Note: IB stands for Ice Barbarian"
+  blogpostStatsDG imgsuffix astts fights
+  h2_ "End state details"
   finalStateRecap' imgsuffix Book03 astts
 
 b04stats :: String -> [Stats] -> Html ()
 b04stats imgsuffix astts = do
   let cols =
         [ ("Win rate", fmtr . winrate),
-          ("Raw rate", fmtr . sum . _cendurance . finalStat),
+          ("Raw rate", fmtr . erawrate),
           ("SS", fmtb . hasitem (Weapon Sommerswerd)),
           ("SH", fmtb . hasitem silverHelmet),
           ("Fought Elix", fmtr . finalFlag FoughtElix),
@@ -438,10 +510,7 @@ b04stats imgsuffix astts = do
               (False, 0.0) -> ("n/a", 0.8)
               (True, _) -> ("used a bit", fromRational @Double finish)
               (False, _) -> ("impossible", fromRational @Double finish)
-  h3_ "Recap"
-  blogpostStatsDG imgsuffix astts cols
-  h3_ "End state details"
-  finalStateRecap' imgsuffix Book04 astts
+  summary imgsuffix Book04 astts cols
 
 b05stats :: String -> [Stats] -> Html ()
 b05stats imgsuffix astts = do
@@ -463,10 +532,7 @@ b05stats imgsuffix astts = do
           ("Dhorgaan", fmtr . visitrate 253),
           ("Keep SS", fmtr . finalItem (Weapon Sommerswerd))
         ]
-  h3_ "Recap"
-  blogpostStatsDG imgsuffix astts cols
-  h3_ "End state details"
-  finalStateRecap' imgsuffix Book05 astts
+  summary imgsuffix Book05 astts cols
 
 main :: IO ()
 main = do
@@ -479,3 +545,18 @@ main = do
       Book04 -> print (b04stats imgsuffix dt)
       Book05 -> print (b05stats imgsuffix dt)
       _ -> error ("unsupported book stats for " ++ show book)
+    Console lst cids -> do
+      forM_ cids $ \cid -> do
+        putStrLn ("chapter " <> show cid)
+        let mkcol :: Stats -> CQuery -> Rational
+            mkcol s = \case
+              ItemAt i -> itemAt cid i s
+              FlagAt f -> flagAt cid f s
+              Passage -> visitrate cid s / erawrate s
+              Winrate -> winrate s
+              Rawwinrate -> erawrate s
+            lns = M.fromListWith (++) (map mkline dt)
+            mkline st = (map (mkcol st) lst, [_fp st])
+            showline :: ([Rational], [FilePath]) -> String
+            showline (cols, fp) = intercalate "\t" (map (printf "%.5f" . fromRational @Double) cols ++ if length lns == 1 then ["ALL"] else fp)
+        putStrLn (unlines (map showline (reverse $ M.toList lns)))

@@ -1,6 +1,6 @@
 digraph G {
     1 [shape=record
-      ,label="{1|{1stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+      ,label="{1|{1stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
       ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect1.htm"
       ,color="/svg/gray"];
     2 [shape=record
@@ -44,7 +44,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect11.htm"
        ,style=filled];
     12 [shape=record
-       ,label="{12|{77000stts|90.000%|24.00\ hp}|{Backpack\ items|6.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.17}}"
+       ,label="{12|{77000stts|90.000%|24.00\ hp}|{Backpack\ items|6.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.17}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect12.htm"
        ,color="/svg/gray"];
     13 [shape=record
@@ -73,12 +73,12 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect18.htm"
        ,color="/svg/gray"];
     19 [shape=record
-       ,label="{19|{4stts|50.000%|24.00\ hp}|{Backpack\ items|8.00}|{Laumspur|1.00}}"
+       ,label="{19|{4stts|50.000%|24.00\ hp}|{Backpack\ items|8.00}|{Laumspur|1}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect19.htm"
        ,style=filled
        ,color="/svg/yellow"];
     20 [shape=record
-       ,label="{20|{36428stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+       ,label="{20|{36428stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect20.htm"
        ,color="/svg/gray"];
     21 [shape=record
@@ -98,7 +98,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect24.htm"
        ,style=filled];
     25 [shape=record
-       ,label="{25|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+       ,label="{25|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect25.htm"
        ,color="/svg/gray"];
     27 [shape=record
@@ -130,7 +130,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect33.htm"
        ,color="/svg/gray"];
     34 [shape=record
-       ,label="{34|{129726stts|90.000%|17.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+       ,label="{34|{129726stts|90.000%|17.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect34.htm"
        ,color="/svg/gray"];
     35 [shape=record
@@ -146,11 +146,11 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect38.htm"
        ,style=filled];
     39 [shape=record
-       ,label="{39|{80500stts|36.000%|23.75\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+       ,label="{39|{80500stts|36.000%|23.75\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect39.htm"
        ,color="/svg/gray"];
     40 [shape=record
-       ,label="{40|{23614stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+       ,label="{40|{23614stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect40.htm"
        ,color="/svg/gray"];
     41 [shape=record
@@ -171,7 +171,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect44.htm"
        ,style=filled];
     45 [shape=record
-       ,label="{45|{17162stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+       ,label="{45|{17162stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect45.htm"
        ,color="/svg/gray"];
     48 [shape=record
@@ -199,11 +199,11 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect54.htm"
        ,style=filled];
     55 [shape=record
-       ,label="{55|{21032stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+       ,label="{55|{21032stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect55.htm"
        ,color="/svg/gray"];
     57 [shape=record
-       ,label="{57|{16597stts|90.000%|23.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+       ,label="{57|{16597stts|90.000%|23.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect57.htm"
        ,color="/svg/gray"];
     58 [shape=record
@@ -231,7 +231,7 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect64.htm"
        ,style=filled];
     66 [shape=record
-       ,label="{66|{36702stts|90.000%|22.50\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+       ,label="{66|{36702stts|90.000%|22.50\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect66.htm"
        ,color="/svg/gray"];
     67 [shape=record
@@ -255,11 +255,11 @@ digraph G {
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect71.htm"
        ,style=filled];
     72 [shape=record
-       ,label="{72|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+       ,label="{72|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect72.htm"
        ,color="/svg/gray"];
     73 [shape=record
-       ,label="{73|{181688stts|90.000%|22.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+       ,label="{73|{181688stts|90.000%|22.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
        ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect73.htm"
        ,color="/svg/gray"];
     74 [shape=record
@@ -353,7 +353,7 @@ digraph G {
        ,style=filled
        ,fontcolor="/svg/white"];
     100 [shape=record
-        ,label="{100|{211472stts|90.000%|19.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{100|{211472stts|90.000%|19.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect100.htm"
         ,color="/svg/gray"];
     101 [shape=record
@@ -361,7 +361,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect101.htm"
         ,color="/svg/gray"];
     102 [shape=record
-        ,label="{102|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+        ,label="{102|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect102.htm"
         ,color="/svg/gray"];
     103 [shape=record
@@ -413,7 +413,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect115.htm"
         ,color="/svg/gray"];
     116 [shape=record
-        ,label="{116|{33194stts|90.000%|21.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{116|{33194stts|90.000%|21.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect116.htm"
         ,color="/svg/gray"];
     117 [shape=record
@@ -425,7 +425,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect118.htm"
         ,style=filled];
     119 [shape=record
-        ,label="{119|{191600stts|90.000%|21.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{119|{191600stts|90.000%|21.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect119.htm"
         ,color="/svg/gray"];
     120 [shape=record
@@ -445,11 +445,11 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect123.htm"
         ,style=filled];
     124 [shape=record
-        ,label="{124|{40218stts|90.000%|23.10\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{124|{40218stts|90.000%|23.10\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect124.htm"
         ,color="/svg/gray"];
     126 [shape=record
-        ,label="{126|{2stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+        ,label="{126|{2stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect126.htm"
         ,color="/svg/yellow"];
     127 [shape=record
@@ -470,7 +470,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect130.htm"
         ,style=filled];
     131 [shape=record
-        ,label="{131|{750stts|100.000%|24.00\ hp}|{Backpack\ items|8.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{131|{750stts|100.000%|24.00\ hp}|{Backpack\ items|8.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect131.htm"
         ,color="/svg/gray"];
     132 [shape=record
@@ -494,7 +494,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect136.htm"
         ,style=filled];
     137 [shape=record
-        ,label="{137|{80500stts|90.000%|23.99\ hp}|{Backpack\ items|6.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.17}}"
+        ,label="{137|{80500stts|90.000%|23.99\ hp}|{Backpack\ items|6.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect137.htm"
         ,color="/svg/gray"];
     138 [shape=record
@@ -506,15 +506,15 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect139.htm"
         ,color="/svg/yellow"];
     140 [shape=record
-        ,label="{140|{73500stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{140|{73500stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect140.htm"
         ,color="/svg/gray"];
     141 [shape=record
-        ,label="{141|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+        ,label="{141|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect141.htm"
         ,color="/svg/yellow"];
     142 [shape=record
-        ,label="{142|{159620stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{142|{159620stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect142.htm"
         ,color="/svg/gray"];
     144 [shape=record
@@ -531,7 +531,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect146.htm"
         ,style=filled];
     148 [shape=record
-        ,label="{148|{164500stts|90.000%|23.95\ hp}|{Backpack\ items|6.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.17}}"
+        ,label="{148|{164500stts|90.000%|23.95\ hp}|{Backpack\ items|6.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect148.htm"
         ,color="/svg/gray"];
     149 [shape=record
@@ -571,7 +571,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect158.htm"
         ,style=filled];
     159 [shape=record
-        ,label="{159|{84030stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{159|{84030stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect159.htm"
         ,color="/svg/gray"];
     160 [shape=record
@@ -587,7 +587,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect162.htm"
         ,style=filled];
     163 [shape=record
-        ,label="{163|{40246stts|90.000%|22.69\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{163|{40246stts|90.000%|22.69\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect163.htm"
         ,color="/svg/gray"];
     164 [shape=record
@@ -616,7 +616,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect170.htm"
         ,style=filled];
     171 [shape=record
-        ,label="{171|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+        ,label="{171|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect171.htm"
         ,color="/svg/gray"];
     172 [shape=record
@@ -628,7 +628,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect173.htm"
         ,style=filled];
     174 [shape=record
-        ,label="{174|{84000stts|18.000%|23.99\ hp}|{Backpack\ items|5.37}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|1.87}}"
+        ,label="{174|{84000stts|18.000%|23.99\ hp}|{Backpack\ items|5.37}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|1.87}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect174.htm"
         ,color="/svg/gray"];
     175 [shape=record
@@ -657,7 +657,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect180.htm"
         ,style=filled];
     181 [shape=record
-        ,label="{181|{36429stts|10.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{181|{36429stts|10.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect181.htm"
         ,style=filled
         ,fontcolor="/svg/white"];
@@ -674,12 +674,12 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect184.htm"
         ,style=filled];
     185 [shape=record
-        ,label="{185|{24361stts|100.000%|24.00\ hp}|{Backpack\ items|8.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{185|{24361stts|100.000%|24.00\ hp}|{Backpack\ items|8.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect185.htm"
         ,style=filled
         ,color="/svg/yellow"];
     186 [shape=record
-        ,label="{186|{29703stts|90.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{186|{29703stts|90.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect186.htm"
         ,color="/svg/red"];
     187 [shape=record
@@ -724,7 +724,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect199.htm"
         ,style=filled];
     200 [shape=record
-        ,label="{200|{18452stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{200|{18452stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect200.htm"
         ,color="/svg/gray"];
     201 [shape=record
@@ -736,7 +736,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect203.htm"
         ,style=filled];
     204 [shape=record
-        ,label="{204|{163828stts|90.000%|23.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{204|{163828stts|90.000%|23.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect204.htm"
         ,color="/svg/yellow"];
     205 [shape=record
@@ -760,7 +760,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect210.htm"
         ,style=filled];
     211 [shape=record
-        ,label="{211|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+        ,label="{211|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect211.htm"
         ,color="/svg/gray"];
     212 [shape=record
@@ -776,7 +776,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect214.htm"
         ,style=filled];
     215 [shape=record
-        ,label="{215|{201512stts|90.000%|20.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{215|{201512stts|90.000%|20.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect215.htm"
         ,color="/svg/gray"];
     216 [shape=record
@@ -796,7 +796,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect219.htm"
         ,style=filled];
     220 [shape=record
-        ,label="{220|{41996stts|90.000%|21.90\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{220|{41996stts|90.000%|21.90\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect220.htm"
         ,color="/svg/gray"];
     221 [shape=record
@@ -816,7 +816,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect224.htm"
         ,style=filled];
     225 [shape=record
-        ,label="{225|{38178stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{225|{38178stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect225.htm"
         ,color="/svg/gray"];
     226 [shape=record
@@ -852,7 +852,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect234.htm"
         ,style=filled];
     235 [shape=record
-        ,label="{235|{221432stts|90.000%|18.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{235|{221432stts|90.000%|18.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect235.htm"
         ,color="/svg/gray"];
     236 [shape=record
@@ -897,7 +897,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect245.htm"
         ,style=filled];
     246 [shape=record
-        ,label="{246|{140889stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{246|{140889stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect246.htm"
         ,color="/svg/gray"];
     247 [shape=record
@@ -909,7 +909,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect248.htm"
         ,style=filled];
     249 [shape=record
-        ,label="{249|{122496stts|90.000%|23.35\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{249|{122496stts|90.000%|23.35\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect249.htm"
         ,color="/svg/gray"];
     250 [shape=record
@@ -925,7 +925,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect252.htm"
         ,style=filled];
     253 [shape=record
-        ,label="{253|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+        ,label="{253|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect253.htm"
         ,color="/svg/gray"];
     254 [shape=record
@@ -933,7 +933,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect254.htm"
         ,color="/svg/gray"];
     255 [shape=record
-        ,label="{255|{31448stts|90.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{255|{31448stts|90.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect255.htm"
         ,color="/svg/gray"];
     256 [shape=record
@@ -945,7 +945,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect257.htm"
         ,color="/svg/gray"];
     258 [shape=record
-        ,label="{258|{173024stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{258|{173024stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect258.htm"
         ,color="/svg/gray"];
     259 [shape=record
@@ -992,7 +992,7 @@ digraph G {
         ,style=filled
         ,color="/svg/yellow"];
     270 [shape=record
-        ,label="{270|{151180stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{270|{151180stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect270.htm"
         ,color="/svg/gray"];
     271 [shape=record
@@ -1004,7 +1004,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect272.htm"
         ,style=filled];
     273 [shape=record
-        ,label="{273|{2stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+        ,label="{273|{2stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect273.htm"
         ,color="/svg/gray"];
     274 [shape=record
@@ -1040,7 +1040,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect282.htm"
         ,color="/svg/gray"];
     283 [shape=record
-        ,label="{283|{79536stts|90.000%|23.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{283|{79536stts|90.000%|23.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect283.htm"
         ,color="/svg/gray"];
     284 [shape=record
@@ -1048,7 +1048,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect284.htm"
         ,style=filled];
     286 [shape=record
-        ,label="{286|{19742stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{286|{19742stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect286.htm"
         ,color="/svg/gray"];
     288 [shape=record
@@ -1056,11 +1056,11 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect288.htm"
         ,color="/svg/gray"];
     289 [shape=record
-        ,label="{289|{33194stts|90.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{289|{33194stts|90.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect289.htm"
         ,color="/svg/gray"];
     290 [shape=record
-        ,label="{290|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2.00}}"
+        ,label="{290|{4stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|2}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect290.htm"
         ,color="/svg/gray"];
     291 [shape=record
@@ -1096,7 +1096,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect298.htm"
         ,style=filled];
     300 [shape=record
-        ,label="{300|{36428stts|40.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{300|{36428stts|40.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect300.htm"
         ,color="/svg/gray"];
     301 [shape=record
@@ -1124,7 +1124,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect306.htm"
         ,style=filled];
     307 [shape=record
-        ,label="{307|{15912stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{307|{15912stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect307.htm"
         ,color="/svg/gray"];
     309 [shape=record
@@ -1144,7 +1144,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect313.htm"
         ,style=filled];
     314 [shape=record
-        ,label="{314|{70000stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{314|{70000stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect314.htm"
         ,color="/svg/gray"];
     315 [shape=record
@@ -1160,7 +1160,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect317.htm"
         ,style=filled];
     318 [shape=record
-        ,label="{318|{33194stts|90.000%|22.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{318|{33194stts|90.000%|22.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect318.htm"
         ,color="/svg/gray"];
     319 [shape=record
@@ -1180,7 +1180,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect322.htm"
         ,style=filled];
     323 [shape=record
-        ,label="{323|{80500stts|36.000%|23.75\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{323|{80500stts|36.000%|23.75\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect323.htm"
         ,color="/svg/gray"];
     324 [shape=record
@@ -1217,7 +1217,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect332.htm"
         ,style=filled];
     333 [shape=record
-        ,label="{333|{38469stts|90.000%|23.60\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{333|{38469stts|90.000%|23.60\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect333.htm"
         ,color="/svg/gray"];
     334 [shape=record
@@ -1250,7 +1250,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect340.htm"
         ,style=filled];
     341 [shape=record
-        ,label="{341|{34679stts|90.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{341|{34679stts|90.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect341.htm"
         ,color="/svg/gray"];
     342 [shape=record
@@ -1283,11 +1283,11 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect348.htm"
         ,style=filled];
     349 [shape=record
-        ,label="{349|{22318stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{349|{22318stts|100.000%|24.00\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect349.htm"
         ,color="/svg/gray"];
     350 [shape=record
-        ,label="{350|{314808stts|70.730%|21.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{350|{314808stts|70.730%|21.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect350.htm"
         ,color="/svg/gray"];
     360 [shape=record
@@ -1295,7 +1295,7 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect143b.htm"
         ,color="/svg/red"];
     361 [shape=record
-        ,label="{270b|{111120stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|4.17}}"
+        ,label="{270b|{111120stts|90.000%|24.00\ hp}|{Backpack\ items|7.67}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|4.17}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect270b.htm"
         ,color="/svg/gray"];
     362 [shape=record
@@ -1503,15 +1503,15 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect396.htm"
         ,style=filled];
     153 [shape=record
-        ,label="{153|{80500stts|18.000%|23.75\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{153|{80500stts|18.000%|23.75\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect153.htm"
         ,color="/svg/gray"];
     397 [shape=record
-        ,label="{397|{80501stts|18.000%|23.75\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{397|{80501stts|18.000%|23.75\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect397.htm"
         ,color="/svg/red"];
     398 [shape=record
-        ,label="{398|{84000stts|18.000%|18.94\ hp}|{Backpack\ items|7.00}|{StrengthPotion|100.000%}|{Flask\ of\ Holy\ Water|100.000%}|{Laumspur|3.50}}"
+        ,label="{398|{84000stts|18.000%|18.94\ hp}|{Backpack\ items|7.00}|{StrengthPotion|yes}|{Flask\ of\ Holy\ Water|yes}|{Laumspur|3.50}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect398.htm"
         ,color="/svg/gray"];
     169 [shape=record
@@ -1611,15 +1611,15 @@ digraph G {
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect416.htm"
         ,style=filled];
     233 [shape=record
-        ,label="{233|{12stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|1.00}}"
+        ,label="{233|{12stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect233.htm"
         ,color="/svg/gray"];
     417 [shape=record
-        ,label="{417|{12stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|1.00}}"
+        ,label="{417|{12stts|50.000%|24.00\ hp}|{Backpack\ items|7.00}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect417.htm"
         ,color="/svg/red"];
     418 [shape=record
-        ,label="{418|{204stts|50.000%|20.54\ hp}|{Backpack\ items|7.00}|{Laumspur|1.00}}"
+        ,label="{418|{204stts|50.000%|20.54\ hp}|{Backpack\ items|7.00}|{Laumspur|1}}"
         ,URL="https://www.projectaon.org/en/xhtml/lw/04tcod/sect418.htm"
         ,color="/svg/gray"];
     260 [shape=record
