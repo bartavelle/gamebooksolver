@@ -78,6 +78,7 @@ import Solver (Probably)
 import System.Directory (getDirectoryContents)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
+import LoneWolf.Rocq (rocqChapter)
 
 pchapters :: Book -> [(ChapterId, Chapter)]
 pchapters book = case book of
@@ -128,6 +129,7 @@ data Command
   | ShowStates FilePath (Log Selector)
   | Dot FilePath (Maybe FilePath)
   | DumpBook Book
+  | DumpBookRocq Book
   | DumpBooks
 
 options :: Parser Opts
@@ -202,6 +204,7 @@ scommand =
         <> command "decodeitems" (info (DecodeItems <$> pbook <*> argument auto (metavar "ITEMS" <> help "numerical representation of items")) (progDesc "Decode numerical inventory"))
         <> command "dot" (info (Dot <$> strArgument (help "path to the json dump") <*> optional (strArgument (help "path to the display specification"))) (progDesc "Generate a dot file from the json dump"))
         <> command "dumpbook" (info (DumpBook <$> pbook) (progDesc "Dump a book as JSON"))
+        <> command "rocqdump" (info (DumpBookRocq <$> pbook) (progDesc "Dump a book as Rocq source"))
         <> command "dumpbooks" (info (pure DumpBooks) (progDesc "Dump all book data, for consumption with the web site"))
     )
 
@@ -479,6 +482,7 @@ main = do
       dt <- mapM loadSiteData [Book01 .. Book05]
       BS8.putStrLn (encode (object dt))
     DumpBook bk -> BS8.putStrLn (encode (pchapters bk & traverse . _2 %~ fmap ERatio))
+    DumpBookRocq bk -> rocqChapter (pchapters bk)
     SolDump dmode sd mtarget oneshot -> do
       res <-
         if oneshot

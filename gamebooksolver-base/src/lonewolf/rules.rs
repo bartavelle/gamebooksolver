@@ -54,7 +54,7 @@ pub fn update_simple<PREV: StoredEquipment>(
             if *canhunt == CanHunt::Hunt && ccst.discipline.contains(&Discipline::Hunting) {
                 return;
             }
-            if b01ls && (max_hp(ccst, cvar) - cvar.curendurance >= 3) {
+            if b01ls && (max_hp(ccst, cvar) - cvar.curendurance >= 3) && cvar.cequipment.has_itemb(&Item::Laumspur) {
                 cvar.heal(ccst, 3);
                 cvar.cequipment.del_item(&Item::Laumspur, 1);
                 return;
@@ -63,7 +63,7 @@ pub fn update_simple<PREV: StoredEquipment>(
                 cvar.cequipment.del_item(&Item::Meal, 1);
                 return;
             }
-            if b01ls {
+            if b01ls && cvar.cequipment.has_itemb(&Item::Laumspur) {
                 cvar.heal(ccst, 3);
                 cvar.cequipment.del_item(&Item::Laumspur, 1);
                 return;
@@ -86,9 +86,6 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
     match outcome {
         ChapterOutcome::Goto(cid2) => {
             // must be checked before healing
-            if cvar.curendurance <= 0 {
-                return vec![Proba::certain(NextStep::HasLost(cid.0))];
-            }
             let max_chapter = ChapterId(if ccst.bookid == Book::Book05 { 400 } else { 350 });
             let mut nv = *cvar;
             if cid < max_chapter && cvar.flags.has(Flag::Poisonned2) {
