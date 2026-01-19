@@ -444,8 +444,6 @@ b02stats imgsuffix astts = do
 
 b03stats :: String -> [Stats] -> Html ()
 b03stats imgsuffix astts = do
-  let vss xs = ('C' : show xs, \n -> fmtr (sum (map (`visitrate` n) xs)))
-      vs x = vss [x]
   let cols =
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . erawrate),
@@ -456,9 +454,7 @@ b03stats imgsuffix astts = do
           ("Passage (6)", fmtr . visitrate 6),
           ("End SH", fmtr . finalItem silverHelmet),
           ("End +4", fmtr . finalItem StrengthPotion4),
-          ("Triangle", fmtr . finalItem blueStoneTriangleB03),
-          vs 201,
-          vs 297
+          ("Triangle", fmtr . finalItem blueStoneTriangleB03)
         ]
   let fights =
         map

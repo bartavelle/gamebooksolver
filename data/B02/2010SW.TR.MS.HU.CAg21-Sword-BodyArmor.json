@@ -1,0 +1,33 @@
+{
+  "mbook": "Book02",
+  "msdisciplines": [
+    "SixthSense",
+    "Healing",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindBlast",
+    "AnimalKinship",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Sword": 1,
+      "BodyArmor": 1
+    },
+    "gold": 21,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.5713619037125613,
+      "mratio": {
+        "radix": 16,
+        "value": "56ce762b69f8d1c158b4373f06f3d04afba1b178efe3d3bb20eb2da3d00389f153000000000000000000000000000000000000000000000000000000000000000000000005a314c28ea06acd1815f6dded907d51312ccba4233b4a12cc876ec5f4db4e6f9/97edd871cfda3a5697758bf0e3cbb5ac5741c64000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "states": 5587963
+    }
+  ]
+}

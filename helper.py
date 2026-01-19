@@ -90,9 +90,7 @@ def adjust_jsons(dir: str, options: List[str]):
             json.dump(new_content, open(newpath, "w"))
 
 
-B02BASE = [
-    "-Sword-Shield",
-]
+B02BASE = ["-Sword-Shield", "-Sword-BodyArmor"]
 
 B03OPTIONS = ["FLGKnowledge01", "Helmet"]
 B03BASE = [
@@ -107,7 +105,13 @@ B04BASE = [
     "g0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
 ]
 
-B05OPTIONS = ["SilverHelmet", "StrengthPotion4", "FLGFoughtElix", "BodyArmor", "StrengthPotion"]
+B05OPTIONS = [
+    "SilverHelmet",
+    "StrengthPotion4",
+    "FLGFoughtElix",
+    "BodyArmor",
+    "StrengthPotion",
+]
 B05BASE = [
     "-Sword-Meal-Meal-Shield-Laumspur",
     "-Sommerswerd-Meal-Meal-Shield-Laumspur",
@@ -145,10 +149,14 @@ for t in B02BASE:
                             if d3 > d4:
                                 for gold in range(10, 28):
                                     if gold == 15:
-                                        TGTS2.append("data/B02/2010SW.%s.%s.%s.%s%s.bin" % (d1, d2, d3, d4, t))
+                                        TGTS2.append(
+                                            "data/B02/2010SW.%s.%s.%s.%s%s.bin"
+                                            % (d1, d2, d3, d4, t)
+                                        )
                                     else:
                                         TGTS2.append(
-                                            "data/B02/2010SW.%s.%s.%s.%sg%d%s.bin" % (d1, d2, d3, d4, gold, t)
+                                            "data/B02/2010SW.%s.%s.%s.%sg%d%s.bin"
+                                            % (d1, d2, d3, d4, gold, t)
                                         )
 
 TGTS3: List[str] = []
@@ -176,12 +184,15 @@ for d1 in RDISCS:
 def chunked_makefile(n: int, l: List[str], cs: int):
     print("# LOW%02d : %d" % (n, len(l)))
     lc = list(chunks(l, cs))
-    for (i, l) in enumerate(lc):
+    for i, l in enumerate(lc):
         print("LOW%02d_%d = %s" % (n, i, " ".join(l)))
         print("")
         print("low%02d_%d: $(LOW%02d_%d)" % (n, i, n, i))
         print("")
-    print("TARGETSLOWB%02d = %s" % (n, " ".join("$(LOW%02d_%d)" % (n, i) for i in range(0, len(lc)))))
+    print(
+        "TARGETSLOWB%02d = %s"
+        % (n, " ".join("$(LOW%02d_%d)" % (n, i) for i in range(0, len(lc))))
+    )
     print("")
 
 
