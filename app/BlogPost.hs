@@ -12,14 +12,16 @@
 module Main (main, flagAt) where
 
 import Control.Applicative (many)
+import Control.Concurrent.ParallelIO (parallel)
 import Control.Lens hiding (argument)
 import Control.Monad (forM_, guard)
+import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (eitherDecodeFileStrict)
 import Data.Bits.Lens (bitAt)
-import Data.List (intercalate, isSuffixOf, maximumBy, sort, sortBy, sortOn)
+import Data.List (intercalate, isSuffixOf, maximumBy, sort, sortOn)
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe)
-import Data.Ord (Down (Down), comparing)
+import Data.Ord (comparing)
 import Data.Ratio (denominator, numerator)
 import qualified Data.Set as S
 import Data.String (fromString)
@@ -55,14 +57,19 @@ import Options.Applicative
     value,
     (<**>),
   )
+import qualified Options.Applicative as O
+import System.Console.Haskeline
 import System.Directory (getDirectoryContents)
 import Text.Printf (printf)
+import Text.Read (readMaybe)
+import GHC.RTS.Flags (GiveGCStats(SummaryGCStats))
 
 data Opts = Opts Book Mode String
 
 data Mode
   = ChapterStats
-  | Console [CQuery] [Int]
+  | Console [CQuery] [Int] Bool
+  | Repl
 
 data CQuery
   = ItemAt Item
@@ -70,24 +77,27 @@ data CQuery
   | Passage
   | Winrate
   | Rawwinrate
+  | Weapons
 
 mode :: Parser Mode
 mode =
   subparser
     (command "chapterstats" (info (pure ChapterStats) (progDesc "Stats for chapter")))
     <|> subparser (command "console" (info pConsole (progDesc "Item at")))
+    <|> subparser (command "repl" (info (pure Repl) (progDesc "repl")))
 
 pConsole :: Parser Mode
-pConsole = Console <$> many pQuery <*> many (argument auto (metavar "CHAPTER"))
+pConsole = Console <$> many pQuery <*> many (argument auto (metavar "CHAPTER")) <*> O.switch (long "details")
 
 pQuery :: Parser CQuery
-pQuery = i <|> f <|> p <|> w <|> r
+pQuery = i <|> f <|> p <|> w <|> r <|> ws
   where
     i = ItemAt <$> option auto (long "item")
     f = FlagAt <$> option auto (long "flag")
     p = flag' Passage (long "passage")
     w = flag' Winrate (long "win" <> help "Win rate (including next book stats)")
     r = flag' Rawwinrate (long "raw" <> help "Raw win rate (only this book)")
+    ws = flag' Rawwinrate (long "weapons" <> help "Amount of weapons")
 
 options :: Parser Opts
 options =
@@ -129,7 +139,7 @@ loadData book = do
         Book04 -> "data/B04/"
         Book05 -> "data/B05/"
   allfiles <- map (bookdir <>) . filter (isSuffixOf ".jot") <$> getDirectoryContents bookdir
-  allcontent <- mapM loadContent allfiles
+  allcontent <- parallel (map loadContent allfiles)
   mapM_ traceM (allcontent ^.. traverse . _Left)
   let convert :: (FilePath, DecisionStats ERatio, Multistat) -> Stats
       convert (fp, stts, ms) =
@@ -530,6 +540,34 @@ b05stats imgsuffix astts = do
         ]
   summary imgsuffix Book05 astts cols
 
+showlineforcol :: [CQuery] -> Bool -> [Stats] -> ChapterId -> String
+showlineforcol lst detailled dt cid =
+  let mkcol :: Stats -> CQuery -> Rational
+      mkcol s = \case
+        ItemAt i -> itemAt cid i s
+        FlagAt f -> flagAt cid f s
+        Passage -> visitrate cid s
+        Winrate -> winrate s
+        Rawwinrate -> erawrate s
+        Weapons -> sum (map (\w -> itemAt cid (Weapon w) s) [minBound .. maxBound])
+      lns :: M.Map [Rational] [Stats]
+      lns = M.fromListWith (++) (map mkline dt)
+      mkline :: Stats -> ([Rational], [Stats])
+      mkline st = (map (mkcol st) lst, [st])
+
+      merge_discs stts = foldl1 S.intersection (map (S.fromList . _sdisciplines) stts)
+      all_common_discs = merge_discs dt
+
+      showline :: ([Rational], [Stats]) -> String
+      showline (cols, stts) = intercalate "\t" (map (\n -> if n == 0 then "ZERO   " else printf "%.5f" (fromRational @Double n)) cols ++ details)
+        where
+          common_discs = merge_discs stts `S.difference` all_common_discs
+          details
+            | detailled = if length lns == 1 then ["ALL"] else map _fp stts
+            | not (S.null common_discs) = show (length stts) : map show (S.toList common_discs)
+            | otherwise = [show (length stts)]
+   in unlines (map showline (reverse $ M.toList lns))
+
 main :: IO ()
 main = do
   Opts book mde imgsuffix <- execParser programOpts
@@ -541,18 +579,26 @@ main = do
       Book04 -> print (b04stats imgsuffix dt)
       Book05 -> print (b05stats imgsuffix dt)
       _ -> error ("unsupported book stats for " ++ show book)
-    Console lst cids -> do
+    Console lst cids detailled -> do
       forM_ cids $ \cid -> do
         putStrLn ("chapter " <> show cid)
-        let mkcol :: Stats -> CQuery -> Rational
-            mkcol s = \case
-              ItemAt i -> itemAt cid i s
-              FlagAt f -> flagAt cid f s
-              Passage -> visitrate cid s / erawrate s
-              Winrate -> winrate s
-              Rawwinrate -> erawrate s
-            lns = M.fromListWith (++) (map mkline dt)
-            mkline st = (map (mkcol st) lst, [_fp st])
-            showline :: ([Rational], [FilePath]) -> String
-            showline (cols, fp) = intercalate "\t" (map (printf "%.5f" . fromRational @Double) cols ++ if length lns == 1 then ["ALL"] else fp)
-        putStrLn (unlines (map showline (reverse $ M.toList lns)))
+        putStrLn (showlineforcol lst detailled dt cid)
+    Repl ->
+      let loop = do
+            minput <- getInputLine "% "
+            case fmap words minput of
+              Just ["quit"] -> pure ()
+              Just [n] | Just cid <- readMaybe n -> liftIO (putStrLn (showlineforcol [Passage] False dt cid)) >> loop
+              Just ["p", n] | Just cid <- readMaybe n -> liftIO (putStrLn (showlineforcol [Passage] True dt cid)) >> loop
+              Just ["i", itm, n] | Just cid <- readMaybe n, Right ritm <- readItem itm -> liftIO (putStrLn (showlineforcol [ItemAt ritm] False dt cid)) >> loop
+              Just ["i", 'S':num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenSpecial (GenCounter sitm))] False dt cid)) >> loop
+              Just ["i", 'G':num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenBackpack (GenCounter sitm))] False dt cid)) >> loop
+              Just ["ip", itm, n] | Just cid <- readMaybe n, Right ritm <- readItem itm -> liftIO (putStrLn (showlineforcol [ItemAt ritm] True dt cid)) >> loop
+              Just ["ip", 'S':num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenSpecial (GenCounter sitm))] True dt cid)) >> loop
+              Just ["ip", 'G':num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenBackpack (GenCounter sitm))] True dt cid)) >> loop
+              Just ["f", sflg, n] | Just cid <- readMaybe n, Just flg <- readMaybe sflg -> liftIO (putStrLn (showlineforcol [FlagAt flg] False dt cid)) >> loop
+              Just ["fp", sflg, n] | Just cid <- readMaybe n, Just flg <- readMaybe sflg -> liftIO (putStrLn (showlineforcol [FlagAt flg] True dt cid)) >> loop
+              Just ["wpns", n] | Just cid <- readMaybe n -> liftIO (putStrLn (showlineforcol [Weapons] False dt cid)) >> loop
+              Just ["pwpns", n] | Just cid <- readMaybe n -> liftIO (putStrLn (showlineforcol [Weapons] True dt cid)) >> loop
+              _ -> loop
+       in runInputT defaultSettings loop

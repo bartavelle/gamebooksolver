@@ -45,11 +45,11 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/16bcc41e9000"
         },
-        "Backpack/Shield/Meal/Gold/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:5/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/b5e620f4800"
         }
@@ -69,37 +69,49 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "196": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
     "10": {
       "endurance": {
+        "17": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "18": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "19": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "flags": {
@@ -109,7 +121,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:2/Sword": {
+        "Backpack/Shield/Meal:2/Gold:6/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -199,7 +211,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/5"
         }
@@ -221,97 +233,35 @@
     },
     "23": {
       "endurance": {
-        "17": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "15362bf60e4b/58d15e17628000"
-        },
         "20": {
           "radix": 16,
-          "value": "964a0033b9a1f/b1a2bc2ec5000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "144": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      }
-    },
-    "25": {
-      "endurance": {
-        "20": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Meal/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "5c8f4b77843/b5e620f4800"
-      },
-      "transitions": {
-        "116": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -319,29 +269,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "66": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -359,7 +309,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:27": {
+        "Backpack/Shield/Meal:2/Gold:27/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -377,123 +327,63 @@
     },
     "31": {
       "endurance": {
-        "6": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "7": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "8": {
-          "radix": 16,
-          "value": "d7f9056c347/2c68af0bb14000"
-        },
-        "9": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "10": {
-          "radix": 16,
-          "value": "5c8f4b77843/11c37937e08000"
-        },
-        "11": {
-          "radix": 16,
-          "value": "287eb10449d5/58d15e17628000"
-        },
-        "12": {
-          "radix": 16,
-          "value": "f8c11ad13341/58d15e17628000"
-        },
-        "13": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "3fa283e22ae1/8e1bc9bf04000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "3bc73612855f/8e1bc9bf04000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "115ade2668c9/2386f26fc1000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "5c8f4b77843/e35fa931a000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "5c8f4b77843/470de4df8200"
-        },
         "20": {
           "radix": 16,
-          "value": "d7f9056c347/16bcc41e9000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "176": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         },
         "254": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       }
     },
     "33": {
       "endurance": {
+        "16": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
+        "17": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/2386f26fc1000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/2386f26fc1000"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "1d0ba203d67b1/2386f26fc1000"
         }
       },
       "flags": {
@@ -503,41 +393,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:13/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:14/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "115ade2668c9/71afd498d000"
         }
       },
       "score": {
@@ -548,136 +410,6 @@
         "296": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
-        }
-      }
-    },
-    "35": {
-      "endurance": {
-        "1": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "2": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "3": {
-          "radix": 16,
-          "value": "d7f9056c347/2c68af0bb14000"
-        },
-        "4": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "5": {
-          "radix": 16,
-          "value": "5c8f4b77843/11c37937e08000"
-        },
-        "6": {
-          "radix": 16,
-          "value": "287eb10449d5/58d15e17628000"
-        },
-        "7": {
-          "radix": 16,
-          "value": "f8c11ad13341/58d15e17628000"
-        },
-        "8": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "9": {
-          "radix": 16,
-          "value": "3fa283e22ae1/8e1bc9bf04000"
-        },
-        "10": {
-          "radix": 16,
-          "value": "3bc73612855f/8e1bc9bf04000"
-        },
-        "11": {
-          "radix": 16,
-          "value": "115ade2668c9/2386f26fc1000"
-        },
-        "12": {
-          "radix": 16,
-          "value": "5c8f4b77843/e35fa931a000"
-        },
-        "13": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "5c8f4b77843/470de4df8200"
-        },
-        "15": {
-          "radix": 16,
-          "value": "191179c5b3cd/e35fa931a000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/e35fa931a00"
-        },
-        "17": {
-          "radix": 16,
-          "value": "115ade2668c9/e35fa931a000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "15362bf60e4b/e35fa931a000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/2d79883d2000"
-        },
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/e35fa931a00"
-        }
-      },
-      "flags": {
-        "16384": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
-      },
-      "transitions": {
-        "293": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
         }
       }
     },
@@ -695,11 +427,11 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:5/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Meal:2/Gold:2/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:6/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
         }
@@ -719,29 +451,71 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "242": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      }
+    },
+    "47": {
+      "endurance": {
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/2c68af0bb14000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/16345785d8a000"
+        },
+        "20": {
+          "radix": 16,
+          "value": "25984901a5e0bf/2c68af0bb14000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "items": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/5af3107a400"
+        }
+      },
+      "score": {
+        "radix": 16,
+        "value": "1eda6e7d2c1/246139ca800"
+      },
+      "transitions": {
+        "307": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -749,37 +523,45 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "score": {
         "radix": 16,
-        "value": "e1f40e4a1240ed/3782dace9d90000"
+        "value": "5c8f4b77843/16bcc41e9000"
       },
       "transitions": {
         "100": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       }
     },
     "51": {
       "endurance": {
+        "18": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/1c6bf5263400"
+        },
+        "19": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/1c6bf5263400"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/5af3107a400"
+          "value": "5c8f4b77843/1c6bf5263400"
         }
       },
       "flags": {
@@ -789,7 +571,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:2/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:6/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
         }
@@ -819,7 +601,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/746a528800"
         }
@@ -849,41 +631,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Sword/SGen0": {
+        "Backpack/Shield/Gold:3/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:5/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:6/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:7/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Sword/SGen0": {
-          "radix": 16,
-          "value": "115ade2668c9/71afd498d000"
         }
       },
       "score": {
@@ -897,70 +651,10 @@
         }
       }
     },
-    "61": {
-      "endurance": {
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Meal:2/Gold:26": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "1eda6e7d2c1/246139ca800"
-      },
-      "transitions": {
-        "181": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      }
-    },
     "66": {
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
-      },
-      "transitions": {
-        "361": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      }
-    },
-    "68": {
-      "endurance": {
-        "20": {
-          "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
       },
@@ -971,33 +665,9 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
@@ -1005,7 +675,7 @@
         "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "306": {
+        "361": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -1013,79 +683,35 @@
     },
     "69": {
       "endurance": {
-        "14": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "d7f9056c347/58d15e17628000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "5c8f4b77843/2386f26fc10000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "287eb10449d5/b1a2bc2ec50000"
-        },
         "20": {
           "radix": 16,
-          "value": "4aa3cd6b30a875/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/1bc16d674ec8000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/6f05b59d3b20000"
+          "value": "1eda6e7d2c1/b5e620f4800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/b1a2bc2ec50000"
+        "value": "1eda6e7d2c1/48c27395000"
       },
       "transitions": {
         "311": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       }
     },
@@ -1147,7 +773,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -1165,9 +791,29 @@
     },
     "76": {
       "endurance": {
+        "15": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
+        "16": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
+        "17": {
+          "radix": 16,
+          "value": "5c8f4b77843/2386f26fc1000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/2386f26fc1000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "39bab4bc3571f/470de4df82000"
         }
       },
       "flags": {
@@ -1177,41 +823,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Sword/SGen0": {
+        "Backpack/Shield/Gold:3/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:5/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:6/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:7/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Sword/SGen0": {
-          "radix": 16,
-          "value": "115ade2668c9/71afd498d000"
         }
       },
       "score": {
@@ -1239,7 +857,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/9184e72a00"
         }
@@ -1321,7 +939,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/5"
         }
@@ -1343,9 +961,25 @@
     },
     "88": {
       "endurance": {
+        "12": {
+          "radix": 16,
+          "value": "5c8f4b77843/2c68af0bb14000"
+        },
+        "13": {
+          "radix": 16,
+          "value": "5c8f4b77843/16345785d8a000"
+        },
+        "14": {
+          "radix": 16,
+          "value": "5c8f4b77843/8e1bc9bf04000"
+        },
+        "15": {
+          "radix": 16,
+          "value": "1e7ddf31b48bd/16345785d8a000"
+        },
         "16": {
           "radix": 16,
-          "value": "1eda6e7d2c1/16bcc41e9000"
+          "value": "3d584daee09bd/2c68af0bb14000"
         },
         "17": {
           "radix": 16,
@@ -1353,15 +987,15 @@
         },
         "18": {
           "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
+          "value": "776f91b68d91f/2c68af0bb14000"
         },
         "19": {
           "radix": 16,
-          "value": "1eda6e7d2c1/16bcc41e9000"
+          "value": "1e7ddf31b48bd/16345785d8a000"
         },
         "20": {
           "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
+          "value": "160e24fb7a7f7/58d15e1762800"
         }
       },
       "flags": {
@@ -1371,33 +1005,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "score": {
@@ -1473,7 +1087,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -1555,7 +1169,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/5"
         }
@@ -1579,29 +1193,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "267": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -1609,45 +1223,45 @@
       "endurance": {
         "18": {
           "radix": 16,
-          "value": "4b515a18b0c04f/22b1c8c1227a0000"
+          "value": "1eda6e7d2c1/e35fa931a000"
         },
         "19": {
           "radix": 16,
-          "value": "4b515a18b0c04f/22b1c8c1227a0000"
+          "value": "1eda6e7d2c1/e35fa931a000"
         },
         "20": {
           "radix": 16,
-          "value": "e6a923eb9d4cf1f/1158e460913d0000"
+          "value": "5e7cf25f56f1/71afd498d000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1bc16d674ec8000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "120": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         },
         "286": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       }
     },
@@ -1713,7 +1327,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -1743,11 +1357,11 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/16bcc41e9000"
         },
-        "Backpack/Shield/Meal/Gold/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:5/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/b5e620f4800"
         }
@@ -1767,63 +1381,33 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/1bc16d674ec8000"
+          "value": "1eda6e7d2c1/b5e620f4800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/b1a2bc2ec50000"
+        "value": "1eda6e7d2c1/48c27395000"
       },
       "transitions": {
         "120": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
-        }
-      }
-    },
-    "116": {
-      "endurance": {
-        "20": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Meal/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "5c8f4b77843/b5e620f4800"
-      },
-      "transitions": {
-        "314": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       }
     },
@@ -1841,7 +1425,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:27": {
+        "Backpack/Shield/Meal:2/Gold:27/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -1859,75 +1443,35 @@
     },
     "118": {
       "endurance": {
-        "15": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "15362bf60e4b/58d15e17628000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "19": {
-          "radix": 16,
-          "value": "37ebe842dfdd/b1a2bc2ec50000"
-        },
         "20": {
           "radix": 16,
-          "value": "95d45f6e7c69f3/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "279": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -1993,7 +1537,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -2013,37 +1557,87 @@
       "endurance": {
         "19": {
           "radix": 16,
-          "value": "4b515a18b0c04f/4563918244f40000"
+          "value": "1eda6e7d2c1/1c6bf52634000"
         },
         "20": {
           "radix": 16,
-          "value": "3a8c3d0931657d69/4563918244f40000"
+          "value": "17fbcbe34d407/1c6bf52634000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1bc16d674ec8000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "225": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      }
+    },
+    "121": {
+      "endurance": {
+        "14": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "15": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "16": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "17": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/16bcc41e9000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/16bcc41e9000"
+        },
+        "20": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        }
+      },
+      "flags": {
+        "16384": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "items": {
+        "Backpack/Shield/Meal:2/Gold:26/SGen3": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "score": {
+        "radix": 16,
+        "value": "1eda6e7d2c1/246139ca800"
+      },
+      "transitions": {
+        "186": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -2051,29 +1645,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "40": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -2151,7 +1745,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1"
         }
@@ -2169,9 +1763,25 @@
     },
     "136": {
       "endurance": {
+        "16": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "17": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "18": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "19": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/16bcc41e9000"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "flags": {
@@ -2181,7 +1791,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:22/Sword": {
+        "Backpack/Shield/Meal:2/Gold:26/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -2192,64 +1802,6 @@
       },
       "transitions": {
         "10": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      }
-    },
-    "138": {
-      "endurance": {
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16bcc41e9000"
-        },
-        "20": {
-          "radix": 16,
-          "value": "115ade2668c9/16bcc41e9000"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "1eda6e7d2c1/246139ca800"
-      },
-      "transitions": {
-        "232": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -2269,7 +1821,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27": {
+        "Backpack/Shield/Gold:27/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -2280,6 +1832,40 @@
       },
       "transitions": {
         "27": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      }
+    },
+    "140": {
+      "endurance": {
+        "20": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "items": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/5af3107a400"
+        }
+      },
+      "score": {
+        "radix": 16,
+        "value": "1eda6e7d2c1/246139ca800"
+      },
+      "transitions": {
+        "265": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -2299,7 +1885,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/746a528800"
         }
@@ -2317,63 +1903,35 @@
     },
     "144": {
       "endurance": {
-        "18": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
         "20": {
           "radix": 16,
-          "value": "4b3a3645d2df43/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "349": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -2439,7 +1997,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/5"
         }
@@ -2469,7 +2027,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:26": {
+        "Backpack/Shield/Meal:2/Gold:26/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -2479,7 +2037,7 @@
         "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "257": {
+        "323": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -2487,9 +2045,25 @@
     },
     "150": {
       "endurance": {
+        "13": {
+          "radix": 16,
+          "value": "5c8f4b77843/2c68af0bb14000"
+        },
+        "14": {
+          "radix": 16,
+          "value": "5c8f4b77843/16345785d8a000"
+        },
+        "15": {
+          "radix": 16,
+          "value": "5c8f4b77843/8e1bc9bf04000"
+        },
+        "16": {
+          "radix": 16,
+          "value": "1e7ddf31b48bd/16345785d8a000"
+        },
         "17": {
           "radix": 16,
-          "value": "1eda6e7d2c1/16bcc41e9000"
+          "value": "3d584daee09bd/2c68af0bb14000"
         },
         "18": {
           "radix": 16,
@@ -2497,11 +2071,11 @@
         },
         "19": {
           "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
+          "value": "776f91b68d91f/2c68af0bb14000"
         },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/5af3107a400"
+          "value": "17be170652e85/470de4df82000"
         }
       },
       "flags": {
@@ -2511,33 +2085,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "score": {
@@ -2545,7 +2099,7 @@
         "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "261": {
+        "334": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -2555,159 +2109,37 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "49": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
         "193": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
         "216": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
-        }
-      }
-    },
-    "155": {
-      "endurance": {
-        "3": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "4": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "5": {
-          "radix": 16,
-          "value": "d7f9056c347/2c68af0bb14000"
-        },
-        "6": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "7": {
-          "radix": 16,
-          "value": "5c8f4b77843/11c37937e08000"
-        },
-        "8": {
-          "radix": 16,
-          "value": "287eb10449d5/58d15e17628000"
-        },
-        "9": {
-          "radix": 16,
-          "value": "f8c11ad13341/58d15e17628000"
-        },
-        "10": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "11": {
-          "radix": 16,
-          "value": "3fa283e22ae1/8e1bc9bf04000"
-        },
-        "12": {
-          "radix": 16,
-          "value": "3bc73612855f/8e1bc9bf04000"
-        },
-        "13": {
-          "radix": 16,
-          "value": "115ade2668c9/2386f26fc1000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "5c8f4b77843/e35fa931a000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "5c8f4b77843/470de4df8200"
-        },
-        "17": {
-          "radix": 16,
-          "value": "191179c5b3cd/e35fa931a000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/e35fa931a00"
-        },
-        "19": {
-          "radix": 16,
-          "value": "115ade2668c9/e35fa931a000"
-        },
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/71afd498d00"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
-      },
-      "transitions": {
-        "265": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       }
     },
@@ -2725,7 +2157,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1"
         }
@@ -2803,7 +2235,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -2837,11 +2269,11 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Meal/Gold/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:5/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
         }
@@ -2851,13 +2283,9 @@
         "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "25": {
-          "radix": 16,
-          "value": "5c8f4b77843/b5e620f4800"
-        },
         "314": {
           "radix": 16,
-          "value": "1eda6e7d2c1/5af3107a400"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -2875,7 +2303,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/3a35294400"
         }
@@ -2897,113 +2325,35 @@
     },
     "176": {
       "endurance": {
-        "13": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "d7f9056c347/58d15e17628000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "5c8f4b77843/2386f26fc10000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "287eb10449d5/b1a2bc2ec50000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "f8c11ad13341/b1a2bc2ec50000"
-        },
         "20": {
           "radix": 16,
-          "value": "3aef3d0d192a9/8e1bc9bf04000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/1bc16d674ec8000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/6f05b59d3b20000"
+          "value": "1eda6e7d2c1/b5e620f4800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/b1a2bc2ec50000"
+        "value": "1eda6e7d2c1/48c27395000"
       },
       "transitions": {
         "277": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
-        }
-      }
-    },
-    "181": {
-      "endurance": {
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Meal:2/Gold:26": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "1eda6e7d2c1/246139ca800"
-      },
-      "transitions": {
-        "186": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       }
     },
@@ -3097,7 +2447,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "19096601/200000000"
         }
@@ -3115,9 +2465,29 @@
     },
     "186": {
       "endurance": {
+        "15": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "16": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "17": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
+        "18": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/16bcc41e9000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/16bcc41e9000"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "1eda6e7d2c1/b5e620f4800"
         }
       },
       "flags": {
@@ -3127,7 +2497,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:22/Sword": {
+        "Backpack/Shield/Meal:2/Gold:26/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -3147,37 +2517,45 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "score": {
         "radix": 16,
-        "value": "e1f40e4a1240ed/3782dace9d90000"
+        "value": "5c8f4b77843/16bcc41e9000"
       },
       "transitions": {
         "100": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         }
       }
     },
     "195": {
       "endurance": {
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/71afd498d000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/71afd498d000"
+        },
         "20": {
           "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
+          "value": "115ade2668c9/71afd498d000"
         }
       },
       "flags": {
@@ -3187,7 +2565,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:2/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:6/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/16bcc41e9000"
         }
@@ -3207,29 +2585,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "123": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -3251,7 +2629,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/3a35294400"
         }
@@ -3275,64 +2653,6 @@
         }
       }
     },
-    "198": {
-      "endurance": {
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16bcc41e9000"
-        },
-        "20": {
-          "radix": 16,
-          "value": "115ade2668c9/16bcc41e9000"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "1eda6e7d2c1/246139ca800"
-      },
-      "transitions": {
-        "138": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      }
-    },
     "200": {
       "endurance": {
         "20": {
@@ -3347,41 +2667,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Sword/SGen0": {
+        "Backpack/Shield/Gold:3/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:5/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:6/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:7/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Sword/SGen0": {
-          "radix": 16,
-          "value": "115ade2668c9/71afd498d000"
         }
       },
       "score": {
@@ -3397,115 +2689,81 @@
     },
     "202": {
       "endurance": {
-        "5": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "6": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "7": {
-          "radix": 16,
-          "value": "d7f9056c347/2c68af0bb14000"
-        },
-        "8": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "9": {
-          "radix": 16,
-          "value": "5c8f4b77843/11c37937e08000"
-        },
-        "10": {
-          "radix": 16,
-          "value": "287eb10449d5/58d15e17628000"
-        },
-        "11": {
-          "radix": 16,
-          "value": "f8c11ad13341/58d15e17628000"
-        },
-        "12": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "13": {
-          "radix": 16,
-          "value": "3fa283e22ae1/8e1bc9bf04000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "3bc73612855f/8e1bc9bf04000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "115ade2668c9/2386f26fc1000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "5c8f4b77843/e35fa931a000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "5c8f4b77843/470de4df8200"
-        },
-        "19": {
-          "radix": 16,
-          "value": "191179c5b3cd/e35fa931a000"
-        },
         "20": {
           "radix": 16,
-          "value": "6dea299decf9/e35fa931a000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "31": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      }
+    },
+    "207": {
+      "endurance": {
+        "17": {
+          "radix": 16,
+          "value": "5c8f4b77843/2c68af0bb14000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/16345785d8a000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/8e1bc9bf04000"
+        },
+        "20": {
+          "radix": 16,
+          "value": "257b5c3a10877/2c68af0bb1400"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "items": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/5af3107a400"
+        }
+      },
+      "score": {
+        "radix": 16,
+        "value": "1eda6e7d2c1/246139ca800"
+      },
+      "transitions": {
+        "47": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -3523,7 +2781,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/746a528800"
         }
@@ -3543,29 +2801,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/de0b6b3a764000"
+        "value": "1eda6e7d2c1/5af3107a400"
       },
       "transitions": {
         "100": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       }
     },
@@ -3573,45 +2831,45 @@
       "endurance": {
         "17": {
           "radix": 16,
-          "value": "4b515a18b0c04f/22b1c8c1227a0000"
+          "value": "1eda6e7d2c1/e35fa931a000"
         },
         "18": {
           "radix": 16,
-          "value": "4b515a18b0c04f/22b1c8c1227a0000"
+          "value": "1eda6e7d2c1/e35fa931a000"
         },
         "19": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
+          "value": "5c8f4b77843/e35fa931a000"
         },
         "20": {
           "radix": 16,
-          "value": "59709afd51e45dd/6f05b59d3b20000"
+          "value": "24a36334a453/2d79883d2000"
         }
       },
       "flags": {
         "16384": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1bc16d674ec8000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "105": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -3629,7 +2887,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/3a35294400"
         }
@@ -3711,7 +2969,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/5"
         }
@@ -3731,77 +2989,23 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1bc16d674ec8000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
-      },
-      "transitions": {
-        "350": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      }
-    },
-    "232": {
-      "endurance": {
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "score": {
@@ -3809,7 +3013,7 @@
         "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "250": {
+        "350": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -3829,7 +3033,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/3a35294400"
         }
@@ -3931,7 +3135,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/3a35294400"
         }
@@ -3951,29 +3155,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "152": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -4067,7 +3271,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "88c0922e7/3a35294400"
         }
@@ -4080,6 +3284,56 @@
         "240": {
           "radix": 16,
           "value": "88c0922e7/3a35294400"
+        }
+      }
+    },
+    "244": {
+      "endurance": {
+        "16": {
+          "radix": 16,
+          "value": "5c8f4b77843/2c68af0bb14000"
+        },
+        "17": {
+          "radix": 16,
+          "value": "5c8f4b77843/16345785d8a000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/8e1bc9bf04000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "1e7ddf31b48bd/16345785d8a000"
+        },
+        "20": {
+          "radix": 16,
+          "value": "35df66ec8feff/470de4df82000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "items": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/5af3107a400"
+        }
+      },
+      "score": {
+        "radix": 16,
+        "value": "1eda6e7d2c1/246139ca800"
+      },
+      "transitions": {
+        "207": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -4097,7 +3351,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/246139ca800"
         }
@@ -4115,9 +3369,13 @@
     },
     "249": {
       "endurance": {
+        "19": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "1eda6e7d2c1/2d79883d200"
         }
       },
       "flags": {
@@ -4127,11 +3385,11 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:5/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Meal:2/Gold:2/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:6/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
         }
@@ -4147,169 +3405,37 @@
         }
       }
     },
-    "250": {
-      "endurance": {
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "1eda6e7d2c1/246139ca800"
-      },
-      "transitions": {
-        "68": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      }
-    },
     "254": {
       "endurance": {
-        "13": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "d7f9056c347/58d15e17628000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "5c8f4b77843/2386f26fc10000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "287eb10449d5/b1a2bc2ec50000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "f8c11ad13341/b1a2bc2ec50000"
-        },
         "20": {
           "radix": 16,
-          "value": "3aef3d0d192a9/8e1bc9bf04000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/1bc16d674ec8000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/6f05b59d3b20000"
+          "value": "1eda6e7d2c1/b5e620f4800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/b1a2bc2ec50000"
+        "value": "1eda6e7d2c1/48c27395000"
       },
       "transitions": {
         "69": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
-        }
-      }
-    },
-    "257": {
-      "endurance": {
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Meal:2/Gold:26": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "1eda6e7d2c1/246139ca800"
-      },
-      "transitions": {
-        "335": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       }
     },
@@ -4375,7 +3501,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -4391,19 +3517,11 @@
         }
       }
     },
-    "261": {
+    "265": {
       "endurance": {
-        "18": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16bcc41e9000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b5e620f4800"
-        },
         "20": {
           "radix": 16,
-          "value": "d7f9056c347/16bcc41e9000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
@@ -4413,33 +3531,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "score": {
@@ -4447,127 +3545,9 @@
         "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "198": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      }
-    },
-    "265": {
-      "endurance": {
-        "4": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "5": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "6": {
-          "radix": 16,
-          "value": "d7f9056c347/2c68af0bb14000"
-        },
-        "7": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "8": {
-          "radix": 16,
-          "value": "5c8f4b77843/11c37937e08000"
-        },
-        "9": {
-          "radix": 16,
-          "value": "287eb10449d5/58d15e17628000"
-        },
-        "10": {
-          "radix": 16,
-          "value": "f8c11ad13341/58d15e17628000"
-        },
-        "11": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "12": {
-          "radix": 16,
-          "value": "3fa283e22ae1/8e1bc9bf04000"
-        },
-        "13": {
-          "radix": 16,
-          "value": "3bc73612855f/8e1bc9bf04000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "115ade2668c9/2386f26fc1000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "5c8f4b77843/e35fa931a000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "5c8f4b77843/470de4df8200"
-        },
-        "18": {
-          "radix": 16,
-          "value": "191179c5b3cd/e35fa931a000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/e35fa931a00"
-        },
-        "20": {
-          "radix": 16,
-          "value": "4f0fbb20c0e9/e35fa931a000"
-        }
-      },
-      "flags": {
-        "0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
-      },
-      "transitions": {
         "202": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -4575,29 +3555,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "309": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -4615,7 +3595,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1"
         }
@@ -4645,7 +3625,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1"
         }
@@ -4663,149 +3643,69 @@
     },
     "277": {
       "endurance": {
-        "14": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "d7f9056c347/58d15e17628000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "5c8f4b77843/2386f26fc10000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "287eb10449d5/b1a2bc2ec50000"
-        },
         "20": {
           "radix": 16,
-          "value": "4aa3cd6b30a875/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/1bc16d674ec8000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/6f05b59d3b20000"
+          "value": "1eda6e7d2c1/b5e620f4800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/b1a2bc2ec50000"
+        "value": "1eda6e7d2c1/48c27395000"
       },
       "transitions": {
         "311": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       }
     },
     "279": {
       "endurance": {
-        "16": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "15362bf60e4b/58d15e17628000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
         "20": {
           "radix": 16,
-          "value": "1e027577bfdb9/2386f26fc1000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "23": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -4823,11 +3723,11 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Meal/Gold/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:5/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
         }
@@ -4909,7 +3809,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -4929,29 +3829,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "9": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -4959,37 +3859,37 @@
       "endurance": {
         "19": {
           "radix": 16,
-          "value": "4b515a18b0c04f/4563918244f40000"
+          "value": "1eda6e7d2c1/1c6bf52634000"
         },
         "20": {
           "radix": 16,
-          "value": "1d2075d78c5a5e8d/4563918244f40000"
+          "value": "bee78ba680a3/1c6bf52634000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/1bc16d674ec8000"
+          "value": "1eda6e7d2c1/b5e620f4800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/b1a2bc2ec50000"
+        "value": "1eda6e7d2c1/48c27395000"
       },
       "transitions": {
         "109": {
           "radix": 16,
-          "value": "4b515a18b0c04f/b1a2bc2ec50000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       }
     },
@@ -5007,7 +3907,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/3a35294400"
         }
@@ -5037,41 +3937,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:3/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Meal/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Meal/Gold:5/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:6/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:7/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:8/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:9/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:10/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:11/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:12/Sword/SGen0": {
-          "radix": 16,
-          "value": "115ade2668c9/71afd498d000"
         }
       },
       "score": {
@@ -5085,137 +3957,77 @@
         }
       }
     },
-    "293": {
+    "291": {
       "endurance": {
-        "2": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "3": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "4": {
-          "radix": 16,
-          "value": "d7f9056c347/2c68af0bb14000"
-        },
-        "5": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "6": {
-          "radix": 16,
-          "value": "5c8f4b77843/11c37937e08000"
-        },
-        "7": {
-          "radix": 16,
-          "value": "287eb10449d5/58d15e17628000"
-        },
-        "8": {
-          "radix": 16,
-          "value": "f8c11ad13341/58d15e17628000"
-        },
-        "9": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "10": {
-          "radix": 16,
-          "value": "3fa283e22ae1/8e1bc9bf04000"
-        },
-        "11": {
-          "radix": 16,
-          "value": "3bc73612855f/8e1bc9bf04000"
-        },
-        "12": {
-          "radix": 16,
-          "value": "115ade2668c9/2386f26fc1000"
-        },
-        "13": {
-          "radix": 16,
-          "value": "5c8f4b77843/e35fa931a000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
         "15": {
           "radix": 16,
-          "value": "5c8f4b77843/470de4df8200"
+          "value": "5c8f4b77843/2c68af0bb14000"
         },
         "16": {
           "radix": 16,
-          "value": "191179c5b3cd/e35fa931a000"
+          "value": "5c8f4b77843/16345785d8a000"
         },
         "17": {
           "radix": 16,
-          "value": "1eda6e7d2c1/e35fa931a00"
+          "value": "5c8f4b77843/8e1bc9bf04000"
         },
         "18": {
           "radix": 16,
-          "value": "115ade2668c9/e35fa931a000"
+          "value": "1e7ddf31b48bd/16345785d8a000"
         },
         "19": {
           "radix": 16,
-          "value": "15362bf60e4b/e35fa931a000"
+          "value": "3d584daee09bd/2c68af0bb14000"
         },
         "20": {
           "radix": 16,
-          "value": "287eb10449d5/e35fa931a000"
+          "value": "1dd61b78ebec39/2c68af0bb14000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "155": {
+        "244": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
     "296": {
       "endurance": {
+        "17": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/2386f26fc1000"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "75a0c53d37fd/8e1bc9bf0400"
         }
       },
       "flags": {
@@ -5225,33 +4037,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "score": {
@@ -5265,81 +4057,67 @@
         }
       }
     },
-    "299": {
+    "298": {
       "endurance": {
-        "14": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "15362bf60e4b/58d15e17628000"
-        },
-        "17": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "18": {
-          "radix": 16,
-          "value": "37ebe842dfdd/b1a2bc2ec50000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "47591f8175e5/b1a2bc2ec50000"
-        },
         "20": {
           "radix": 16,
-          "value": "4ac683277d7a07/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:26/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
-        },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
+      },
+      "transitions": {
+        "121": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      }
+    },
+    "299": {
+      "endurance": {
+        "20": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "items": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/5af3107a400"
+        }
+      },
+      "score": {
+        "radix": 16,
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "118": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -5413,7 +4191,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1"
         }
@@ -5445,11 +4223,15 @@
         }
       }
     },
-    "306": {
+    "307": {
       "endurance": {
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/2c68af0bb14000"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "25a3daeb14d145/2c68af0bb14000"
         }
       },
       "flags": {
@@ -5459,33 +4241,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
         }
       },
       "score": {
@@ -5493,7 +4255,7 @@
         "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "399": {
+        "140": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -5503,111 +4265,67 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "26": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
     "311": {
       "endurance": {
-        "13": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "15": {
-          "radix": 16,
-          "value": "15362bf60e4b/58d15e17628000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "17": {
-          "radix": 16,
-          "value": "37ebe842dfdd/b1a2bc2ec50000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "47591f8175e5/b1a2bc2ec50000"
-        },
         "19": {
           "radix": 16,
-          "value": "12b02e8cb18071/2c68af0bb14000"
+          "value": "1eda6e7d2c1/48c27395000"
         },
         "20": {
           "radix": 16,
-          "value": "77ad469387ea1/11c37937e08000"
+          "value": "1eda6e7d2c1/48c27395000"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Gold/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:3/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:4/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:5/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:6/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "299": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -5625,7 +4343,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:27": {
+        "Backpack/Shield/Meal:2/Gold:27/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -5655,49 +4373,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal/Sword/SGen0": {
+        "Backpack/Shield/Meal/Gold:3/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Meal/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Meal/Gold:5/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:6/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:7/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:8/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:9/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:10/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:11/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:12/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:13/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Meal/Gold:14/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
         }
       },
       "score": {
@@ -5725,7 +4407,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/3a35294400"
         }
@@ -5807,7 +4489,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/5"
         }
@@ -5841,7 +4523,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "36d9a7faf9/746a528800"
         }
@@ -5854,6 +4536,36 @@
         "197": {
           "radix": 16,
           "value": "36d9a7faf9/746a528800"
+        }
+      }
+    },
+    "323": {
+      "endurance": {
+        "20": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "items": {
+        "Backpack/Shield/Meal:2/Gold:26/SGen3": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
+        }
+      },
+      "score": {
+        "radix": 16,
+        "value": "1eda6e7d2c1/246139ca800"
+      },
+      "transitions": {
+        "298": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -5919,7 +4631,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -5935,11 +4647,35 @@
         }
       }
     },
-    "335": {
+    "334": {
       "endurance": {
+        "14": {
+          "radix": 16,
+          "value": "5c8f4b77843/2c68af0bb14000"
+        },
+        "15": {
+          "radix": 16,
+          "value": "5c8f4b77843/16345785d8a000"
+        },
+        "16": {
+          "radix": 16,
+          "value": "5c8f4b77843/8e1bc9bf04000"
+        },
+        "17": {
+          "radix": 16,
+          "value": "1e7ddf31b48bd/16345785d8a000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "3d584daee09bd/2c68af0bb14000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/b5e620f4800"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "164dc77f5caa51/2c68af0bb14000"
         }
       },
       "flags": {
@@ -5949,9 +4685,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:26": {
+        "Backpack/Shield/Gold:5/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:6/Dagger/SGen0/SGen3": {
+          "radix": 16,
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
@@ -5959,7 +4699,7 @@
         "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
-        "61": {
+        "291": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -5983,7 +4723,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/246139ca800"
         }
@@ -6001,9 +4741,17 @@
     },
     "339": {
       "endurance": {
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/71afd498d000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/71afd498d000"
+        },
         "20": {
           "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
+          "value": "115ade2668c9/71afd498d000"
         }
       },
       "flags": {
@@ -6013,7 +4761,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold:2/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:6/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/16bcc41e9000"
         }
@@ -6091,7 +4839,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -6197,7 +4945,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "9908921/50000000"
         }
@@ -6227,11 +4975,11 @@
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Gold/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:5/SGen0/SGen3": {
           "radix": 16,
           "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Meal:2/Gold:2/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Gold:6/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
         }
@@ -6249,35 +4997,31 @@
     },
     "349": {
       "endurance": {
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/16345785d8a000"
-        },
         "20": {
           "radix": 16,
-          "value": "f0eba4c36b10f/11c37937e08000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Dagger/Sword/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/SGen0/SGen3": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "284": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -6285,28 +5029,28 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/1bc16d674ec8000"
+          "value": "5c8f4b77843/b5e620f4800"
         },
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "score": {
         "radix": 16,
-        "value": "31d864ef40e31713ec49ee24e667908a6141e317c976888faa3/4dc9a61d998642bbb1e62afa4fc47597b9fcd00000000000000"
+        "value": "146b2e2276642497a355a9c74664bf376e7a629ba0a4132d/1fdca16e04b86d41005e46da08ea7ab691d0000000000000"
       },
       "transitions": {}
     },
@@ -6324,41 +5068,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Sword/SGen0": {
+        "Backpack/Shield/Gold:3/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:5/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:6/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:7/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Sword/SGen0": {
-          "radix": 16,
-          "value": "115ade2668c9/71afd498d000"
         }
       },
       "score": {
@@ -6374,9 +5090,29 @@
     },
     "360": {
       "endurance": {
+        "15": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
+        "16": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
+        "17": {
+          "radix": 16,
+          "value": "5c8f4b77843/2386f26fc1000"
+        },
+        "18": {
+          "radix": 16,
+          "value": "5c8f4b77843/2386f26fc1000"
+        },
+        "19": {
+          "radix": 16,
+          "value": "5c8f4b77843/470de4df82000"
+        },
         "20": {
           "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
+          "value": "39bab4bc3571f/470de4df82000"
         }
       },
       "flags": {
@@ -6386,41 +5122,13 @@
         }
       },
       "items": {
-        "Backpack/Shield/Sword/SGen0": {
+        "Backpack/Shield/Gold:3/SGen0/SGen3": {
+          "radix": 16,
+          "value": "5c8f4b77843/b5e620f4800"
+        },
+        "Backpack/Shield/Gold:4/SGen0/SGen3": {
           "radix": 16,
           "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:5/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:6/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:7/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Sword/SGen0": {
-          "radix": 16,
-          "value": "115ade2668c9/71afd498d000"
         }
       },
       "score": {
@@ -6438,29 +5146,29 @@
       "endurance": {
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "flags": {
         "16384": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "362": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -6468,61 +5176,61 @@
       "endurance": {
         "12": {
           "radix": 16,
-          "value": "4b515a18b0c04f/22b1c8c1227a0000"
+          "value": "1eda6e7d2c1/e35fa931a000"
         },
         "13": {
           "radix": 16,
-          "value": "4b515a18b0c04f/22b1c8c1227a0000"
+          "value": "1eda6e7d2c1/e35fa931a000"
         },
         "14": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/22b1c8c1227a0000"
+          "value": "5c8f4b77843/e35fa931a000"
         },
         "15": {
           "radix": 16,
-          "value": "4b515a18b0c04f/22b1c8c1227a0000"
+          "value": "1eda6e7d2c1/e35fa931a000"
         },
         "16": {
           "radix": 16,
-          "value": "4b515a18b0c04f/8ac7230489e8000"
+          "value": "1eda6e7d2c1/38d7ea4c6800"
         },
         "17": {
           "radix": 16,
-          "value": "4b515a18b0c04f/3782dace9d90000"
+          "value": "1eda6e7d2c1/16bcc41e9000"
         },
         "18": {
           "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
+          "value": "5c8f4b77843/16bcc41e9000"
         },
         "19": {
           "radix": 16,
-          "value": "4b515a18b0c04f/3782dace9d90000"
+          "value": "1eda6e7d2c1/16bcc41e9000"
         },
         "20": {
           "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
+          "value": "1eda6e7d2c1/5af3107a400"
         }
       },
       "flags": {
         "16384": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "items": {
-        "Backpack/Shield/Potion5Hp/Meal:2/Sword/Sommerswerd/SGen0": {
+        "Backpack/Shield/Potion5Hp/Meal:2/Dagger/Sommerswerd/SGen0": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       },
       "score": {
         "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
+        "value": "1eda6e7d2c1/246139ca800"
       },
       "transitions": {
         "218": {
           "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
+          "value": "1eda6e7d2c1/246139ca800"
         }
       }
     },
@@ -6588,7 +5296,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/5"
         }
@@ -6698,7 +5406,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "9908921/50000000"
         }
@@ -6711,194 +5419,6 @@
         "345": {
           "radix": 10,
           "value": "9908921/50000000"
-        }
-      }
-    },
-    "399": {
-      "endurance": {
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "flags": {
-        "16384": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/246139ca800"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/5af3107a400"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/71afd498d000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "5c8f4b77843/16bcc41e9000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "1eda6e7d2c1/246139ca800"
-      },
-      "transitions": {
-        "399": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e17628000"
-        },
-        "400": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      }
-    },
-    "400": {
-      "endurance": {
-        "1": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/b1a2bc2ec5000"
-        },
-        "2": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "3": {
-          "radix": 16,
-          "value": "d7f9056c347/2c68af0bb14000"
-        },
-        "4": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/58d15e1762800"
-        },
-        "5": {
-          "radix": 16,
-          "value": "5c8f4b77843/11c37937e08000"
-        },
-        "6": {
-          "radix": 16,
-          "value": "287eb10449d5/58d15e17628000"
-        },
-        "7": {
-          "radix": 16,
-          "value": "f8c11ad13341/58d15e17628000"
-        },
-        "8": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "9": {
-          "radix": 16,
-          "value": "3fa283e22ae1/8e1bc9bf04000"
-        },
-        "10": {
-          "radix": 16,
-          "value": "3bc73612855f/8e1bc9bf04000"
-        },
-        "11": {
-          "radix": 16,
-          "value": "115ade2668c9/2386f26fc1000"
-        },
-        "12": {
-          "radix": 16,
-          "value": "5c8f4b77843/e35fa931a000"
-        },
-        "13": {
-          "radix": 16,
-          "value": "191179c5b3cd/470de4df82000"
-        },
-        "14": {
-          "radix": 16,
-          "value": "5c8f4b77843/470de4df8200"
-        },
-        "15": {
-          "radix": 16,
-          "value": "191179c5b3cd/e35fa931a000"
-        },
-        "16": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/e35fa931a00"
-        },
-        "17": {
-          "radix": 16,
-          "value": "115ade2668c9/e35fa931a000"
-        },
-        "18": {
-          "radix": 16,
-          "value": "15362bf60e4b/e35fa931a000"
-        },
-        "19": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/2d79883d2000"
-        },
-        "20": {
-          "radix": 16,
-          "value": "1eda6e7d2c1/e35fa931a00"
-        }
-      },
-      "flags": {
-        "16384": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
-        }
-      },
-      "items": {
-        "Backpack/Shield/Gold:2/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/de0b6b3a764000"
-        },
-        "Backpack/Shield/Gold:7/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:8/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:9/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:10/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:11/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/1158e460913d0000"
-        },
-        "Backpack/Shield/Gold:12/Dagger/Sword/SGen0": {
-          "radix": 16,
-          "value": "e1f40e4a1240ed/3782dace9d90000"
-        }
-      },
-      "score": {
-        "radix": 16,
-        "value": "4b515a18b0c04f/58d15e17628000"
-      },
-      "transitions": {
-        "35": {
-          "radix": 16,
-          "value": "4b515a18b0c04f/58d15e17628000"
         }
       }
     },
@@ -6964,7 +5484,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "1/10"
         }
@@ -7074,7 +5594,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "19096601/200000000"
         }
@@ -7180,7 +5700,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 10,
           "value": "9908921/50000000"
         }
@@ -7290,7 +5810,7 @@
         }
       },
       "items": {
-        "Backpack/Shield/Gold:27/Sword": {
+        "Backpack/Shield/Gold:27/Sword/SGen3": {
           "radix": 16,
           "value": "88c0922e7/3a35294400"
         }
@@ -7311,63 +5831,63 @@
     "1": 1,
     "2": 10311,
     "4": 2,
-    "5": 9991,
+    "5": 9859,
     "6": 4,
     "8": 4,
-    "9": 17599,
+    "9": 14627,
     "10": 4329,
     "11": 51613,
     "12": 1,
     "14": 7,
-    "15": 79934,
-    "17": 9992,
+    "15": 88714,
+    "17": 9860,
     "18": 4,
     "20": 120,
     "22": 18,
-    "23": 37646,
+    "23": 30652,
     "24": 2,
     "25": 648,
-    "26": 45600,
+    "26": 49248,
     "27": 3,
     "28": 60920,
     "29": 1,
-    "30": 1156,
-    "31": 147713,
+    "30": 1224,
+    "31": 120338,
     "32": 746,
     "33": 130330,
     "34": 17,
     "35": 113566,
     "37": 3,
-    "38": 15736,
+    "38": 13216,
     "39": 8061,
-    "40": 11784,
+    "40": 12252,
     "41": 3,
-    "43": 45600,
-    "45": 46667,
+    "43": 49248,
+    "45": 36629,
     "46": 6,
-    "47": 155115,
-    "49": 1156,
+    "47": 162651,
+    "49": 1224,
     "50": 261,
     "51": 4225,
-    "52": 44665,
+    "52": 37213,
     "53": 1,
     "54": 51613,
     "56": 6,
     "57": 93006,
     "58": 1,
-    "59": 40382,
+    "59": 31860,
     "60": 6500,
     "61": 6,
     "63": 3,
-    "64": 49573,
+    "64": 41171,
     "65": 73,
-    "66": 43200,
+    "66": 46656,
     "67": 19,
     "68": 79290,
-    "69": 46667,
+    "69": 36629,
     "71": 54622,
     "72": 3,
-    "73": 42894,
+    "73": 46056,
     "74": 16,
     "76": 17134,
     "78": 3,
@@ -7376,162 +5896,162 @@
     "83": 2,
     "85": 6500,
     "86": 1,
-    "87": 19080,
+    "87": 15818,
     "88": 86418,
     "89": 3,
     "90": 42193,
     "91": 4,
-    "92": 16002,
+    "92": 13406,
     "93": 6,
     "94": 17,
     "95": 69224,
     "99": 18,
-    "100": 1156,
+    "100": 1224,
     "101": 1,
-    "102": 19108,
+    "102": 16048,
     "103": 4121,
     "104": 2,
-    "105": 45600,
+    "105": 49248,
     "106": 56769,
     "107": 17,
     "108": 10311,
-    "109": 45564,
-    "111": 50340,
+    "109": 49156,
+    "111": 57284,
     "112": 6,
     "114": 3,
     "115": 69224,
     "116": 508,
     "117": 3,
-    "118": 49760,
+    "118": 39822,
     "119": 17,
-    "120": 91200,
+    "120": 98496,
     "121": 42,
     "122": 6,
-    "123": 12101,
+    "123": 12507,
     "124": 78000,
     "125": 16,
     "127": 6,
-    "128": 42894,
+    "128": 46056,
     "129": 2,
     "131": 7,
     "132": 117616,
-    "134": 44665,
+    "134": 37213,
     "135": 60920,
     "136": 9574,
     "137": 6,
     "138": 85568,
     "139": 3,
-    "140": 52172,
+    "140": 65652,
     "141": 3,
     "143": 8,
-    "144": 31589,
+    "144": 26067,
     "146": 17,
     "148": 3,
     "150": 77528,
-    "152": 1156,
+    "152": 1224,
     "154": 1,
     "155": 111406,
     "157": 3,
     "158": 6500,
-    "159": 53605,
+    "159": 42999,
     "160": 1,
     "161": 6,
     "162": 65073,
     "163": 17,
-    "164": 49573,
+    "164": 41171,
     "165": 8,
-    "166": 47658,
+    "166": 51176,
     "167": 1,
     "168": 17232,
     "173": 4,
     "174": 60920,
     "175": 1,
-    "176": 53812,
+    "176": 42690,
     "177": 4,
     "180": 3,
     "181": 6,
-    "183": 65927,
+    "183": 52861,
     "184": 20,
-    "185": 38131,
+    "185": 40937,
     "186": 226,
     "187": 204670,
     "189": 60920,
-    "193": 1156,
+    "193": 1224,
     "194": 3,
     "195": 4225,
-    "196": 16263,
+    "196": 13535,
     "197": 4,
     "198": 69224,
     "199": 5,
     "200": 6552,
-    "202": 156877,
+    "202": 128140,
     "205": 7915,
     "206": 3,
-    "207": 153089,
-    "208": 44665,
+    "207": 160625,
+    "208": 37213,
     "209": 1,
     "212": 4,
     "213": 7877,
     "214": 7,
     "215": 2,
-    "216": 1156,
+    "216": 1224,
     "217": 6,
-    "218": 48000,
+    "218": 51840,
     "220": 80899,
     "221": 60200,
     "222": 2,
-    "223": 44460,
+    "223": 56004,
     "224": 18,
-    "225": 45600,
+    "225": 49248,
     "226": 7,
     "227": 2,
     "230": 6,
     "231": 2,
     "232": 81416,
     "233": 3,
-    "234": 24022,
+    "234": 20040,
     "235": 51612,
     "236": 1,
-    "237": 47766,
+    "237": 51424,
     "238": 741,
     "239": 65072,
     "240": 19,
-    "242": 1156,
+    "242": 1224,
     "243": 20,
-    "244": 225778,
+    "244": 233906,
     "245": 56,
     "247": 4,
-    "248": 43201,
+    "248": 46657,
     "249": 8187,
     "250": 77264,
     "251": 3,
     "253": 2,
-    "254": 53812,
-    "256": 44665,
+    "254": 42690,
+    "256": 37213,
     "257": 6,
-    "258": 11590,
+    "258": 11490,
     "259": 6,
     "260": 17,
     "261": 73376,
     "264": 3,
-    "265": 178711,
+    "265": 185184,
     "266": 56,
-    "267": 45276,
+    "267": 48616,
     "268": 2,
-    "269": 16860,
+    "269": 14160,
     "271": 2,
     "273": 1,
     "274": 52400,
     "276": 7,
-    "277": 46667,
+    "277": 36629,
     "278": 6,
-    "279": 43703,
+    "279": 35237,
     "280": 10443,
     "281": 17,
     "282": 159986,
     "283": 4,
-    "284": 19079,
-    "286": 90930,
+    "284": 15817,
+    "286": 97960,
     "287": 1,
     "288": 60920,
     "289": 8,
@@ -7542,21 +6062,21 @@
     "296": 15703,
     "297": 2,
     "298": 7,
-    "299": 57641,
+    "299": 45879,
     "300": 19,
     "301": 120,
     "302": 83040,
     "303": 4,
-    "304": 24022,
+    "304": 20040,
     "305": 7,
     "306": 75138,
     "307": 97158,
     "308": 1,
-    "309": 90894,
+    "309": 97896,
     "310": 56,
-    "311": 65118,
+    "311": 52432,
     "312": 3,
-    "313": 14612,
+    "313": 12272,
     "314": 9841,
     "315": 1,
     "316": 18,
@@ -7567,34 +6087,34 @@
     "323": 6,
     "324": 65072,
     "326": 17,
-    "328": 45276,
+    "328": 48616,
     "329": 1,
     "331": 40,
-    "332": 7011,
+    "332": 5855,
     "333": 20,
     "334": 73376,
     "335": 6,
-    "336": 40512,
+    "336": 43496,
     "337": 6,
-    "338": 15736,
+    "338": 13216,
     "339": 4225,
-    "340": 37646,
+    "340": 30652,
     "341": 17,
     "342": 4,
     "345": 20,
     "346": 7954,
-    "349": 20559,
-    "350": 43200,
-    "351": 9992,
-    "352": 47640,
-    "355": 1156,
-    "356": 9009,
+    "349": 17007,
+    "350": 46656,
+    "351": 9860,
+    "352": 50920,
+    "355": 1224,
+    "356": 8921,
     "357": 18,
     "358": 20,
     "359": 6500,
     "360": 17004,
-    "361": 43201,
-    "362": 48000,
+    "361": 46657,
+    "362": 51840,
     "363": 6501,
     "364": 74880,
     "365": 52401,
@@ -7602,8 +6122,8 @@
     "367": 52401,
     "368": 52401,
     "369": 52400,
-    "370": 42895,
-    "371": 47766,
+    "370": 46057,
+    "371": 51424,
     "372": 115,
     "373": 121,
     "374": 120,
@@ -7611,10 +6131,10 @@
     "376": 20,
     "377": 6501,
     "378": 80678,
-    "379": 48001,
-    "380": 48000,
-    "381": 47767,
-    "382": 48000,
+    "379": 51799,
+    "380": 51840,
+    "381": 51425,
+    "382": 51840,
     "387": 159987,
     "388": 200741,
     "389": 200740,

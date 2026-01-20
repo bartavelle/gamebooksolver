@@ -8,17 +8,29 @@
           [
             "If you wish to draw your weapon and attack your unknown assailant, turn to 273.",
             {
-              "NoDecision": {
-                "Goto": 273
-              }
+              "CanTake": [
+                "SGenCounter 3",
+                1,
+                {
+                  "NoDecision": {
+                    "Goto": 273
+                  }
+                }
+              ]
             }
           ],
           [
             "If you wish to try to pull free of his grasp, turn to 160.",
             {
-              "NoDecision": {
-                "Goto": 160
-              }
+              "CanTake": [
+                "SGenCounter 3",
+                1,
+                {
+                  "NoDecision": {
+                    "Goto": 160
+                  }
+                }
+              ]
             }
           ]
         ]
@@ -7524,21 +7536,7 @@
               {
                 "Always": true
               },
-              {
-                "Simple": [
-                  [
-                    {
-                      "LoseItem": [
-                        "Gold",
-                        6
-                      ]
-                    }
-                  ],
-                  {
-                    "Goto": 202
-                  }
-                ]
-              }
+              "GameLost"
             ]
           ]
         }

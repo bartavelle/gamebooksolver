@@ -29,11 +29,12 @@ pchapters = map patch (extractMultiFight chapters)
     patch x = x
     limitMoneyAt :: Int -> Decision -> Decision
     limitMoneyAt maxmoney dc =
-      dc & _Outcome %~ \o ->
-        Conditionally
-          [ (HasItem Gold maxmoney, Simple [LoseItemKind [PouchSlot], GainItem Gold maxmoney] o),
-            (Always True, o)
-          ]
+      dc
+        & _Outcome %~ \o ->
+          Conditionally
+            [ (HasItem Gold maxmoney, Simple [LoseItemKind [PouchSlot], GainItem Gold maxmoney] o),
+              (Always True, o)
+            ]
 
 chapters :: [(ChapterId, Chapter)]
 chapters =
@@ -43,10 +44,16 @@ chapters =
         "Captain D'Val and his guards escort you to the citadel gate where a small covered wagon awaits you. As soon as you clamber in, the gates are thrown open and you are hurried away through the crowded streets of Holmgard. After a short but uncomfortable journey, the wagon stops and the driver pulls open the canvas flap.\n\"This is the quay, my lord. There is your ship, the <<Green Sceptre>>.\" As he speaks the driver points across the quay to a sleek trade caravel anchored near to the harbour wall.\n\"The first mate's name is Ronan. You will find him waiting for you across the square at the Good Cheer Inn.\" Then the driver bids you farewell and quickly disappears into the teeming crowds.\nYou reach the inn to find the front doors locked and the window shutters barred. You are trying to decide what to do next when a hand grabs your arm and you are pulled into the darkness.\n"
         ( Decisions
             [ ( "If you wish to draw your weapon and attack your unknown assailant, turn to 273.",
-                NoDecision (Goto 273)
+                CanTake
+                  sealHammerdalVol2
+                  1
+                  (NoDecision (Goto 273))
               ),
               ( "If you wish to try to pull free of his grasp, turn to 160.",
-                NoDecision (Goto 160)
+                CanTake
+                  sealHammerdalVol2
+                  1
+                  (NoDecision (Goto 160))
               )
             ]
         )
@@ -2925,7 +2932,7 @@ chapters =
         ( NoDecision
             ( Conditionally
                 [ (HasItem sealHammerdalVol2 1, Goto 202),
-                  (Always True, Simple [LoseItem Gold 6] (Goto 202))
+                  (Always True, GameLost)
                 ]
             )
         )

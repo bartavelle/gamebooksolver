@@ -24,7 +24,7 @@ import Control.Monad (foldM)
 import Data.Aeson (FromJSON (..), FromJSONKey (..), Options (fieldLabelModifier), ToJSON (toJSON), ToJSONKey (..), Value (String), defaultOptions, genericParseJSON, genericToJSON, withObject, withText, (.:))
 import qualified Data.Aeson.Key as K
 import qualified Data.Aeson.KeyMap as A
-import Data.Aeson.Types (FromJSONKeyFunction (..), Parser, unexpected, typeMismatch, toJSONKeyText)
+import Data.Aeson.Types (FromJSONKeyFunction (..), Parser, toJSONKeyText, typeMismatch, unexpected)
 import Data.Bits
 import Data.Bits.Lens (bitAt)
 import Data.Data (Data, Typeable)
@@ -171,16 +171,16 @@ parseInventory inv = foldM parseI emptyInventory (T.splitOn "/" inv)
 parseItem :: T.Text -> Parser Item
 parseItem t
   | Just n <- T.stripPrefix "SGen" t = case readMaybe (T.unpack n) of
-                                          Just x -> pure (GenSpecial (GenCounter x))
-                                          _ -> typeMismatch "Counter" (toJSON n)
+      Just x -> pure (GenSpecial (GenCounter x))
+      _ -> typeMismatch "Counter" (toJSON n)
   | Just n <- T.stripPrefix "BGen" t = case readMaybe (T.unpack n) of
-                                          Just x -> pure (GenBackpack (GenCounter x))
-                                          _ -> typeMismatch "Counter" (toJSON n)
-  | otherwise =  case readMaybe (T.unpack t) of
-                Just itm -> pure itm
-                _ -> case readMaybe (T.unpack t) of
-                        Just wpn -> pure (Weapon wpn)
-                        _ -> typeMismatch "Item" (toJSON t)
+      Just x -> pure (GenBackpack (GenCounter x))
+      _ -> typeMismatch "Counter" (toJSON n)
+  | otherwise = case readMaybe (T.unpack t) of
+      Just itm -> pure itm
+      _ -> case readMaybe (T.unpack t) of
+        Just wpn -> pure (Weapon wpn)
+        _ -> typeMismatch "Item" (toJSON t)
 
 instance Show Inventory where
   show i = "(inventoryFromList " ++ show (items i) ++ ")"
@@ -333,6 +333,16 @@ itemNames =
             ("crystal Star Pendant", GenSpecial 3)
           ]
       ),
+      ( Book02,
+        M.fromList
+          [ ("Ticket", ticketVol2),
+            ("Crystal star pendant", crystalStarPendantB02),
+            ("Documents", documentsVol2),
+            ("Seal of Hammerdal", sealHammerdalVol2),
+            ("White pass", whitePassVol2),
+            ("Red pass", redPassVol2)
+          ]
+      ),
       ( Book03,
         M.fromList
           [ ("Ornate Silver Key", ornateSilverKeyB03),
@@ -400,25 +410,25 @@ showItem bk i = case (i, M.lookup bk itemIds >>= M.lookup i) of
 
 instance ToJSONKey Item where
   toJSONKey = toJSONKeyText $ \case
-   Weapon w -> T.pack (show w)
-   GenSpecial (GenCounter n) -> T.pack ("SGen" ++ show n)
-   GenBackpack (GenCounter n) -> T.pack ("BGen" ++ show n)
-   x -> T.pack (show x)
-
+    Weapon w -> T.pack (show w)
+    GenSpecial (GenCounter n) -> T.pack ("SGen" ++ show n)
+    GenBackpack (GenCounter n) -> T.pack ("BGen" ++ show n)
+    x -> T.pack (show x)
 
 instance FromJSONKey Item where
   fromJSONKey = FromJSONKeyTextParser $
-        \t -> case readMaybe (T.unpack t) of
-          Just x -> pure x
-          Nothing -> case readMaybe (T.unpack t) of
-              Just w -> pure (Weapon w)
-              Nothing -> case T.stripPrefix "SGen" t of
-                    Just n -> pure (GenSpecial (GenCounter (read (T.unpack n))))
-                    Nothing -> case T.stripPrefix "BGen" t of
-                      Just n -> pure (GenBackpack (GenCounter (read (T.unpack n))))
-                      Nothing -> if t == "SilverHelmet"
-                              then pure silverHelmet
-                              else error (show t)
+    \t -> case readMaybe (T.unpack t) of
+      Just x -> pure x
+      Nothing -> case readMaybe (T.unpack t) of
+        Just w -> pure (Weapon w)
+        Nothing -> case T.stripPrefix "SGen" t of
+          Just n -> pure (GenSpecial (GenCounter (read (T.unpack n))))
+          Nothing -> case T.stripPrefix "BGen" t of
+            Just n -> pure (GenBackpack (GenCounter (read (T.unpack n))))
+            Nothing ->
+              if t == "SilverHelmet"
+                then pure silverHelmet
+                else error (show t)
 
 -- all books
 silverHelmet :: Item
@@ -801,8 +811,8 @@ usedWeapon cconstant cvariable
   | otherwise = case filter ((`hasItem` inventory) . Weapon) wskills of
       (x : _) -> WithSkill x
       [] -> case weapons of
-              [] -> NoWeapon
-              (w:_) -> WithoutSkill w
+        [] -> NoWeapon
+        (w : _) -> WithoutSkill w
   where
     inventory = cvariable ^. equipment
     wskills = cconstant ^.. discipline . traverse . _WeaponSkill

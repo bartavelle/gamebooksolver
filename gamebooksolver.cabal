@@ -115,9 +115,11 @@ executable gamebooksolver-blogpost
                      , unordered-containers
                      , lucid
                      , directory
+                     , haskeline
                      , lens
                      , text
                      , optparse-applicative
+                     , parallel-io
                      , bytestring
                      , hashable
                      , vector

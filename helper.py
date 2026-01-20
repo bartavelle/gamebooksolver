@@ -90,7 +90,7 @@ def adjust_jsons(dir: str, options: List[str]):
             json.dump(new_content, open(newpath, "w"))
 
 
-B02BASE = ["-Sword-Shield", "-Sword-BodyArmor"]
+B02BASE = ["-Sword-Shield", "-Sword-BodyArmor", "-Sword-Meal-Meal", "-Sword-Laumspur"]
 
 B03OPTIONS = ["FLGKnowledge01", "Helmet"]
 B03BASE = [
