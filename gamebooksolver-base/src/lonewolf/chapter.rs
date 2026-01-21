@@ -59,7 +59,6 @@ pub enum Decision<P> {
     EvadeFight(Rounds, ChapterId, FightDetails<P>, ChapterOutcome<P>),
     AfterCombat(Box<Decision<P>>),
     RemoveItemFrom(Slot, u8, Box<Decision<P>>),
-    LoseItemFrom(Slot, u8, Box<Decision<P>>),
 }
 
 pub struct OutcomeIt<'t, P> {
@@ -82,7 +81,6 @@ impl<'t, P: Rational> Iterator for OutcomeIt<'t, P> {
                 | Decision::Conditional(_, decision)
                 | Decision::AfterCombat(decision)
                 | Decision::RemoveItemFrom(_, _, decision)
-                | Decision::LoseItemFrom(_, _, decision)
                 | Decision::CanTake(_, _, decision)
                 | Decision::RetrieveEquipment(decision) => {
                     self.decs.push(decision);
@@ -143,7 +141,6 @@ impl<P: Clone> Decision<P> {
             EvadeFight(r, cid, fd, co) => EvadeFight(r, cid, fd.map_proba(f), co.map_proba(f)),
             AfterCombat(nxt) => AfterCombat(convert(nxt)),
             RemoveItemFrom(sl, q, nxt) => RemoveItemFrom(sl, q, convert(nxt)),
-            LoseItemFrom(sl, q, nxt) => LoseItemFrom(sl, q, convert(nxt)),
         }
     }
 }
@@ -171,6 +168,7 @@ pub enum ChapterOutcome<P> {
     Goto(ChapterId),
     GameLost,
     GameWon,
+    LoseItemFrom(Slot, u8, Box<ChapterOutcome<P>>),
 }
 
 pub struct SimpleOutcomeIt<'t, P> {
@@ -191,7 +189,7 @@ impl<'t, P> Iterator for SimpleOutcomeIt<'t, P> {
                     self.co.push(co1);
                     self.next()
                 }
-                ChapterOutcome::Fight(_, chapter_outcome) => {
+                ChapterOutcome::Fight(_, chapter_outcome) | ChapterOutcome::LoseItemFrom(_, _, chapter_outcome) => {
                     self.co.push(chapter_outcome);
                     self.next()
                 }
@@ -240,6 +238,7 @@ impl<P: Clone> ChapterOutcome<P> {
             OneRound(fd, cl, ce, cw) => OneRound(fd.map_proba(f), convert(cl), convert(ce), convert(cw)),
             Randomly(lst) => Randomly(lst.into_iter().map(|(p, co2)| (f(&p), co2.map_proba(f))).collect()),
             Conditionally(lst) => Conditionally(lst.into_iter().map(|(c, co2)| (c, co2.map_proba(f))).collect()),
+            LoseItemFrom(slot, n, cl) => LoseItemFrom(slot, n, convert(cl)),
             Simple(sos, nxt) => Simple(sos, convert(nxt)),
             Goto(cid) => Goto(cid),
             GameLost => GameLost,

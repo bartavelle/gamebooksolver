@@ -21,7 +21,7 @@ impl<P, STT> NodeState<P, STT> {
 }
 
 pub fn solve<
-    STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd,
+    STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd + std::fmt::Display,
     FC,
     FS,
     INSPECT,
@@ -49,7 +49,7 @@ where
         .collect()
 }
 
-fn go<STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd, FC, FS, DESC: std::fmt::Debug, P: Rational>(
+fn go<STT: Eq + Hash + Clone + std::fmt::Debug + std::fmt::Display + PartialOrd, FC, FS, DESC: std::fmt::Debug, P: Rational>(
     get_choices: &mut FC,
     get_score: &FS,
     search_state: &mut Cache<STT, NodeState<P, STT>>,
@@ -66,7 +66,14 @@ where
 
     if let Some(ns) = search_state.get(curstate) {
         return match ns {
-            NodeState::Searching => panic!("loop at {:?}", curstate),
+            NodeState::Searching => {
+                for (k, v) in &search_state.cache {
+                    if let NodeState::Searching = v {
+                        println!(" * {k}")
+                    }
+                }
+                panic!("loop at {}", curstate)
+            },
             NodeState::Solved(yeah) => match yeah {
                 SolNode::Win(s) | SolNode::Chosen(s, _) | SolNode::Single(s, _) => s.clone(),
             },
@@ -77,7 +84,7 @@ where
 
     let choices = get_choices(curstate);
     if choices.is_empty() {
-        panic!("Empty choice at state {:?}", curstate);
+        panic!("Empty choice at state {}", curstate);
     }
     let mut best_choice: Option<SolNode<P, STT>> = None;
     let mut best_score = P::from_i64(-1, 1);
@@ -103,7 +110,7 @@ where
 
     match best_choice {
         None => panic!(
-            "No score, but no choices for {:?}, choices: {:?}",
+            "No score, but no choices for {}, choices: {:?}",
             curstate,
             get_choices(curstate)
         ),

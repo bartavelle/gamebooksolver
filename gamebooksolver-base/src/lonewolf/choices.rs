@@ -136,6 +136,7 @@ fn has_combat<P>(o: &ChapterOutcome<P>) -> Option<&FightDetails<P>> {
         Goto(_) => None,
         GameLost => None,
         GameWon => None,
+        LoseItemFrom(_, _, o2) => has_combat(o2),
     }
 }
 
@@ -321,26 +322,19 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
             let n = Decision::CanTake(*i, 1, Box::new(Decision::CanTake(*i, q - 1, nxt.clone())));
             flatten_decision(ccst, cvar, &n)
         }
-        Decision::RemoveItemFrom(Slot::Backpack, n, nxt) => {
-            if cvar.cequipment.in_backpack().len() < *n as usize {
-                Vec::new()
-            } else {
-                flatten_decision(ccst, cvar, &Decision::LoseItemFrom(Slot::Backpack, *n, nxt.clone()))
-            }
-        }
-        Decision::LoseItemFrom(Slot::Backpack, n, nxt) => {
-            let allbackpackitems: Vec<(Item, u8)> = cvar
+        Decision::RemoveItemFrom(sl, n, nxt) => {
+            let allslotitems: Vec<(Item, u8)> = cvar
                 .cequipment
                 .items()
                 .into_iter()
-                .filter(|(i, _)| i.slot() == Slot::Backpack)
+                .filter(|(i, _)| i.slot() == *sl)
                 .collect();
-            if *n == 0 || allbackpackitems.is_empty() {
+            if *n == 0 || allslotitems.is_empty() {
                 flatten_decision(ccst, cvar, nxt)
             } else {
                 let mut out = Vec::new();
-                for (to_drop, _) in allbackpackitems {
-                    let n2 = Decision::LoseItemFrom(Slot::Backpack, n - 1, nxt.clone());
+                for (to_drop, _) in allslotitems {
+                    let n2 = Decision::RemoveItemFrom(*sl, n - 1, nxt.clone());
                     out.extend(with_effect(&[SimpleOutcome::LoseItem(to_drop, 1)], &n2))
                 }
                 out

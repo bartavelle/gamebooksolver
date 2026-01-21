@@ -13,8 +13,7 @@ book05gen cid _ computedDecision =
     3 ->
       takeItems
         [(StrengthPotion, 1), (Gold, 4), (Weapon Dagger, 1), (Weapon Sword, 1), (blowpipeSleepDart, 1)]
-        ( computedDecision & _Outcome %~ Simple [SetFlag bronzeDoorSecretB05]
-        )
+        (computedDecision & _Outcome %~ Simple [SetFlag bronzeDoorSecretB05])
     4 -> takeItems [(Weapon Sword, 1)] (computedDecision & _Outcome . _Fight . _1 . fightMod %~ (Timed 1 EnemyInvulnerable :))
     8 -> Just (NoDecision (Simple [DamagePlayer 2] (Randomly [(1 % 2, Goto 67), (1 % 2, Goto 76)])))
     11 ->
@@ -88,7 +87,7 @@ book05gen cid _ computedDecision =
     34 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
     35 -> takeItems [(Weapon Mace, 1), (copperKeyB05, 1)] (computedDecision & _Outcome %~ Simple [SetFlag jewelledMaceB05])
     38 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
-    40 -> Just (LoseItemFrom BackpackSlot 1 (NoDecision (Simple [DamagePlayer 2, LoseItemKind [PouchSlot]] (Goto 17))))
+    40 -> Just (NoDecision (LoseItemFrom BackpackSlot 1 (Simple [DamagePlayer 2, LoseItemKind [PouchSlot]] (Goto 17))))
     48 ->
       Just
         ( NoDecision
@@ -263,8 +262,7 @@ book05gen cid _ computedDecision =
                 ( Canbuy
                     Potion2Hp
                     3
-                    ( Canbuy tinctureGraveweed 1 (NoDecision (Goto 179))
-                    )
+                    (Canbuy tinctureGraveweed 1 (NoDecision (Goto 179)))
                 )
             )
         )
@@ -403,7 +401,7 @@ book05gen cid _ computedDecision =
     257 -> Nothing
     264 -> Just (computedDecision & _Outcome %~ \o -> Conditionally [(HasDiscipline MindBlast, o), (Always True, Simple [DamagePlayer 2] o)])
     265 -> Just (computedDecision & _Decisions . ix 0 . _2 .~ Conditional (HasItem Gold 1) (NoDecision (Simple [LoseItem Gold 1] (Goto 397))))
-    270 -> Just (LoseItemFrom BackpackSlot 2 (NoDecision (Goto 241))) -- TODO: a bit buggy, should lose weapon + special item if no backpack items
+    270 -> Just (NoDecision (LoseItemFrom BackpackSlot 2 (Goto 241))) -- TODO: a bit buggy, should lose weapon + special item if no backpack items
     273 -> Just (NoDecision (Simple [DamagePlayer 1] (Goto 402)))
     276 -> Just (computedDecision & _Decisions . ix 0 . _2 .~ Conditional (HasItem Gold 5) (NoDecision (Simple [LoseItem Gold 5] (Goto 326))))
     278 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 3])

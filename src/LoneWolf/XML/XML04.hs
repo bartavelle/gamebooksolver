@@ -15,7 +15,7 @@ book04gen cid _ computedDecision =
     -- do not include the rope as it is unused
     12 -> takeItems [(Backpack, 1), (Laumspur, 1), (Weapon Sword, 1), (Weapon Spear, 1)] computedDecision
     19 -> Just (computedDecision & _Outcome %~ Simple [MustEat NoHunt])
-    22 -> Just (LoseItemFrom BackpackSlot 1 (NoDecision (Goto 157)))
+    22 -> Just (NoDecision (LoseItemFrom BackpackSlot 1 (Goto 157)))
     24 ->
       Just
         ( Decisions
@@ -314,7 +314,7 @@ book04gen cid _ computedDecision =
                 ]
             )
         )
-    272 -> Just (LoseItemFrom WeaponSlot 1 (NoDecision (Simple [DamagePlayer 5] (Goto 79))))
+    272 -> Just (NoDecision (LoseItemFrom WeaponSlot 1 (Simple [DamagePlayer 5] (Goto 79))))
     275 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 1])
     279 -> Just (NoDecision (Conditionally [(CAnd (HasItem (Weapon Sword) 1) (HasFlag captainDvalSword), Goto 327), (Always True, Goto 289)]))
     280 -> Just (NoDecision (Goto 231)) -- same chapter
@@ -387,7 +387,6 @@ extraChapters04 =
       Chapter
         "284b"
         "Choice"
-        ( EvadeFight 0 89 (FightDetails "Bandit Warrior" 16 25 []) (Goto 7)
-        )
+        (EvadeFight 0 89 (FightDetails "Bandit Warrior" 16 25 []) (Goto 7))
     )
   ]

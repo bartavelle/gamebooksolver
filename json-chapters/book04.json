@@ -551,15 +551,15 @@
     {
       "desc": "You fumble for your light, and in doing so, you drop one other item from your Backpack into the crevasse. (If you were not carrying any Backpack Items other than a Torch that you are now using, you have lost a Weapon instead.)\nYou eventually manage to make your way safely across to the other side of the bridge.\n",
       "pchoice": {
-        "LoseItemFrom": [
-          "BackpackSlot",
-          1,
-          {
-            "NoDecision": {
+        "NoDecision": {
+          "LoseItemFrom": [
+            "BackpackSlot",
+            1,
+            {
               "Goto": 157
             }
-          }
-        ]
+          ]
+        }
       },
       "title": "22"
     }
@@ -8254,11 +8254,11 @@
     {
       "desc": "You smash feet-first into a large river boulder. Recoiling from the impact, you cough uncontrollably in your desperate fight for air as the water fills your ears and nose. Down and down, around and around you go, your eyes stinging and the pain in your legs grinding agonizingly upwards through your body. A glancing blow to your shoulder rips the sleeve from your jacket and numbs your arm; your weapon falls from your hand. You are somersaulted into a steep V-shaped channel and buffeted on all sides as you tumble towards a pool far below. You feel the sheer weight and volume of water behind you will plunge you to your doom, and as you plummet into the swirling dark water, all consciousness rapidly gives way to a blind and silent numbness.\nWhen you open your eyes it is dusk. You have been washed up on the river bank near to a twisting forest track. The silhouette of the Maaken Range rises steeply to the east, and you realize that you must have drifted many miles downstream. You have survived a terrible ordeal; one that would have killed any lesser mortal. You have lost 5 ENDURANCE points due to leg and head wounds and one Weapon. (If you possess two Weapons, you may choose which one you have lost.) All of your Special Items, Backpack Items, and Gold Crowns are still intact.\n",
       "pchoice": {
-        "LoseItemFrom": [
-          "WeaponSlot",
-          1,
-          {
-            "NoDecision": {
+        "NoDecision": {
+          "LoseItemFrom": [
+            "WeaponSlot",
+            1,
+            {
               "Simple": [
                 [
                   {
@@ -8270,8 +8270,8 @@
                 }
               ]
             }
-          }
-        ]
+          ]
+        }
       },
       "title": "272"
     }

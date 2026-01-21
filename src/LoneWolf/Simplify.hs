@@ -21,7 +21,6 @@ separateOutcome d =
     AfterCombat sub -> appendDec AfterCombat sub
     RetrieveEquipment sub -> appendDec RetrieveEquipment sub
     RemoveItemFrom s c sub -> appendDec (RemoveItemFrom s c) sub
-    LoseItemFrom s c sub -> appendDec (LoseItemFrom s c) sub
   where
     appendDec :: (Decision -> Decision) -> Decision -> Maybe (ChapterOutcome -> Decision, ChapterOutcome)
     appendDec f sub = do

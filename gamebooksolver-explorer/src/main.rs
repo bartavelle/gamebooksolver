@@ -14,6 +14,8 @@ use gamebooksolver_base::lonewolf::solve::solve_lws;
 use gamebooksolver_base::solver::base::Proba;
 use gamebooksolver_base::solver::base::optimize_outcome;
 use gamebooksolver_base::solver::base::{ChoppedSolution, SolNode};
+use gamebooksolver_base::solver::rational::Rational as _;
+use gamebooksolver_base::solver::rational::r::MRational;
 use lwexplore::explore_solution;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
@@ -392,6 +394,36 @@ fn score_with(
 ) -> Rational {
     match mscoremap {
         None => Rational::from(1),
+        Some(scoremap) if bookid == Book::Book01 => {
+            let (re, rf) = filter_final_state(bookid, iitems, iflags, e, f);
+            let mut score = MRational::from_i64(0, 1);
+            for gainedgold in 10..=19 {
+                let mut nre = re;
+                nre.add_item(&Item::Gold, gainedgold);
+                if nre.gold > 27 {
+                    nre.gold = 27;
+                }
+                match scoremap.get(&(nre, rf)) {
+                    None => {
+                        eprintln!(
+                            "Could not find matching combination for {:?} {:?}",
+                            nre.items(),
+                            rf.all()
+                        );
+                        eprintln!("know combinations are:");
+                        for (ke, kf) in scoremap.keys() {
+                            eprintln!(" * {:?} {:?}", ke.items(), kf.all());
+                        }
+                        panic!("failed :(");
+                    }
+                    Some(s) => {
+                        score += s.clone();
+                    }
+                }
+            }
+            score = score.div(&MRational::from_i64(10, 1));
+            score
+        }
         Some(scoremap) => {
             let (re, rf) = filter_final_state(bookid, iitems, iflags, e, f);
             match scoremap.get(&(re, rf)) {
@@ -996,7 +1028,7 @@ fn has_no_choice(d: &Decision<Rational>) -> bool {
         | Decision::EvadeFight(_, _, _, _)
         | Decision::RemoveItemFrom(_, _, _)
         | Decision::Cansell(_, _, _) => false,
-        Decision::AfterCombat(d) | Decision::LoseItemFrom(_, _, d) | Decision::Conditional(_, d) => has_no_choice(d),
+        Decision::AfterCombat(d) | Decision::Conditional(_, d) => has_no_choice(d),
         Decision::None(_) => true,
     }
 }

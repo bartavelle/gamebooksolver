@@ -433,7 +433,7 @@ impl StoredEquipment for NoPrevEq {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord, Deserialize, Encode, Decode)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, PartialOrd, Ord, Deserialize, Encode, Decode, Copy)]
 pub struct CharacterVariableG<PREV> {
     pub curendurance: i8,
     pub flags: Flags,

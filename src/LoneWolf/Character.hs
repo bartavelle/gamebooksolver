@@ -27,7 +27,7 @@ import qualified Data.Aeson.KeyMap as A
 import Data.Aeson.Types (FromJSONKeyFunction (..), Parser, toJSONKeyText, typeMismatch, unexpected)
 import Data.Bits
 import Data.Bits.Lens (bitAt)
-import Data.Data (Data, Typeable)
+import Data.Data (Data)
 import Data.Hashable (Hashable)
 import Data.Int (Int16)
 import qualified Data.Map.Strict as M
@@ -64,10 +64,10 @@ instance Serialise Book
 In the constant part, the combat skill and endurance are randomly determined when the adventure begins. The list of disciplines is choosen by the player.
 -}
 newtype CombatSkill = CombatSkill {getCombatSkill :: Int}
-  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise)
+  deriving (Show, Eq, Read, Num, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise)
 
 newtype Endurance = Endurance {getEndurance :: Int16}
-  deriving (Show, Eq, Read, Num, Typeable, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise, Hashable, NFData, Bounded, FromJSONKey, ToJSONKey)
+  deriving (Show, Eq, Read, Num, Data, Ord, Integral, Real, Enum, Generic, Bits, ToJSON, FromJSON, Serialise, Hashable, NFData, Bounded, FromJSONKey, ToJSONKey)
 
 data CharacterConstant = CharacterConstant
   { _maxendurance :: !Endurance,
@@ -241,7 +241,7 @@ data Discipline
   | MindBlast
   | AnimalKinship
   | MindOverMatter
-  deriving (Show, Eq, Generic, Read, Ord, Typeable, Data)
+  deriving (Show, Eq, Generic, Read, Ord, Data)
 
 instance ToJSON Discipline where
   toJSON d = case d of
@@ -285,7 +285,7 @@ data Weapon
   | BroadSword
   | MagicSpear
   | Sommerswerd
-  deriving (Show, Eq, Generic, Ord, Enum, Bounded, Read, Typeable, Data)
+  deriving (Show, Eq, Generic, Ord, Enum, Bounded, Read, Data)
 
 instance ToJSON Weapon
 
@@ -320,7 +320,7 @@ data Item
   | Gold
   | Laumspur
   | Helmet
-  deriving (Show, Eq, Generic, Ord, Read, Typeable, Data)
+  deriving (Show, Eq, Generic, Ord, Read, Data)
 
 itemNames :: M.Map Book (M.Map String Item)
 itemNames =
@@ -678,7 +678,7 @@ data Slot
   | BackpackSlot
   | SpecialSlot
   | PouchSlot
-  deriving (Show, Eq, Generic, Typeable, Data)
+  deriving (Show, Eq, Generic, Data)
 
 instance ToJSON Slot where
   toJSON = genericToJSON defaultOptions

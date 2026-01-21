@@ -90,7 +90,7 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
                 return vec![Proba::certain(NextStep::HasLost(cid.0))];
             }
             let max_chapter = ChapterId(if ccst.bookid == Book::Book05 { 400 } else { 350 });
-            let mut nv = cvar.clone();
+            let mut nv = *cvar;
             if cid < max_chapter && cvar.flags.has(Flag::Poisonned2) {
                 update_simple(&mut nv, ccst, &SimpleOutcome::DamagePlayer(Endurance(2)));
                 if nv.curendurance > 0 {
@@ -109,9 +109,9 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
             }
         }
         ChapterOutcome::GameLost => vec![Proba::certain(NextStep::HasLost(cid.0))],
-        ChapterOutcome::GameWon => vec![Proba::certain(NextStep::HasWon(cvar.clone()))],
+        ChapterOutcome::GameWon => vec![Proba::certain(NextStep::HasWon(*cvar))],
         ChapterOutcome::Simple(effects, nxt) => {
-            let mut nv = cvar.clone();
+            let mut nv = *cvar;
             for e in effects {
                 update_simple(&mut nv, ccst, e);
             }
@@ -131,10 +131,43 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
                 .flat_map(|(pb, o)| {
                     update(memo, ccst, cvar, cid, o)
                         .into_iter()
-                        .map(move |r| Proba { p: r.p.mul(pb), v: r.v })
+                        .map(|r| Proba { p: r.p.mul(pb), v: r.v })
                 })
                 .collect();
             optimize_outcome(out)
+        }
+        ChapterOutcome::LoseItemFrom(sl, n, nxt) => {
+            let allslotitems: Vec<(Item, u8)> = cvar
+                .cequipment
+                .items()
+                .into_iter()
+                .filter(|(i, _)| i.slot() == *sl)
+                .collect();
+            if *n == 0 || allslotitems.is_empty() {
+                update(memo, ccst, cvar, cid, nxt)
+            } else {
+                let mut out = Vec::new();
+                let pb = P::from_i64(1, allslotitems.iter().map(|(_, n)| *n as i64).sum());
+                for (to_drop, amnt) in allslotitems {
+                    let mut nv = *cvar;
+                    update_simple(&mut nv, ccst, &SimpleOutcome::LoseItem(to_drop, 1));
+                    out.extend(
+                        update(
+                            memo,
+                            ccst,
+                            &nv,
+                            cid,
+                            &ChapterOutcome::LoseItemFrom(*sl, *n - 1, nxt.clone()),
+                        )
+                        .into_iter()
+                        .map(|r| Proba {
+                            p: r.p.mul(&pb).mul(&P::from_i64(amnt as i64, 1)),
+                            v: r.v,
+                        }),
+                    );
+                }
+                optimize_outcome(out)
+            }
         }
         ChapterOutcome::OneRound(fd, lose, eq, win) => {
             let cinfo = CombatInfo::make(ccst, cvar, fd);
@@ -144,7 +177,7 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
                 .flat_map(|r| {
                     let lwloss = cvar.curendurance - r.v.0.0;
                     let oploss = fd.endurance.0 - r.v.1.0;
-                    let mut nv: CharacterVariableG<PREV> = cvar.clone();
+                    let mut nv: CharacterVariableG<PREV> = *cvar;
                     nv.curendurance = r.v.0.0;
                     nv.flags.unset(Flag::StrengthPotionActive);
                     nv.flags.unset(Flag::PotentStrengthPotionActive);
@@ -178,7 +211,7 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
                         Escaped::Lost(ecid) => (ChapterOutcome::Goto(ecid), Endurance(1)),
                         Escaped::Stopped(ecid, n) => (ChapterOutcome::Goto(ecid), n),
                     };
-                    let mut nv: CharacterVariableG<PREV> = cvar.clone();
+                    let mut nv: CharacterVariableG<PREV> = *cvar;
                     nv.flags.set(Flag::HadCombat);
                     if !fd.fight_mod.contains(&FightModifier::MultiFight) {
                         nv.flags.unset(Flag::StrengthPotionActive);
@@ -233,8 +266,9 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
 mod test {
     use super::*;
     use crate::lonewolf::chapter::{CombatSkill, FightDetails};
-    use crate::lonewolf::mini::{CharacterVariable, Weapon};
-    use num_rational::BigRational;
+    use crate::lonewolf::mini::{CharacterVariable, NoPrevEq, Slot, Weapon};
+    use num_bigint::BigInt;
+    use num_rational::{BigRational, Ratio};
 
     #[test]
     fn combat1() {
@@ -347,5 +381,56 @@ mod test {
         ];
         expected.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_lose_item() {
+        let mut memo = Memoz::<Ratio<BigInt>>::default();
+        let ccst = CharacterConstant {
+            bookid: Book::Book04,
+            combat_skill: 10,
+            maxendurance: 20,
+            discipline: vec![],
+        };
+        let mut cvar = CharacterVariableG::new(20);
+        cvar.add_item(&Item::Meal, 3);
+        cvar.add_item(&Item::Potion2Hp, 1);
+        let outcome = ChapterOutcome::LoseItemFrom(
+            Slot::Backpack,
+            2,
+            Box::new(ChapterOutcome::Randomly(vec![
+                (BigRational::from_i64(1, 2), ChapterOutcome::Goto(ChapterId(5))),
+                (BigRational::from_i64(1, 2), ChapterOutcome::Goto(ChapterId(6))),
+            ])),
+        );
+        let mut actual = update(&mut memo, &ccst, &cvar, ChapterId(50), &outcome);
+        actual.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+
+        let mut lost_meal_meal = cvar;
+        lost_meal_meal.cequipment.del_item(&Item::Meal, 2);
+        let mut lost_meal_potion = cvar;
+        lost_meal_potion.cequipment.del_item(&Item::Potion2Hp, 1);
+        lost_meal_potion.cequipment.del_item(&Item::Meal, 1);
+
+        let mut expected: Vec<Proba<Ratio<BigInt>, NextStep<NoPrevEq>>> = vec![
+            Proba {
+                p: BigRational::from_i64(1, 4),
+                v: NextStep::NewChapter(5, lost_meal_potion),
+            },
+            Proba {
+                p: BigRational::from_i64(1, 4),
+                v: NextStep::NewChapter(6, lost_meal_potion),
+            },
+            Proba {
+                p: BigRational::from_i64(1, 4),
+                v: NextStep::NewChapter(5, lost_meal_meal),
+            },
+            Proba {
+                p: BigRational::from_i64(1, 4),
+                v: NextStep::NewChapter(6, lost_meal_meal),
+            },
+        ];
+        expected.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        assert_eq!(actual, expected)
     }
 }

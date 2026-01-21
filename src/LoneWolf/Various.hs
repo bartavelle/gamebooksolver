@@ -42,7 +42,6 @@ getDestinations book d =
     NoDecision co -> getDestinationsO co
     RetrieveEquipment d' -> getDestinations book d'
     RemoveItemFrom _ _ d' -> getDestinations book d'
-    LoseItemFrom _ _ d' -> getDestinations book d'
   where
     itemDesc i c = case i of
       Gold -> show c ++ "$"
@@ -86,6 +85,7 @@ getDestinations book d =
     getDestinationsO co = case co of
       OneRound _ w e l -> getDestinationsO w ++ getDestinationsO e ++ getDestinationsO l
       Simple s co' -> map (fmap (mapMaybe sdesc s ++)) (getDestinationsO co')
+      LoseItemFrom sl n co' -> map (fmap (["loseitem " ++ show sl ++ " " ++ show n] ++)) (getDestinationsO co')
       Fight fd co' ->
         let slow = fd ^.. fightMod . traverse . _Timed . _2 . _OnNotYetWon . to (,["slow fight"])
             fake = fd ^.. fightMod . traverse . _FakeFight . to (,["fake fight loss"])

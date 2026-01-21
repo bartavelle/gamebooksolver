@@ -41,7 +41,7 @@ book03gen cid _ computedDecision =
                 ]
             )
         )
-    16 -> Just (LoseItemFrom BackpackSlot 2 (NoDecision (Goto 63)))
+    16 -> Just (NoDecision (LoseItemFrom BackpackSlot 2 (Goto 63)))
     17 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 3, LoseItemKind [WeaponSlot]])
     21 -> Just (computedDecision & _Outcome %~ Simple [DamagePlayer 3])
     25 -> takeItems [(blueStoneTriangleB03, 1)] computedDecision

@@ -89,8 +89,10 @@ def adjust_jsons(dir: str, options: List[str]):
             new_content["_variable"]["_cvflags"].append("PermanentSkillReduction2")
             json.dump(new_content, open(newpath, "w"))
 
+B01BASE = ["-Sword", "-Helmet", "-Meal-Meal", "-BodyArmor", "-Potion4Hp", "*MOREGOLD*"]
 
 B02BASE = ["-Sword-Shield", "-Sword-BodyArmor", "-Sword-Meal-Meal", "-Sword-Laumspur"]
+B02bBASE = ["-Sword-Shield"]
 
 B03OPTIONS = ["FLGKnowledge01", "Helmet"]
 B03BASE = [
@@ -137,9 +139,33 @@ def geneqps(base: List[str], options: List[str]) -> Iterator[str]:
 
 DISCS = {"CA", "HU", "6S", "TR", "HL", "MS", "MB", "AK", "MO"}
 RDISCS = {"CA", "HU", "6S", "TR", "MS", "MO"}
+RDISCSb = {"CA", "HU", "6S", "TR", "MS", "MO", "AK"}
 
-TGTS2: List[str] = []
-for t in B02BASE:
+TGTS1: set[str] = set()
+for t in B01BASE:
+    for d1 in RDISCSb:
+        for d2 in RDISCSb:
+            if d1 > d2:
+                for d3 in RDISCSb:
+                    if d2 > d3:
+                        for d4 in RDISCSb:
+                            if d3 > d4:
+                                for d5 in RDISCSb:
+                                    if d4 > d5:
+                                        for gold in range(0,10):
+                                            if t == "*MOREGOLD*":
+                                                TGTS1.add(
+                                                    "data/B01/2010SW.%s.%s.%s.%s.%sg%d.bin"
+                                                    % (d1, d2, d3, d4, d5, gold + 12)
+                                                )
+                                            else:
+                                                TGTS1.add(
+                                                    "data/B01/2010SW.%s.%s.%s.%s.%sg%d%s.bin"
+                                                    % (d1, d2, d3, d4, d5, gold, t)
+                                                )
+
+TGTS2: set[str] = set()
+for t in B02bBASE:
     for d1 in RDISCS:
         for d2 in RDISCS:
             if d1 > d2:
@@ -149,12 +175,31 @@ for t in B02BASE:
                             if d3 > d4:
                                 for gold in range(10, 28):
                                     if gold == 15:
-                                        TGTS2.append(
+                                        TGTS2.add(
                                             "data/B02/2010SW.%s.%s.%s.%s%s.bin"
                                             % (d1, d2, d3, d4, t)
                                         )
                                     else:
-                                        TGTS2.append(
+                                        TGTS2.add(
+                                            "data/B02/2010SW.%s.%s.%s.%sg%d%s.bin"
+                                            % (d1, d2, d3, d4, gold, t)
+                                        )
+for t in B02bBASE:
+    for d1 in RDISCSb:
+        for d2 in RDISCSb:
+            if d1 > d2:
+                for d3 in RDISCSb:
+                    if d2 > d3:
+                        for d4 in RDISCSb:
+                            if d3 > d4:
+                                for gold in range(23, 24):
+                                    if gold == 15:
+                                        TGTS2.add(
+                                            "data/B02/2010SW.%s.%s.%s.%s%s.bin"
+                                            % (d1, d2, d3, d4, t)
+                                        )
+                                    else:
+                                        TGTS2.add(
                                             "data/B02/2010SW.%s.%s.%s.%sg%d%s.bin"
                                             % (d1, d2, d3, d4, gold, t)
                                         )
@@ -196,7 +241,8 @@ def chunked_makefile(n: int, l: List[str], cs: int):
     print("")
 
 
-chunked_makefile(2, TGTS2, 60)
+chunked_makefile(1, list(TGTS1), 60)
+chunked_makefile(2, list(TGTS2), 60)
 chunked_makefile(3, TGTS3, 60)
 chunked_makefile(4, TGTS4, 30)
 chunked_makefile(5, TGTS5, 30)

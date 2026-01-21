@@ -18,7 +18,6 @@ import Data.Bifunctor (first)
 import Data.Char (toLower)
 import Data.List (intercalate)
 import qualified Data.Map.Strict as M
-import Data.Maybe (fromMaybe)
 import Data.Ratio (denominator, numerator, (%))
 import qualified Data.Set as S
 import Data.Text (Text)
@@ -221,7 +220,7 @@ readItem s = case readMaybe s of
       _ -> Left ("Unknown item: " ++ s)
 
 eqcvarstate :: Book -> CVarState -> CVarState -> Bool
-eqcvarstate book (CVarState i1 g1 f1) (CVarState i2 g2 f2) = g1 == g2 && f1 == f2 && i1 == i2
+eqcvarstate _book (CVarState i1 g1 f1) (CVarState i2 g2 f2) = g1 == g2 && f1 == f2 && i1 == i2
 
 makeLenses ''Multistat
 makeLenses ''MultistatEntry

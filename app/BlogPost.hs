@@ -62,7 +62,6 @@ import System.Console.Haskeline
 import System.Directory (getDirectoryContents)
 import Text.Printf (printf)
 import Text.Read (readMaybe)
-import GHC.RTS.Flags (GiveGCStats(SummaryGCStats))
 
 data Opts = Opts Book Mode String
 
@@ -167,7 +166,7 @@ rowStyleRG d =
    in style_ (fromString (printf "background-color: #%02x%02x00; color: #000;" (255 - color) color))
 
 optColors :: [Text]
-optColors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6", "#bcf60c", "#fabebe", "#008080", "#e6beff", "#9a6324", "#fffac8", "#800000", "#aaffc3", "#808000", "#ffd8b1", "#000075", "#808080", "#ffffff", "#000000"]
+optColors = ["#e6194b", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4", "#46f0f0", "#f032e6", "#bcf60c", "#fabebe", "#008080", "#e6beff", "#9a6324", "#fffac8", "#a00000", "#aaffc3", "#808000", "#ffd8b1", "#808080", "#ffffff"]
 
 colorStyle :: (TermRaw Text arg) => T.Text -> T.Text -> arg
 colorStyle color bg = style_ ("background-color: " <> bg <> "; color: " <> color <> ";")
@@ -326,9 +325,11 @@ blogpostStatsDG imgsuffix astts rawcols = heatmapH Nothing rowStyleGreen (Just "
     minstates = minimum (map (_states . _sentry) astts)
     colshow :: String -> ([Attribute], Html ())
     colshow n =
-      let stt = mpo M.! n
+      let stt = case M.lookup n mpo of
+            Just x -> x
+            Nothing -> error "a"
           mdisc = mdiscname stt
-       in ( [colorStyle "#000" (ordered_discs M.! mdisc)],
+       in ( [colorStyle "#000" (M.findWithDefault (error (show (mdisc, ordered_discs))) mdisc ordered_discs)],
             fromString mdisc
               <> a_ [href_ (T.pack ("/images/lonewolf" ++ imgsuffix ++ "/" ++ drop 5 (_fp stt) ++ ".svg"))] "🗺️"
           )
@@ -337,11 +338,11 @@ blogpostStatsDG imgsuffix astts rawcols = heatmapH Nothing rowStyleGreen (Just "
     max_score_by_discipline = M.fromListWith max $ do
       st <- astts
       pure (mdiscname st, winrate st)
-    ordered_discs = M.fromList $ zip (M.keys max_score_by_discipline) optColors
+    ordered_discs = M.fromList $ zip (M.keys max_score_by_discipline) (cycle optColors)
     getmaxscore d = M.findWithDefault 0 (mdiscname d) max_score_by_discipline
     ordered = sortOn (\x -> (negate (getmaxscore x), mdiscname x, negate (winrate x), _fp x)) astts
     getentry entry col =
-      let e = mpo M.! entry
+      let e = M.findWithDefault (error "c") entry mpo
           fn = case M.lookup col cmap of
             Just f -> f
             _ -> error col
@@ -352,7 +353,7 @@ blogpostStats mthstyle imgsuffix astts cols = heatmapH mthstyle rowStyleGreen (J
   where
     maxstates = maximum (map (_states . _sentry) astts)
     colshow n =
-      let stt = mpo M.! n
+      let stt = M.findWithDefault (error "d") n mpo
           nstates = _states (_sentry stt)
           ratio = fromIntegral nstates / fromIntegral maxstates
        in ( [rowStyleRG (1 - ratio)],
@@ -365,7 +366,7 @@ blogpostStats mthstyle imgsuffix astts cols = heatmapH mthstyle rowStyleGreen (J
     cmap = M.fromList cols
     ordered = sortOn (\x -> (negate (winrate x), _fp x)) astts
     getentry entry col =
-      let e = mpo M.! entry
+      let e = M.findWithDefault (error "d") entry mpo
           fn = case M.lookup col cmap of
             Just f -> f
             _ -> error col
@@ -447,8 +448,13 @@ b02stats imgsuffix astts = do
         [ ("Win rate", fmtr . winrate),
           ("Raw rate", fmtr . erawrate),
           ("S money", fmtq 30 . itemAt 1 Gold),
-          ("S BA", fmtb . hasitem BodyArmor),
-          ("S Shield", fmtb . hasitem Shield)
+          ( "Start protection",
+            \stt -> case (hasitem BodyArmor stt, hasitem Shield stt) of
+              (True, False) -> (fromString "body armor", 1)
+              (False, True) -> (fromString "shield", 1)
+              (True, True) -> (fromString "both", 0)
+              (False, False) -> (fromString "none", 0)
+          )
         ]
   summary imgsuffix Book02 astts cols
 
@@ -591,11 +597,11 @@ main = do
               Just [n] | Just cid <- readMaybe n -> liftIO (putStrLn (showlineforcol [Passage] False dt cid)) >> loop
               Just ["p", n] | Just cid <- readMaybe n -> liftIO (putStrLn (showlineforcol [Passage] True dt cid)) >> loop
               Just ["i", itm, n] | Just cid <- readMaybe n, Right ritm <- readItem itm -> liftIO (putStrLn (showlineforcol [ItemAt ritm] False dt cid)) >> loop
-              Just ["i", 'S':num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenSpecial (GenCounter sitm))] False dt cid)) >> loop
-              Just ["i", 'G':num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenBackpack (GenCounter sitm))] False dt cid)) >> loop
+              Just ["i", 'S' : num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenSpecial (GenCounter sitm))] False dt cid)) >> loop
+              Just ["i", 'G' : num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenBackpack (GenCounter sitm))] False dt cid)) >> loop
               Just ["ip", itm, n] | Just cid <- readMaybe n, Right ritm <- readItem itm -> liftIO (putStrLn (showlineforcol [ItemAt ritm] True dt cid)) >> loop
-              Just ["ip", 'S':num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenSpecial (GenCounter sitm))] True dt cid)) >> loop
-              Just ["ip", 'G':num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenBackpack (GenCounter sitm))] True dt cid)) >> loop
+              Just ["ip", 'S' : num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenSpecial (GenCounter sitm))] True dt cid)) >> loop
+              Just ["ip", 'G' : num, n] | Just cid <- readMaybe n, Just sitm <- readMaybe num -> liftIO (putStrLn (showlineforcol [ItemAt (GenBackpack (GenCounter sitm))] True dt cid)) >> loop
               Just ["f", sflg, n] | Just cid <- readMaybe n, Just flg <- readMaybe sflg -> liftIO (putStrLn (showlineforcol [FlagAt flg] False dt cid)) >> loop
               Just ["fp", sflg, n] | Just cid <- readMaybe n, Just flg <- readMaybe sflg -> liftIO (putStrLn (showlineforcol [FlagAt flg] True dt cid)) >> loop
               Just ["wpns", n] | Just cid <- readMaybe n -> liftIO (putStrLn (showlineforcol [Weapons] False dt cid)) >> loop

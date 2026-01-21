@@ -249,7 +249,7 @@ chapters =
       Chapter
         "40"
         "The Kwaraz drops from the ceiling and plunges into the water, creating an enormous wave of foul slime which completely submerges you. Wracked with nausea, you cough and retch and try to scoop the muck from your eyes and mouth. The Kwaraz's carcass blocks the tunnel, and you can only get past by climbing over it. Still in a state of shock, you lose 1 Backpack Item, your pouch of Gold Crowns and 2 ENDURANCE points. Make the necessary adjustments to your Action Chart.\n"
-        (LoseItemFrom BackpackSlot 1 (NoDecision (Simple [DamagePlayer (Endurance {getEndurance = 2}), LoseItemKind [PouchSlot]] (Goto 17))))
+        (NoDecision (LoseItemFrom BackpackSlot 1 (Simple [DamagePlayer (Endurance {getEndurance = 2}), LoseItemKind [PouchSlot]] (Goto 17))))
     ),
     ( 41,
       Chapter
@@ -1646,7 +1646,7 @@ chapters =
       Chapter
         "270"
         "You race along the rock-strewn cave, eager to escape from the infected old man. The horrific stories that you have heard about vaxelus make you careless in your haste, and you lose 2 Items from your Backpack. Choose which two items to erase from your Action Chart (if you have no Backpack Items, you lose a Weapon and a Special Item instead).\n"
-        (LoseItemFrom BackpackSlot 2 (NoDecision (Goto 241)))
+        (NoDecision (LoseItemFrom BackpackSlot 2 (Goto 241)))
     ),
     ( 271,
       Chapter

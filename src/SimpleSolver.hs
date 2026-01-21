@@ -6,16 +6,16 @@
 module SimpleSolver where
 
 import Codec.Serialise (Serialise)
+import Control.DeepSeq (NFData)
 import Control.Lens (Bifunctor (bimap))
 import Data.Aeson (FromJSON (..), Options (..), SumEncoding (ObjectWithSingleField), ToJSON (..), defaultOptions, genericParseJSON, genericToEncoding, genericToJSON)
 import Data.Bifunctor (first)
-import Data.List (foldl', maximumBy)
+import Data.List (maximumBy)
 import qualified Data.Map.Strict as M
 import qualified Data.MemoCombinators as Memo
 import Data.Ord (comparing)
 import GHC.Generics (Generic)
 import Solver (Choice, Probably, Score (..), SolMap, certain, mapProbably, regroup)
-import Control.DeepSeq (NFData)
 
 data Solution state description
   = Node
@@ -78,7 +78,7 @@ chopSolution = \case
       LeafLost -> Nothing
       Node _ stt' _ _ -> Just stt'
 
-toSolMap :: forall state description. Ord state => state -> Solution state description -> SolMap state
+toSolMap :: forall state description. (Ord state) => state -> Solution state description -> SolMap state
 toSolMap loststate = go 1 M.empty
   where
     go :: Rational -> SolMap state -> Solution state description -> SolMap state
@@ -111,7 +111,7 @@ getSolScore s = case s of
   Leaf x _ -> x
   Node _ _ x _ -> x
 
-winStates :: Ord state => Solution state description -> Probably state
+winStates :: (Ord state) => Solution state description -> Probably state
 winStates s = case s of
   LeafLost -> mempty
   Leaf _ st -> certain st

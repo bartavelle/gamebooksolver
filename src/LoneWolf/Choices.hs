@@ -4,7 +4,6 @@ module LoneWolf.Choices where
 
 import Control.Lens
 import Data.Bifunctor (first)
-import Data.List
 import qualified Data.Map.Strict as M
 import Data.Maybe (fromMaybe)
 import qualified LoneWolf.Cartwheel
@@ -188,16 +187,6 @@ flattenDecision cnv cconstant cvariable d =
                     (dsc, o) <- flattenDecision cnv cconstant nvariable (RemoveItemFrom BackpackSlot (n - 1) nxt)
                     return (cnv ("drop " ++ show todrop) : dsc, Simple [LoseItem todrop 1] o)
         RemoveItemFrom slot _ _ -> error ("unsupported remove from slot " ++ show slot)
-        LoseItemFrom BackpackSlot n nxt ->
-          let allbackpackitems = filter ((== BackpackSlot) . itemSlot . fst) (items inventory)
-           in if n <= 0 || null allbackpackitems
-                then flattenDecision cnv cconstant cvariable nxt
-                else do
-                  (todrop, _) <- allbackpackitems
-                  let nvariable = updateSimple cconstant cvariable (LoseItem todrop 1)
-                  (dsc, o) <- flattenDecision cnv cconstant nvariable (LoseItemFrom BackpackSlot (n - 1) nxt)
-                  return (cnv ("lost " ++ show todrop) : dsc, Simple [LoseItem todrop 1] o)
-        LoseItemFrom slot _ _ -> error ("unsupported remove from slot " ++ show slot)
         Special B05S357 ->
           let lwe = cvariable ^. curendurance
               ratio = getRatio cconstant cvariable (FightDetails "Platform Sentry" 15 23 [CombatBonus (-2)])

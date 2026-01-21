@@ -90,22 +90,6 @@ itemp b = case M.lookup b itemNames of
   where
     checkitem (r, nm) = nm <$ string r
 
--- itemp Book02 =
---   (vordakGem <$ "Vordak Gem")
---     <|> (goldenKey <$ "Golden Key")
---     <|> (silverKey <$ "Silver Key")
--- itemp Book05 =
---   (gaolerKeyB05 <$ "Gaoler's Keys")
---     <|> (Weapon Sommerswerd <$ "Sommerswerd")
---     <|> (copperKeyB05 <$ "Copper Key")
---     <|> (ropeB05 <$ "Rope")
---     <|> (blackCubeB05 <$ "Black Crystal Cube")
---     <|> (blowpipeSleepDart <$ "Blowpipe and Sleep Dart")
---     <|> (oedeHerb <$ "Oede herb")
---     <|> (prismB05 <$ "Prism")
---     <|> (blueStoneTriangleB05 <$ "Blue Stone Triangle")
--- itemp _ = fail "?"
-
 data CondType
   = TInconditional BoolCond
   | TConditional BoolCond

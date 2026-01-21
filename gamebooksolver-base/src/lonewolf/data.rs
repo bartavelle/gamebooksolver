@@ -94,6 +94,7 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
             }
             ChapterOutcome::Randomly(lst) => lst.iter().flat_map(|(_, o)| get_destinations_o(o)).collect(),
             ChapterOutcome::Simple(_, nxt) => get_destinations_o(nxt),
+            ChapterOutcome::LoseItemFrom(_, _, o) => get_destinations_o(o),
         }
     }
     match dec {
@@ -108,7 +109,6 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
             o.insert(*cid);
             o
         }
-        Decision::LoseItemFrom(_, _, nxt) => get_destinations(nxt),
         Decision::None(co) => get_destinations_o(co),
         Decision::RemoveItemFrom(_, _, nxt) => get_destinations(nxt),
         Decision::RetrieveEquipment(nxt) => get_destinations(nxt),

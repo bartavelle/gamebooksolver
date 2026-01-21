@@ -542,15 +542,15 @@
     {
       "desc": "You only just manage to slip through the gap as the stone door slams shut. Unfortunately, if you are wearing a Backpack, two separate items have been crushed and must be discarded here. You may choose which Backpack Items to delete. If you only have one item in your Backpack, then this single item has been destroyed. Make the necessary adjustments to your Action Chart, and continue along the passage.\n",
       "pchoice": {
-        "LoseItemFrom": [
-          "BackpackSlot",
-          2,
-          {
-            "NoDecision": {
+        "NoDecision": {
+          "LoseItemFrom": [
+            "BackpackSlot",
+            2,
+            {
               "Goto": 63
             }
-          }
-        ]
+          ]
+        }
       },
       "title": "16"
     }

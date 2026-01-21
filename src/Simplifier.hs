@@ -29,9 +29,6 @@ instance Semigroup LinkType where
 
 instance Monoid LinkType where
   mempty = Neutral
-  Neutral `mappend` b = b
-  b `mappend` Neutral = b
-  _ `mappend` _ = error "?!"
 
 uselessEdges ::
   forall chapterid priority.

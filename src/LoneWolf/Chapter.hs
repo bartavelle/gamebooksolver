@@ -68,7 +68,7 @@ data ChapterG a = Chapter
   }
   deriving (Show, Eq, Generic, Functor)
 
-instance ToJSON a => ToJSON (ChapterG a) where
+instance (ToJSON a) => ToJSON (ChapterG a) where
   toJSON = genericToJSON jsonOptions
 
 {-
@@ -113,10 +113,9 @@ data DecisionG a
   | EvadeFight Rounds ChapterId (FightDetailsG a) (ChapterOutcomeG a)
   | AfterCombat (DecisionG a)
   | RemoveItemFrom Slot Int (DecisionG a) -- must have that least that many items
-  | LoseItemFrom Slot Int (DecisionG a) -- always succeeds
-  deriving (Show, Eq, Typeable, Data, Generic, Functor)
+  deriving (Show, Eq, Data, Generic, Functor)
 
-instance ToJSON a => ToJSON (DecisionG a) where
+instance (ToJSON a) => ToJSON (DecisionG a) where
   toJSON = genericToJSON jsonOptions
 
 data SpecialChapter
@@ -124,7 +123,7 @@ data SpecialChapter
   | Portholes
   | B05S127
   | B05S357
-  deriving (Show, Eq, Typeable, Data, Generic)
+  deriving (Show, Eq, Data, Generic)
 
 instance ToJSON SpecialChapter where
   toJSON = genericToJSON jsonOptions
@@ -188,14 +187,15 @@ data ChapterOutcomeG a
   | -- | lw loss, equal, lw win
     OneRound (FightDetailsG a) (ChapterOutcomeG a) (ChapterOutcomeG a) (ChapterOutcomeG a)
   | Randomly [(a, ChapterOutcomeG a)]
+  | LoseItemFrom Slot Int (ChapterOutcomeG a)
   | Conditionally [(BoolCond, ChapterOutcomeG a)]
   | Simple [SimpleOutcome] (ChapterOutcomeG a)
   | Goto ChapterId
   | GameLost
   | GameWon
-  deriving (Show, Eq, Typeable, Data, Generic, Functor)
+  deriving (Show, Eq, Data, Generic, Functor)
 
-instance ToJSON a => ToJSON (ChapterOutcomeG a) where
+instance (ToJSON a) => ToJSON (ChapterOutcomeG a) where
   toJSON x = case x of
     GameLost -> "GameLost"
     GameWon -> "GameWon"
@@ -205,6 +205,7 @@ instance ToJSON a => ToJSON (ChapterOutcomeG a) where
     Randomly l -> object [("Randomly", toJSON l)]
     Goto d -> object [("Goto", toJSON d)]
     OneRound a b c d -> object [("OneRound", toJSON (a, b, c, d))]
+    LoseItemFrom sl n nxt -> object [("LoseItemFrom", toJSON (sl, n, nxt))]
 
 data SimpleOutcome
   = DamagePlayer Endurance
@@ -218,7 +219,7 @@ data SimpleOutcome
   | StoreEquipment -- drop all equipment, saving it in case we find it again
   | SetFlag Flag
   | ClearFlag Flag
-  deriving (Show, Eq, Typeable, Data, Generic)
+  deriving (Show, Eq, Data, Generic)
 
 instance ToJSON SimpleOutcome where
   toJSON x = case x of
@@ -245,6 +246,7 @@ hasCombat o =
     Goto _ -> False
     GameLost -> False
     GameWon -> False
+    LoseItemFrom _ _ o' -> hasCombat o'
 
 {-
 A constructor of interest is the `MustEat` constructor.
@@ -269,7 +271,7 @@ botherwise :: BoolCond
 botherwise = Always True
 
 data CanHunt = Hunt | NoHunt
-  deriving (Show, Eq, Typeable, Data, Generic)
+  deriving (Show, Eq, Data, Generic)
 
 instance ToJSON CanHunt where
   toJSON = genericToJSON jsonOptions
@@ -284,7 +286,7 @@ data BoolCond
   | HasEndurance Endurance
   | HasFlag Flag
   | HasLevel KaiLevel
-  deriving (Show, Eq, Typeable, Data, Generic)
+  deriving (Show, Eq, Data, Generic)
 
 instance ToJSON BoolCond where
   toJSON = genericToJSON jsonOptions
@@ -311,9 +313,9 @@ data FightDetailsG a = FightDetails
     _fendurance :: Endurance,
     _fightMod :: [FightModifierG a]
   }
-  deriving (Show, Eq, Typeable, Data, Generic, Functor)
+  deriving (Show, Eq, Data, Generic, Functor)
 
-instance ToJSON a => ToJSON (FightDetailsG a) where
+instance (ToJSON a) => ToJSON (FightDetailsG a) where
   toJSON = genericToJSON jsonOptions
 
 type FightModifier = FightModifierG Rational
@@ -339,9 +341,9 @@ data FightModifierG a
   | DPR Endurance -- damage per round inflicted to the opponent
   | NoPotion -- can't take a potion for this fight
   | Poisonous a -- opponent doesn't damage, but can instakill on damage (cf b03s088)
-  deriving (Show, Eq, Typeable, Data, Generic, Ord, Functor)
+  deriving (Show, Eq, Data, Generic, Ord, Functor)
 
-instance ToJSON a => ToJSON (FightModifierG a) where
+instance (ToJSON a) => ToJSON (FightModifierG a) where
   toJSON x = case x of
     Undead -> String "Undead"
     MindblastImmune -> String "MindblastImmune"
