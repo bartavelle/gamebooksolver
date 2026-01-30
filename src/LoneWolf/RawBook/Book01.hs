@@ -2894,7 +2894,7 @@ chapters =
       Chapter
         "346"
         "Lodged deep in the rib cage of the skeleton is a Spear. It is in good condition and you may take it if you wish and are able to.\n"
-        (NoDecision (Goto 14))
+        (CanTake (Weapon Spear) 1 (NoDecision (Goto 14)))
     ),
     ( 347,
       Chapter

@@ -1771,7 +1771,7 @@ digraph G {
     21 -> 264 [color="/svg/darkgray"
               ,label=" \"?trk\""];
     22 -> 157 [color="/svg/darkgray"
-              ,label=""];
+              ,label=" \"loseitem BackpackSlot 1\""];
     23 -> 105 [color="/svg/darkgray"
               ,label=" \"!?Brass Key\" \"-Brass Key\""];
     24 -> 207 [color="/svg/darkgray"
@@ -2473,7 +2473,7 @@ digraph G {
     271 -> 104 [color="/svg/darkgray"
                ,label=" \"\" \"r(3/10)\""];
     272 -> 79 [color="/svg/darkgray"
-              ,label=" \"-5HP\""];
+              ,label=" \"loseitem WeaponSlot 1\" \"-5HP\""];
     273 -> 37 [color="/svg/darkgray"
               ,label=""];
     274 -> 325 [color="/svg/darkgray"

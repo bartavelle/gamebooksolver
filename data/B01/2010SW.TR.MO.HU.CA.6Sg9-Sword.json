@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Healing",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": {
+      "Sword": 1
+    },
+    "gold": 9,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.5919375203108482,
+      "mratio": {
+        "radix": 16,
+        "value": "b82e8b34d928a3a9e309e91c5bdfcb0b72366404f32986ca7f/13726987666190aeec798abe93f11d65ee7f340000000000000"
+      },
+      "states": 2978431
+    }
+  ]
+}

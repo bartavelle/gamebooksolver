@@ -62,9 +62,10 @@ impl SolDesc {
         let mut cvar = CharacterVariableG::new(self.ccst.maxendurance);
         cvar.cequipment.add_item(&Item::Backpack, 1);
         cvar.cequipment.set_gold(self.cvar.gold);
-        let itms = self.cvar.items.as_ref().expect("default items not yet implemented");
-        for (i, q) in itms {
-            cvar.cequipment.add_item(i, *q);
+        if let Some(itms) = self.cvar.items.as_ref() {
+            for (i, q) in itms {
+                cvar.cequipment.add_item(i, *q);
+            }
         }
         for f in &self.cvar.flags {
             cvar.set_flag(*f);
@@ -969,7 +970,7 @@ pub fn max_hp<PREV: From<Equipment> + Into<Equipment>>(
 
 pub fn mkchar<PREV: StoredEquipment>(ccst: &CharacterConstant, cvar: &CVarState) -> CharacterVariableG<PREV> {
     let mut cv = CharacterVariableG::new(ccst.maxendurance);
-    for (itm, qty) in cvar.items.as_ref().unwrap().iter() {
+    for (itm, qty) in cvar.items.as_ref().iter().flat_map(|x| x.iter()) {
         cv.add_item(itm, *qty);
     }
     cv.add_item(&Item::Backpack, 1);

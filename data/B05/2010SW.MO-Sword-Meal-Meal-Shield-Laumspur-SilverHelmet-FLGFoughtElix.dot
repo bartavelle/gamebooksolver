@@ -1915,7 +1915,7 @@ digraph G {
     38 -> 87 [color="/svg/darkgray"
              ,label=" \"-1HP\""];
     40 -> 17 [color="/svg/darkgray"
-             ,label=" \"-2HP\" \"LoseItemKind [PouchSlot]\""];
+             ,label=" \"loseitem BackpackSlot 1\" \"-2HP\" \"LoseItemKind [PouchSlot]\""];
     41 -> 71 [color="/svg/darkgray"
              ,label=""];
     41 -> 103 [color="/svg/darkgray"
@@ -2519,7 +2519,7 @@ digraph G {
     269 -> 352 [color="/svg/darkgray"
                ,label=""];
     270 -> 241 [color="/svg/darkgray"
-               ,label=""];
+               ,label=" \"loseitem BackpackSlot 2\""];
     272 -> 216 [color="/svg/darkgray"
                ,label=""];
     272 -> 342 [color="/svg/darkgray"

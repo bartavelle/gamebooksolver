@@ -8386,9 +8386,15 @@
     {
       "desc": "Lodged deep in the rib cage of the skeleton is a Spear. It is in good condition and you may take it if you wish and are able to.\n",
       "pchoice": {
-        "NoDecision": {
-          "Goto": 14
-        }
+        "CanTake": [
+          "Spear",
+          1,
+          {
+            "NoDecision": {
+              "Goto": 14
+            }
+          }
+        ]
       },
       "title": "346"
     }

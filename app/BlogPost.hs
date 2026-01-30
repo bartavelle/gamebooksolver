@@ -125,8 +125,13 @@ data Stats = Stats
 loadContent :: FilePath -> IO (Either String (FilePath, DecisionStats ERatio, Multistat))
 loadContent jotpath = do
   let basepath = reverse (drop 4 (reverse jotpath))
-  a1 <- eitherDecodeFileStrict jotpath
-  a2 <- eitherDecodeFileStrict (basepath ++ ".json")
+      mf path = do
+        r <- eitherDecodeFileStrict path
+        pure $ case r of
+          Right x -> Right x
+          Left rr -> Left (path ++ ": " ++ rr)
+  a1 <- mf jotpath
+  a2 <- mf (basepath ++ ".json")
   pure ((,,) basepath <$> a1 <*> a2)
 
 loadData :: Book -> IO [Stats]
@@ -211,20 +216,33 @@ visitrate :: ChapterId -> Stats -> Rational
 visitrate cid stts = M.findWithDefault 0 cid (fmap _cscore (_dres (_sdecisions stts)))
 
 mvisitrate :: [ChapterId] -> Stats -> (Html (), Double)
-mvisitrate cids stts = (fromString (intercalate " / " (map rpercent rates)), fromRational (sum rates / fromIntegral (length cids)))
+mvisitrate cids stts = (fromString (intercalate "/" (map rpercent rates)), fromRational (sum rates / fromIntegral (length cids)))
   where
     rates = map (`visitrate` stts) cids
 
 normalDiscs :: S.Set Discipline
-normalDiscs = S.fromList [Camouflage, Hunting, SixthSense, Tracking, Healing, MindShield, MindBlast, AnimalKinship, MindOverMatter]
-
-missingdiscs :: Stats -> S.Set Discipline
-missingdiscs stats =
-  let discs = S.fromList (_sdisciplines stats)
-   in S.difference normalDiscs discs
+normalDiscs = S.fromList [Camouflage, Hunting, SixthSense, Tracking, Healing, MindShield, MindBlast, AnimalKinship, MindOverMatter, WeaponSkill Sword]
 
 mdiscname :: Stats -> String
-mdiscname = intercalate " / " . map show . S.toList . missingdiscs
+mdiscname st = if S.size actual > 6
+                  then "missing: " ++ sd missing
+                  else sd actual
+  where
+    sd = intercalate "/" . map showDisc . S.toList
+    missing = normalDiscs `S.difference` actual
+    actual = S.fromList (_sdisciplines st)
+    showDisc = \case
+      Camouflage -> "CA"
+      Hunting -> "HU"
+      SixthSense -> "6S"
+      Tracking -> "TR"
+      Healing -> "HL"
+      WeaponSkill Sword -> "W(SW)"
+      MindShield -> "MS"
+      MindBlast -> "MB"
+      AnimalKinship -> "AK"
+      MindOverMatter -> "MM"
+      WeaponSkill x -> show x
 
 hasitem :: Item -> Stats -> Bool
 hasitem i = (> 0) . M.findWithDefault 0 i . _cvitems . _svariable
@@ -318,7 +336,7 @@ humanNumber = go units
     units = ["", "K", "M", "G"]
 
 blogpostStatsDG :: String -> [Stats] -> [(String, Stats -> (Html (), Double))] -> Html ()
-blogpostStatsDG imgsuffix astts rawcols = heatmapH Nothing rowStyleGreen (Just "Missing disc") (map fst cols) (map _fp ordered) fromString colshow getentry
+blogpostStatsDG imgsuffix astts rawcols = heatmapH Nothing rowStyleGreen (Just "Disciplines") (map fst cols) (map _fp ordered) fromString colshow getentry
   where
     cols = ("states", \stt -> let st = _states (_sentry stt) in (fromString (humanNumber (fromIntegral st)), 1 - fromIntegral (st - minstates) / fromIntegral (maxstates - minstates))) : rawcols
     maxstates = maximum (map (_states . _sentry) astts)
@@ -442,6 +460,25 @@ summary imgsuffix book astts cols = do
   h2_ "End state details"
   finalStateRecap' imgsuffix book astts
 
+b01stats :: String -> [Stats] -> Html ()
+b01stats imgsuffix astts = do
+  let cols =
+        [ ("Win rate", fmtr . winrate),
+          ("Raw rate", fmtr . erawrate),
+          ("Start", sitem),
+          ("S money", fmtq 25 . itemAt 1 Gold),
+          ("E money", fmtq 25 . finalItem Gold)
+        ]
+      sitem c = case (hasitem (Weapon Sword) c, hasitem Helmet c, hasitem Meal c, hasitem BodyArmor c, hasitem Potion4Hp c) of
+        (True, False, False, False, False) -> (fromString "sword", 1)
+        (False, True, False, False, False) -> (fromString "helmet", 1)
+        (False, False, True, False, False) -> (fromString "meals", 1)
+        (False, False, False, True, False) -> (fromString "armor", 1)
+        (False, False, False, False, True) -> (fromString "potion", 1)
+        (False, False, False, False, False) -> (fromString "none", 0.5)
+        x -> (fromString (show x), 0)
+  summary imgsuffix Book01 astts cols
+
 b02stats :: String -> [Stats] -> Html ()
 b02stats imgsuffix astts = do
   let cols =
@@ -564,14 +601,25 @@ showlineforcol lst detailled dt cid =
       merge_discs stts = foldl1 S.intersection (map (S.fromList . _sdisciplines) stts)
       all_common_discs = merge_discs dt
 
+      merge_items stts = foldl1 S.intersection (map (M.keysSet . _cvitems . _svariable) stts)
+      all_common_items = merge_items dt
+
+      merge_flags stts = foldl1 S.intersection (map (S.fromList . _cvflags . _svariable) stts)
+      all_common_flags = merge_flags dt
+
       showline :: ([Rational], [Stats]) -> String
       showline (cols, stts) = intercalate "\t" (map (\n -> if n == 0 then "ZERO   " else printf "%.5f" (fromRational @Double n)) cols ++ details)
         where
           common_discs = merge_discs stts `S.difference` all_common_discs
+          common_items = merge_items stts `S.difference` all_common_items
+          common_flags = merge_flags stts `S.difference` all_common_flags
           details
-            | detailled = if length lns == 1 then ["ALL"] else map _fp stts
-            | not (S.null common_discs) = show (length stts) : map show (S.toList common_discs)
-            | otherwise = [show (length stts)]
+            | detailled = if length lns == 1 then ["ALL"] else sort (map (drop 9 . _fp) stts)
+            | otherwise =
+                show (length stts)
+                  : map show (S.toList common_discs)
+                  ++ map show (S.toList common_items)
+                  ++ map show (S.toList common_flags)
    in unlines (map showline (reverse $ M.toList lns))
 
 main :: IO ()
@@ -580,11 +628,11 @@ main = do
   dt <- loadData book
   case mde of
     ChapterStats -> case book of
+      Book01 -> print (b01stats imgsuffix dt)
       Book02 -> print (b02stats imgsuffix dt)
       Book03 -> print (b03stats imgsuffix dt)
       Book04 -> print (b04stats imgsuffix dt)
       Book05 -> print (b05stats imgsuffix dt)
-      _ -> error ("unsupported book stats for " ++ show book)
     Console lst cids detailled -> do
       forM_ cids $ \cid -> do
         putStrLn ("chapter " <> show cid)

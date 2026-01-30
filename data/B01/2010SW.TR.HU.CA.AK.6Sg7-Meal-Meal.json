@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Healing",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Meal": 2
+    },
+    "gold": 7,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.5919352744265098,
+      "mratio": {
+        "radix": 16,
+        "value": "398e7d30becc9a16a4e8797bb3b356746f995737aef979620d31/613c0fa4ffe7d36a9e5fb5b8e3b592fda87c0400000000000000"
+      },
+      "states": 3957932
+    }
+  ]
+}

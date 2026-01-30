@@ -12,12 +12,13 @@ module LoneWolf.Data where
 import Codec.Serialise (Serialise)
 import Control.Lens
 import Data.Aeson
-import qualified Data.Aeson.Types as A
 import qualified Data.Aeson.Key as K
+import qualified Data.Aeson.Types as A
 import Data.Bifunctor (first)
 import Data.Char (toLower)
 import Data.List (intercalate)
 import qualified Data.Map.Strict as M
+import Data.Maybe (fromMaybe)
 import Data.Ratio (denominator, numerator, (%))
 import qualified Data.Set as S
 import Data.Text (Text)
@@ -116,13 +117,13 @@ data DecisionStats g = DecisionStats
   }
   deriving (Generic, Show, Eq, Functor)
 
-instance FromJSON g => FromJSON (ChapterAggreg g) where
+instance (FromJSON g) => FromJSON (ChapterAggreg g) where
   parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 2}
 
-instance FromJSON g => FromJSON (DecisionStats g) where
+instance (FromJSON g) => FromJSON (DecisionStats g) where
   parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 2}
 
-instance Semigroup g => Semigroup (ChapterAggreg g) where
+instance (Semigroup g) => Semigroup (ChapterAggreg g) where
   ChapterAggreg i1 f1 e1 t1 s1 <> ChapterAggreg i2 f2 e2 t2 s2 =
     ChapterAggreg
       (M.unionWith (<>) i1 i2)
@@ -131,7 +132,7 @@ instance Semigroup g => Semigroup (ChapterAggreg g) where
       (M.unionWith (<>) t1 t2)
       (s1 <> s2)
 
-emptyAggreg :: Ord g => g -> ChapterAggreg g
+emptyAggreg :: (Ord g) => g -> ChapterAggreg g
 emptyAggreg = ChapterAggreg mempty mempty mempty mempty
 
 mkchar :: Bool -> CharacterConstant -> CVarState -> CharacterVariable
@@ -143,9 +144,9 @@ mkchar autoweapon cst (CVarState sitems gld flgs) = chr
     allitems_pre = (Backpack, 1) : M.toList sitems ++ [(Gold, gld)]
     allitems
       | autoweapon && notElem (Weapon Sommerswerd) (map fst allitems_pre) =
-        case specialties of
-          Nothing -> allitems_pre
-          Just w -> (Weapon w, 1) : filter (not . isWeapon . fst) allitems_pre
+          case specialties of
+            Nothing -> allitems_pre
+            Just w -> (Weapon w, 1) : filter (not . isWeapon . fst) allitems_pre
       | otherwise = allitems_pre
     specialties = cst ^? discipline . traverse . _WeaponSkill
     isWeapon i = case i of
@@ -157,9 +158,12 @@ instance ToJSON CVarState
 instance FromJSON CVarState where
   parseJSON = withObject "CVarState" $ \o ->
     CVarState
-      <$> (o .: "_cvitems" <|> o .: "_items" <|> o .: "items")
+      <$> fmap (fromMaybe M.empty) (parseitems o)
       <*> (o .: "_cvgold" <|> o .: "_gold" <|> o .: "gold")
       <*> (o .: "_cvflags" <|> o .: "flags" <|> o .: "flags")
+    where
+      parseitems o = o .: "_cvitems" <|> o .: "_items" <|> o .: "items"
+
 
 defaultItems :: Book -> [(Item, Int)]
 defaultItems Book01 = [(Weapon ShortSword, 1), (Shield, 1)]
@@ -321,7 +325,7 @@ instance Monoid DecisionStat where
 
 newtype Bagged k = Bagged {getBag :: M.Map k Int} deriving (ToJSON, Show, Eq)
 
-singletonbag :: Ord k => k -> Bagged k
+singletonbag :: (Ord k) => k -> Bagged k
 singletonbag k = Bagged (M.singleton k 1)
 
 instance ToJSON DecisionStat where
@@ -339,7 +343,6 @@ instance ToJSON DecisionStat where
 
 instance FromJSON DecisionStat where
   parseJSON = withObject "DecisionStat" $ \o ->
-
     DecisionStat
       <$> mk fromIntegral "hp" o
       <*> mk fromIntegral "gold" o
@@ -347,16 +350,16 @@ instance FromJSON DecisionStat where
       <*> mk toGW "goldwin" o
       <*> mk Inventory "items" o
     where
-      mk :: Ord a => (Word64 -> a) -> Text -> Object -> A.Parser (Bagged a)
+      mk :: (Ord a) => (Word64 -> a) -> Text -> Object -> A.Parser (Bagged a)
       mk f t o = Bagged . M.fromList . map (first f) . M.toList <$> o .: (K.fromText t)
 
-instance Ord k => Semigroup (Bagged k) where
+instance (Ord k) => Semigroup (Bagged k) where
   Bagged a <> Bagged b = Bagged (M.unionWith (+) a b)
 
-instance Ord k => Monoid (Bagged k) where
+instance (Ord k) => Monoid (Bagged k) where
   mempty = Bagged mempty
 
-tohisto :: Ord k => M.Map ChapterId (Bagged k) -> M.Map k (M.Map ChapterId Int)
+tohisto :: (Ord k) => M.Map ChapterId (Bagged k) -> M.Map k (M.Map ChapterId Int)
 tohisto r = M.fromListWith (M.unionWith (+)) $ do
   (cid, Bagged bg) <- M.toList r
   (bv, bn) <- M.toList bg
@@ -372,10 +375,10 @@ csvlines ccst mfd entries = unlines (headers : map csvline entries)
     csvline (cv, i) =
       intercalate
         "\t"
-        ( show (M.findWithDefault (-1) i chapterCorr) :
-          show (cv ^. curendurance . to getEndurance) :
-          show (itemCount Meal inv + itemCount Laumspur inv) :
-          map (show . (`itemCount` inv)) allitems
+        ( show (M.findWithDefault (-1) i chapterCorr)
+            : show (cv ^. curendurance . to getEndurance)
+            : show (itemCount Meal inv + itemCount Laumspur inv)
+            : map (show . (`itemCount` inv)) allitems
             ++ maybe [] (map (show . fromRational @Double) . fightstats) mfd
         )
       where

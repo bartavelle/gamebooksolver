@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Healing",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "BodyArmor": 1
+    },
+    "gold": 9,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.620395974859623,
+      "mratio": {
+        "radix": 16,
+        "value": "2f20cae765fd6b06e82dd9b594dece2ff42a382a6efb512406959/4bf6ec38e7ed1d2b4bbac5f871e5dad62ba0e3200000000000000"
+      },
+      "states": 3813252
+    }
+  ]
+}

@@ -269,7 +269,7 @@ fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
     use Item::{BodyArmor, Gold, Helmet, StrengthPotion, StrengthPotion4};
 
     match bookid {
-        Book::Book01 => ([Helmet, BodyArmor, Gold].into_iter().collect(), HashSet::new()),
+        Book::Book01 => ([Gold].into_iter().collect(), HashSet::new()),
         Book::Book02 => ([Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
         Book::Book03 => (
             [Item::Weapon(Weapon::Sommerswerd), StrengthPotion4, Item::SILVERHELMET]
@@ -650,11 +650,13 @@ fn optimize<PREV: StoredEquipment>(
             .filter_map(|(k, v)| CompactState::from_choppedsolution(k, v, &useless_chapters))
             .collect::<Vec<_>>()
     };
+    let mut soldesc = soldump.soldesc.clone();
+    soldesc.ccst.discipline.sort();
+    if let Some(l) = soldesc.mscoremap.as_mut() {
+        l.sort()
+    }
     content.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-    let compact = CompactSolution {
-        soldesc: soldump.soldesc.clone(),
-        content,
-    };
+    let compact = CompactSolution { soldesc, content };
     // save json recap
     let mut json_file = File::create(jname)?;
     serde_json::to_writer(&mut json_file, &compact.soldesc)?;
