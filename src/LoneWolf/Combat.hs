@@ -1,10 +1,11 @@
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE TemplateHaskell #-}
 
-module LoneWolf.Combat (fight, getRatio, Escaped (..), winchance, expectedEndurance, fightRound, rustResult) where
+module LoneWolf.Combat (fight, getRatio, Escaped (..), winchance, expectedEndurance, fightRound, rustResult, coqfightres) where
 
 import Control.Lens
+import Data.List (intercalate)
 import Data.Maybe (mapMaybe)
 import qualified Data.MemoCombinators as Memo
 import Data.Monoid (Sum (Sum, getSum))
@@ -54,6 +55,17 @@ data FightType
 data Escaped a = HasEscaped Int a | NotEscaped a | LateWin Int a | Lost ChapterId | Stopped ChapterId a
   deriving (Functor, Eq, Ord, Show)
 
+coqfightres :: Probably (Escaped Endurance) -> String
+coqfightres lst = '[' : intercalate ";" (map showesc lst) ++ "]"
+  where
+    sproba n = "(" ++ show (numerator n) ++ " / " ++ show (denominator n) ++ ")%Q"
+    showesc = \case
+      (HasEscaped n (Endurance e), p) -> "(Escaped nat " ++ show n ++ " " ++ show e ++ ", " ++ sproba p ++ ")"
+      (NotEscaped (Endurance e), p) -> "(Std nat " ++ " " ++ show e ++ ", " ++ sproba p ++ ")"
+      (LateWin n (Endurance e), p) -> "(LateWin nat " ++ show n ++ " " ++ show e ++ ", " ++ sproba p ++ ")"
+      (Lost n, p) -> "(Lost nat " ++ " " ++ show n ++ ", " ++ sproba p ++ ")"
+      (Stopped n (Endurance e), p) -> "(Stopped nat " ++ show n ++ " " ++ show e ++ ", " ++ sproba p ++ ")"
+
 winchance :: CharacterConstant -> CharacterVariable -> FightDetails -> Rational
 winchance cc cv fd = sum $ do
   (end, p) <- fight cc cv fd
@@ -81,8 +93,8 @@ fightVanilla :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, En
 fightVanilla ratio php ohp
   | php <= 0 || ohp <= 0 = certain (max 0 php, max 0 ohp)
   | otherwise = regroup $ do
-    (odmg, pdmg) <- hits ratio
-    fmap (/ 10) <$> fightVanillaM ratio (php - pdmg) (ohp - odmg)
+      (odmg, pdmg) <- hits ratio
+      fmap (/ 10) <$> fightVanillaM ratio (php - pdmg) (ohp - odmg)
 
 fightMindBlastedM :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance, Endurance)
 fightMindBlastedM = Memo.memo3 Memo.integral Memo.integral Memo.integral fightMindBlasted
@@ -91,8 +103,8 @@ fightMindBlasted :: CombatSkill -> Endurance -> Endurance -> Probably (Endurance
 fightMindBlasted ratio php ohp
   | php <= 0 || ohp <= 0 = certain (max 0 php, max 0 ohp)
   | otherwise = regroup $ do
-    (odmg, pdmg) <- hits ratio
-    fmap (/ 10) <$> fightMindBlastedM ratio (php - pdmg - 2) (ohp - odmg)
+      (odmg, pdmg) <- hits ratio
+      fmap (/ 10) <$> fightMindBlastedM ratio (php - pdmg - 2) (ohp - odmg)
 
 cmodifiers :: Lens' CombatInfo [FightModifier]
 cmodifiers f cinfo = (\m' -> cinfo {_modifiers = m'}) <$> f (_modifiers cinfo)
@@ -148,13 +160,13 @@ getRatio' cinfo =
       | BareHanded `elem` modifiers = -4
       | null weapons = -4
       | Sommerswerd `elem` weapons =
-        if wskill `elem` [Just ShortSword, Just BroadSword, Just Sword]
-          then 10
-          else 8
+          if wskill `elem` [Just ShortSword, Just BroadSword, Just Sword]
+            then 10
+            else 8
       | MagicSpear `elem` weapons =
-        if wskill == Just Spear
-          then 2
-          else 0
+          if wskill == Just Spear
+            then 2
+            else 0
       | Just sk <- wskill, sk `elem` weapons = 2
       | otherwise = 0
     mindblastBonus =
@@ -190,59 +202,59 @@ fight' :: CombatInfo -> Probably (Escaped Endurance)
 fight' cinfo
   | Just ecid <- cinfo ^? cmodifiers . folded . _StopFight = certain (Stopped ecid (cinfo ^. lwendurance))
   | Just ecid <- cinfo ^? cmodifiers . folded . _Evaded = regroup $ do
-    ((hpLW, _), p) <- fightRound' cinfo
-    pure $
-      if hpLW <= 0
-        then (lost, p)
-        else (HasEscaped ecid hpLW, p)
+      ((hpLW, _), p) <- fightRound' cinfo
+      pure $
+        if hpLW <= 0
+          then (lost, p)
+          else (HasEscaped ecid hpLW, p)
   | Just instakill <- preview (cmodifiers . folded . _Poisonous) cinfo = regroup $ do
-    let prevlwhp = _lwendurance cinfo
-        prevophp = _opendurance cinfo
-    -- bullshit fight :( there can be cases where nothing happens, so it's looping :(
-    let roundresults = regroup $ do
-          ((lwhp, ophp), p) <- fightRound' cinfo
-          if lwhp < prevlwhp
-            then [((True, 1), p * instakill), ((False, ophp), p * (1 - instakill))]
-            else [((False, ophp), p)]
+      let prevlwhp = _lwendurance cinfo
+          prevophp = _opendurance cinfo
+      -- bullshit fight :( there can be cases where nothing happens, so it's looping :(
+      let roundresults = regroup $ do
+            ((lwhp, ophp), p) <- fightRound' cinfo
+            if lwhp < prevlwhp
+              then [((True, 1), p * instakill), ((False, ophp), p * (1 - instakill))]
+              else [((False, ophp), p)]
 
-        useful = filter ((/= (False, prevophp)) . fst) roundresults
-        usefulproba = sum (map snd useful)
-    ((instadeath, ophp), rp) <- useful
-    let p = rp / usefulproba
-    let outcome
-          | instadeath = pure (lost, p)
-          | ophp <= 0 = pure (NotEscaped prevlwhp, p)
-          | otherwise =
-            let ncinfo = cinfo & opendurance .~ ophp & cmodifiers %~ mapMaybe decrementTimed
-             in fmap (* p) <$> fightM ncinfo
-    outcome
+          useful = filter ((/= (False, prevophp)) . fst) roundresults
+          usefulproba = sum (map snd useful)
+      ((instadeath, ophp), rp) <- useful
+      let p = rp / usefulproba
+      let outcome
+            | instadeath = pure (lost, p)
+            | ophp <= 0 = pure (NotEscaped prevlwhp, p)
+            | otherwise =
+                let ncinfo = cinfo & opendurance .~ ophp & cmodifiers %~ mapMaybe decrementTimed
+                 in fmap (* p) <$> fightM ncinfo
+      outcome
   -- we can't run the optimized combat if there are still timed effects, or DPR effects
   | has (cmodifiers . folded . _Timed) cinfo || has (cmodifiers . folded . _DPR) cinfo = regroup $ do
-    ((hpLW, hpOpponent), p) <- fightRound' cinfo
-    let outcome
-          | hpLW <= 0 = return (lost, p)
-          | hpOpponent <= 0 = return (NotEscaped hpLW, p)
-          | otherwise =
-            let ncinfo = cinfo & lwendurance .~ hpLW & opendurance .~ hpOpponent & cmodifiers %~ mapMaybe decrementTimed
-             in fmap (* p) <$> fightM ncinfo
-    outcome
+      ((hpLW, hpOpponent), p) <- fightRound' cinfo
+      let outcome
+            | hpLW <= 0 = return (lost, p)
+            | hpOpponent <= 0 = return (NotEscaped hpLW, p)
+            | otherwise =
+                let ncinfo = cinfo & lwendurance .~ hpLW & opendurance .~ hpOpponent & cmodifiers %~ mapMaybe decrementTimed
+                 in fmap (* p) <$> fightM ncinfo
+      outcome
   | otherwise = regroup $ do
-    let ratio = getRatio' cinfo
-        modifiers = cinfo ^. cmodifiers
-        ohp =
-          if DoubleDamage `elem` modifiers || (Sommerswerd `elem` _weapons cinfo && Undead `elem` modifiers)
-            then (cinfo ^. opendurance + 1) `div` 2
-            else cinfo ^. opendurance
-        ftype
-          | PlayerInvulnerable `elem` modifiers = error "PlayerInvulnerable is only a timed effect"
-          | (EnemyMindblast `elem` modifiers && MindShield `notElem` _discs cinfo) || ForceEMindblast `elem` modifiers = fightMindBlastedM
-          | otherwise = fightVanillaM
-    ((php, _), p) <- ftype ratio (cinfo ^. lwendurance) ohp
-    let constr = maybe NotEscaped LateWin (cinfo ^? cmodifiers . folded . _OnNotYetWon)
-    pure $
-      if php <= 0
-        then (lost, p)
-        else (constr (max 0 php), p)
+      let ratio = getRatio' cinfo
+          modifiers = cinfo ^. cmodifiers
+          ohp =
+            if DoubleDamage `elem` modifiers || (Sommerswerd `elem` _weapons cinfo && Undead `elem` modifiers)
+              then (cinfo ^. opendurance + 1) `div` 2
+              else cinfo ^. opendurance
+          ftype
+            | PlayerInvulnerable `elem` modifiers = error "PlayerInvulnerable is only a timed effect"
+            | (EnemyMindblast `elem` modifiers && MindShield `notElem` _discs cinfo) || ForceEMindblast `elem` modifiers = fightMindBlastedM
+            | otherwise = fightVanillaM
+      ((php, _), p) <- ftype ratio (cinfo ^. lwendurance) ohp
+      let constr = maybe NotEscaped LateWin (cinfo ^? cmodifiers . folded . _OnNotYetWon)
+      pure $
+        if php <= 0
+          then (lost, p)
+          else (constr (max 0 php), p)
   where
     lost = case cinfo ^? cmodifiers . folded . _OnLose of
       Nothing -> NotEscaped 0
@@ -261,7 +273,8 @@ rustResult :: Probably (Escaped Endurance) -> [String]
 rustResult = map format
   where
     format (c, r) =
-      "Proba {v: " ++ showC c
+      "Proba {v: "
+        ++ showC c
         ++ ", p: Rational::from(("
         ++ show (numerator r)
         ++ ", "
