@@ -10,7 +10,6 @@ From Equations Require Import Equations.
 From Stdlib Require Import ZArith.
 Require Import Stdlib.QArith.QArith.
 Require Import Stdlib.QArith.Qcanon.
-Require Import Field.
 
 Lemma hits_has_13_elements: length HITSCHART = 13%nat.
 Proof.
@@ -432,8 +431,7 @@ match lst with
            end
 end.
 
-Definition get_ratio (stt: Stt) (d: fight_details): Z :=
-  let (osk, mds) := match d with Details sk _ mds => (sk, mds) end in
+Definition get_ratio (stt: Stt) (osk: Z) (mds: list fight_modifier): Z :=
   let hasd d := s_check d (disciplines stt) in
   let hasmod m := existsb (FM.fm_eqb m) mds in
   let skdiff := (sk stt - osk)%Z in
@@ -465,11 +463,8 @@ Definition get_ratio (stt: Stt) (d: fight_details): Z :=
   let raw_ratio: Z := (skdiff + combat_bonus + wpnbonus + mb + shield + silverhelm + skm1 + skm2 + limbd + str2 + str4)%Z in
     raw_ratio.
 
-Definition moddmg (stt: Stt) (d: fight_details) (dmgs: nat * nat): (nat * nat) :=
+Definition moddmg (stt: Stt) (opp_hp: nat) (mds: list fight_modifier) (dmgs: nat * nat): (nat * nat) :=
   let (raw_op, raw_lw) := dmgs in
-  let brr := match d with | Details skl opp_hp m => (skl, opp_hp, m) end in 
-  let (brrr2, mds) := brr in
-  let (skl, opp_hp) := brrr2 in
   let odmg_opponent := (raw_op + gdpr mds)%nat in
   let has_mod := fun m => existsb (FM.fm_eqb m) (Modifiers.get_cur_mods mds) in
   let dmg_lw := if has_mod PlayerInvulnerable then 0:nat else
@@ -480,10 +475,10 @@ Definition moddmg (stt: Stt) (d: fight_details) (dmgs: nat * nat): (nat * nat) :
             else odmg_opponent in
   (curendurance stt - dmg_lw, opp_hp - dmg_opp)%nat.
 
-Definition fight_round (stt: Stt) (d: fight_details) : Proba (nat * nat) :=
-  let ratio := get_ratio stt d in
+Definition fight_round (stt: Stt) (osk: Z) (opphp: nat) (mds: list fight_modifier) : Proba (nat * nat) :=
+  let ratio := get_ratio stt osk mds in
   let hits := hits_from_ratio ratio in
-  rebuild_proba (map (fun dmg => (moddmg stt d dmg, (Q2Qc (1%Q/10%Q)))) hits).
+  rebuild_proba (map (fun dmg => (moddmg stt opphp mds dmg, (Q2Qc (1%Q/10%Q)))) hits).
 
 Definition fd_sk (d: fight_details): skill := match d with
   | Details s _ _ => s
@@ -515,7 +510,7 @@ Definition fight_shortcut (stt: Stt) (d: fight_details): option (Proba TEscaped)
             if Nat.eqb lw 0
               then (lose, p)
               else (Escaped cid lw, p)
-          ) (fight_round stt (Details sk en mds))))
+          ) (fight_round stt sk en mds)))
       | None => None
       end
     end.
@@ -527,21 +522,10 @@ Fixpoint all_timings (mds: list fight_modifier): nat :=
   | _::xs => all_timings xs
   end.
 
-Definition counter (mode: option ((nat * nat) * Qc)) (stt: Stt) (d: fight_details): nat :=
-      let nm := match mode with | Some _ => 1%nat | None => 0%nat end in
-      (nm + curendurance stt + fd_opp_hp d + all_timings (fd_mods d))%nat.
-
-Definition has_damage (p: ((nat * nat) * Qc)) (stt: Stt) (d: fight_details):=
+Definition has_damage (p: ((nat * nat) * Qc)) (stt: Stt) (opphp: nat):=
     let (lw, op) := fst p in
     let lwp := curendurance stt in
-    let opp := fd_opp_hp d in
-        (lw <= lwp /\ op <= opp /\ lw + op < lwp + opp)%nat.
-
-Definition FM_correct (mode: option ((nat * nat) * Qc)) (stt: Stt) (d: fight_details):=
-    match mode with
-    | Some pr => has_damage pr stt d
-    | None => True
-    end.
+        (lw <= lwp /\ op <= opphp /\ lw + op < lwp + opphp)%nat.
 
 Definition ValidFight (d: fight_details): Prop :=
   let mds := fd_mods d in
@@ -560,13 +544,12 @@ Proof.
   tauto.
 Qed.
 
-Lemma fight_round_correct: forall (stt: Stt) (d: fight_details) lst,
+Lemma fight_round_correct: forall (stt: Stt) (osk: Z) (opphp: nat) (mds: list fight_modifier) lst,
   (curendurance stt > 0)%nat ->
-  ValidFight d -> lst = fight_round stt d -> Forall (fun p => FM_correct (Some p) stt d) lst.
+  ValidFight (Details osk opphp mds) -> lst = fight_round stt osk opphp mds -> Forall (fun p => has_damage p stt opphp) lst.
 Proof.
   (* intros *)
-  intros stt d lst CE0 VF H.
-  unfold FM_correct.
+  intros stt osk pphp mds lst CE0 VF H.
   unfold has_damage.
   apply Forall_forall.
   intros x HIn.
@@ -579,7 +562,7 @@ Proof.
   simpl in HIn.
   apply rebuild_proba_keeps_keys_conv in HIn.
   rewrite map_map in HIn. simpl in HIn.
-  remember (hits_from_ratio (get_ratio stt d)) as hr.
+  remember (hits_from_ratio (get_ratio stt osk mds)) as hr.
   apply hits_from_ratio_content in Heqhr.
 
   pose proof (hits_damage).
@@ -594,9 +577,8 @@ Proof.
   (* case analysis *)
   unfold moddmg in H0.
   destruct VF as [OPp [FR [NP [NE [IP IE]]]]].
-  remember (Modifiers.get_cur_mods (fd_mods d)) as curmods.
-  destruct d.
-  simpl in Heqcurmods, FR. rewrite <- Heqcurmods in H0.
+  remember (Modifiers.get_cur_mods mds) as curmods.
+  simpl in Heqcurmods, FR. 
   Ltac gogo := match goal with
   | H: existsb (FM.fm_eqb _) _ = true |- _ => apply existsb_exists in H
   | H: exists _ : fight_modifier, In _ _ /\ FM.fm_eqb _ _ = _ |- _ =>
@@ -623,19 +605,19 @@ Proof.
           .
 Qed.
 
-Lemma fight_round_full: forall stt d, FullProba (fight_round stt d).
+Lemma fight_round_full: forall stt osk opphp mds, FullProba (fight_round stt osk opphp mds).
 Proof.
   intros.
   unfold FullProba.
   unfold fight_round.
   rewrite rebuild_proba_keeps_sumproba.
-  remember (hits_from_ratio (get_ratio stt d)).
+  remember (hits_from_ratio (get_ratio stt osk mds)).
 
   pose proof (hits_from_ratio_content _ _ Heql). clear Heql.
   unfold SumProba.
   unfold foldMap.
   rewrite map_map.
-  replace (fun x : nat * nat => snd (moddmg stt d x, (1 / 10)%Q)) with
+  replace (fun x : nat * nat => snd (moddmg stt opphp mds x, (1 / 10)%Q)) with
           (fun x : nat * nat => (1 / 10)%Q).
   2: {
     apply functional_extensionality. 
@@ -738,8 +720,9 @@ Proof.
 Qed. 
 
 Module IF.
-  Definition ustt (ht: nat * nat) (stt: Stt) :=
-    update_endurance (fun hp => hp - fst ht)%nat stt.
+  Definition ustt (stt: Stt) (opphp: nat) (mds: list fight_modifier) (dmgs: nat * nat): (Stt * nat) :=
+    let (lwd, opd) := moddmg stt opphp mds dmgs in
+    (update_endurance (fun _ => lwd) stt, opd).
 End IF.
 
 Inductive ifight : Stt -> skill -> nat -> list fight_modifier -> Proba TEscaped -> Prop :=
@@ -772,29 +755,19 @@ Inductive ifight : Stt -> skill -> nat -> list fight_modifier -> Proba TEscaped 
         fight_shortcut curstt (Details sk opphp mds) = None ->
         curendurance curstt <> 0%nat ->
         opphp <> 0%nat ->
-        ratio = (get_ratio curstt (Details sk opphp mds) / 2)%Z ->
+        ratio = get_ratio curstt sk mds ->
         i_hits ratio h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 ->
         nmds = Modifiers.advance_time mds ->
-        s0 = IF.ustt h0 curstt ->
-        s1 = IF.ustt h1 curstt ->
-        s2 = IF.ustt h2 curstt ->
-        s3 = IF.ustt h3 curstt ->
-        s4 = IF.ustt h4 curstt ->
-        s5 = IF.ustt h5 curstt ->
-        s6 = IF.ustt h6 curstt ->
-        s7 = IF.ustt h7 curstt ->
-        s8 = IF.ustt h8 curstt ->
-        s9 = IF.ustt h9 curstt ->
-        o0 = (opphp - snd h0)%nat ->
-        o1 = (opphp - snd h1)%nat ->
-        o2 = (opphp - snd h2)%nat ->
-        o3 = (opphp - snd h3)%nat ->
-        o4 = (opphp - snd h4)%nat ->
-        o5 = (opphp - snd h5)%nat ->
-        o6 = (opphp - snd h6)%nat ->
-        o7 = (opphp - snd h7)%nat ->
-        o8 = (opphp - snd h8)%nat ->
-        o9 = (opphp - snd h9)%nat ->
+        (s0, o0) = IF.ustt curstt opphp mds h0 ->
+        (s1, o1) = IF.ustt curstt opphp mds h1 ->
+        (s2, o2) = IF.ustt curstt opphp mds h2 ->
+        (s3, o3) = IF.ustt curstt opphp mds h3 ->
+        (s4, o4) = IF.ustt curstt opphp mds h4 ->
+        (s5, o5) = IF.ustt curstt opphp mds h5 ->
+        (s6, o6) = IF.ustt curstt opphp mds h6 ->
+        (s7, o7) = IF.ustt curstt opphp mds h7 ->
+        (s8, o8) = IF.ustt curstt opphp mds h8 ->
+        (s9, o9) = IF.ustt curstt opphp mds h9 ->
         ifight s0 sk o0 nmds r0 ->
         ifight s1 sk o1 nmds r1 ->
         ifight s2 sk o2 nmds r2 ->
@@ -867,44 +840,26 @@ Proof.
   * inversion H2; subst; clear H2; try contradiction.
     + rewrite H1 in H5. inversion H5; subst; reflexivity.
     + rewrite H1 in H3. discriminate.
-  * inversion H36; subst; clear H36; try contradiction.
-    + rewrite H in H39. discriminate.
-    + pose proof (i_hits_eq _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ H3 H41) as EQS.
+  * inversion H26; subst; clear H26; try contradiction.
+    + rewrite H in H29. discriminate.
+    + pose proof (i_hits_eq _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ H3 H31) as EQS.
       destruct EQS as [X0 [X1 [X2 [X3 [X4 [X5 [X6 [X7 [X8 X9]]]]]]]]].
       subst.
-      clear H3 H41.
+      clear H3 H31.
 
-      f_equal.
-      f_equal.
-      f_equal.
-      apply IHifight1; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight2; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight3; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight4; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight5; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight6; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight7; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight8; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight9; auto; try (apply Modifiers.advance_time_correct; auto).
-      f_equal.
-      f_equal.
-      apply IHifight10; auto; try (apply Modifiers.advance_time_correct; auto).
+      Ltac ifight_result_unique_hlp := match goal with
+        | H1: (?s1, ?o1) = IF.ustt ?curstt ?opphp ?mds _
+        , H2: (?s2, ?o2) = IF.ustt ?curstt ?opphp ?mds _
+          |- _ => rewrite <- H1 in H2
+        | H: (_, _) = (_, _) |- _ => inversion H; subst; clear H
+        | |- merge_probas (_::_) = merge_probas (_::_) => f_equal
+        | |- (_::_) = (_::_) => f_equal
+        | |- (Q2Qc _, _) = (Q2Qc _, _) => f_equal
+        | Hi: forall _ : Proba TEscaped, ifight _ _ _ (Modifiers.advance_time _) _ -> ?r0 = _
+          |- ?r0 = _ => apply Hi
+      end.
+
+      repeat ifight_result_unique_hlp; assumption.
 Qed.
 
 Lemma ifight_validmap: forall stt sk opphp mds res,
@@ -943,10 +898,72 @@ Proof.
   reflexivity.
 Qed.
 
-Axiom ifight_advance: forall stt sk opphp mds,
-    { res | ifight stt sk opphp mds res}.
+Definition counter (stt: Stt) (opphp: nat) (mds: list fight_modifier): nat :=
+    curendurance stt + opphp.
 
-Program Definition fight stt de : Proba TEscaped :=
-  match de with
-  | Details sk opphp mds => proj1_sig (ifight_advance stt sk opphp mds)
-  end.
+Program Fixpoint f_fight (stt: Stt) (sk: skill) (opphp: nat) (mds: list fight_modifier) (vld: Modifiers.ValidMods mds) {measure (counter stt opphp mds)}: Proba TEscaped :=
+  match Nat.eq_dec (curendurance stt) 0 with
+  | left _ =>
+         match Modifiers.extractl Modifiers.gOnlose mds with
+        | Some cid => [(TLost cid, 1%Qc)]
+        | None => [(Std 0%nat, 1%Qc)]
+        end
+  | right hce =>
+    match Nat.eq_dec opphp 0 with
+    | left _ => [(Std (curendurance stt), 1%Qc)]
+    | right hne =>
+      match fight_shortcut stt (Details sk opphp mds) with
+          | Some subout => subout
+          | None => 
+        let hitres := fight_round stt sk opphp mds in
+        let fix go (lst : Proba (nat * nat)) (Hc: (curendurance stt <> 0)%nat) (Ho : (opphp <> 0)%nat) (Hsub : forall x, In x lst -> In x hitres) :=
+          match lst return (forall x, In x lst -> In x hitres) -> _ with
+          | [] => fun _ => []
+          | ((nlw, nopp), p) :: rest => fun Hsub' =>
+              (p, f_fight (update_endurance (fun _ => nlw) stt) sk nopp (Modifiers.advance_time mds) _)
+              :: go rest Hc Ho (fun x Hx => Hsub' x (in_cons _ x _ Hx))
+          end Hsub
+        in
+        merge_probas (go hitres hce hne (fun x Hx => Hx))
+    end
+  end
+end.
+Next Obligation.
+apply Modifiers.advance_time_correct. assumption.
+Defined.
+Next Obligation.
+  unfold counter.
+  simpl.
+  remember (fight_round stt sk opphp mds) as fr.
+  assert (ValidFight (Details sk opphp mds)) as VFF. {
+    unfold ValidFight. split; simpl; auto.
+    Lia.lia.
+  }
+  assert (curendurance stt > 0)%nat as Hc2 by Lia.lia.
+  pose proof (fight_round_correct _ _ _ _ _ Hc2 VFF Heqfr).
+  subst.
+  specialize (Hsub' ((nlw, nopp), p)).
+  lapply Hsub'.
+  2: {
+    left. reflexivity.
+  }
+  intro HsubX. clear Hsub'.
+  destruct (Forall_forall (fun p : nat * nat * Qc => has_damage p stt opphp) (fight_round stt sk opphp mds)) as [A B].
+  specialize (A H ((nlw, nopp), p) HsubX).
+  unfold has_damage in A. simpl in A. tauto.
+Defined.
+
+(* Lemma fight_i2f: forall stt sk opphp mds res pr,
+    ifight stt sk opphp mds res ->
+    f_fight stt sk opphp mds pr = res.
+Proof.
+  intros.
+  induction H.
+  unfold f_fight.
+  unfold f_fight_func.
+  vm_compute.
+
+Lemma f_fight_correct: forall stt sk opphp mds res pr,
+    res = f_fight stt sk opphp mds pr ->
+    FullProba res.
+Proof. *)
