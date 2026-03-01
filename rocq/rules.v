@@ -154,6 +154,9 @@ Fixpoint select_cond (stt: Stt) (conds: list (bool_cond * chapter_outcome)) : ch
 Definition single_outcome (ns: next_step): Proba next_step :=
   certain ns.
 
+
+Definition has_mod (m: fight_modifier) (de: fight_details) :=  existsb (FM.fm_eqb m) (Modifiers.get_cur_mods (fd_mods de)).
+
 Fixpoint s_update_d (maxdepth: nat) (stt: Stt) (outcome: chapter_outcome): Proba next_step :=
   let certain (s: Stt) := single_outcome (New s)
   in
@@ -198,8 +201,26 @@ Fixpoint s_update_d (maxdepth: nat) (stt: Stt) (outcome: chapter_outcome): Proba
                   let amnt := list_sum (map snd losable) in
                    []
             end
-      | Fight de co => []
-      | OneRound de a b c => []
+      | Fight de co =>
+          let fightres := fight stt de in
+          merge_probas (map (fun tep : TEscaped * Qc => 
+            let (te, p) := tep in
+            let (nco, nhp) := match te with
+              | Escaped c hp | LateWin c hp | Stopped c hp => (Goto c, hp)
+              | TLost c => (Goto c, 1%nat)
+              | Std hp => (co, hp)
+              end in
+            let stt1 := update_flags (s_set HadCombat) stt in
+            let stt2 := if has_mod MultiFight de then stt1 else update_flags (fun flgs => s_unset StrengthPotionActive (s_unset PotentStrengthPotionActive flgs)) stt1 in
+            let result := match Modifiers.extractl Modifiers.gFakeFight (fd_mods de) with
+                  | Some cid2 => if nhp =? 0 then certain (update_chapter cid2 stt2) else s_update_d md stt2 nco
+                  | None => if nhp =? 0 then single_outcome Lost else 
+                      s_update_d md (update_endurance (fun _ => nhp) stt2) nco
+                  end in
+
+              (p, result)
+              ) fightres)
+      | OneRound de olose oeq owin => []
     end
   end .
 
@@ -252,11 +273,47 @@ Inductive CheckNS: next_step -> Prop :=
   | check_new: forall stt, ValidState stt -> CheckNS (New stt)
   .
 
-Theorem rules_are_preserving: forall stt co, ValidState stt -> WellFormedCO co ->
-        let sol := s_update stt co
-         in FullProba sol /\ Forall CheckNS (map fst sol).
+Module RHelpers.
+
+  Ltac rap := match goal with
+    | |- _ /\ _ => split
+    | |- context [ curendurance ?stt =? 0 ] =>
+          destruct (curendurance stt =? 0) eqn: DEAD
+    | |- FullProba (single_outcome _) => reflexivity
+    | |- context [map fst (single_outcome _)] => unfold single_outcome
+    | |- context [map fst (certain _)] => unfold certain
+    | |- context [map fst [(_, _)]] => simpl
+    | |- Forall _ (_::_) => constructor
+    | |- Forall _ [] => constructor
+    | |- CheckNS _ => constructor
+  end.
+
+  Lemma fold_right_map {A B C: Type}:
+      forall (f: A -> B -> B) (i: B) (f2: C -> A) (lst: list C),
+        fold_right f i (map f2 lst) =
+          fold_right (fun a b => f (f2 a) b) i lst.
+  Proof.
+    intros.
+    induction lst; simpl; auto.
+    rewrite IHlst. reflexivity.
+  Qed.
+
+End RHelpers.
+
+Theorem rules_are_preserving: forall stt co fuel sol, ValidState stt -> WellFormedCO co ->
+         sol = s_update_d fuel stt co ->
+          FullProba sol /\ Forall CheckNS (map fst sol).
 Proof.
-  intros stt co VS WCO.
-  unfold FullProba.
-  induction co; inversion WCO; subst; split; simpl.
-Admitted.
+  intros stt co fuel sol VS WCO EQC.
+  subst.
+  generalize dependent stt.
+  generalize dependent fuel.
+  induction co; inversion WCO; subst; clear WCO; intros; destruct fuel; simpl; repeat RHelpers.rap.
+  * unfold FullProba.
+    rewrite merge_probas_sum.
+    rewrite RHelpers.fold_right_map.
+
+    Search (fold_right (fun _ _ => _ + _) _ _).
+    destruct (Modifiers.extractl Modifiers.gFakeFight (fd_mods f)) eqn:fakefight.
+    simpl.
+    Search (fold_right).

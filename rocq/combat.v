@@ -7,7 +7,7 @@ Require Import mps.
 Require Import character.
 Require Import chapters.
 From Equations Require Import Equations.
-Require Import ZArith.
+From Stdlib Require Import ZArith.
 Require Import Stdlib.QArith.QArith.
 Require Import Stdlib.QArith.Qcanon.
 Require Import Field.
@@ -39,7 +39,7 @@ Inductive TEscaped : Set :=
   | Escaped: cid -> nat -> TEscaped
   | Std: nat -> TEscaped
   | LateWin: cid -> nat -> TEscaped
-  | Lost: cid -> TEscaped
+  | TLost: cid -> TEscaped
   | Stopped: cid -> nat -> TEscaped
   .
 
@@ -49,7 +49,7 @@ Module TE.
   | (Escaped c1 a1, Escaped c2 a2) => mps.eqb c1 c2 && mps.eqb a1 a2
   | (LateWin c1 a1, LateWin c2 a2) => mps.eqb c1 c2 && mps.eqb a1 a2
   | (Stopped c1 a1, Stopped c2 a2) => mps.eqb c1 c2 && mps.eqb a1 a2
-  | (Lost a1, Lost a2) => mps.eqb a1 a2
+  | (TLost a1, TLost a2) => mps.eqb a1 a2
   | (Std a1, Std a2) => mps.eqb a1 a2
   | _ => false
   end.
@@ -81,9 +81,9 @@ Module TE.
   | (Stopped c1 a1, Stopped c2 a2) => SH.chain (cmp c1 c2) (cmp a1 a2)
   | (Stopped _ _, _) => GT
   | (_, Stopped _ _) => LT
-  | (Lost a1, Lost a2) => cmp a1 a2
-  | (Lost _, _) => GT
-  | (_, Lost _) => LT
+  | (TLost a1, TLost a2) => cmp a1 a2
+  | (TLost _, _) => GT
+  | (_, TLost _) => LT
   | (Std a1, Std a2) => cmp a1 a2
   end.
 
@@ -114,7 +114,7 @@ Module TE.
     | H: Escaped _ _ _ = Escaped _ _ _ |- _ => inversion H; subst
     | H: LateWin _ _ _ = LateWin _ _ _ |- _ => inversion H; subst
     | H: Stopped _ _ _ = Stopped _ _ _ |- _ => inversion H; subst
-    | H: Lost _ _ = Lost _ _ |- _ => inversion H; subst
+    | H: TLost _ _ = TLost _ _ |- _ => inversion H; subst
     | H: Std _ _ = Std _ _ |- _ => inversion H; subst
     end.
 
@@ -182,6 +182,12 @@ Module Modifiers.
   Definition gStopFight (m: fight_modifier): option cid :=
     match m with
     | StopFight x => Some x
+    | _ => None
+    end.
+
+  Definition gFakeFight (m: fight_modifier): option cid :=
+    match m with
+    | FakeFight x => Some x
     | _ => None
     end.
 
@@ -497,7 +503,7 @@ Definition fight_shortcut (stt: Stt) (d: fight_details): option (Proba TEscaped)
     let extract {A}:  (fight_modifier -> option A) -> option A := fun x => Modifiers.extractl x mds in
     let lose := match extract Modifiers.gOnlose with
                 | None => Std 0
-                | Some cid => Lost cid
+                | Some cid => TLost cid
                 end in
     match extract Modifiers.gStopFight with
     | Some cid => Some [(Stopped cid (curendurance stt), 1%Qc)]
@@ -654,33 +660,6 @@ Proof.
   inversion H.
 Qed.
 
-Program Fixpoint apply_fight
-      (stt: Stt)
-      (d: fight_details)
-      (nxt: forall (md: option((nat * nat) * Qc)) (cs: Stt) (fd: fight_details) (correct: FM_correct md cs fd), Proba TEscaped)
-      (frr : Proba (nat * nat)) 
-      (COR: Forall (fun p => FM_correct (Some p) stt d) frr)
-      : list (Proba TEscaped)
-      :=
-      match frr with
-      | [] => []
-      | x::xs =>
-          let PP := _ : In x frr -> FM_correct (Some x) stt d in
-            nxt (Some x) stt d (PP _) :: apply_fight stt d nxt xs _
-      end.
-Next Obligation.
-  apply Forall_cons_iff in COR. tauto.
-Defined.
-Next Obligation.
-  apply Forall_cons_iff in COR.
-  constructor.
-  reflexivity.
-Defined.
-Next Obligation.
-  apply Forall_cons_iff in COR.
-  tauto.
-Defined.
-
 Lemma some_notequal (T: Type): forall (a b :T), Some a <> Some b <-> a <> b.
 Proof.
   split; intros.
@@ -717,49 +696,6 @@ Proof.
   destruct n; simpl; auto.
   Lia.lia.
 Qed.
-
-Inductive ifight: Proba (nat * nat) -> Stt -> fight_details -> Proba TEscaped -> Prop :=
-  | lost_onlose:
-      forall opp p stt fd cid xs out res,
-          ifight xs stt fd out ->
-          res = add_event out (Lost cid, p) ->
-          Modifiers.extractl Modifiers.gOnlose (fd_mods fd) = Some cid ->
-          ifight (((0:nat, opp), p)::xs) stt fd res
-  | lost_std:
-      forall opp p stt fd xs out res,
-          ifight xs stt fd out ->
-          Modifiers.extractl Modifiers.gOnlose (fd_mods fd) = None ->
-          res = add_event out (Std 0%nat, p) ->
-          ifight (((0%nat, opp), p)::xs) stt fd res
-  | win: forall lw p stt fd xs out res,
-          lw <> 0%nat ->
-          ifight xs stt fd out ->
-          res = add_event out (Std lw, p) ->
-          ifight (((lw, 0%nat), p)::xs) stt fd res
-  | applydmg_shortcut:
-        forall lw opp p stt fd nstt xs out subout res,
-            (lw > 0)%nat -> (opp > 0)%nat ->
-            nstt = update_endurance (fun _ => lw) stt ->
-            ifight xs stt fd out ->
-            fight_shortcut nstt fd = Some subout ->
-            res = add_proba (mul_proba subout p) out ->
-            ifight (((lw, opp), p)::xs) stt fd res
-  | applydmg:
-        forall lw opp p stt fd nstt nfd xs out fightroundres subout res,
-            (lw > 0)%nat -> (opp > 0)%nat ->
-            nstt = update_endurance (fun _ => lw) stt ->
-            nfd = Details (fd_sk fd) opp (Modifiers.advance_time (fd_mods fd)) ->
-            ifight xs stt fd out ->
-            fight_shortcut nstt fd = None ->
-            fight_round nstt fd = fightroundres ->
-            ifight fightroundres nstt nfd subout ->
-            res = add_proba (mul_proba subout p) out ->
-            ifight (((lw, opp), p)::xs) stt fd res
-  | done: forall stt fd, ifight [] stt fd []
-.
-
-Definition run_ifight (stt: Stt) (fd: fight_details) (res: Proba TEscaped) :=
-  ifight [((curendurance stt, fd_opp_hp fd), 1)] stt fd res.
 
 Lemma fight_shortcut_correct: forall stt fd res,
     fight_shortcut stt fd = Some res -> FullProba res.
@@ -801,149 +737,198 @@ Proof.
     - discriminate.
 Qed. 
 
-Lemma ifight_empty_is_done: forall cur stt fd out,
-      ifight cur stt fd out -> (out = [] <-> cur = []).
-Proof.
-  assert (forall stt fd, fight_shortcut stt fd = Some [] -> False) as FS.
-  {
-    intros. pose proof (fight_shortcut_correct stt fd [] H) .
-    compute in H0. inversion H0.
-  }
-  intros.
-  induction H; split; intros; subst; auto; try (apply Insert.empty in H2; contradiction).
-  {
-    inversion H2.
-  }
-  {
-    inversion H2.
-  }
-  {
-    inversion H2.
-  }
-  {
-    apply Merge.empty in H5. destruct H5; subst.
-    apply map_eq_nil in H1; subst.
-    apply FS in H3. contradiction.
-  }
-  {
-    inversion H5.
-  }
-  {
-    apply Merge.empty in H8. destruct H8; subst.
-    apply map_eq_nil in H1; subst.
-    eassert (fight_round _ _ = []).
-    apply IHifight2. reflexivity.
-    assert (FullProba ([]:Proba (nat * nat))).
-    rewrite <- H1.
-    apply fight_round_full.
-    compute in H2.
-    inversion H2.
-  }
-  inversion H8.
-Qed.
+Module IF.
+  Definition ustt (ht: nat * nat) (stt: Stt) :=
+    update_endurance (fun hp => hp - fst ht)%nat stt.
+End IF.
 
-Lemma ifight_empty_out: forall stt fd out,
-    ifight [] stt fd out -> out = [].
+Inductive ifight : Stt -> skill -> nat -> list fight_modifier -> Proba TEscaped -> Prop :=
+  | lost_onlose:
+      forall curstt sk opphp mds cid,
+        curendurance curstt = 0%nat ->
+        Modifiers.extractl Modifiers.gOnlose mds = Some cid ->
+        ifight curstt sk opphp mds [(TLost cid, 1%Qc)]
+  | lost_std:
+      forall curstt sk opphp mds,
+        curendurance curstt = 0%nat ->
+        Modifiers.extractl Modifiers.gOnlose mds = None ->
+        ifight curstt sk opphp mds [(Std 0%nat, 1%Qc)]
+  | win:
+      forall curstt sk mds,
+        curendurance curstt <> 0%nat ->
+        ifight curstt sk 0 mds [(Std (curendurance curstt), 1%Qc)]
+  | shortcut:
+      forall curstt sk opphp mds subout,
+        curendurance curstt <> 0%nat ->
+        opphp <> 0%nat ->
+        fight_shortcut curstt (Details sk opphp mds) = Some subout ->
+        ifight curstt sk opphp mds subout
+  | applydmg:
+      forall curstt sk opphp mds ratio nmds result
+        h0 h1 h2 h3 h4 h5 h6 h7 h8 h9
+        r0 r1 r2 r3 r4 r5 r6 r7 r8 r9
+        s0 s1 s2 s3 s4 s5 s6 s7 s8 s9
+        o0 o1 o2 o3 o4 o5 o6 o7 o8 o9,
+        fight_shortcut curstt (Details sk opphp mds) = None ->
+        curendurance curstt <> 0%nat ->
+        opphp <> 0%nat ->
+        ratio = (get_ratio curstt (Details sk opphp mds) / 2)%Z ->
+        i_hits ratio h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 ->
+        nmds = Modifiers.advance_time mds ->
+        s0 = IF.ustt h0 curstt ->
+        s1 = IF.ustt h1 curstt ->
+        s2 = IF.ustt h2 curstt ->
+        s3 = IF.ustt h3 curstt ->
+        s4 = IF.ustt h4 curstt ->
+        s5 = IF.ustt h5 curstt ->
+        s6 = IF.ustt h6 curstt ->
+        s7 = IF.ustt h7 curstt ->
+        s8 = IF.ustt h8 curstt ->
+        s9 = IF.ustt h9 curstt ->
+        o0 = (opphp - snd h0)%nat ->
+        o1 = (opphp - snd h1)%nat ->
+        o2 = (opphp - snd h2)%nat ->
+        o3 = (opphp - snd h3)%nat ->
+        o4 = (opphp - snd h4)%nat ->
+        o5 = (opphp - snd h5)%nat ->
+        o6 = (opphp - snd h6)%nat ->
+        o7 = (opphp - snd h7)%nat ->
+        o8 = (opphp - snd h8)%nat ->
+        o9 = (opphp - snd h9)%nat ->
+        ifight s0 sk o0 nmds r0 ->
+        ifight s1 sk o1 nmds r1 ->
+        ifight s2 sk o2 nmds r2 ->
+        ifight s3 sk o3 nmds r3 ->
+        ifight s4 sk o4 nmds r4 ->
+        ifight s5 sk o5 nmds r5 ->
+        ifight s6 sk o6 nmds r6 ->
+        ifight s7 sk o7 nmds r7 ->
+        ifight s8 sk o8 nmds r8 ->
+        ifight s9 sk o9 nmds r9 ->
+        result = merge_probas 
+            [ (Q2Qc (1%Q/10%Q), r0)
+            ; (Q2Qc (1%Q/10%Q), r1)
+            ; (Q2Qc (1%Q/10%Q), r2)
+            ; (Q2Qc (1%Q/10%Q), r3)
+            ; (Q2Qc (1%Q/10%Q), r4)
+            ; (Q2Qc (1%Q/10%Q), r5)
+            ; (Q2Qc (1%Q/10%Q), r6)
+            ; (Q2Qc (1%Q/10%Q), r7)
+            ; (Q2Qc (1%Q/10%Q), r8)
+            ; (Q2Qc (1%Q/10%Q), r9)
+            ] ->
+        ifight curstt sk opphp mds result
+  .
+
+Lemma ifight_correct: forall stt sk opphp mds res,
+    ifight stt sk opphp mds res ->
+    FullProba res.
 Proof.
   intros.
-  apply ifight_empty_is_done in H. tauto.
-Qed.
+  unfold FullProba.
+  induction H; auto.
+  eapply fight_shortcut_correct; eauto.
+  subst.
+  rewrite merge_probas_sum.
+  simpl.
+  rewrite IHifight1.
+  rewrite IHifight2.
+  rewrite IHifight3.
+  rewrite IHifight4.
+  rewrite IHifight5.
+  rewrite IHifight6.
+  rewrite IHifight7.
+  rewrite IHifight8.
+  rewrite IHifight9.
+  rewrite IHifight10.
 
-Lemma ifight_correct: forall cur stt fd res,
-    (curendurance stt > 0)%nat -> ValidFight fd -> ifight cur stt fd res ->
-      SumProba cur = SumProba res.
-Proof.
-  intros. 
-  induction H1; intros; subst.
-  {
-    rewrite add_event_adds_proba.
-    rewrite sumproba_cons.
-    f_equal.
-    apply IHifight; auto.
-  }
-  {
-    rewrite add_event_adds_proba.
-    rewrite sumproba_cons.
-    f_equal.
-    apply IHifight; auto.
-  }
-  {
-    rewrite add_event_adds_proba.
-    rewrite sumproba_cons.
-    f_equal.
-    apply IHifight; auto.
-  }
-  {
-    rewrite add_proba_adds_proba.
-    rewrite sumproba_cons.
-    f_equal.
-    rewrite mul_proba_sum.
-    pose proof (fight_shortcut_correct _ _ _ H5).
-    rewrite H3.
-    field.
-    apply IHifight;auto.
-  }
-  {
-    rewrite add_proba_adds_proba.
-    rewrite sumproba_cons.
-    rewrite mul_proba_sum.
-    rewrite <- IHifight2; auto.
-    * rewrite fight_round_full. 
-      f_equal.
-      field.
-      apply IHifight1; auto.
-    * apply valid_advanced; auto.
-  }
+  vm_compute.
+  apply Qceq_alt.
+  vm_compute.
   reflexivity.
 Qed.
 
-Lemma ifight_result_unique: forall cur stt d res1 res2,
-    ValidFight d ->
-      ifight cur stt d res1 ->
-      ifight cur stt d res2 ->
+Lemma ifight_result_unique: forall stt sk opphp mds res1 res2,
+      ifight stt sk opphp mds res1 ->
+      ifight stt sk opphp mds res2 ->
       res1 = res2
       .
 Proof.
   intros.
   generalize dependent res2.
-  induction H0; intros.
-  * inversion H3; subst; clear H3; try contradiction; try Lia.lia. 
-    + rewrite H2 in H12. inversion H12; subst. f_equal.
-      apply IHifight; auto.
-    + rewrite H2 in H11. inversion H11.
-  * inversion H3; subst; clear H3; try contradiction; try Lia.lia. 
-    + rewrite H1 in H12. discriminate.
-    + f_equal.
-      apply IHifight; auto.
-  * inversion H3; subst; clear H3; try contradiction; try Lia.lia. 
-    + f_equal.
-      apply IHifight; auto.
-  * inversion H6; subst; clear H6; try contradiction; try Lia.lia. 
-    + f_equal.
-      - f_equal. rewrite H4 in H18.
-        inversion H18; subst; reflexivity.
-      - apply IHifight; auto.
-    + rewrite H4 in H16. discriminate.
-  * inversion H7; subst; clear H7; try contradiction; try Lia.lia. 
-    + rewrite H4 in H19. discriminate.
-    + f_equal.
-      - f_equal. apply IHifight2; auto.
-        apply valid_advanced; auto.
-      - apply IHifight1; auto.
-  * apply ifight_empty_out in H1.
-    subst.
-    reflexivity.
+  induction H; intros.
+  * inversion H1; subst; clear H1; try contradiction.
+    + rewrite H0 in H3. inversion H3; auto.
+    + rewrite H0 in H3. discriminate.
+  * inversion H1; subst; clear H1; try contradiction.
+    + rewrite H0 in H3. discriminate.
+    + rewrite H0 in H3. inversion H3; auto.
+  * inversion H0; subst; clear H0; try contradiction. reflexivity.
+  * inversion H2; subst; clear H2; try contradiction.
+    + rewrite H1 in H5. inversion H5; subst; reflexivity.
+    + rewrite H1 in H3. discriminate.
+  * inversion H36; subst; clear H36; try contradiction.
+    + rewrite H in H39. discriminate.
+    + pose proof (i_hits_eq _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ H3 H41) as EQS.
+      destruct EQS as [X0 [X1 [X2 [X3 [X4 [X5 [X6 [X7 [X8 X9]]]]]]]]].
+      subst.
+      clear H3 H41.
+
+      f_equal.
+      f_equal.
+      f_equal.
+      apply IHifight1; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight2; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight3; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight4; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight5; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight6; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight7; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight8; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight9; auto; try (apply Modifiers.advance_time_correct; auto).
+      f_equal.
+      f_equal.
+      apply IHifight10; auto; try (apply Modifiers.advance_time_correct; auto).
 Qed.
 
-Lemma ifight_validmap: forall cur stt d res,
-  ifight cur stt d res -> ValidMap res.
+Lemma ifight_validmap: forall stt sk opphp mds res,
+  ifight stt sk opphp mds res -> ValidMap res.
 Proof.
   intros.
-  induction H; subst; try (apply Insert.insert_with_valid);
-    try apply (add_proba_valid);
-    try apply (map_proba_valid); auto.
-  * eapply fight_shortcut_valid; eauto.
+  induction H; subst; clear H.
   * constructor.
+  * constructor.
+  * constructor.
+  * eapply fight_shortcut_valid; eauto.
+  * apply merge_probas_correct.
+    simpl.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor; try assumption.
+    constructor.
 Qed.
 
 Lemma fight_shortcut_endurance_unchanged:
@@ -958,147 +943,10 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma ifight_swap: forall cur c1 c2 stt d res,
-  ifight (c1::c2::cur) stt d res -> ifight (c2::c1::cur) stt d res.
-Proof.
+Axiom ifight_advance: forall stt sk opphp mds,
+    { res | ifight stt sk opphp mds res}.
 
-  Ltac gogo_ifight_swap := match goal with
-  | H1: ?a = Some ?x, H2: ?a = Some ?y |- _ =>
-      rewrite H1 in H2; inversion H2; subst; clear H2
-  | H1: ?a = Some _, H2: ?a = None |- _ =>
-      rewrite H1 in H2; discriminate
-  | H: Modifiers.extractl Modifiers.gOnlose (fd_mods _) = Some _ |-
-          ifight ((0%nat, _, _):: _) _ _ _ =>
-            eapply lost_onlose; eauto
-  | |- ifight ((_, 0%nat, _):: _) _ _ _ =>
-            eapply win; eauto
-  | H1: (?opp > 0)%nat, H2: fight_shortcut _ _ = Some _ |- ifight ((_, ?opp, _):: _) _ _ _ =>
-            eapply applydmg_shortcut; eauto
-  | |- add_event (add_event ?o ?a) ?b = add_event (add_event ?o ?b) ?a =>
-        apply AddEvent.swap_l
-  | H: ifight (_::_) _ _ _ |- _ => inversion H; subst; clear H
-  | |- add_event (add_proba ?x ?y) ?z = add_proba ?x (add_event ?y ?z) =>
-      apply AddProba.add_proba_event_swap
-  | |- ValidMap (mul_proba _ _) => apply map_proba_valid
-  | H: fight_shortcut _ _ = Some ?o |- ValidMap ?o =>
-        eapply fight_shortcut_valid; eauto
-  | H: ifight _ _ _ ?o |- ValidMap ?o =>
-        eapply ifight_validmap; eauto
-  | |- add_proba ?a (add_proba ?b ?c) = add_proba (add_proba ?a ?b) ?c =>
-        apply Merge.assoc
-  | |- add_proba ?a (add_event ?b ?c) = add_event (add_proba ?a ?b) ?c =>
-        repeat rewrite AddProba.add_proba_event
-  | |- forall _ _ _ , _ + (_ + _) = _ + _ + _ => intros; field
-  | |- ValidMap [_] => constructor
-  | |- add_proba ?a (add_proba ?b ?c) = add_proba ?b (add_proba ?a ?c) =>
-        apply AddProba.swap
-  | H1: fight_shortcut (update_endurance (fun _ : endurance => ?lw1) ?stt) ?d = Some _,
-    H2: fight_shortcut (update_endurance (fun _ : endurance => _) ?stt) ?d = None |- _ =>
-      apply (fight_shortcut_endurance_unchanged _ lw1) in H2
-  end.
-
-  intros.
-  destruct c1 as [[lw1 opp1] p1].
-  destruct c2 as [[lw2 opp2] p2].
-  inversion H; subst; clear H; destruct lw2.
-  * inversion H7; subst; repeat gogo_ifight_swap; try Lia.lia.
-  * inversion H7; subst; repeat gogo_ifight_swap; try Lia.lia.
-    eapply applydmg; eauto.
-    eapply lost_onlose; eauto.
-    rewrite H21.
-    repeat gogo_ifight_swap.
-  * inversion H7; subst; repeat gogo_ifight_swap; try Lia.lia.
-    eapply lost_std; auto.
-    eapply lost_std; auto.
-    apply H2.
-    apply AddEvent.swap_l.
-  * inversion H8; subst; repeat gogo_ifight_swap; try Lia.lia; clear H8.
-    eapply lost_std; eauto.
-    gogo_ifight_swap.
-    eapply lost_std; eauto.
-    repeat gogo_ifight_swap.
-    eapply applydmg; eauto.
-    eapply lost_std; eauto.
-    repeat gogo_ifight_swap.
-  * repeat gogo_ifight_swap; try Lia.lia.
-    eapply lost_std;eauto.
-    eapply win;eauto.
-    repeat gogo_ifight_swap.
-  * repeat gogo_ifight_swap; try Lia.lia.
-    eapply applydmg; eauto.
-    eapply win;eauto.
-    repeat gogo_ifight_swap.
-  * repeat gogo_ifight_swap; try Lia.lia.
-    eapply lost_std; eauto.
-    eapply applydmg_shortcut; eauto.
-    repeat gogo_ifight_swap.
-  * repeat gogo_ifight_swap; try Lia.lia.
-      Unshelve.
-        assumption.
-        assumption.
-        assumption.
-        assumption.
-        assumption.
-        assumption.
-        assumption.
-  * repeat gogo_ifight_swap; try Lia.lia.
-    + eapply applydmg; eauto.
-    + repeat gogo_ifight_swap.
-    + eapply lost_std; eauto.
-      eapply applydmg; eauto.
-      repeat gogo_ifight_swap.
-  * repeat gogo_ifight_swap; try Lia.lia.
-    + eapply applydmg; eauto.
-    + repeat gogo_ifight_swap.
-    Unshelve.
-      assumption.
-      assumption.
-      assumption.
-    + eapply applydmg; eauto.
-      eapply applydmg; eauto.
-      repeat gogo_ifight_swap.
-Qed.
-
-Fixpoint transpose_list_option {A: Set} (l: list (option A)): option (list A) :=
-  match l with
-  | [] => Some []
-  | None::_ => None
-  | Some x :: xs =>
-      match transpose_list_option xs with
-      | Some out => Some (x :: out)
-      | None => None
-      end
-  end.
-
-Fixpoint fight_juice (juice: nat) (stt: Stt) (d: fight_details): option (Proba TEscaped) :=
-  match juice with
-  | 0%nat => None
-  | S juice => if curendurance stt =? 0
-      then
-        match Modifiers.extractl Modifiers.gOnlose (fd_mods d) with
-        | None => Some [(Std 0, 1)]
-        | Some cid => Some [(Lost cid, 1)]
-        end
-      else if fd_opp_hp d =? 0
-      then Some [(Std (curendurance stt), 1)]
-      else
-        match fight_shortcut stt d with
-        | Some x => Some x
-        | None =>
-            let fight_round_result: Proba (nat * nat) := fight_round stt d in
-            let fullresult := map (fun (lwop : (nat * nat) * Qc) => 
-                let (lwo, p) := lwop in
-                let (lw, opp) := lwo in
-                let nstt := update_endurance (fun _ => lw) stt in
-                let nfd := Details (fd_sk d) opp (Modifiers.advance_time (fd_mods d)) in
-                match fight_juice juice nstt nfd with
-                | None => None
-                | Some lst => Some (mul_proba lst p)
-                end
-                ) fight_round_result in
-            match transpose_list_option fullresult with
-            | None => None
-            | Some x => Some (rebuild_proba (concat x))
-            end
-        end
+Program Definition fight stt de : Proba TEscaped :=
+  match de with
+  | Details sk opphp mds => proj1_sig (ifight_advance stt sk opphp mds)
   end.
