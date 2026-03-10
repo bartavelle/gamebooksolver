@@ -515,6 +515,11 @@ Module FM.
     Qed.
 End FM.
 
+Instance fight_modifier_EqDec : EqDec fight_modifier := {
+  eqb := FM.fm_eqb;
+  eqb_correct := FM.eqb_correct;
+}.
+
 Inductive fight_details: Set :=
   Details: skill -> endurance -> list fight_modifier -> fight_details
   .

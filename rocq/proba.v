@@ -489,6 +489,28 @@ Proof.
   }
 Qed.
 
+Lemma merge_proba_rebuild_full {A B: Set} `{OrdDec B}:
+  forall (src: Proba A) (f: A -> Proba B),
+    (forall x, In x (map fst src) -> FullProba (f x)) ->
+    SumProba (merge_probas (map (fun tep : A * Qc => let (te, p) := tep in (p, f te)) src)) = SumProba src.
+Proof.
+  induction src; intros.
+  * reflexivity.
+  * simpl.
+    destruct a.
+    rewrite sumproba_cons.
+    rewrite merge_probas_cons.
+    rewrite add_proba_adds_proba.
+    rewrite mul_proba_sum.
+    rewrite IHsrc; auto.
+    specialize (H1 a).
+    rewrite H1.
+    field.
+    simpl. left. reflexivity.
+    intros.
+    apply H1. simpl. tauto.
+Qed.
+
 Lemma map_f_is_id (A : Set): forall (f: A -> A) (lst: list A),
     f = id -> ListDef.map f lst = lst.
 Proof.

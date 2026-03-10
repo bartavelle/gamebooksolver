@@ -157,8 +157,11 @@ Proof.
     contradiction.
 Qed.
 
-Lemma hits_damage: Forall (Forall (fun pr : (nat * nat) => let (a, b) := pr in a > 0 \/ b > 0)) HITSCHART.
+Definition HasDamage (pr: nat * nat): Prop := let (a, b) := pr in a > 0 \/ b > 0.
+
+Lemma hits_damage: Forall (Forall HasDamage) HITSCHART.
 Proof.
+    unfold HasDamage.
     repeat (apply Forall_cons); try (apply Forall_nil); try Lia.lia.
 Qed.
 
@@ -196,4 +199,22 @@ Proof.
     end.
 
     destruct z; simpl; repeat __ihi; try tauto; try Lia.lia.
+Qed.
+
+Lemma ihits_damages: forall z h0 h1 h2 h3 h4 h5 h6 h7 h8 h9,
+    i_hits z h0 h1 h2 h3 h4 h5 h6 h7 h8 h9 ->
+    HasDamage h0
+        /\ HasDamage h1
+        /\ HasDamage h2
+        /\ HasDamage h3
+        /\ HasDamage h4
+        /\ HasDamage h5
+        /\ HasDamage h6
+        /\ HasDamage h7
+        /\ HasDamage h8
+        /\ HasDamage h9.
+Proof.
+    intros.
+    unfold HasDamage.
+    inversion H; subst; clear H; Lia.lia.
 Qed.

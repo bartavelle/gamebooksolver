@@ -19,6 +19,14 @@ Proof.
   reflexivity.
 Qed.
 
+Lemma eqdec_dec {T: Type} `{EqDec T} : forall (a b: T), {a = b} + {a <> b}.
+Proof.
+  intros.
+  destruct (eqb a b) eqn:H2.
+  - left. apply eqb_correct. assumption.
+  - right. intro Heq. apply eqb_correct in Heq. congruence.
+Qed.
+
 Inductive Order := LT | EQ | GT.
 
 Class OrdDec (T: Type) `(EqDec T) := {
@@ -1547,6 +1555,43 @@ Fixpoint delete {K: Set} {V: Set} `{OrdDec K} (k: K) (mp: Mp K V) :=
   end.
 
 Module Delete.
+
+  Ltac dtac := match goal with
+  | H: cmp ?a ?b = LT |- ValidMap ((?a, _)::(?b, _)::_) => constructor
+  | H: cmp ?a ?b = LT |- lt ?a ?b => apply cmp_correct
+  | |- ?a = ?a => reflexivity
+  | H: lt ?a ?a |- _ => apply lt_not in H
+  | H: False |- _ => contradiction
+  | |- _ => inequalities
+  end.
+
+  Lemma valid {K: Set} {V: Set} `{OrdDec K}: forall (m: Mp K V) (k: K),
+      ValidMap m -> ValidMap (delete k m).
+  Proof.
+    intros.
+    generalize dependent k.
+    induction H1; intros; simpl.
+    * constructor.
+    * destruct kv . destruct (cmp k k0); simpl; constructor.
+    * destruct (cmp k k1) eqn: CMP1, (cmp k k2) eqn: CMP2; auto;
+      destruct (cmp k1 k2) eqn: CMP3; repeat dtac; auto.
+      + apply Valid.head in H2.
+        apply Valid.head.
+        split; try tauto.
+        apply Forall_forall.
+        destruct H2.
+        intros.
+
+        destruct (Forall_forall (fun pr : K * V => let (ck, _) := pr in lt k2 ck) xs ) as [A B].
+        destruct x.
+        eapply A in H3. 2: { apply H4. }
+        simpl in H3.
+        apply cmp_correct.
+        apply cmp_correct in H3.
+        inequalities.
+      + simpl in IHValidMap. specialize (IHValidMap k). rewrite CMP2 in IHValidMap. assumption.
+  Qed.
+    
   Lemma delete_insert {K: Set} {V: Set} `{OrdDec K}: forall (m: Mp K V) (k: K) (v: V) (f: V -> V),
       ValidMap m ->
       delete k (insert_with f k v m) = delete k m.

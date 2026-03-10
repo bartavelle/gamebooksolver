@@ -329,4 +329,51 @@ Definition ValidState (s: Stt) :=
         /\ ValidMap (flags s)
         /\ ValidMap (previtems s)
         /\ OneWeaponSpecMax s
+        /\ le (curendurance s) (max_hp s)
+        /\ lt 0 (maxendurance s)
         .
+
+Module VS.
+
+  Lemma max_hp_over_me: forall stt, max_hp stt >= maxendurance stt.
+  Proof.
+    intros.
+    unfold max_hp; simpl. Lia.lia.
+  Qed.
+
+  Lemma update_flags: forall stt f, (forall flgs, ValidMap flgs -> ValidMap (f flgs)) -> ValidState stt -> ValidState (update_flags f stt).
+  Proof.
+    intros.
+    unfold ValidState in *.
+    repeat split; try tauto.
+    destruct stt. simpl in *.
+    apply H. tauto.
+  Qed.
+
+  Lemma update_endurance: forall stt f, (forall hp : nat, lt 0%nat (f hp) /\ le (f hp) (max_hp stt)) -> ValidState stt -> ValidState (update_endurance f stt).
+  Proof.
+    intros.
+    unfold ValidState in *.
+    repeat split; try tauto.
+    destruct stt; simpl in *.  apply H. 
+    unfold update_endurance. destruct stt. simpl in *.
+    destruct (H curendurance0).
+    unfold max_hp in *.
+    unfold has_item in *.
+    simpl in *.
+    assumption.
+  Qed.
+
+End VS.
+
+Module MH.
+  Lemma update_flags: forall stt f,
+      max_hp (update_flags f stt) = max_hp stt.
+  Proof.
+    intros.
+    unfold max_hp.
+    destruct stt.
+    simpl in *.
+    reflexivity.
+  Qed.
+End MH.

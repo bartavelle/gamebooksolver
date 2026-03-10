@@ -285,6 +285,35 @@ Fixpoint wspec (d: DisciplineSet) (wpns: list weapon): option weapon :=
     /\ (In EnemyInvulnerable cur -> ~In PlayerInvulnerable cur)
     .
 
+    Lemma valid_mod_dec: forall md,
+    {match md with
+     | PlayerInvulnerable | EnemyInvulnerable | Timed _ (Timed _ _) => False
+     | _ => True
+     end}
+  + {~match md with
+     | PlayerInvulnerable | EnemyInvulnerable | Timed _ (Timed _ _) => False
+     | _ => True
+     end}.
+    Proof.
+      destruct md; simpl; auto.
+      destruct md; simpl; auto.
+    Qed.
+
+    Lemma ValidMods_dec: forall mds, {Modifiers.ValidMods mds} + {~Modifiers.ValidMods mds}.
+    Proof.
+      intro mds.
+      unfold Modifiers.ValidMods.
+      set (cur := Modifiers.get_cur_mods mds).
+      set (valid_mods := fun md => match md with
+        | PlayerInvulnerable | EnemyInvulnerable | Timed _ (Timed _ _) => False
+        | _ => True end).
+      destruct (Forall_dec valid_mods valid_mod_dec mds) as [HF|HF];
+      destruct (In_dec eqdec_dec PlayerInvulnerable cur) as [HPI|HPI];
+      destruct (In_dec eqdec_dec EnemyInvulnerable cur) as [HEI|HEI];
+      (* now just tauto for all 8 combinations *)
+      (left; tauto) || (right; tauto).
+    Qed.
+
   Lemma in_get_cur_mods_cons: forall x md xs,
     In md (get_cur_mods xs) ->
     In md (get_cur_mods (x::xs)).
@@ -468,7 +497,8 @@ Definition moddmg (stt: Stt) (opp_hp: nat) (mds: list fight_modifier) (dmgs: nat
   let odmg_opponent := (raw_op + gdpr mds)%nat in
   let has_mod := fun m => existsb (FM.fm_eqb m) (Modifiers.get_cur_mods mds) in
   let dmg_lw := if has_mod PlayerInvulnerable then 0:nat else
-        if (has_mod ForceEMindblast || (has_mod EnemyMindblast && negb (s_check MindShield (disciplines stt))))%bool then (raw_lw + 2:nat)%nat else raw_lw in
+        if (has_mod ForceEMindblast || (has_mod EnemyMindblast && negb (s_check MindShield (disciplines stt))))%bool
+          then (raw_lw + 2:nat)%nat else raw_lw in
   let dmg_opp := if has_mod EnemyInvulnerable then 0:nat else
         if (has_mod DoubleDamage || (has_mod Undead && has_item (Weapon Sommerswerd) stt))%bool
             then (odmg_opponent * 2)%nat
@@ -539,6 +569,16 @@ Proof.
   intros.
   unfold ValidFight in *.
   destruct fd. simpl in *.
+  split; auto.
+  apply Modifiers.advance_time_correct.
+  tauto.
+Qed.
+
+Lemma valid_advanced_g: forall sk prevo opp mds,
+    (opp > 0)%nat -> ValidFight (Details sk prevo mds) -> ValidFight (Details sk opp (Modifiers.advance_time mds)).
+Proof.
+  intros.
+  unfold ValidFight in *. simpl in *.
   split; auto.
   apply Modifiers.advance_time_correct.
   tauto.
@@ -953,17 +993,173 @@ Next Obligation.
   unfold has_damage in A. simpl in A. tauto.
 Defined.
 
-(* Lemma fight_i2f: forall stt sk opphp mds res pr,
-    ifight stt sk opphp mds res ->
-    f_fight stt sk opphp mds pr = res.
+Lemma fight_inductive: forall stt sk opphp mds vld res,
+    f_fight stt sk opphp mds vld = res <-> ifight stt sk opphp mds res.
+Proof.
+Admitted.
+
+
+
+Definition fight (stt: Stt) (sk: skill) (opphp: nat) (mds: list fight_modifier): Proba TEscaped :=
+  match Modifiers.ValidMods_dec mds with
+  | left pr => f_fight stt sk opphp mds pr
+  | right _ => []
+  end.
+
+Lemma fight_full: forall stt sk opphp mds, Modifiers.ValidMods mds -> FullProba (fight stt sk opphp mds).
 Proof.
   intros.
-  induction H.
-  unfold f_fight.
-  unfold f_fight_func.
-  vm_compute.
+  unfold FullProba.
+  unfold fight.
+  destruct (Modifiers.ValidMods_dec mds); try contradiction.
+  remember (f_fight stt sk opphp mds v).
+  symmetry in Heqp.
+  apply fight_inductive in Heqp.
+  eapply ifight_correct; eauto.
+Qed.
 
-Lemma f_fight_correct: forall stt sk opphp mds res pr,
-    res = f_fight stt sk opphp mds pr ->
-    FullProba res.
-Proof. *)
+Definition valid_fight_result (stt: Stt) (te: TEscaped) :=
+  match te with
+  | Escaped _ nhp | LateWin _ nhp | Stopped _ nhp | Std nhp => (nhp <= max_hp stt)%nat
+  | TLost _ => True
+  end.
+
+Module FRH.
+
+  Lemma ustt_valid: forall stt opphp mds dmgs nstt no,
+    ValidState stt -> IF.ustt stt opphp mds dmgs = (nstt, no) ->
+    ValidState nstt \/ curendurance nstt = 0%nat.
+  Proof.
+    unfold IF.ustt, moddmg.
+    intros.
+    destruct dmgs.
+    unfold ValidState in H.
+
+    destruct (existsb (FM.fm_eqb PlayerInvulnerable) (Modifiers.get_cur_mods mds)) eqn:PI;
+    destruct (existsb (FM.fm_eqb EnemyInvulnerable) (Modifiers.get_cur_mods mds)) eqn:EI;
+    destruct (existsb (FM.fm_eqb DoubleDamage) (Modifiers.get_cur_mods mds) || existsb (FM.fm_eqb Undead) (Modifiers.get_cur_mods mds) && has_item (Weapon Sommerswerd) stt) eqn:SS;
+    destruct (existsb (FM.fm_eqb ForceEMindblast) (Modifiers.get_cur_mods mds) || existsb (FM.fm_eqb EnemyMindblast) (Modifiers.get_cur_mods mds) && negb (s_check MindShield (disciplines stt))) eqn: MB;
+    destruct (curendurance nstt) eqn: NE; try tauto;left;
+      inversion H0; subst; clear H0; apply VS.update_endurance; auto; intros; simpl in *; try Lia.lia.
+  Qed.
+
+  Lemma fight_round_vr: forall stt sk opphp mds res,
+      fight_round stt sk opphp mds = res ->
+      Forall (fun lo: nat * nat => let (l, o) := lo in l <= curendurance stt /\ o <= opphp)%nat (map fst res).
+  Proof.
+    intros.
+    unfold fight_round in H.
+    apply Forall_forall.
+    intros.
+    subst.
+    apply rebuild_proba_keeps_keys_conv in H0.
+    rewrite map_map in H0.
+    simpl in H0.
+    unfold moddmg in H0.
+    destruct (existsb (FM.fm_eqb PlayerInvulnerable) (Modifiers.get_cur_mods mds)) eqn: PI.
+    destruct (existsb (FM.fm_eqb EnemyInvulnerable) (Modifiers.get_cur_mods mds)) eqn: EI.
+    * apply in_map_iff in H0.
+      destruct H0, x0. destruct x, H. inversion H; subst. Lia.lia.
+    * apply in_map_iff in H0.
+      destruct H0, x0. destruct x, H. inversion H; subst. Lia.lia.
+    * apply in_map_iff in H0.
+      destruct H0, x0. destruct x, H. inversion H; subst. Lia.lia.
+  Qed.
+
+  Lemma fight_shortcut_res_hp: forall stt sk opphp mds subout,
+    ValidState stt ->
+    Modifiers.ValidMods mds ->
+    fight_shortcut stt (Details sk opphp mds) = Some subout ->
+    Forall (valid_fight_result stt) (map fst subout).
+  Proof.
+    intros stt sk opphp mds subout VSS VMDS SHC.
+    unfold fight_shortcut in SHC.
+    unfold ValidState in VSS.
+    simpl in VSS.
+    simpl in VMDS.
+    destruct (Modifiers.extractl Modifiers.gStopFight mds) eqn: SF.
+    { inversion SHC; subst; clear SHC.
+      repeat constructor.
+      simpl. tauto.
+    }
+    destruct (Modifiers.extractl Modifiers.gEvaded mds) eqn:EV; try discriminate.
+    inversion SHC; subst; clear SHC.
+    remember (fight_round stt sk opphp mds) as result.
+    pose proof (fight_round_vr stt sk opphp mds result (symmetry Heqresult)) as FRC.
+      
+    apply Forall_forall.
+    intros.
+    pose proof (rebuild_proba_keeps_keys_conv _ _ H).
+    rewrite map_map in H0.
+    clear H.
+    apply in_map_iff in H0.
+    destruct H0.
+    destruct x0 as [[lwr opr] pr].
+    unfold valid_fight_result.
+    destruct (lwr =? 0) eqn:LWD.
+    * destruct (Modifiers.extractl Modifiers.gOnlose mds) eqn:onlose; destruct H; simpl in *; subst; auto. Lia.lia.
+    * destruct H; simpl in *; subst.
+      apply Forall_map in FRC.
+      epose proof (Merge.use_forall _ (fight_round stt sk opphp mds) ((lwr, opr), pr) FRC H0).
+      simpl in H. Lia.lia.
+  Qed.
+
+  Lemma valid_fight_result_change_stt: forall h curstt s x o opphp mds,
+      ValidState curstt ->
+      HasDamage h ->
+      (s, o) = IF.ustt curstt opphp mds h ->
+      valid_fight_result s x ->
+      valid_fight_result curstt x.
+  Proof.
+    intros.
+  Admitted.
+
+End FRH.
+
+
+Lemma fight_res_hp: forall stt sk opphp mds res, ValidState stt \/ curendurance stt = 0%nat ->
+  Modifiers.ValidMods mds -> fight stt sk opphp mds = res ->
+  Forall (valid_fight_result stt) (map fst res).
+Proof.
+  intros.
+  unfold fight in H1.
+  destruct (Modifiers.ValidMods_dec mds); try contradiction.
+  apply fight_inductive in H1.
+  clear v.
+  induction H1 ; simpl; repeat constructor.
+  * unfold valid_fight_result. unfold ValidState in H. Lia.lia.
+  * unfold valid_fight_result. unfold ValidState in H. Lia.lia.
+  * destruct H; try contradiction. eapply FRH.fight_shortcut_res_hp; eauto.
+  * destruct H; try contradiction. apply Forall_forall.
+    intros.
+    subst.
+    apply merge_probas_keeps_keys_conv in H18.
+    simpl in H18.
+    repeat (rewrite map_app in H18).
+    apply ihits_damages in H5.
+
+    Ltac fight_res_hp_finish := match goal with
+    | H: _ /\ _ |- _ => destruct H
+    | H: In _ (_ ++ _) |- _ => apply in_app_or in H
+    | H: In _ _ \/ _ |- _ => destruct H
+    | H: (?s, ?o) = IF.ustt ?cur ?opphp ?mds ?h,
+      Hi: In ?x (map fst ?r),
+      Hf: ifight ?s _ ?o _ ?r,
+      Vc: ValidState ?cur
+      |- valid_fight_result ?cur ?x => symmetry in H; destruct (FRH.ustt_valid cur opphp mds h s o Vc H)
+    | VS: ValidState ?cur,
+      H: IF.ustt ?cur ?opphp ?mds ?h = (?s, ?o),
+      Hi: In ?x (map fst ?r),
+      Hd: HasDamage ?h,
+      Hf: ifight ?s _ ?o _ ?r
+      |- valid_fight_result ?cur ?x => 
+        apply (FRH.valid_fight_result_change_stt h cur s x o opphp mds VS Hd (symmetry H)); eapply Forall_forall
+    | Ih: ValidState ?s \/ curendurance ?s = 0%nat -> Modifiers.ValidMods (Modifiers.advance_time ?mds) -> Forall (valid_fight_result ?s) (map fst ?r)
+      |- Forall (valid_fight_result ?s) _ => apply Ih; auto
+    | |- Modifiers.ValidMods (Modifiers.advance_time ?mds) => apply Modifiers.advance_time_correct
+    | H: ?x |- ?x => assumption
+    end.
+
+    repeat fight_res_hp_finish.
+    simpl in H18. contradiction.
+Qed.
