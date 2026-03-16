@@ -124,6 +124,46 @@ Proof.
   intro contra. subst. discriminate.
 Qed.
 
+Lemma cmp_eq_not {T: Type} `{OrdDec T}: forall (a b : T), a <> b -> cmp a b <> EQ.
+Proof.
+  intros.
+  intro contra.
+  apply cmp_eq in contra.
+  contradiction.
+Qed.
+
+Lemma eqb_cmp_lt {T: Type} `{OrdDec T}: forall (a b: T), cmp a b = LT -> eqb a b = false.
+Proof.
+  intros.
+  apply eqb_not.
+  intro contra.
+  subst. rewrite cmp_refl in H1. discriminate.
+Qed.
+
+Lemma eqb_cmp_gt {T: Type} `{OrdDec T}: forall (a b: T), cmp a b = GT -> eqb a b = false.
+Proof.
+  intros.
+  apply eqb_not.
+  intro contra.
+  subst. rewrite cmp_refl in H1. discriminate.
+Qed.
+
+Lemma eqb_comm {T: Type} `{OrdDec T}: forall a b, eqb a b = eqb b a.
+Proof.
+  intros.
+  destruct (eq_dec a b).
+  * subst. reflexivity.
+  * destruct (eqb_not a b) as [A _].
+    destruct (eqb_not b a) as [B _].
+
+    specialize (A n).
+    apply not_eq_sym in n.
+    specialize (B n).
+    rewrite A.
+    rewrite B.
+    reflexivity.
+Qed.
+
 Ltac inequalities :=
   match goal with
   | H1: cmp ?x ?y = ?r1, H2: cmp ?x ?y = ?r2 |- _ =>
@@ -155,6 +195,16 @@ Ltac inequalities :=
   | H: cmp ?a ?b = GT |- context [cmp ?a ?b] => rewrite H
   | H: cmp ?a ?b = GT |- context [cmp ?b ?a] => apply cmp_opp in H
   | |- context [cmp ?a ?a] => rewrite cmp_refl
+  | H: cmp ?a ?b = LT |- context [eqb ?a ?b] => rewrite (eqb_cmp_lt a b H)
+  | H: cmp ?a ?b = GT |- context [eqb ?a ?b] => rewrite (eqb_cmp_gt a b H)
+  | H: cmp ?a ?b = LT |- context [eqb ?b ?a] => rewrite (eqb_comm b a)
+  | H: cmp ?a ?b = GT |- context [eqb ?b ?a] => rewrite (eqb_comm b a)
+  | H: cmp ?a ?b = LT, H2: context [eqb ?a ?b] |- _ => rewrite (eqb_cmp_lt a b H) in H2
+  | H: cmp ?a ?b = GT, H2: context [eqb ?a ?b] |- _ => rewrite (eqb_cmp_gt a b H) in H2
+  | H: cmp ?a ?b = LT, H2: context [eqb ?b ?a] |- _ => rewrite (eqb_comm b a) in H2
+  | H: cmp ?a ?b = GT, H2: context [eqb ?b ?a] |- _ => rewrite (eqb_comm b a) in H2
+  | H: cmp ?a ?b = _, H2: context [cmp ?a ?b] |- _ => rewrite H in H2
+  | |- context [eqb ?a ?a] => rewrite eq_refl
   end. 
 
 Module PairLemma.
@@ -652,6 +702,66 @@ Module Valid.
       inversion H2; subst.
       constructor; auto.
   Qed.
+
+  Lemma same_keys {K V: Set} `{OrdDec K}:
+    forall (m1 m2: Mp K V),
+      map fst m1 = map fst m2 ->
+      ValidMap m1 ->
+      ValidMap m2.
+  Proof.
+    intros.
+    generalize dependent m2.
+    induction H2; intros.
+    * simpl in H1.
+      symmetry in H1.
+      apply map_eq_nil in H1.
+      subst.
+      constructor.
+    * destruct kv.
+      simpl in H1.
+      destruct m2. inversion H1.
+      destruct p.
+      simpl in H1.
+      inversion H1; subst.
+      symmetry in H4.
+      apply map_eq_nil in H4.
+      subst.
+      constructor.
+    * destruct m2 as [|[km1 kv1] [|[km2 kv2]]]; simpl in H3; inversion H3; subst; clear H3.
+      constructor; auto.
+      apply IHValidMap.
+      simpl.
+      f_equal.
+      assumption.
+  Qed.
+
+  Lemma filter {K V: Set} `{OrdDec K}:
+    forall (m: Mp K V) pred,
+      ValidMap m ->
+      ValidMap (filter pred m).
+  Proof.
+    intros.
+    induction H1.
+    * constructor.
+    * simpl. destruct (pred kv); constructor.
+    * simpl in *.
+      destruct (pred (k1, v1)); destruct (pred (k2, v2)).
+      + constructor; auto.
+      + apply Valid.head in H2.
+        destruct H2 as [VMM LT].
+        apply Valid.head.
+        split; auto.
+        apply Forall_forall.
+        intros.
+        apply filter_In in H2.
+        destruct H2, x.
+        eapply Forall_forall in LT; eauto.
+        simpl in LT.
+        eapply lt_trans;eauto.
+      + assumption.
+      + assumption.
+  Qed.
+
 End Valid.
 
 Fixpoint insert_with {K: Set} {V: Set} `{OrdDec K} (f: V -> V) (k: K) (v: V) (mp: Mp K V) :=
@@ -664,6 +774,115 @@ Fixpoint insert_with {K: Set} {V: Set} `{OrdDec K} (f: V -> V) (k: K) (v: V) (mp
       | GT => (ck,cv)::insert_with f k v xs
       end
   end.
+
+Fixpoint update {K: Set} {V: Set} `{OrdDec K} (f: option V -> option V) (k: K) (mp: Mp K V) :=
+  match mp with
+  | [] => match f None with
+          | None => []
+          | Some v => [(k, v)]
+          end
+  | ((ck, cv)::xs) =>
+      match cmp k ck with
+      | EQ => match f (Some cv) with
+              | None => xs
+              | Some nv => (k, nv)::xs
+              end
+      | LT => match f None with
+              | None => (ck, cv)::xs
+              | Some nv => (k, nv)::(ck,cv)::xs
+              end
+      | GT => (ck,cv)::update f k xs
+      end
+  end.
+
+Module Update.
+  Lemma update_preserve_keys {K: Set} {V: Set} `{OrdDec K}:
+    forall (m: Mp K V) f k,
+      ValidMap m ->
+      f None = None ->
+      (forall x, exists v, f (Some x) = Some v) ->
+      map fst m = map fst (update f k m).
+  Proof.
+    intros.
+    generalize dependent k.
+    induction H1; intros; simpl.
+    * rewrite H2. reflexivity.
+    * destruct kv.
+      rewrite H2.
+      destruct (cmp k k0) eqn:D; auto.
+      destruct (H3 v).
+      rewrite H1.
+      simpl.
+      rewrite cmp_eq in D.
+      subst.
+      reflexivity.
+    * rewrite H2.
+      destruct (H3 v1).
+      destruct (H3 v2).
+      rewrite H5.
+      rewrite H6.
+      destruct (cmp k k1) eqn: KK1; simpl; repeat inequalities; auto.
+      f_equal.
+      simpl in IHValidMap.
+      rewrite H2 in IHValidMap.
+      rewrite H6 in IHValidMap.
+      apply IHValidMap.
+  Qed.
+
+  Lemma valid {K: Set} {V: Set} `{OrdDec K}:
+    forall (m: Mp K V) f k,
+    ValidMap m ->
+    ValidMap (update f k m).
+  Proof.
+    intros.
+    induction H1; simpl.
+    * destruct (f None); constructor.
+    * destruct kv.
+      destruct (cmp k k0) eqn: KK0.
+      + destruct (f None); constructor.
+        apply cmp_correct in KK0. assumption.
+        constructor.
+      + destruct (f (Some v)); constructor.
+      + destruct (f None); repeat constructor.
+        apply cmp_opp in KK0.
+        apply cmp_correct.
+        assumption.
+    * simpl in *.
+      destruct (cmp k k1) eqn: KK1, (cmp k k2) eqn: KK2; repeat inequalities.
+      + destruct (f None).
+        inversion IHValidMap; subst.
+        constructor. apply cmp_correct. assumption.
+        constructor; auto.
+        constructor; auto.
+      + destruct (f None).
+        constructor.
+        apply cmp_correct; auto.
+        constructor; assumption.
+        constructor; assumption.
+      + destruct (f (Some v1)); auto.
+        constructor; auto.
+      + destruct (f (Some v1)); auto.
+        constructor; auto.
+      + destruct (f None); constructor; auto.
+        apply cmp_opp in KK1.
+        apply cmp_correct.
+        assumption.
+      + destruct (f (Some v2)).
+        constructor; auto.
+        apply Valid.head in H2.
+        destruct H2.
+        apply Valid.head.
+        split ;auto .
+        apply Forall_forall.
+        intros.
+        destruct x.
+        eapply Forall_forall in H3; eauto.
+        simpl in H3.
+        eapply lt_trans; eauto.
+      + constructor; auto.
+  Qed.
+
+End Update.
 
 Definition insert {K: Set} {V: Set} `{OrdDec K} (k: K) (v: V) (mp: Mp K V) :=
   insert_with (fun _ => v) k v mp.
@@ -1672,24 +1891,64 @@ Fixpoint lookup {K: Set} {V: Set} `{OrdDec K} (k: K) (m: Mp K V): option V :=
   end.
 
 Module Lookup.
+  Lemma lookup_insert_with {K: Set} {V: Set} `{OrdDec K}: forall (mp: Mp K V), ValidMap mp -> forall f k v,
+    lookup k (insert_with f k v mp) = match lookup k mp with | Some x => Some (f x) | None => Some v end.
+  Proof.
+    intro m.
+    induction m; intros; simpl.
+    * rewrite cmp_refl. reflexivity.
+    * destruct a as [ck cv]. inversion H1; subst; simpl.
+      { destruct (cmp k ck) eqn: KCK; simpl; try rewrite cmp_refl; auto.
+        rewrite KCK. reflexivity. }
+      { specialize (IHm H6 f k v).
+        simpl in IHm.
+        destruct (cmp k ck) eqn: KCK; simpl in *; try rewrite cmp_refl; auto.
+        rewrite KCK.
+        destruct (cmp k k2) eqn: K2K2; simpl in *; try rewrite cmp_refl; auto.
+      }
+  Qed.
+
+  Lemma lookup_insert_with_diff {K: Set} {V: Set} `{OrdDec K}: forall (mp: Mp K V), ValidMap mp -> forall f k1 k2 v,
+    k1 <> k2 ->
+    lookup k1 (insert_with f k2 v mp) = lookup k1 mp.
+  Proof.
+    induction mp; intros; simpl.
+    * destruct (cmp k1 k2) eqn: CC; auto.
+      apply cmp_eq in CC. contradiction.
+    * destruct a as [ck cv].
+      inversion H1; subst; simpl.
+      { destruct (cmp k2 ck) eqn: K2CK; destruct (cmp k1 ck) eqn: K1CK; simpl; destruct (cmp k1 k2) eqn: K1K2; auto; 
+        repeat inequalities; try contradiction; auto.
+      }
+      { specialize (IHmp H7 f k1 k2 v H2).
+        destruct (cmp k2 ck) eqn: K2CK; destruct (cmp k2 k3) eqn: K2K3; simpl; destruct (cmp k1 ck) eqn: K1CK; auto; repeat inequalities;
+          auto; apply cmp_eq_not in H2.
+        * destruct (cmp k1 k2) eqn: K1K2; auto; try contradiction.
+        * destruct (cmp k1 k2) eqn: K1K2; auto; try contradiction. inequalities.
+        * destruct (cmp k1 k2) eqn: K1K2; auto; try contradiction.
+        * destruct (cmp k1 k2) eqn: K1K2; auto; try contradiction; repeat inequalities.
+        * rewrite cmp_refl in H2. contradiction.
+        * rewrite cmp_refl in H2. contradiction.
+        * destruct (cmp k1 k2) eqn: K1K2; auto; try contradiction. replace (cmp k1 k3) with LT; auto. symmetry. inequalities.
+        * destruct (cmp k1 k3) eqn: K1K3; auto; try contradiction.
+        * destruct (cmp k1 k3) eqn: K1K3; auto; try contradiction.
+          simpl in IHmp.
+          rewrite K2K3 in IHmp.
+          rewrite K1K3 in IHmp.
+          simpl in IHmp.
+          rewrite K1K3 in IHmp.
+          assumption.
+      }
+  Qed.
+
   Lemma lookup_insert {K: Set} {V: Set} `{OrdDec K}: forall (mp: Mp K V), ValidMap mp -> forall k v,
       lookup k (insert k v mp) = Some v.
   Proof.
-    intro m.
-    induction m; intros.
-    * {
-      unfold insert. simpl. rewrite cmp_refl. reflexivity.
-    }
-    * unfold insert.
-      destruct a as [ck cv]. inversion H1; subst; simpl.
-      { destruct (cmp k ck) eqn: KCK; simpl; try rewrite cmp_refl; auto.
-        rewrite KCK. auto. }
-      { specialize (IHm H6 k v).
-        unfold insert in IHm. simpl in IHm.
-      destruct (cmp k ck) eqn: KCK; simpl in *; try rewrite cmp_refl; auto.
-      rewrite KCK.
-      destruct (cmp k k2) eqn: K2K2; simpl in *; try rewrite cmp_refl; auto.
-      }
+    intros.
+    pose proof (lookup_insert_with mp H1 (fun _ : V => v) k v).
+    unfold insert.
+    rewrite H2.
+    destruct (lookup k mp); reflexivity.
   Qed.
 
   Lemma lookup_delete {K: Set} {V: Set} `{OrdDec K}:
@@ -1717,6 +1976,88 @@ Module Lookup.
       simpl in IHmp. rewrite K2 in IHmp. auto.
     }
   Qed.
+
+  Lemma lowkey_not_found {K: Set} {V: Set} `{OrdDec K}: forall (mp: Mp K V) k,
+    ValidMap mp ->
+     Forall (fun pr : K * V => let (ck, _) := pr in lt k ck) mp ->
+     lookup k mp = None.
+  Proof.
+    destruct mp; intros; auto.
+    simpl.
+    destruct p.
+    rewrite Valid.head in H1.
+    rewrite Forall_cons_iff in H2.
+    destruct H2.
+    apply cmp_correct in H2.
+    rewrite H2.
+    reflexivity.
+  Qed.
+
+  Lemma update_eq {K: Set} {V: Set} `{OrdDec K}: forall k f (mp: Mp K V) res,  ValidMap mp -> lookup k (update f k mp) = res ->
+      (lookup k mp = None \/ res = f None) \/ (exists r, lookup k mp = Some r /\ lookup k (update f k mp) = f (Some r)).
+  Proof.
+    induction mp; intros; auto.
+    destruct a.
+    simpl in H2.
+    simpl.
+    apply Valid.head in H1.
+    destruct (cmp k k0) eqn: KK0; repeat inequalities; simpl in *; repeat inequalities.
+    + subst. tauto.
+    + right. exists v. split; auto.
+      destruct (f (Some v)) eqn: FV; simpl.
+      - rewrite cmp_refl. reflexivity.
+      - apply lowkey_not_found;tauto.
+    + apply IHmp; tauto.
+  Qed.
+
+  Lemma update_diff {K V: Set} `{OrdDec K}: forall (mp: Mp K V) f k1 k2,
+    ValidMap mp ->
+    k1 <> k2 -> lookup k1 (update f k2 mp) = lookup k1 mp.
+Proof.
+  induction mp; intros; simpl; auto. {
+    destruct (f None); auto.
+    simpl.
+    destruct (cmp k1 k2) eqn: E; auto.
+    apply cmp_eq in E. contradiction.
+  }
+  destruct a as [ck cv].
+  destruct (cmp k2 ck) eqn:K2; simpl; repeat inequalities.
+  * destruct (f None); simpl; destruct (cmp k1 ck) eqn: K1CK; auto; repeat inequalities; auto;
+      destruct (cmp k1 k2) eqn: K1K2; repeat inequalities; auto; contradiction.
+  * destruct (f (Some cv)); simpl; destruct (cmp k1 ck) eqn: K1CK; auto; repeat inequalities;
+      try contradiction.
+    apply Valid.head in H1.
+    apply lowkey_not_found; try tauto.
+    apply Forall_forall.
+    intros.
+    destruct x.
+    destruct H1.
+
+    destruct (Forall_forall (fun pr : K * V => let (ck0, _) := pr in lt ck ck0) mp) as [FR _].
+    specialize (FR H4 (k, v) H3). simpl in FR. apply cmp_correct in K1CK. eapply lt_trans; eauto.
+  * destruct (cmp k1 ck) eqn: K1CK; auto.
+    apply Valid.head in H1.
+    apply IHmp; tauto.
+Qed.
+
+Lemma update_eq_b {K V: Set} `{OrdDec K}: forall (mp: Mp K V) f k,
+    f None = None ->
+    ValidMap mp -> lookup k (update f k mp) = f (lookup k mp).
+Proof.
+  induction mp; intros; simpl; auto. {
+      destruct (f None); auto.
+      simpl.
+      rewrite cmp_refl.
+      reflexivity.
+  }
+  destruct a as [ck cv]. apply Valid.head in H2. destruct H2.
+  destruct (cmp k ck) eqn:KCK; simpl; repeat inequalities.
+  * rewrite H1. simpl. rewrite KCK. reflexivity.
+  * destruct (f (Some cv)) eqn:FCV; simpl.
+    + rewrite cmp_refl. reflexivity.
+    + apply lowkey_not_found; tauto.
+  * apply IHmp; auto.
+Qed.
 
 End Lookup.
 
@@ -2029,3 +2370,217 @@ Qed.
   
 Definition set_from_list {K: Set} `{OrdDec K} (l: list K): St K :=
   fold_right (fun (k: K) (curset : St K) => s_set k curset) [] l.
+
+Lemma vmap_in {K V: Set} `{OrdDec K}: forall (m: Mp K V) k q,
+    ValidMap m ->
+    In (k, q) m <-> lookup k m = Some q.
+Proof.
+  intros m k q VMM.
+  induction VMM; split; intros.
+  * inversion H1.
+  * inversion H1.
+  * inversion H1; subst; clear H1; simpl.
+    rewrite cmp_refl. reflexivity.
+    inversion H2.
+  * simpl in H1.
+    destruct kv as [ck v].
+    destruct (cmp k ck) eqn: KCK; try discriminate.
+    inversion H1; subst.
+    apply cmp_eq in KCK.
+    subst.
+    left.
+    reflexivity.
+  * simpl in *.
+    destruct H2 as [EQ1|[EQ1|EQ2]]; try (inversion EQ1; subst; clear EQ1); try rewrite cmp_refl; auto.
+    + apply cmp_correct in H1.
+      inequalities.
+      inequalities.
+      reflexivity.
+    + apply cmp_correct in H1.
+      destruct (cmp k k1) eqn: KK1, (cmp k k2) eqn: KK2; auto; repeat inequalities; try apply IHVMM; try tauto.
+      apply Valid.head in VMM.
+      destruct VMM.
+      eapply Forall_forall in H3; eauto. simpl in H3. apply cmp_correct in H3.
+      repeat inequalities.
+  *  simpl in *.
+      destruct (cmp k k1) eqn: KK1, (cmp k k2) eqn: KK2; auto; repeat inequalities; try apply IHVMM; try tauto; try discriminate.
+      + inversion H2; subst; clear H2.
+        tauto.
+      + inversion H2; subst; clear H2.
+        tauto.
+Qed.
+
+Lemma vmap_out {K V: Set} `{OrdDec K}: forall (m: Mp K V) k,
+    ValidMap m ->
+    (forall q, ~ In (k, q) m) <-> lookup k m = None.
+Proof.
+  intros m k VMM.
+  induction VMM; split; intros; auto.
+  * destruct kv.
+    simpl.
+    destruct (cmp k k0) eqn: KK0; auto.
+    apply cmp_eq in KK0.
+    subst.
+    exfalso.
+    apply (H1 v).
+    constructor.
+    reflexivity.
+  * intro contra.
+    inversion contra; subst; simpl in H1.
+    rewrite cmp_refl in H1. discriminate.
+    inversion H2.
+  * simpl in *.
+    destruct (cmp k k1) eqn: KK1, (cmp k k2) eqn: KK2; auto; repeat inequalities.
+    + exfalso. apply (H2 v1). tauto.
+    + exfalso. apply (H2 v1). tauto.
+    + exfalso. apply (H2 v2). tauto.
+    + apply IHVMM.
+      intros.
+      intro contra.
+      destruct contra.
+      - inversion H3; subst.
+        apply (H2 q).
+        tauto.
+      - apply (H2 q).
+        tauto.
+  * intro contra.
+    simpl in H2.
+    inversion contra; subst; clear contra.
+    - inversion H3; subst; clear H3. rewrite cmp_refl in H2. discriminate.
+    - inversion H3; subst; clear H3.
+     -- inversion H4; subst; clear H4.
+        rewrite cmp_refl in H2.
+        apply cmp_correct in H1.
+        apply cmp_opp in H1.
+        rewrite H1 in H2.
+        discriminate.
+     -- destruct (cmp k k1) eqn: KK1, (cmp k k2) eqn: KK2; try discriminate; simpl in *; rewrite KK2 in IHVMM; destruct IHVMM; repeat inequalities.
+       ++ lapply H5; auto. intros. specialize (H6 q). tauto.
+       ++ apply cmp_correct in H1. inequalities.
+       ++ lapply H5; auto. intros. specialize (H6 q). tauto.
+       ++ lapply H5; auto. intros. specialize (H6 q). tauto.
+  Qed.
+
+Section Bag.
+  Context {K: Set} `{EqDec K} `{OrdDec K}.
+
+
+  Definition ValidBag (m: Mp K nat) := ValidMap m /\ Forall (fun kv => snd kv =? 0 = false)%nat m.
+
+  Definition bag_add (k: K) (q: nat) (m: Mp K nat) :=
+    insert_with (fun prev => prev + q)%nat k q m.
+  
+  Definition bag_rm (k: K) (q: nat) (m: Mp K nat) :=
+    update (fun mv => match mv with | None => None | Some cv => if cv <=? q then None else Some (cv - q)%nat end) k m.
+
+  Lemma add_valid: forall (m: Mp K nat) k q,
+    ValidBag m -> (q > 0)%nat -> ValidBag (bag_add k q m).
+  Proof.
+    intros.
+    unfold ValidBag in *.
+    split.
+    * apply Insert.insert_with_valid.
+      tauto.
+    * induction m; simpl.
+      + constructor. 
+        simpl.
+        apply Nat.eqb_neq.
+        Lia.lia.
+        tauto.
+      + unfold bag_add in *.
+        simpl.
+        destruct a as [ck cv].
+        destruct H2 as [VMM APOS].
+        inversion APOS; subst; clear APOS.
+        destruct (cmp k ck) eqn: KCK.
+        - apply cmp_correct in KCK.
+          constructor; simpl.
+          apply Nat.eqb_neq.
+          Lia.lia.
+          constructor; simpl; auto.
+        - constructor; auto.
+          simpl.
+          apply Nat.eqb_neq.
+          Lia.lia.
+        - constructor; auto.
+          apply IHm.
+          apply Valid.head in VMM.
+          tauto.
+  Qed.
+
+  Lemma add_valid_no_zero: forall (m: Mp K nat) k q,
+    ValidBag m -> (q > 0)%nat -> Forall (fun kv => snd kv =? 0 = false)%nat (bag_add k q m).
+  Proof.
+    intros.
+    destruct (add_valid m k q H2 H3).
+    tauto.
+  Qed.
+
+  Lemma rm_valid: forall (m: Mp K nat) k q,
+    ValidBag m -> ValidBag (bag_rm k q m).
+  Proof.
+    unfold ValidBag.
+    split; intros.
+    * apply Update.valid. tauto.
+    * destruct H2 as [VMM APOS].
+      induction m; simpl; unfold bag_rm; simpl.
+      + constructor.
+      + destruct a as [ck cv].
+        inversion APOS; subst; clear APOS.
+        apply Valid.head in VMM.
+        simpl in *.
+        destruct (cmp k ck) eqn: KCK.
+        - constructor; auto.
+        - apply cmp_eq in KCK. subst.
+          destruct (cv <=? q) eqn: LT; auto.
+          constructor; auto.
+          simpl.
+          apply Nat.eqb_neq.
+          apply Nat.leb_gt in LT.
+          Lia.lia.
+        - constructor; auto.
+          apply IHm; auto.
+          tauto.
+  Qed.
+
+  Lemma lookup_cant_be_zero: forall (m: Mp K nat) k,
+    ValidBag m -> lookup k m = Some O -> False.
+  Proof.
+    intros.
+    destruct H2.
+    apply vmap_in in H3; auto.
+    eapply Forall_forall in H4; eauto.
+    simpl in H4.
+    discriminate.
+  Qed.
+
+  Definition has (k: K) (m: Mp K nat): bool := match lookup k m with | Some O | None => false | Some _ => true end.
+
+  Lemma has_rm_preserve: forall (m: Mp K nat) k rm q, ValidBag m -> k <> rm -> has k m = has k (bag_rm rm q m).
+  Proof.
+    induction m; intros; unfold has; simpl; auto.
+    unfold bag_rm.
+    destruct a as [ck v].
+    destruct H2.
+    apply Valid.head in H2.
+    destruct H2.
+    inversion H4; subst; clear H4. simpl in *.
+    destruct (cmp k ck) eqn: KCK; simpl; destruct (cmp rm ck) eqn: RMCK; simpl; repeat inequalities; auto; try contradiction.
+    * destruct (v <=? q); simpl; repeat inequalities; auto.
+      replace (lookup k m) with (None : option nat). reflexivity.
+      symmetry.
+      apply Lookup.lowkey_not_found; auto.
+      apply Forall_forall; intros.
+      destruct x.
+      eapply Forall_forall in H5; eauto. simpl in H5. apply cmp_correct in KCK. eapply lt_trans; eauto.
+    * destruct (v <=? q); simpl; repeat inequalities; auto.
+    * assert (ValidBag m). {
+        unfold ValidBag.
+        tauto.
+      }
+      specialize (IHm k rm q H4 H3).
+      unfold has in IHm.
+      rewrite IHm.
+      reflexivity.
+  Qed.
+End Bag.

@@ -281,11 +281,7 @@ Definition sitems (i: item) (stt: Stt): nat :=
     | Some x => x
     end.
 
-Definition has_item (i: item) (stt: Stt) : bool :=
-    match lookup i (items stt) with
-    | None | Some 0 => false
-    | _ => true
-    end.
+Definition has_item (i: item) (stt: Stt) : bool := has i (items stt).
 
 Definition has_flag (f: flag) (stt: Stt) : bool :=
     s_check f (flags stt).
@@ -293,6 +289,10 @@ Definition has_flag (f: flag) (stt: Stt) : bool :=
 Definition max_hp (stt: Stt) : nat :=
   maxendurance stt + (if has_item BodyArmor stt then 4 else 0)
     + (if has_item Helmet stt then 2 else 0).
+
+Definition c_rm_items (i: item) (q: nat) (stt: Stt): Stt :=
+  let nstt := update_items (rm_item i q) stt in
+      update_endurance (fun cur => Nat.min cur (max_hp nstt)) nstt.
 
 Definition heal (stt: Stt) (q: nat) : Stt :=
   update_endurance (fun e => Nat.min (max_hp stt) (curendurance stt + q)) stt.
@@ -304,10 +304,296 @@ Definition level (stt: Stt): kai_level :=
 Definition all_character_items (s: Stt): list (item * nat) := items s.
 
 Definition all_character_items_slot (s: Stt) (sl: slot): list (item * nat) :=
-  map (fun i => (i, sitems i  s)) (slot_items sl).
+  filter (fun kv: item * nat => mps.eqb (item_slot (fst kv)) sl) (items s).
 
 Definition all_character_items_slot_count (s: Stt) (sl: slot): nat :=
-  list_sum (map (fun i => sitems i s) (slot_items sl)).
+  list_sum (map snd (all_character_items_slot s sl)).
+
+Module Slot.
+  Lemma valid: forall sl stt, ValidMap (items stt) -> ValidMap (all_character_items_slot stt sl).
+  Proof.
+    intros.
+    unfold all_character_items_slot.
+    apply Valid.filter.
+    assumption.
+  Qed.
+
+  Lemma update_add0: forall stt i, update_items (add_item i 0) stt = stt.
+  Proof.
+    intros.
+    unfold add_item.
+    simpl.
+    unfold update_items.
+    destruct stt.
+    reflexivity.
+  Qed.
+
+  Lemma increase: forall stt i q sl, ValidMap (items stt) -> sl = item_slot i -> i <> Gold -> all_character_items_slot_count (update_items (add_item i q) stt) sl
+          = all_character_items_slot_count stt sl + q.
+  Proof.
+    intros.
+    destruct q; try (rewrite update_add0; Lia.lia).
+    destruct stt. unfold all_character_items_slot_count, update_items, sitems.
+    unfold all_character_items_slot.
+    Arguments mps.eqb : simpl never.
+    simpl.
+    rewrite add_item_nogold; auto.
+    subst.
+    simpl in H.
+    clear book0 maxendurance0 curendurance0 sk0 disciplines0 chapter0 flags0 previtems0.
+    induction items0; simpl.
+    * rewrite mps.eqb_refl.
+      simpl. Lia.lia.
+    * destruct a.
+      simpl.
+      replace (Helpers.compare_with_list all_items i i0) with (mps.cmp i i0) by auto.
+      destruct (mps.cmp i i0) eqn: II0; simpl.
+      + rewrite mps.eqb_refl.
+        destruct (mps.eq_dec (item_slot i0) (item_slot i)).
+        - rewrite e.
+          rewrite mps.eqb_refl; simpl. Lia.lia.
+        - apply mps.eqb_not in n0.
+          rewrite n0; simpl.
+          Lia.lia.
+      + apply cmp_eq in II0.
+        subst.
+        rewrite mps.eq_refl; simpl.
+        Lia.lia.
+      + destruct (mps.eq_dec (item_slot i0) (item_slot i)).
+        - rewrite e.
+          rewrite mps.eqb_refl; simpl.
+          rewrite IHitems0.
+          Lia.lia.
+          apply Valid.head in H.
+          tauto.
+        - apply mps.eqb_not in n0.
+          rewrite n0.
+          rewrite IHitems0.
+          Lia.lia.
+          apply Valid.head in H.
+          tauto.
+    * Lia.lia.
+  Qed.
+
+  Lemma no_increase: forall stt i q sl, ValidBag (items stt) -> sl <> item_slot i -> all_character_items_slot_count (update_items (add_item i q) stt) sl
+          = all_character_items_slot_count stt sl.
+  Proof.
+    intros.
+    destruct q; try (rewrite update_add0; Lia.lia).
+    unfold all_character_items_slot_count.
+    unfold all_character_items_slot.
+    f_equal.
+    f_equal.
+    unfold update_items.
+    destruct stt.
+    simpl in *.
+    clear book0 maxendurance0 curendurance0 sk0 disciplines0 chapter0 flags0 previtems0.
+    Arguments mps.eqb : simpl never.
+    Arguments mps.cmp : simpl never.
+    unfold add_item, bag_add.
+    remember (fun kv : item * nat => mps.eqb (item_slot (fst kv)) sl) as pred.
+    assert (forall f, filter pred (insert_with f i (S q) items0) = filter pred items0). {
+      intros.
+      subst.
+      apply not_eq_sym in H0.
+      apply eqb_not in H0.
+      induction items0; simpl; try (rewrite H0); simpl; auto.
+      destruct a as [ck cv].
+      destruct H. apply Valid.head in H. inversion H1; subst; clear H1.
+      destruct (cmp i ck) eqn: ICK; simpl; destruct (mps.eq_dec (item_slot ck) sl); subst; try apply mps.eqb_refl; simpl;
+        try rewrite H0; auto; try rewrite mps.eq_refl; repeat inequalities.
+      * rewrite mps.eq_refl in H0. discriminate.
+      * apply eqb_not in n. rewrite n. reflexivity.
+      * f_equal.
+        apply IHitems0.
+        unfold ValidBag.
+        tauto.
+      * apply eqb_not in n. rewrite n. apply IHitems0.
+        unfold ValidBag.
+        tauto.
+    }
+    simpl.
+    destruct i; apply H1.
+  Qed.
+
+  Lemma list_sum_add {A: Type} `{EqDec A}: forall lst (i: A) (f: A -> nat),
+    In i lst -> NoDup lst ->
+    list_sum (map (fun x => if mps.eqb x i then f x + 1 else f x) lst) = list_sum (map f lst) + 1.
+  Proof.
+    induction lst; intros; simpl.
+    * contradiction.
+    * inversion H0; subst; clear H0.
+      + rewrite mps.eqb_refl.
+        inversion H1; subst; clear H1.
+        replace (list_sum (map (fun x : A => if mps.eqb x i then f x + 1 else f x) lst)) with (list_sum (map f lst)).
+        Lia.lia.
+        f_equal.
+        apply map_ext_in.
+        intros.
+        destruct (mps.eqb a i) eqn: EAI; auto.
+        apply eqb_correct in EAI. subst. contradiction.
+      + inversion H1; subst; clear H1.
+        destruct (eq_dec a i).
+        - subst. contradiction.
+        - replace (mps.eqb a i) with false. 2: {
+            symmetry.
+            apply eqb_not.
+            assumption.
+          }
+          rewrite IHlst; auto. Lia.lia.
+  Qed.
+
+  Lemma list_sum_sub {A: Type} `{EqDec A}: forall lst (drp: A) (f: A -> nat),
+    In drp lst -> NoDup lst -> f drp > 0 ->
+    list_sum (map (fun x => if mps.eqb x drp then f x - 1 else f x) lst) + 1 = list_sum (map f lst).
+  Proof.
+    induction lst; intros; simpl.
+    * contradiction.
+    * inversion H0; subst; clear H0.
+      + rewrite mps.eqb_refl.
+        inversion H1; subst; clear H1.
+        replace (list_sum (map (fun x : A => if mps.eqb x drp then f x - 1 else f x) lst)) with (list_sum (map f lst)).
+        Lia.lia.
+        f_equal.
+        apply map_ext_in.
+        intros.
+        destruct (mps.eqb a drp) eqn: EAI; auto.
+        apply eqb_correct in EAI. subst. contradiction.
+      + inversion H1; subst; clear H1.
+        destruct (eq_dec a drp).
+        - subst. contradiction.
+        - replace (mps.eqb a drp) with false. 2: {
+            symmetry.
+            apply eqb_not.
+            assumption.
+          }
+          rewrite <- Nat.add_assoc.
+          rewrite IHlst; auto.
+  Qed.
+
+  Lemma nodup_slot_items: forall s, NoDup (slot_items s).
+  Proof.
+    intros.
+    destruct s; simpl; repeat constructor; intro C; repeat destruct C as [C|C]; try discriminate; inversion C.
+  Qed.
+
+  Lemma in_slot_items_slot: forall x s, In x (slot_items s) -> item_slot x = s.
+  Proof.
+    intros x s. destruct s; destruct x; simpl in *; intros; repeat (destruct H as [H|H]; try discriminate);
+      try (destruct w; try discriminate); auto; contradiction.
+  Qed.
+
+  Lemma sum_filter_insert_1: forall (m: Mp item nat) (i: item) (s: slot),
+  list_sum (map snd (filter (fun kv => mps.eqb (item_slot (fst kv)) s) (insert_with (fun pq => pq + 1) i 1 m))) =
+  list_sum (map snd (filter (fun kv => mps.eqb (item_slot (fst kv)) s) m)) + (if mps.eqb (item_slot i) s then 1 else 0).
+  Proof.
+    induction m as [| [ck cv] m' IH]; intros i s; simpl.
+    - destruct (mps.eqb (item_slot i) s); simpl; Lia.lia.
+    - destruct (cmp i ck) eqn:Hc; simpl.
+      + destruct (mps.eqb (item_slot i) s); destruct (mps.eqb (item_slot ck) s); simpl; Lia.lia.
+      + apply cmp_eq in Hc; subst.
+        destruct (mps.eqb (item_slot ck) s); simpl; Lia.lia.
+      + destruct (mps.eqb (item_slot ck) s); simpl.
+        * rewrite IH. Lia.lia.
+        * rewrite IH. reflexivity.
+  Qed.
+
+  Lemma sum_filter_rm_1: forall (m: Mp item nat) (drp: item) (s: slot),
+    match lookup drp m with Some x => x | None => 0 end > 0 ->
+    list_sum (map snd (filter (fun kv => mps.eqb (item_slot (fst kv)) s) m)) =
+    list_sum (map snd (filter (fun kv => mps.eqb (item_slot (fst kv)) s) (rm_item drp 1 m))) + (if mps.eqb (item_slot drp) s then 1 else 0).
+  Proof.
+    induction m as [| [ck cv] m' IH]; intros drp s Hgt; simpl in *.
+    - Lia.lia.
+    - unfold rm_item in *; simpl in *.
+      destruct (cmp drp ck) eqn:Hc; simpl in *.
+      + Lia.lia. (* lookup returns None, contradicting Hgt > 0 *)
+      + apply cmp_eq in Hc; subst.
+        destruct (cv - 1 =? 0) eqn:Hz.
+        * apply Nat.eqb_eq in Hz. 
+          unfold bag_rm.
+          simpl.
+          rewrite cmp_refl.
+          replace (cv <=? 1) with true.
+          destruct (mps.eqb (item_slot ck) s) eqn:SLE; simpl; Lia.lia.
+          symmetry.
+          apply Nat.leb_le.
+          Lia.lia.
+        * unfold bag_rm.
+          apply Nat.eqb_neq in Hz.
+          destruct (mps.eqb (item_slot ck) s) eqn: SCK; simpl; rewrite cmp_refl; replace (cv <=? 1) with false; simpl; try rewrite SCK;
+            simpl; try Lia.lia; symmetry; apply Nat.leb_gt; Lia.lia.
+      + specialize (IH drp s Hgt).
+        unfold bag_rm in *; simpl in *.
+        rewrite Hc; simpl.
+        destruct (mps.eqb (item_slot ck) s) eqn: SL; simpl in *; destruct (mps.eqb (item_slot drp) s); simpl in *; Lia.lia.
+  Qed.
+
+  Lemma add_rm: forall stt i drp,
+    ValidBag (items stt) ->
+    i <> drp ->
+    item_slot i = item_slot drp ->
+    sitems drp stt > 0 ->
+    let nstt := update_items (fun ns => add_item i 1 (rm_item drp 1 ns)) stt in
+    forall s,
+    all_character_items_slot_count nstt s = all_character_items_slot_count stt s.
+  Proof.
+    intros stt i drp VM Hneq Hslot Hgt nstt s.
+
+    (* Rule out Gold edge-cases since item_slot matches but they aren't equal *)
+    assert (i <> Gold /\ drp <> Gold).
+    {
+      split; intro C; subst; simpl in Hslot.
+      - destruct drp; simpl in Hslot; try discriminate. apply Hneq. reflexivity.
+      - destruct i; simpl in Hslot; try discriminate. apply Hneq. reflexivity.
+    }
+    destruct H as [Hnotgold_i Hnotgold_drp].
+  
+    unfold all_character_items_slot_count, all_character_items_slot.
+    unfold update_items in nstt.
+    subst nstt.
+    destruct stt.
+    simpl in *.
+    unfold sitems in Hgt.
+    simpl in *.
+    clear book0 maxendurance0 curendurance0 sk0 disciplines0 chapter0 flags0 previtems0.
+    destruct VM as [VM NEO].
+    rewrite add_item_nogold; auto.
+    unfold rm_item, bag_rm.
+    rewrite sum_filter_insert_1.
+    rewrite Hslot.
+    symmetry.
+    apply sum_filter_rm_1.
+    exact Hgt.
+  Qed.
+
+  Lemma rm: forall stt nstt drp q sl,
+    nstt = update_items (rm_item drp q) stt ->
+    all_character_items_slot_count nstt sl <= all_character_items_slot_count stt sl.
+  Proof.
+    intros.
+    subst.
+    unfold all_character_items_slot_count, update_items, all_character_items_slot; simpl.
+    remember (items stt) as itms.
+    clear Heqitms stt.
+    induction itms; simpl; try Lia.lia.
+    destruct (mps.eqb (item_slot (fst a)) sl) eqn: SLOT; simpl.
+    * unfold rm_item, bag_rm in *.
+      destruct a as [ck cv].
+      simpl in *.
+      destruct (cmp drp ck) eqn: DCK; simpl; try rewrite SLOT; simpl; try Lia.lia.
+      apply cmp_eq in DCK.
+      subst.
+      destruct (cv <=? q) eqn: CVQ; simpl; try rewrite SLOT; simpl; Lia.lia.
+    * unfold rm_item, bag_rm in *.
+      destruct a as [ck cv].
+      simpl in *.
+      destruct (cmp drp ck) eqn: DCK; simpl; try rewrite SLOT; simpl; try Lia.lia.
+      apply cmp_eq in DCK.
+      subst.
+      destruct (cv <=? q) eqn: CVQ; simpl; try rewrite SLOT; simpl; Lia.lia.
+  Qed.
+End Slot.
 
 Definition OneWeaponSpecMax (s: Stt) : Prop :=
   let discs := disciplines s in
@@ -324,10 +610,10 @@ Definition ValidState (s: Stt) :=
         /\ lt (sitems Gold s) 51
         /\ le (all_character_items_slot_count s SBackpack) 8
         /\ le (all_character_items_slot_count s SWeapon) 2
-        /\ ValidMap (items s)
+        /\ ValidBag (items s)
         /\ ValidMap (disciplines s)
         /\ ValidMap (flags s)
-        /\ ValidMap (previtems s)
+        /\ ValidBag (previtems s)
         /\ OneWeaponSpecMax s
         /\ le (curendurance s) (max_hp s)
         /\ lt 0 (maxendurance s)
@@ -345,6 +631,7 @@ Module VS.
   Proof.
     intros.
     unfold ValidState in *.
+    unfold ValidBag in *.
     repeat split; try tauto.
     destruct stt. simpl in *.
     apply H. tauto.
@@ -353,7 +640,7 @@ Module VS.
   Lemma update_endurance: forall stt f, (forall hp : nat, lt 0%nat (f hp) /\ le (f hp) (max_hp stt)) -> ValidState stt -> ValidState (update_endurance f stt).
   Proof.
     intros.
-    unfold ValidState in *.
+    unfold ValidState, ValidBag in *.
     repeat split; try tauto.
     destruct stt; simpl in *.  apply H. 
     unfold update_endurance. destruct stt. simpl in *.
@@ -363,6 +650,96 @@ Module VS.
     simpl in *.
     assumption.
   Qed.
+
+  Lemma has_item_kept: forall stt itm itm2 q, ValidMap (items stt) -> has_item itm stt = true -> has_item itm (update_items (add_item itm2 q) stt) = true.
+  Proof.
+    intros.
+    destruct q. {
+      rewrite Slot.update_add0.
+      exact H0.
+    }
+    unfold has_item, update_items, add_item in *.
+    destruct stt; simpl in *. clear book0 maxendurance0 curendurance0 sk0 disciplines0 chapter0 flags0 previtems0.
+    destruct (eq_dec itm2 Gold).
+    + subst.
+      destruct (eq_dec itm Gold).
+      - subst. unfold has. rewrite Lookup.lookup_insert_with; auto.
+        destruct (lookup Gold items0); try congruence.
+        destruct n; try discriminate. simpl.
+        * destruct (S q <? 51) eqn: SQ; auto.
+        * destruct (S n + S q <? 51) eqn: SQ; auto.
+      - unfold has.
+        rewrite Lookup.lookup_insert_with_diff; auto.
+    + assert (forall b1, match itm2 with | Gold => b1 | _ => insert_with (fun pq : nat => (pq + S q)%nat) itm2 (S q) items0 end
+            = insert_with (fun pq : nat => (pq + S q)%nat) itm2 (S q) items0) as RR. {
+        intros. destruct itm2; auto. contradiction.
+      }
+      rewrite RR. clear RR.
+      unfold has.
+      destruct (eq_dec itm itm2).
+      - subst.
+        rewrite Lookup.lookup_insert_with; auto.
+        destruct (lookup itm2 items0); auto; try discriminate.
+        destruct n0; simpl; try discriminate; reflexivity.
+      - rewrite Lookup.lookup_insert_with_diff; auto.
+  Qed.
+
+  Lemma max_hp_add_items: forall stt i q, ValidMap (items stt) -> q > 0 -> max_hp stt <= max_hp (update_items (add_item i q) stt).
+  Proof.
+    intros.
+    lapply (has_item_kept stt BodyArmor i q); try tauto; intro BA.
+    lapply (has_item_kept stt Helmet i q); try tauto; intro HL.
+    unfold max_hp, update_items in *.
+    simpl in *.
+    Ltac bubu := match goal with
+    | H: ?a = ?a -> _ |- _ => lapply H; auto; clear H; intros
+    | H1: ?x = true, H2: ?x = false |- _ => rewrite H1 in H2; discriminate
+    end.
+
+    destruct (has_item BodyArmor stt) eqn: HBA;
+    destruct (has_item Helmet stt) eqn: HHE;
+    destruct (has_item BodyArmor (update_items (add_item i q) stt)) eqn: HBE2;
+    destruct (has_item Helmet (update_items (add_item i q) stt)) eqn: HHE2; try Lia.lia;
+    destruct stt; unfold has_item in *; simpl in *; try rewrite HBE2; try rewrite HHE2; try Lia.lia;
+    repeat bubu.
+  Qed.
+
+  Lemma v_c_rm_items: forall stt i q, ValidState stt -> ValidState (c_rm_items i q stt).
+  Proof.
+    unfold ValidState, ValidBag.
+    simpl.
+    intros.
+    pose proof (rm_valid (items stt) i q) as VB. unfold ValidBag in VB.
+    repeat (split; try tauto).
+    * unfold max_hp, update_items; simpl.
+      Lia.lia.
+    * unfold sitems, c_rm_items, rm_item, bag_rm; simpl.
+      destruct (eq_dec i Gold).
+      + subst.
+        rewrite Lookup.update_eq_b; auto.
+        unfold sitems in H.
+        destruct (lookup Gold (items stt)); try Lia.lia.
+        destruct (n <=? q); Lia.lia.
+        unfold ValidBag in H.
+        tauto.
+      + rewrite Lookup.update_diff; auto.
+        unfold sitems in H.
+        destruct (lookup Gold (items stt)); try Lia.lia.
+        unfold ValidBag in H.
+        tauto.
+    * lapply (Slot.rm stt (update_items (rm_item i q) stt) i q SBackpack); auto .
+      intros.
+      unfold c_rm_items.
+      unfold all_character_items_slot_count, all_character_items_slot in *; simpl in *.
+      Lia.lia.
+    * lapply (Slot.rm stt (update_items (rm_item i q) stt) i q SWeapon); auto .
+      intros.
+      unfold c_rm_items.
+      unfold all_character_items_slot_count, all_character_items_slot in *; simpl in *.
+      Lia.lia.
+    * unfold rm_item.
+      Search c_rm_items.
+
 
 End VS.
 

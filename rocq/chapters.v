@@ -533,6 +533,20 @@ Inductive slot : Set :=
 
 Scheme Equality for slot.
 
+Module Slot.
+    Lemma eqb_correct: forall (a b: slot), (a = b) <-> slot_beq a b = true.
+    Proof.
+        split; intros.
+        apply internal_slot_dec_lb; auto.
+        apply internal_slot_dec_bl; auto.
+    Qed.
+End Slot.
+
+Instance slot_EqDec : EqDec slot := {
+    eqb := slot_beq;
+    eqb_correct := Slot.eqb_correct
+}.
+
 Inductive can_hunt : Set :=
     |Hunt
     |NoHunt
@@ -567,7 +581,8 @@ Inductive chapter_outcome: Set :=
     .
 
 Inductive decision : Set :=
-  | Decisions: list decision -> decision
+    (* plus facile pour faire des preuves ici *)
+  | App: decision -> decision -> decision
   | retrieve_equipment: decision -> decision
   | can_take: item -> nat -> decision -> decision
   | can_buy: item -> nat -> decision -> decision
@@ -587,13 +602,93 @@ Definition DisciplineSet := St discipline.
 Definition StandardDisciplineSet (s: DisciplineSet) := s_check Healing s.
 
 Definition add_item (i: item) (q: nat) (items: Items) :=
+  if q =? O then items else
   match i with
-  | Gold => mps.insert_with (fun pq => Nat.min 50 (pq + q)) Gold q items
-  | _ => mps.insert_with (fun pq => pq + q)%nat i q items
+  | Gold => mps.insert_with (fun pq => if (pq + q) <? 51 then (pq + q)%nat else 50) Gold q items
+  | _ => bag_add i q items
   end.
 
+Lemma add_item_nogold: forall  (i: item) (q: nat) (items: Items),
+        (q > 0)%nat -> i <> Gold -> add_item i q items = mps.insert_with (fun pq => pq + q)%nat i q items.
+Proof.
+    intros. unfold add_item.
+    replace (q =? O) with false.
+    destruct i; try contradiction; reflexivity.
+    symmetry.
+    apply Nat.eqb_neq.
+    Lia.lia.
+Qed.
+
+Lemma add_item_gold: forall (q: nat) (items: Items),
+    (q > 0)%nat -> add_item Gold q items =
+        insert_with (fun pq : nat => if pq + q <? 51 then (pq + q)%nat else 50) Gold q items.
+Proof.
+    unfold add_item.
+    intros.
+    replace (q =? 0) with false.
+    reflexivity.
+    symmetry.
+    apply Nat.eqb_neq.
+    Lia.lia.
+Qed.
+
+Lemma add_item_valid: forall i q items, ValidMap items -> ValidMap (add_item i q items).
+Proof.
+  intros.
+  destruct q. unfold add_item. simpl. exact H.
+  destruct (eq_dec i Gold).
+  * subst.
+    unfold add_item.
+    simpl.
+    apply Insert.insert_with_valid.
+    assumption.
+  * rewrite add_item_nogold; auto; try Lia.lia.
+    apply Insert.insert_with_valid.
+    assumption.
+Qed.
+
+Lemma add_item_valid_bag: forall i q items, (q > 0)%nat -> ValidBag items -> ValidBag (add_item i q items).
+Proof.
+  intros i q items POS H.
+  unfold ValidBag in *.
+  split. apply add_item_valid; tauto.
+  apply Forall_forall.
+  intros.
+  destruct x, H.
+  simpl.
+  apply Nat.eqb_neq.
+  intro contra.
+  subst.
+  apply vmap_in in H0. 2: {
+    apply add_item_valid. assumption.
+  }
+  destruct (eq_dec i Gold), (eq_dec i0 Gold); subst; simpl in H0.
+  * rewrite add_item_gold in H0; auto.
+    rewrite Lookup.lookup_insert_with in H0; auto.
+    destruct (lookup Gold items); inversion H0; subst; clear H0.
+    destruct (n + q <? 51); Lia.lia.
+    Lia.lia.
+  * rewrite add_item_gold in H0; auto.
+    rewrite Lookup.lookup_insert_with_diff in H0; auto.
+    apply lookup_cant_be_zero in H0.
+    contradiction.
+    unfold ValidBag. tauto.
+  * rewrite add_item_nogold in H0; auto.
+    rewrite Lookup.lookup_insert_with_diff in H0; auto.
+    apply lookup_cant_be_zero in H0; unfold ValidBag; tauto.
+  * rewrite add_item_nogold in H0; auto.
+    destruct (eq_dec i i0).
+    + subst.
+      rewrite Lookup.lookup_insert_with in H0; auto.
+      destruct (lookup i0 items) eqn:LO.
+      inversion H0; subst. Lia.lia.
+      inversion H0; subst. Lia.lia.
+    + rewrite Lookup.lookup_insert_with_diff in H0; auto.
+      apply lookup_cant_be_zero in H0; unfold ValidBag; tauto.
+Qed.
+
 Definition rm_item (i: item) (q: nat) (items: Items) :=
-   mps.delete i items.
+   bag_rm i q items.
 
 Definition item_slot (i: item): slot :=
   match i with
@@ -672,6 +767,15 @@ Definition slot_items (s: slot): list item :=
     |SSpecial => all_special_items
     |SPouch => all_pouch_items
     end.
+
+Lemma item_in_slot_items: forall i, In i (slot_items (item_slot i)).
+Proof.
+    intros.
+    destruct i; simpl; try tauto.
+    destruct w; simpl; tauto.
+    destruct s; simpl; tauto.
+    destruct s; simpl; tauto.
+Qed.
 
 Definition lose_all_slot (s: slot) (items: Items): Items :=
     fold_right (fun i itms => mps.delete i itms) items (slot_items s).
