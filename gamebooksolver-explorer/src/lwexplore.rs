@@ -1,5 +1,6 @@
 use gamebooksolver_base::lonewolf::chapter::{Chapter, ChapterId};
 use gamebooksolver_base::lonewolf::combat::Memoz;
+use gamebooksolver_base::lonewolf::data::WeaponUse;
 use gamebooksolver_base::lonewolf::mini::{
     CharacterConstant, CompactSolution, NextStep, SolutionDump, StoredEquipment, mkchar,
 };
@@ -28,6 +29,7 @@ pub fn explore_compact<PREV: StoredEquipment>(
     let mut memo = Memoz::default();
     let mbook: HashMap<ChapterId, Chapter<MF64>> = book.iter().cloned().map(|(k, c)| (k, convert_chapter(c))).collect();
     let order: HashMap<ChapterId, u32> = HashMap::new();
+    let wuse = WeaponUse::new(&mbook);
     let mut memo_score = HashMap::new();
 
     go_compact(
@@ -36,6 +38,7 @@ pub fn explore_compact<PREV: StoredEquipment>(
         &soldump.soldesc.ccst,
         &mbook,
         &order,
+        &wuse,
         soldump,
         &ini,
     );
@@ -49,10 +52,11 @@ pub fn explore_solution<PREV: StoredEquipment>(
     let mut memo = Memoz::default();
     let mbook: HashMap<ChapterId, Chapter<Rational>> = book.iter().cloned().collect();
     let order: HashMap<ChapterId, u32> = HashMap::new();
+    let wuse = WeaponUse::new(&mbook);
     let content: HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>> =
         soldump.content.into_iter().collect();
 
-    go(&mut memo, &soldump.soldesc.ccst, &mbook, &order, &content, &ini);
+    go(&mut memo, &soldump.soldesc.ccst, &mbook, &order, &wuse, &content, &ini);
 }
 
 fn select_between<A, F>(choices: &[A], fmt: F) -> &A
@@ -100,6 +104,7 @@ fn go<PREV: StoredEquipment>(
     ccst: &CharacterConstant,
     mbook: &HashMap<ChapterId, Chapter<Rational>>,
     order: &HashMap<ChapterId, u32>,
+    wuse: &WeaponUse,
     solmap: &HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>>,
     ns: &NextStep<PREV>,
 ) {
@@ -117,7 +122,7 @@ fn go<PREV: StoredEquipment>(
         }
     };
 
-    let steps = step(memo, order, mbook, ccst, ns);
+    let steps = step(memo, order, wuse, mbook, ccst, ns);
 
     let next_step = select_between(&steps, |s| {
         let score = compute_score(solmap, &s.res);
@@ -146,7 +151,7 @@ fn go<PREV: StoredEquipment>(
             s.v
         )
     });
-    go(memo, ccst, mbook, order, solmap, &outcome.v);
+    go(memo, ccst, mbook, order, wuse, solmap, &outcome.v);
 }
 
 fn go_compact<PREV: StoredEquipment>(
@@ -155,6 +160,7 @@ fn go_compact<PREV: StoredEquipment>(
     ccst: &CharacterConstant,
     mbook: &HashMap<ChapterId, Chapter<MF64>>,
     order: &HashMap<ChapterId, u32>,
+    wuse: &WeaponUse,
     solmap: &CompactSolution<PREV>,
     ns: &NextStep<PREV>,
 ) {
@@ -172,12 +178,12 @@ fn go_compact<PREV: StoredEquipment>(
         }
     };
 
-    let r_steps = step(memo, order, mbook, ccst, ns);
+    let r_steps = step(memo, order, wuse, mbook, ccst, ns);
 
     let mut steps = Vec::new();
 
     for step in r_steps {
-        let score = compute_score_compact(solmap, memo, memo_score, ccst, mbook, order, &step.res);
+        let score = compute_score_compact(solmap, memo, memo_score, ccst, mbook, order, wuse, &step.res);
         steps.push((step, score));
     }
 
@@ -194,7 +200,7 @@ fn go_compact<PREV: StoredEquipment>(
 
     let mut outcomes = Vec::new();
     for s in &next_step.0.res {
-        let score = score_of_step(solmap, memo, memo_score, ccst, mbook, order, &s.v);
+        let score = score_of_step(solmap, memo, memo_score, ccst, mbook, order, wuse, &s.v);
         outcomes.push((s, score))
     }
 
@@ -208,7 +214,7 @@ fn go_compact<PREV: StoredEquipment>(
             s.v
         )
     });
-    go_compact(memo, memo_score, ccst, mbook, order, solmap, &outcome.0.v);
+    go_compact(memo, memo_score, ccst, mbook, order, wuse, solmap, &outcome.0.v);
 }
 
 fn score_of_step<PREV: StoredEquipment>(
@@ -218,15 +224,16 @@ fn score_of_step<PREV: StoredEquipment>(
     ccst: &CharacterConstant,
     mbook: &HashMap<ChapterId, Chapter<MF64>>,
     order: &HashMap<ChapterId, u32>,
+    wuse: &WeaponUse,
     ns: &NextStep<PREV>,
 ) -> f64 {
     let out = match memo_score.get(ns).copied().or_else(|| solmap.get_score(ns)) {
         Some(x) => x,
         None => {
-            let v = step(memo, order, mbook, ccst, ns);
+            let v = step(memo, order, wuse, mbook, ccst, ns);
             let mut max = 0.0;
             for s in v {
-                let cur = compute_score_compact(solmap, memo, memo_score, ccst, mbook, order, &s.res);
+                let cur = compute_score_compact(solmap, memo, memo_score, ccst, mbook, order, wuse, &s.res);
                 if cur > max {
                     max = cur
                 }
@@ -245,11 +252,12 @@ fn compute_score_compact<PREV: StoredEquipment>(
     ccst: &CharacterConstant,
     mbook: &HashMap<ChapterId, Chapter<MF64>>,
     order: &HashMap<ChapterId, u32>,
+    wuse: &WeaponUse,
     outcome: &[Proba<MF64, NextStep<PREV>>],
 ) -> f64 {
     let mut o = 0.0;
     for p in outcome {
-        let curscore = score_of_step(solmap, memo, memo_score, ccst, mbook, order, &p.v);
+        let curscore = score_of_step(solmap, memo, memo_score, ccst, mbook, order, wuse, &p.v);
         o += curscore * gamebooksolver_base::solver::rational::Rational::t_f64(&p.p);
     }
     o

@@ -1,7 +1,8 @@
 use crate::lonewolf::chapter::{
-    Chapter, ChapterId, ChapterOutcome, CombatSkill, Decision, Endurance, FightModifier, SpecialChapter,
+    BoolCond, Chapter, ChapterId, ChapterOutcome, CombatSkill, Decision, Endurance, FightModifier, SimpleOutcome,
+    SpecialChapter,
 };
-use crate::lonewolf::mini::{Book, CVarState, Discipline, NextStep, SolutionDump, StoredEquipment};
+use crate::lonewolf::mini::{Book, CVarState, Discipline, Item, NextStep, SolutionDump, StoredEquipment, Weapon};
 use crate::solver::rational::Rational;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -118,6 +119,159 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
             SpecialChapter::Cartwheel => [169, 136].iter().copied().map(ChapterId).collect(),
             SpecialChapter::Portholes => [197].iter().copied().map(ChapterId).collect(),
         },
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
+pub struct WeaponSet(u16);
+
+impl WeaponSet {
+    const ALL: WeaponSet = WeaponSet(u16::MAX);
+
+    pub fn contains(self, w: Weapon) -> bool {
+        self.0 & (1 << w as u8) != 0
+    }
+
+    fn add_item(&mut self, i: &Item) {
+        if let Item::Weapon(w) = i {
+            self.0 |= 1 << *w as u8;
+        }
+    }
+
+    // all the weapons this condition accepts, when it only checks for the presence of one of them
+    fn any_of(bc: &BoolCond) -> Option<WeaponSet> {
+        match bc {
+            BoolCond::HasItem(i @ Item::Weapon(_), 1) => {
+                let mut s = WeaponSet::default();
+                s.add_item(i);
+                Some(s)
+            }
+            BoolCond::COr(a, b) => Some(WeaponSet(Self::any_of(a)?.0 | Self::any_of(b)?.0)),
+            _ => None,
+        }
+    }
+
+    fn cond(&mut self, bc: &BoolCond) {
+        // having any weapon does not depend on which one it is
+        if Self::any_of(bc).is_some_and(|s| Weapon::VALUES.iter().all(|w| s.contains(*w))) {
+            return;
+        }
+        match bc {
+            BoolCond::HasItem(i, _) => self.add_item(i),
+            BoolCond::Not(c) => self.cond(c),
+            BoolCond::COr(a, b) | BoolCond::CAnd(a, b) => {
+                self.cond(a);
+                self.cond(b);
+            }
+            BoolCond::HasDiscipline(_)
+            | BoolCond::Always(_)
+            | BoolCond::HasEndurance(_)
+            | BoolCond::HasFlag(_)
+            | BoolCond::HasLevel(_) => (),
+        }
+    }
+
+    fn outcome<P>(&mut self, co: &ChapterOutcome<P>) {
+        match co {
+            ChapterOutcome::Fight(_, o) | ChapterOutcome::LoseItemFrom(_, _, o) => self.outcome(o),
+            ChapterOutcome::OneRound(_, a, b, c) => {
+                self.outcome(a);
+                self.outcome(b);
+                self.outcome(c);
+            }
+            ChapterOutcome::Randomly(lst) => lst.iter().for_each(|(_, o)| self.outcome(o)),
+            ChapterOutcome::Conditionally(lst) => lst.iter().for_each(|(c, o)| {
+                self.cond(c);
+                self.outcome(o);
+            }),
+            ChapterOutcome::Simple(sos, o) => {
+                for so in sos {
+                    match so {
+                        SimpleOutcome::GainItem(i, _) | SimpleOutcome::LoseItem(i, _) => self.add_item(i),
+                        SimpleOutcome::DamagePlayer(_)
+                        | SimpleOutcome::HealPlayer(_)
+                        | SimpleOutcome::FullHeal
+                        | SimpleOutcome::HalfHeal
+                        | SimpleOutcome::LoseItemKind(_)
+                        | SimpleOutcome::MustEat(_)
+                        | SimpleOutcome::StoreEquipment
+                        | SimpleOutcome::RetrieveEquipment
+                        | SimpleOutcome::SetFlag(_)
+                        | SimpleOutcome::ClearFlag(_) => (),
+                    }
+                }
+                self.outcome(o);
+            }
+            ChapterOutcome::Goto(_) | ChapterOutcome::GameLost | ChapterOutcome::GameWon => (),
+        }
+    }
+
+    fn decision<P>(&mut self, dec: &Decision<P>) {
+        match dec {
+            Decision::Decisions(lst) => lst.iter().for_each(|(_, d)| self.decision(d)),
+            Decision::RetrieveEquipment(d) | Decision::AfterCombat(d) | Decision::RemoveItemFrom(_, _, d) => {
+                self.decision(d)
+            }
+            Decision::CanTake(i, _, d) | Decision::Canbuy(i, _, d) | Decision::Cansell(i, _, d) => {
+                self.add_item(i);
+                self.decision(d);
+            }
+            Decision::Conditional(c, d) => {
+                self.cond(c);
+                self.decision(d);
+            }
+            Decision::Special(_) => (),
+            Decision::None(o) => self.outcome(o),
+            Decision::EvadeFight(_, _, _, o) => self.outcome(o),
+        }
+    }
+}
+
+/// For each chapter, the weapons the rest of the game can tell apart from the others, because they are named in that
+/// chapter or in one that can be reached from it. Fights are not looked at, as they only depend on the weapon skill and
+/// on the two magical weapons.
+#[derive(Debug, Clone, Default)]
+pub struct WeaponUse(HashMap<ChapterId, WeaponSet>);
+
+impl WeaponUse {
+    pub fn new<P>(book: &HashMap<ChapterId, Chapter<P>>) -> Self {
+        let mut used: HashMap<ChapterId, WeaponSet> = book
+            .iter()
+            .map(|(cid, chapter)| {
+                let mut s = WeaponSet::default();
+                s.decision(&chapter.pchoice);
+                (*cid, s)
+            })
+            .collect();
+        let edges: Vec<(ChapterId, HashSet<ChapterId>)> = book
+            .iter()
+            .map(|(cid, chapter)| (*cid, get_destinations(&chapter.pchoice)))
+            .collect();
+        loop {
+            let mut changed = false;
+            for (cid, dsts) in &edges {
+                let merged = dsts.iter().fold(used[cid], |acc, d| {
+                    WeaponSet(acc.0 | used.get(d).copied().unwrap_or(WeaponSet::ALL).0)
+                });
+                if merged != used[cid] {
+                    used.insert(*cid, merged);
+                    changed = true;
+                }
+            }
+            if !changed {
+                return WeaponUse(used);
+            }
+        }
+    }
+
+    /// The weapons that matter once this decision is about to be made. An unknown chapter could do anything, so all
+    /// the weapons matter.
+    pub fn after<P>(&self, dec: &Decision<P>) -> WeaponSet {
+        let mut s = WeaponSet::default();
+        s.decision(dec);
+        get_destinations(dec).iter().fold(s, |acc, d| {
+            WeaponSet(acc.0 | self.0.get(d).copied().unwrap_or(WeaponSet::ALL).0)
+        })
     }
 }
 

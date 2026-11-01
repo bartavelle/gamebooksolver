@@ -2,6 +2,7 @@ use crate::lonewolf::cartwheel::{CARTWHEEL_LABEL, MAX_CARTWHEEL, cartwheel};
 use crate::lonewolf::chapter::{
     ChapterId, ChapterOutcome, Decision, Endurance, FightDetails, FightModifier, SimpleOutcome, SpecialChapter,
 };
+use crate::lonewolf::data::{WeaponSet, WeaponUse};
 use crate::lonewolf::mini::{
     Book, CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Item, Slot, StoredEquipment, Weapon,
     max_hp,
@@ -9,63 +10,43 @@ use crate::lonewolf::mini::{
 use crate::lonewolf::rules::{check, update_simple};
 use crate::solver::rational::Rational;
 
-enum UsedWeapon {
-    WithSkill(Weapon),
-    WithoutSkill,
-    NoWeapon,
-}
-
-fn used_weapon<PREV: Into<Equipment> + From<Equipment>>(
+/// A weapon that nothing can tell apart from another one of the same kind: the character has no skill with it, it is not
+/// magical, it is not in the stored equipment, and it is not named in what remains to be played. Exchanging two of those
+/// leaves a game that is identical up to their names, and so with the same score.
+fn is_plain_weapon<PREV: StoredEquipment>(
+    item: &Item,
     ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
-) -> UsedWeapon {
-    let wskill = ccst
-        .discipline
-        .iter()
-        .filter_map(|d| match d {
-            Discipline::WeaponSkill(w) => Some(*w),
-            _ => None,
-        })
-        .next();
-    if cvar.cequipment.has_itemb(&Item::Weapon(Weapon::Sommerswerd)) {
-        if wskill == Some(Weapon::Sword) || wskill == Some(Weapon::ShortSword) || wskill == Some(Weapon::BroadSword) {
-            UsedWeapon::WithSkill(Weapon::Sommerswerd)
-        } else {
-            UsedWeapon::WithoutSkill
-        }
-    } else {
-        let weapons = cvar.cequipment.weapons();
-        if weapons.is_empty() {
-            UsedWeapon::NoWeapon
-        } else if let Some(w) = weapons.iter().find(|cw| Some(**cw) == wskill) {
-            UsedWeapon::WithSkill(*w)
-        } else {
-            UsedWeapon::WithoutSkill
-        }
-    }
-}
-
-fn important_item<PREV: Into<Equipment> + From<Equipment>>(
-    i: &Item,
-    ccst: &CharacterConstant,
-    cvar: &CharacterVariableG<PREV>,
+    used: WeaponSet,
 ) -> bool {
-    match i {
-        Item::Weapon(Weapon::Sommerswerd) => true,
-        Item::Weapon(Weapon::MagicSpear) => true,
+    let stored: Equipment = cvar.cprevequipment.into();
+    match item {
+        Item::Weapon(Weapon::Sommerswerd | Weapon::MagicSpear) => false,
         Item::Weapon(w) => {
-            if w == &Weapon::Mace && ccst.bookid == Book::Book05 {
-                true
-            } else {
-                match used_weapon(ccst, cvar) {
-                    UsedWeapon::WithSkill(_) => false,
-                    UsedWeapon::NoWeapon => true,
-                    UsedWeapon::WithoutSkill => ccst.discipline.contains(&Discipline::WeaponSkill(*w)),
-                }
-            }
+            !used.contains(*w) && !ccst.discipline.contains(&Discipline::WeaponSkill(*w)) && !stored.has_itemb(item)
         }
-        _ => true,
+        _ => false,
     }
+}
+
+/// The items worth dropping to make room for `item`. Dropping any of the plain weapons has the same result, so that only
+/// one of them is kept.
+fn useful_drops<PREV: StoredEquipment>(
+    item: &Item,
+    lst: Vec<Item>,
+    ccst: &CharacterConstant,
+    cvar: &CharacterVariableG<PREV>,
+    used: WeaponSet,
+) -> Vec<Item> {
+    let mut seen_plain = false;
+    lst.into_iter()
+        .filter(|l| {
+            if l == item || !is_plain_weapon(l, ccst, cvar, used) {
+                return true;
+            }
+            !std::mem::replace(&mut seen_plain, true)
+        })
+        .collect()
 }
 
 enum CanTake {
@@ -76,7 +57,6 @@ enum CanTake {
 
 fn can_take<PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug>(
     item: &Item,
-    ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
 ) -> CanTake {
     match item.slot() {
@@ -97,17 +77,7 @@ fn can_take<PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug>(
             match weapons.len() {
                 0 => CanTake::SpaceAvailable,
                 1 => CanTake::SpaceAvailable,
-                _ => CanTake::MustDrop(match used_weapon(ccst, cvar) {
-                    UsedWeapon::WithSkill(w) => weapons
-                        .into_iter()
-                        .filter_map(|x| if x == w { None } else { Some(Item::Weapon(x)) })
-                        .collect(),
-                    _ => weapons
-                        .into_iter()
-                        .filter(|x| *x != Weapon::Sommerswerd)
-                        .map(Item::Weapon)
-                        .collect(),
-                }),
+                _ => CanTake::MustDrop(weapons.into_iter().map(Item::Weapon).collect()),
             }
         }
         Slot::Backpack => {
@@ -141,6 +111,7 @@ fn has_combat<P>(o: &ChapterOutcome<P>) -> Option<&FightDetails<P>> {
 }
 
 pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
+    wuse: &WeaponUse,
     ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
     dec: &Decision<P>,
@@ -150,7 +121,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         for so in sos {
             update_simple(&mut nv, ccst, so);
         }
-        flatten_decision(ccst, &nv, nxt)
+        flatten_decision(wuse, ccst, &nv, nxt)
             .into_iter()
             .map(|(mut dsc, out)| {
                 dsc.insert(0, format!("{:?}", sos));
@@ -216,7 +187,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         }
         Decision::AfterCombat(nxt) => {
             let missing_hp = max_hp(ccst, cvar) - cvar.curendurance;
-            let mut out = flatten_decision(ccst, cvar, nxt);
+            let mut out = flatten_decision(wuse, ccst, cvar, nxt);
 
             if missing_hp > 0 {
                 let usable_potions = [
@@ -258,7 +229,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         }
         Decision::Conditional(bc, nxt) => {
             if check(ccst, cvar, bc) {
-                flatten_decision(ccst, cvar, nxt)
+                flatten_decision(wuse, ccst, cvar, nxt)
             } else {
                 Vec::new()
             }
@@ -285,29 +256,32 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         Decision::Decisions(lst) => lst
             .iter()
             .flat_map(|(cdesc, d2)| {
-                flatten_decision(ccst, cvar, d2).into_iter().map(|(mut adesc, res)| {
-                    adesc.insert(0, cdesc.clone());
-                    (adesc, res)
-                })
+                flatten_decision(wuse, ccst, cvar, d2)
+                    .into_iter()
+                    .map(|(mut adesc, res)| {
+                        adesc.insert(0, cdesc.clone());
+                        (adesc, res)
+                    })
             })
             .collect(),
         Decision::CanTake(Item::Gold, q, nxt) => with_effect(&[SimpleOutcome::GainItem(Item::Gold, *q)], nxt),
-        Decision::CanTake(_, 0, nxt) => flatten_decision(ccst, cvar, nxt),
+        Decision::CanTake(_, 0, nxt) => flatten_decision(wuse, ccst, cvar, nxt),
         Decision::CanTake(i, 1, nxt) => {
-            let notake = || flatten_decision(ccst, cvar, nxt);
-            match can_take(i, ccst, cvar) {
+            let notake = || flatten_decision(wuse, ccst, cvar, nxt);
+            match can_take(i, cvar) {
                 CanTake::Nope => notake(),
                 CanTake::SpaceAvailable => with_effect(&[SimpleOutcome::GainItem(*i, 1)], nxt),
                 CanTake::MustDrop(lst) => {
                     let mut out = notake();
-                    if important_item(i, ccst, cvar) {
-                        for l in lst {
-                            if l != *i {
-                                out.extend(with_effect(
-                                    &[SimpleOutcome::LoseItem(l, 1), SimpleOutcome::GainItem(*i, 1)],
-                                    nxt,
-                                ))
-                            }
+                    let used = wuse.after(nxt);
+                    let plain = is_plain_weapon(i, ccst, cvar, used);
+                    for l in useful_drops(i, lst, ccst, cvar, used) {
+                        // exchanging a plain weapon for another one is the same as not taking it
+                        if l != *i && !(plain && is_plain_weapon(&l, ccst, cvar, used)) {
+                            out.extend(with_effect(
+                                &[SimpleOutcome::LoseItem(l, 1), SimpleOutcome::GainItem(*i, 1)],
+                                nxt,
+                            ))
                         }
                     }
                     out
@@ -316,7 +290,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         }
         Decision::CanTake(i, q, nxt) => {
             let n = Decision::CanTake(*i, 1, Box::new(Decision::CanTake(*i, q - 1, nxt.clone())));
-            flatten_decision(ccst, cvar, &n)
+            flatten_decision(wuse, ccst, cvar, &n)
         }
         Decision::RemoveItemFrom(sl, n, nxt) => {
             let allslotitems: Vec<(Item, u8)> = cvar
@@ -326,7 +300,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                 .filter(|(i, _)| i.slot() == *sl)
                 .collect();
             if *n == 0 || allslotitems.is_empty() {
-                flatten_decision(ccst, cvar, nxt)
+                flatten_decision(wuse, ccst, cvar, nxt)
             } else {
                 let mut out = Vec::new();
                 for (to_drop, _) in allslotitems {
@@ -337,10 +311,10 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
             }
         }
         Decision::Cansell(item, price, nxt) => {
-            let mut out = flatten_decision(ccst, cvar, nxt);
+            let mut out = flatten_decision(wuse, ccst, cvar, nxt);
             let cnt = cvar.cequipment.get_item_count(item);
             // TODO, sell more than 1 item
-            if cnt > 0 && !important_item(item, ccst, cvar) {
+            if cnt > 0 {
                 out.extend(with_effect(
                     &[
                         SimpleOutcome::LoseItem(*item, 1),
@@ -352,9 +326,9 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
             out
         }
         Decision::Canbuy(item, price, nxt) => {
-            let mut out = flatten_decision(ccst, cvar, nxt);
-            if cvar.cequipment.get_item_count(&Item::Gold) >= price.0 && important_item(item, ccst, cvar) {
-                match can_take(item, ccst, cvar) {
+            let mut out = flatten_decision(wuse, ccst, cvar, nxt);
+            if cvar.cequipment.get_item_count(&Item::Gold) >= price.0 {
+                match can_take(item, cvar) {
                     CanTake::Nope => (),
                     CanTake::SpaceAvailable => out.extend(with_effect(
                         &[
@@ -364,7 +338,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                         nxt,
                     )),
                     CanTake::MustDrop(lst) => {
-                        for to_drop in lst {
+                        for to_drop in useful_drops(item, lst, ccst, cvar, wuse.after(nxt)) {
                             out.extend(with_effect(
                                 &[
                                     SimpleOutcome::LoseItem(to_drop, 1),
@@ -395,7 +369,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
             const FARE: u8 = 20;
             let gold = cvar.cequipment.get_item_count(&Item::Gold);
             if gold >= MAX_CARTWHEEL {
-                flatten_decision(ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(136))))
+                flatten_decision(wuse, ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(136))))
                     .into_iter()
                     .map(|(mut dsc, out)| {
                         dsc.insert(0, "cartwheel ok".into());
@@ -413,6 +387,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                     .flat_map(|target| {
                         let money = if target == gold { gold } else { gold + 1 };
                         flatten_decision(
+                            wuse,
                             ccst,
                             cvar,
                             &Decision::None(ChapterOutcome::Randomly(
@@ -445,7 +420,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         }
         // do not play portholes!
         Decision::Special(SpecialChapter::Portholes) => {
-            flatten_decision(ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(197))))
+            flatten_decision(wuse, ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(197))))
         }
         _ => todo!("{:?}", dec),
     }
@@ -455,12 +430,13 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
 mod test {
     use super::*;
     use crate::lonewolf::{
-        chapter::{BoolCond, ChapterId},
+        chapter::{BoolCond, Chapter, ChapterId, Price},
         combat::Memoz,
         mini::{CharacterVariable, NextStep},
         rules::update,
     };
     use num_rational::BigRational;
+    use std::collections::HashMap;
 
     fn book_char(bookid: Book) -> CharacterConstant {
         CharacterConstant {
@@ -482,7 +458,7 @@ mod test {
         dec: &Decision<BigRational>,
     ) -> Vec<Vec<NextStep<Equipment>>> {
         let mut memo = Memoz::default();
-        flatten_decision(ccst, cvar, dec)
+        flatten_decision(&WeaponUse::default(), ccst, cvar, dec)
             .iter()
             .map(|(_, o)| {
                 update(&mut memo, ccst, cvar, ChapterId(1), o)
@@ -517,10 +493,15 @@ mod test {
             cvar.add_item(&p, 1);
         }
         let first_drink = |c: &CharacterVariable| -> Vec<String> {
-            flatten_decision::<BigRational, _>(&ccst, c, &Decision::AfterCombat(Box::new(goto(2))))
-                .into_iter()
-                .filter_map(|(d, _)| d.first().cloned())
-                .collect()
+            flatten_decision::<BigRational, _>(
+                &WeaponUse::default(),
+                &ccst,
+                c,
+                &Decision::AfterCombat(Box::new(goto(2))),
+            )
+            .into_iter()
+            .filter_map(|(d, _)| d.first().cloned())
+            .collect()
         };
         let drinks = first_drink(&cvar);
         for p in ["Potion6Hp", "Potion5Hp", "Potion4Hp", "Potion2Hp"] {
@@ -565,7 +546,7 @@ mod test {
             }
         }
         // the token alone can't be turned into the missing crown
-        let labels: Vec<_> = flatten_decision::<BigRational, _>(&ccst, &with_gold(19), &dec)
+        let labels: Vec<_> = flatten_decision::<BigRational, _>(&WeaponUse::default(), &ccst, &with_gold(19), &dec)
             .into_iter()
             .map(|(d, _)| d[0].clone())
             .collect();
@@ -573,6 +554,128 @@ mod test {
         // it is possible not to play
         let results = choices_results(&ccst, &with_gold(25), &dec);
         assert_eq!(results[0], vec![NextStep::NewChapter(136, with_gold(25))]);
+    }
+
+    fn weapons_book(pchoice: Decision<BigRational>) -> (WeaponUse, Decision<BigRational>) {
+        let chapter = |pchoice: Decision<BigRational>| Chapter {
+            title: String::new(),
+            desc: String::new(),
+            pchoice,
+        };
+        let book: HashMap<ChapterId, Chapter<BigRational>> = [
+            (ChapterId(1), chapter(pchoice.clone())),
+            (ChapterId(2), chapter(Decision::None(ChapterOutcome::GameWon))),
+        ]
+        .into_iter()
+        .collect();
+        (WeaponUse::new(&book), pchoice)
+    }
+
+    fn two_weapons() -> CharacterVariable {
+        let mut cvar = CharacterVariable::new(20);
+        cvar.add_item(&Item::Weapon(Weapon::Dagger), 1);
+        cvar.add_item(&Item::Weapon(Weapon::Mace), 1);
+        cvar
+    }
+
+    #[test]
+    fn plain_weapons_are_not_exchanged() {
+        let (wuse, dec) = weapons_book(Decision::CanTake(Item::Weapon(Weapon::Axe), 1, Box::new(goto(2))));
+        let ccst = book_char(Book::Book02);
+        assert_eq!(flatten_decision(&wuse, &ccst, &two_weapons(), &dec).len(), 1);
+    }
+
+    #[test]
+    fn weapons_that_can_be_sold_are_exchanged() {
+        // the Dagger is worth something later on, so that exchanging it for the Axe, or the opposite, changes the game
+        let sell = |w: Weapon| Decision::Cansell(Item::Weapon(w), Price(3), Box::new(goto(2)));
+        let (wuse, dec) = weapons_book(Decision::CanTake(
+            Item::Weapon(Weapon::Axe),
+            1,
+            Box::new(sell(Weapon::Dagger)),
+        ));
+        let ccst = book_char(Book::Book02);
+        let drops: Vec<String> = flatten_decision(&wuse, &ccst, &two_weapons(), &dec)
+            .into_iter()
+            .map(|(d, _)| d.join(" "))
+            .collect();
+        assert!(
+            drops.iter().any(|d| d.contains("LoseItem(Weapon(Dagger), 1)")),
+            "{drops:?}"
+        );
+        // the Mace can't be told apart from the Axe
+        assert!(
+            !drops.iter().any(|d| d.contains("LoseItem(Weapon(Mace), 1)")),
+            "{drops:?}"
+        );
+    }
+
+    #[test]
+    fn skilled_weapon_is_not_plain() {
+        let (wuse, dec) = weapons_book(Decision::CanTake(Item::Weapon(Weapon::Axe), 1, Box::new(goto(2))));
+        let mut ccst = book_char(Book::Book02);
+        ccst.discipline.push(Discipline::WeaponSkill(Weapon::Axe));
+        // not taking it, or dropping either weapon, as these are no longer the same
+        assert_eq!(flatten_decision(&wuse, &ccst, &two_weapons(), &dec).len(), 2);
+    }
+
+    #[test]
+    fn weapon_named_later_is_not_plain() {
+        let cond = Decision::Conditional(BoolCond::HasItem(Item::Weapon(Weapon::Axe), 1), Box::new(goto(2)));
+        let any = Decision::Decisions(vec![("a".to_string(), cond), ("b".to_string(), goto(2))]);
+        let (wuse, dec) = weapons_book(Decision::CanTake(Item::Weapon(Weapon::Axe), 1, Box::new(any)));
+        let ccst = book_char(Book::Book02);
+        let n = flatten_decision(&wuse, &ccst, &two_weapons(), &dec).len();
+        assert!(n > 2, "{n}");
+    }
+
+    #[test]
+    fn unknown_chapters_disable_the_filter() {
+        let dec = Decision::CanTake(Item::Weapon(Weapon::Axe), 1, Box::new(goto(2)));
+        let ccst = book_char(Book::Book02);
+        assert_eq!(
+            flatten_decision(&WeaponUse::default(), &ccst, &two_weapons(), &dec).len(),
+            3
+        );
+    }
+
+    #[test]
+    fn all_items_can_be_sold_and_bought() {
+        let mut ccst = book_char(Book::Book02);
+        ccst.discipline.push(Discipline::WeaponSkill(Weapon::Dagger));
+        let mut cvar = two_weapons();
+        cvar.add_item(&Item::Gold, 5);
+        let (wuse, dec) = weapons_book(Decision::Cansell(
+            Item::Weapon(Weapon::Dagger),
+            Price(1),
+            Box::new(goto(2)),
+        ));
+        assert_eq!(flatten_decision(&wuse, &ccst, &cvar, &dec).len(), 2);
+        // buying a weapon that nothing tells apart can still be useful to spend gold
+        let (wuse, dec) = weapons_book(Decision::Canbuy(Item::Weapon(Weapon::Axe), Price(1), Box::new(goto(2))));
+        assert_eq!(flatten_decision(&wuse, &ccst, &cvar, &dec).len(), 3);
+    }
+
+    #[test]
+    fn having_any_weapon_names_none() {
+        let any = Weapon::VALUES
+            .iter()
+            .map(|w| BoolCond::HasItem(Item::Weapon(*w), 1))
+            .reduce(|a, b| BoolCond::COr(Box::new(a), Box::new(b)))
+            .unwrap();
+        let dec = Decision::CanTake(
+            Item::Weapon(Weapon::Axe),
+            1,
+            Box::new(Decision::Conditional(any, Box::new(goto(2)))),
+        );
+        let (wuse, dec) = weapons_book(dec);
+        // nothing names the weapons, so that exchanging them is pointless
+        let ccst = book_char(Book::Book02);
+        let mut cvar = two_weapons();
+        cvar.cequipment.del_item(&Item::Weapon(Weapon::Mace), 1);
+        cvar.cequipment.add_item(&Item::Weapon(Weapon::Spear), 1);
+        let n = flatten_decision(&wuse, &ccst, &cvar, &dec).len();
+        assert_eq!(n, 1);
     }
 
     #[test]
@@ -607,8 +710,8 @@ mod test {
                 ),
             ),
         ]);
-        let r1 = flatten_decision(&ccst, &cvar, &dec);
-        let r2 = flatten_decision(&ccst, &cvar2, &dec);
+        let r1 = flatten_decision(&WeaponUse::default(), &ccst, &cvar, &dec);
+        let r2 = flatten_decision(&WeaponUse::default(), &ccst, &cvar2, &dec);
         assert_eq!(
             r1,
             vec![(

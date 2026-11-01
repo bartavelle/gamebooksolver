@@ -842,7 +842,7 @@ pub enum Weapon {
 }
 
 impl Weapon {
-    const VALUES: [Self; 11] = [
+    pub const VALUES: [Self; 11] = [
         Self::Dagger,
         Self::Spear,
         Self::Mace,

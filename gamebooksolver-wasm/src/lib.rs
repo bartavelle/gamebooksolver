@@ -5,7 +5,7 @@ use wasm_bindgen::prelude::*;
 
 use gamebooksolver_base::lonewolf::chapter::{Chapter, ChapterId};
 use gamebooksolver_base::lonewolf::combat::Memoz;
-use gamebooksolver_base::lonewolf::data::order_chapters;
+use gamebooksolver_base::lonewolf::data::{WeaponUse, order_chapters};
 use gamebooksolver_base::lonewolf::mini::{
     CharacterVariable, CompactSolution, Equipment, NextStep, SolDesc,
 };
@@ -218,6 +218,7 @@ pub struct WState {
     scores: HashMap<(u16, CharacterVariable), f32>,
     memo: Memoz<BigRational>,
     order: HashMap<ChapterId, u32>,
+    wuse: WeaponUse,
     chapters: HashMap<ChapterId, Chapter<BigRational>>,
 }
 
@@ -231,8 +232,9 @@ impl WState {
             .into_iter()
             .map(|(cid, c)| (cid, c.map_proba(&|p: &JRatio| BigRational::from_jratio(p))))
             .collect();
-        let order = order_chapters(&chapters);
         let soldesc = sol.soldesc;
+        let order = order_chapters(&chapters);
+        let wuse = WeaponUse::new(&chapters);
         let scores = sol
             .content
             .into_iter()
@@ -244,6 +246,7 @@ impl WState {
             scores,
             memo: Memoz::default(),
             order,
+            wuse,
             chapters,
         }
     }
@@ -254,15 +257,17 @@ impl WState {
             .into_iter()
             .map(|(cid, c)| (cid, c.map_proba(&|p: &JRatio| BigRational::from_jratio(p))))
             .collect();
-        let order = order_chapters(&chapters);
         let scores = HashMap::new();
         let soldesc: SolDesc = serde_json::from_str(desc).unwrap();
+        let order = order_chapters(&chapters);
+        let wuse = WeaponUse::new(&chapters);
 
         WState {
             soldesc,
             scores,
             memo: Memoz::default(),
             order,
+            wuse,
             chapters,
         }
     }
@@ -271,6 +276,7 @@ impl WState {
         WChoices(step(
             &mut self.memo,
             &self.order,
+            &self.wuse,
             &self.chapters,
             &self.soldesc.ccst,
             &ns.0,

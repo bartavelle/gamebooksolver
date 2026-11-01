@@ -1,7 +1,7 @@
 use crate::lonewolf::chapter::{Chapter, ChapterId};
 use crate::lonewolf::choices::flatten_decision;
 use crate::lonewolf::combat::Memoz;
-use crate::lonewolf::data::order_chapters;
+use crate::lonewolf::data::{WeaponUse, order_chapters};
 use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
@@ -13,6 +13,7 @@ use std::collections::HashMap;
 pub fn step<P: Rational, PREV: StoredEquipment>(
     memo: &mut Memoz<P>,
     order: &HashMap<ChapterId, u32>,
+    wuse: &WeaponUse,
     chapters: &HashMap<ChapterId, Chapter<P>>,
     ccst: &CharacterConstant,
     ns: &NextStep<PREV>,
@@ -25,7 +26,7 @@ pub fn step<P: Rational, PREV: StoredEquipment>(
             let chapter = chapters.get(&ChapterId(*cid)).expect("could not find chapter");
             let mut nv = cvar.clone();
             nv.flags.unset(Flag::HadCombat);
-            let mut out: Vec<Choice<P, String, NextStep<PREV>>> = flatten_decision(ccst, cvar, &chapter.pchoice)
+            let mut out: Vec<Choice<P, String, NextStep<PREV>>> = flatten_decision(wuse, ccst, cvar, &chapter.pchoice)
                 .into_iter()
                 .map(|(d, outcome)| Choice {
                     desc: d.join(" "),
@@ -76,6 +77,7 @@ where
     }
 }
 
+/// The scorer must not depend on ordinary weapons, see `WeaponUse`.
 pub fn solve_lws<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
     scorer: F,
     tgt: &[ChapterId],
@@ -90,9 +92,10 @@ where
 {
     let mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
+    let wuse = WeaponUse::new(&mbook);
     let mut memo = Memoz::default();
     let o = solve::<NextStep<PREV>, _, _, _, _, _>(
-        &mut |ns| step(&mut memo, &order, &mbook, ccst, ns),
+        &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),
         &|ns| get_score(&scorer, tgt, ns),
         &NextStep::NewChapter(startat, cvar.clone()),
         &|c| {
