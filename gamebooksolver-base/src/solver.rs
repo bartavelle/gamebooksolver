@@ -4,7 +4,6 @@ pub mod rational;
 use base::*;
 use rational::Rational;
 
-use std::collections::HashMap;
 use std::hash::Hash;
 
 /// What is kept for a state while solving: its score and the index of the best choice. The outcomes can be computed again
@@ -15,7 +14,7 @@ pub struct CompactNode<P> {
     pub choice: u16,
 }
 
-pub type CompactSolved<P, STT> = HashMap<STT, CompactNode<P>>;
+pub type CompactSolved<P, STT> = Shards<STT, CompactNode<P>>;
 
 // the values of the choice that do not stand for a choice
 const SEARCHING: u16 = u16::MAX;
@@ -110,7 +109,7 @@ where
 
     if let Some(ns) = search_state.get(curstate) {
         if ns.choice == SEARCHING {
-            for (k, v) in &search_state.cache {
+            for (k, v) in search_state.cache.iter() {
                 if v.choice == SEARCHING {
                     println!(" * {k}")
                 }

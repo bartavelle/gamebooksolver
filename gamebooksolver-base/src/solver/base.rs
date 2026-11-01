@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::solver::rational::Rational;
 use std::collections::HashMap;
+use std::hash::{BuildHasher, RandomState};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
 pub struct Proba<P, T> {
@@ -57,8 +58,72 @@ pub enum ChoppedSolution<P, State> {
 
 pub type Solution<P, S> = HashMap<S, SolNode<P, S>>;
 
+/// A map split in many smaller ones. A map needs its old and its new table when growing, which would be a very large single
+/// allocation for the hundreds of millions of states of the largest books.
+pub struct Shards<K, V> {
+    hasher: RandomState,
+    maps: Vec<HashMap<K, V>>,
+}
+
+const SHARD_BITS: u32 = 8;
+
+impl<K, V> Default for Shards<K, V> {
+    fn default() -> Self {
+        Shards {
+            hasher: RandomState::new(),
+            maps: (0..1 << SHARD_BITS).map(|_| HashMap::new()).collect(),
+        }
+    }
+}
+
+impl<K, V> Shards<K, V> {
+    pub fn len(&self) -> usize {
+        self.maps.iter().map(|m| m.len()).sum()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.maps.iter().all(|m| m.is_empty())
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
+        self.maps.iter().flatten()
+    }
+}
+
+impl<K: Eq + std::hash::Hash, V> Shards<K, V> {
+    fn shard(&self, k: &K) -> usize {
+        (self.hasher.hash_one(k) >> (u64::BITS - SHARD_BITS)) as usize
+    }
+
+    pub fn get(&self, k: &K) -> Option<&V> {
+        self.maps[self.shard(k)].get(k)
+    }
+
+    pub fn insert(&mut self, k: K, v: V) -> Option<V> {
+        let shard = self.shard(&k);
+        self.maps[shard].insert(k, v)
+    }
+}
+
+impl<K: Eq + std::hash::Hash, V> std::ops::Index<&K> for Shards<K, V> {
+    type Output = V;
+
+    fn index(&self, k: &K) -> &V {
+        self.get(k).expect("no entry found for key")
+    }
+}
+
+impl<K, V> IntoIterator for Shards<K, V> {
+    type Item = (K, V);
+    type IntoIter = std::iter::Flatten<std::vec::IntoIter<HashMap<K, V>>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.maps.into_iter().flatten()
+    }
+}
+
 pub struct Cache<K, V> {
-    pub cache: HashMap<K, V>,
+    pub cache: Shards<K, V>,
     checks: u64,
     hits: u64,
 }
@@ -66,7 +131,7 @@ pub struct Cache<K, V> {
 impl<K, V> Default for Cache<K, V> {
     fn default() -> Self {
         Cache {
-            cache: HashMap::new(),
+            cache: Shards::default(),
             checks: 0,
             hits: 0,
         }
@@ -131,5 +196,28 @@ impl<P: Rational, A> ChoppedSolution<P, A> {
             ChoppedSolution::CLeafLost => P::from_i64(0, 1),
             ChoppedSolution::CLeaf(r) => r.clone(),
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn shards_behave_like_a_map() {
+        let mut s: Shards<u32, u32> = Shards::default();
+        assert!(s.is_empty());
+        for i in 0..10000 {
+            assert_eq!(s.insert(i, i * 2), None);
+        }
+        assert_eq!(s.insert(5, 7), Some(10));
+        assert_eq!(s.len(), 10000);
+        assert_eq!(s.get(&5), Some(&7));
+        assert_eq!(s[&6], 12);
+        assert_eq!(s.get(&10000), None);
+        assert_eq!(s.iter().count(), 10000);
+        let all: HashMap<u32, u32> = s.into_iter().collect();
+        assert_eq!(all.len(), 10000);
+        assert_eq!(all[&7], 14);
     }
 }
