@@ -479,6 +479,11 @@ impl<PREV: StoredEquipment> CharacterVariableG<PREV> {
         self.curendurance = std::cmp::max(0, self.curendurance - dmg);
     }
 
+    /// Losing an item that gives endurance points also loses those points
+    pub fn clamp_endurance(&mut self, ccst: &CharacterConstant) {
+        self.curendurance = std::cmp::min(max_hp(ccst, self), self.curendurance);
+    }
+
     pub fn heal(&mut self, ccst: &CharacterConstant, hp: i8) {
         self.curendurance = std::cmp::min(max_hp(ccst, self), self.curendurance + hp)
     }

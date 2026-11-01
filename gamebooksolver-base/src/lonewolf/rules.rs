@@ -40,21 +40,27 @@ pub fn update_simple<PREV: StoredEquipment>(
         FullHeal => cvar.curendurance = max_hp(ccst, cvar),
         HalfHeal => cvar.curendurance = (max_hp(ccst, cvar) + cvar.curendurance) / 2,
         GainItem(i, q) => cvar.cequipment.add_item(i, *q as i64),
-        LoseItem(i, q) => cvar.cequipment.del_item(i, *q as i64),
+        LoseItem(i, q) => {
+            cvar.cequipment.del_item(i, *q as i64);
+            cvar.clamp_endurance(ccst);
+        }
         LoseItemKind(slots) => {
             for s in slots {
                 cvar.cequipment.del_slot(*s)
             }
+            cvar.clamp_endurance(ccst);
         }
         SetFlag(f) => cvar.flags.set(*f),
         ClearFlag(f) => cvar.flags.unset(*f),
         StoreEquipment => {
             cvar.cprevequipment = cvar.cequipment.into();
             cvar.cequipment = Equipment::default();
+            cvar.clamp_endurance(ccst);
         }
         RetrieveEquipment => {
             cvar.cequipment = cvar.cprevequipment.into();
             cvar.cprevequipment = PREV::default();
+            cvar.clamp_endurance(ccst);
         }
         MustEat(canhunt) => {
             let b01ls = ccst.bookid == Book::Book01 && cvar.cequipment.has_itemb(&Item::Laumspur);
