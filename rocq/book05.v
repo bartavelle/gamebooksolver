@@ -247,6 +247,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 36%nat); none (Goto 176%nat
   (254%nat,Decisions [none (Simple [DamagePlayer 2%nat] (Goto 280%nat)); none (Simple [DamagePlayer 2%nat] (Goto 361%nat))]);
   (255%nat,Decisions [can_take (GenSpecial S8) 1%nat (none (Goto 228%nat)); none (Goto 228%nat)]);
   (256%nat,Decisions [none (Goto 307%nat); none (Goto 314%nat)]);
+  (257%nat,none (GameLost));
   (258%nat,none (Goto 267%nat));
   (259%nat,none (GameLost));
   (260%nat,none (Goto 395%nat));
@@ -339,7 +340,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 36%nat); none (Goto 176%nat
   (352%nat,none (Goto 313%nat));
   (354%nat,Decisions [conditional (HasDiscipline (Healing)) (none (Simple [DamagePlayer 2%nat] (Goto 377%nat))); conditional (Not (HasDiscipline (Healing))) (Decisions [none (Simple [DamagePlayer 2%nat] (Goto 339%nat))])]);
   (356%nat,none (Goto 281%nat));
-  (357%nat,(special B05S357));
+  (357%nat,none (Fight (Details ((15)%Z)%Z 23%nat [CombatBonus (-2)%Z; OnPickOne 293%nat]) (Goto 452%nat)));
   (358%nat,Decisions [none (Goto 388%nat); none (Goto 376%nat); none (Goto 216%nat)]);
   (359%nat,none (Simple [HealPlayer 2%nat] (Goto 300%nat)));
   (360%nat,none (Conditionally [(HasDiscipline (Hunting) , Randomly [(Goto 334%nat , (Q2Qc (9 / 100)%Q)); (Goto 226%nat , (Q2Qc (11 / 20)%Q)); (Goto 297%nat , (Q2Qc (9 / 25)%Q))]); (Always true , Randomly [(Goto 334%nat , (Q2Qc (1 / 10)%Q)); (Goto 226%nat , (Q2Qc (9 / 20)%Q)); (Goto 297%nat , (Q2Qc (9 / 20)%Q))])]));
@@ -452,4 +453,5 @@ Definition chapters := [(1%nat,Decisions [none (Goto 36%nat); none (Goto 176%nat
   (449%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 404%nat))));
   (403%nat,none (Simple [SetFlag HadCombat] (Goto 450%nat)));
   (450%nat,none (Fight (Details ((17)%Z)%Z 30%nat [DoubleDamage]) (Goto 451%nat)));
-  (451%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 217%nat))))].
+  (451%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 217%nat))));
+  (452%nat,Decisions [none (Goto 207%nat); none (Goto 224%nat)])].

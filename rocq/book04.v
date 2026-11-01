@@ -40,7 +40,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (37%nat,Decisions [none (Goto 182%nat); none (Goto 247%nat)]);
   (38%nat,Decisions [none (Goto 297%nat); none (Goto 15%nat)]);
   (39%nat,none (Goto 148%nat));
-  (40%nat,Decisions [conditional (CAnd (HasDiscipline (Tracking)) (HasLevel Aspirant)) (none (Goto 349%nat)); conditional (Not (HasDiscipline (Tracking))) (Decisions [none (Goto 55%nat); none (Goto 291%nat)])]);
+  (40%nat,Decisions [conditional (CAnd (HasDiscipline (Tracking)) (HasLevel Aspirant)) (none (Goto 349%nat)); conditional (Not (CAnd (HasDiscipline (Tracking)) (HasLevel Aspirant))) (Decisions [none (Goto 55%nat); none (Goto 291%nat)])]);
   (41%nat,none (Goto 276%nat));
   (42%nat,none (GameLost));
   (43%nat,none (Conditionally [(CAnd (COr (HasDiscipline (MindOverMatter)) (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (HasDiscipline (WeaponSkill Dagger)) (HasDiscipline (WeaponSkill Spear))) (HasDiscipline (WeaponSkill Mace))) (HasDiscipline (WeaponSkill ShortSword))) (HasDiscipline (WeaponSkill Warhammer))) (HasDiscipline (WeaponSkill Sword))) (HasDiscipline (WeaponSkill Axe))) (HasDiscipline (WeaponSkill Quarterstaff))) (HasDiscipline (WeaponSkill BroadSword))) (HasDiscipline (WeaponSkill MagicSpear))) (HasDiscipline (WeaponSkill Sommerswerd)))) (COr (HasDiscipline (Hunting)) (HasDiscipline (SixthSense))) , Randomly [(Goto 262%nat , (Q2Qc (2 / 5)%Q)); (Goto 111%nat , (Q2Qc (3 / 5)%Q))]); (COr (HasDiscipline (MindOverMatter)) (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (HasDiscipline (WeaponSkill Dagger)) (HasDiscipline (WeaponSkill Spear))) (HasDiscipline (WeaponSkill Mace))) (HasDiscipline (WeaponSkill ShortSword))) (HasDiscipline (WeaponSkill Warhammer))) (HasDiscipline (WeaponSkill Sword))) (HasDiscipline (WeaponSkill Axe))) (HasDiscipline (WeaponSkill Quarterstaff))) (HasDiscipline (WeaponSkill BroadSword))) (HasDiscipline (WeaponSkill MagicSpear))) (HasDiscipline (WeaponSkill Sommerswerd))) , Randomly [(Goto 262%nat , (Q2Qc (3 / 5)%Q)); (Goto 111%nat , (Q2Qc (2 / 5)%Q))]); (COr (HasDiscipline (Hunting)) (HasDiscipline (SixthSense)) , Randomly [(Goto 262%nat , (Q2Qc (1 / 2)%Q)); (Goto 111%nat , (Q2Qc (1 / 2)%Q))]); (Always true , Randomly [(Goto 262%nat , (Q2Qc (7 / 10)%Q)); (Goto 111%nat , (Q2Qc (3 / 10)%Q))])]));
@@ -51,7 +51,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (50%nat,none (Simple [LoseItem (GenSpecial S0) 1%nat] (Randomly [(Goto 184%nat , (Q2Qc (7 / 10)%Q)); (Goto 267%nat , (Q2Qc (3 / 10)%Q))])));
   (51%nat,Decisions [conditional (HasDiscipline (AnimalKinship)) (none (Goto 227%nat)); conditional (Not (HasDiscipline (AnimalKinship))) (Decisions [none (Goto 328%nat); none (Goto 120%nat)])]);
   (52%nat,none (Simple [DamagePlayer 1%nat] (Goto 248%nat)));
-  (54%nat,Decisions [conditional (CAnd (HasDiscipline (Healing)) (HasLevel Warmarn)) (none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 4%nat))); conditional (Not (HasDiscipline (Healing))) (Decisions [none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 65%nat)); none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 201%nat))])]);
+  (54%nat,Decisions [conditional (CAnd (HasDiscipline (Healing)) (HasLevel Warmarn)) (none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 4%nat))); conditional (Not (CAnd (HasDiscipline (Healing)) (HasLevel Warmarn))) (Decisions [none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 65%nat)); none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 201%nat))])]);
   (55%nat,Decisions [none (Goto 161%nat); none (Goto 286%nat)]);
   (57%nat,none (Conditionally [(CAnd (HasItem (Weapon Sword) 1%nat) (HasFlag Special01) , Goto 327%nat); (Always true , Goto 289%nat)]));
   (58%nat,Decisions [none (Goto 222%nat); none (Goto 110%nat)]);
@@ -236,7 +236,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (255%nat,none (Goto 186%nat));
   (256%nat,none (Goto 309%nat));
   (257%nat,Decisions [none (Goto 302%nat); none (Goto 131%nat)]);
-  (258%nat,Decisions [conditional (HasItem (GenSpecial S11) 1%nat) (none (Goto 305%nat)); conditional (Not (HasItem (GenSpecial S11) 1%nat)) (Decisions [conditional (CAnd (HasDiscipline (Camouflage)) (HasLevel Guardian)) (none (Goto 49%nat)); conditional (Not (HasDiscipline (Camouflage))) (Decisions [none (Goto 159%nat)])])]);
+  (258%nat,Decisions [conditional (HasItem (GenSpecial S11) 1%nat) (none (Goto 305%nat)); conditional (Not (HasItem (GenSpecial S11) 1%nat)) (Decisions [conditional (CAnd (HasDiscipline (Camouflage)) (HasLevel Guardian)) (none (Goto 49%nat)); conditional (Not (CAnd (HasDiscipline (Camouflage)) (HasLevel Guardian))) (Decisions [none (Goto 159%nat)])])]);
   (259%nat,none (Goto 141%nat));
   (261%nat,none (Goto 348%nat));
   (262%nat,none (GameLost));
