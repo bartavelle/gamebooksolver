@@ -55,8 +55,17 @@ enum CanTake {
     Nope,
 }
 
+/// In book 4, the Pickaxe and the Shovel "each occupy the same amount of space in your Backpack as two normal items".
+fn backpack_slots(bookid: Book, item: &Item) -> usize {
+    match item {
+        Item::GenBackpack(3 | 4) if bookid == Book::Book04 => 2,
+        _ => 1,
+    }
+}
+
 fn can_take<PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug>(
     item: &Item,
+    ccst: &CharacterConstant,
     cvar: &CharacterVariableG<PREV>,
 ) -> CanTake {
     match item.slot() {
@@ -86,7 +95,8 @@ fn can_take<PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug>(
             if bpitems.len() > 8 {
                 panic!("too many items in backpack :( bp={bpitems:?} cvar={cvar:?}")
             }
-            if bpitems.len() < 8 {
+            let used: usize = bpitems.iter().map(|i| backpack_slots(ccst.bookid, i)).sum();
+            if used + backpack_slots(ccst.bookid, item) <= 8 {
                 CanTake::SpaceAvailable
             } else {
                 bpitems.dedup();
@@ -255,7 +265,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         Decision::CanTake(_, 0, nxt) => flatten_decision(wuse, ccst, cvar, nxt),
         Decision::CanTake(i, 1, nxt) => {
             let notake = || flatten_decision(wuse, ccst, cvar, nxt);
-            match can_take(i, cvar) {
+            match can_take(i, ccst, cvar) {
                 CanTake::Nope => notake(),
                 CanTake::SpaceAvailable => with_effect(&[SimpleOutcome::GainItem(*i, 1)], nxt),
                 CanTake::MustDrop(lst) => {
@@ -264,7 +274,10 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                     let plain = is_plain_weapon(i, ccst, cvar, used);
                     for l in useful_drops(i, lst, ccst, cvar, used) {
                         // exchanging a plain weapon for another one is the same as not taking it
-                        if l != *i && !(plain && is_plain_weapon(&l, ccst, cvar, used)) {
+                        if backpack_slots(ccst.bookid, i) > 1 {
+                            // dropping an item might not be enough
+                            out.extend(with_effect(&[SimpleOutcome::LoseItem(l, 1)], dec))
+                        } else if l != *i && !(plain && is_plain_weapon(&l, ccst, cvar, used)) {
                             out.extend(with_effect(
                                 &[SimpleOutcome::LoseItem(l, 1), SimpleOutcome::GainItem(*i, 1)],
                                 nxt,
@@ -315,7 +328,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         Decision::Canbuy(item, price, nxt) => {
             let mut out = flatten_decision(wuse, ccst, cvar, nxt);
             if cvar.cequipment.get_item_count(&Item::Gold) >= price.0 {
-                match can_take(item, cvar) {
+                match can_take(item, ccst, cvar) {
                     CanTake::Nope => (),
                     CanTake::SpaceAvailable => out.extend(with_effect(
                         &[
@@ -517,7 +530,7 @@ mod test {
         cvar.add_item(&Item::Backpack, 1);
         cvar.add_item(&Item::Meal, 7);
         cvar.add_item(&Item::Potion2Hp, 1);
-        let dec = Decision::CanTake(Item::GenBackpack(3), 1, Box::new(goto(2)));
+        let dec = Decision::CanTake(Item::GenBackpack(5), 1, Box::new(goto(2)));
         let results = choices_results(&ccst, &cvar, &dec);
         assert_eq!(results.len(), 3);
         assert!(results.contains(&vec![NextStep::NewChapter(2, cvar)]));
@@ -762,6 +775,39 @@ mod test {
         let dec = Decision::CanTake(Item::StrengthPotion4, 1, Box::new(goto(2)));
         let cvar = CharacterVariable::new(20);
         assert_eq!(choices_results(&ccst, &cvar, &dec), vec![vec![NextStep::NewChapter(2, cvar)]]);
+    }
+
+    #[test]
+    fn tools_use_two_backpack_slots() {
+        let ccst = book_char(Book::Book04);
+        let pick = Item::GenBackpack(3);
+        let dec = Decision::CanTake(pick, 1, Box::new(goto(2)));
+        let with_meals = |n: i64| {
+            let mut c = CharacterVariable::new(20);
+            c.add_item(&Item::Backpack, 1);
+            c.add_item(&Item::Meal, n);
+            c
+        };
+        let has_pick = |r: &Vec<NextStep<Equipment>>| {
+            matches!(&r[0], NextStep::NewChapter(_, c) if c.cequipment.has_itemb(&pick))
+        };
+        // two free slots
+        let results = choices_results(&ccst, &with_meals(6), &dec);
+        assert_eq!(results.len(), 1);
+        assert!(has_pick(&results[0]));
+        // a single free slot: a meal must be dropped, or the tool refused
+        let results = choices_results(&ccst, &with_meals(7), &dec);
+        assert_eq!(results.len(), 2);
+        assert_eq!(results.iter().filter(|r| has_pick(r)).count(), 1);
+        // nothing free: two meals must be dropped
+        let mut expected = with_meals(6);
+        expected.add_item(&pick, 1);
+        let results = choices_results(&ccst, &with_meals(8), &dec);
+        assert!(results.contains(&vec![NextStep::NewChapter(2, expected)]));
+        // it only takes one slot in the other books
+        let results = choices_results(&book_char(Book::Book03), &with_meals(7), &dec);
+        assert_eq!(results.len(), 1);
+        assert!(has_pick(&results[0]));
     }
 
     #[test]

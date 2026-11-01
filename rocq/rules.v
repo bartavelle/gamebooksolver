@@ -279,6 +279,13 @@ Inductive can_take_result :=
 
 Definition SilverHelmet: item := GenSpecial S10.
 
+(* In book 4, the Pickaxe and the Shovel "each occupy the same amount of space in your Backpack as two normal items" *)
+Definition backpack_slots (bk: nat) (i: item): nat :=
+  match i with
+  | GenBackpack S3 | GenBackpack S4 => if Nat.eqb bk 4 then 2 else 1
+  | _ => 1
+  end.
+
 Definition tcan_take (i: item) (s: Stt): can_take_result :=
   match item_slot i with
   | SPouch => SpaceAvailable
@@ -294,7 +301,8 @@ Definition tcan_take (i: item) (s: Stt): can_take_result :=
       if negb (has_item Backpack s) then Nope
       else
         let bpis := held_items SBackpack s in
-        if Nat.ltb (list_sum (map snd bpis)) 8 then SpaceAvailable else MustDrop (map fst bpis)
+        let used := list_sum (map (fun iq : item * nat => backpack_slots (book s) (fst iq) * snd iq) bpis) in
+        if Nat.leb (used + backpack_slots (book s) i) 8 then SpaceAvailable else MustDrop (map fst bpis)
   end.
 
 Fixpoint has_combat (o: chapter_outcome): option fight_details :=
@@ -380,7 +388,10 @@ Fixpoint flatten_d (fuel: nat) (stt: Stt) (d: decision) : list chapter_outcome :
         | SpaceAvailable => with_effect [GainItem i 1] nxt
         | MustDrop lst =>
             flatten_d f stt nxt ++
-            flat_map (fun l => if mps.eqb l i then [] else with_effect [LoseItem l 1; GainItem i 1] nxt) lst
+            flat_map (fun l =>
+              if Nat.ltb 1 (backpack_slots (book stt) i) then with_effect [LoseItem l 1] d
+              else if mps.eqb l i then []
+              else with_effect [LoseItem l 1; GainItem i 1] nxt) lst
         end
     | can_take i (S q) nxt => flatten_d f stt (can_take i 1 (can_take i q nxt))
     | remove_item_from sl n nxt =>
