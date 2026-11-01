@@ -239,7 +239,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                 // il faut conserver les potions qui restaurent trop de hp, si il y en a trop
                 let (mut wasted, not_wasted) = usable_potions
                     .into_iter()
-                    .partition::<Vec<_>, _>(|(_, hpgained)| *hpgained < missing_hp);
+                    .partition::<Vec<_>, _>(|(_, hpgained)| *hpgained > missing_hp);
                 let mut drinkable = not_wasted;
                 if let Some(p) = wasted.pop() {
                     drinkable.push(p)
@@ -501,6 +501,31 @@ mod test {
         expected.cequipment.add_item(&Item::Potion2Hp, 1);
         let results = choices_results(&ccst, &cvar, &Decision::RetrieveEquipment(Box::new(goto(58))));
         assert_eq!(results, vec![vec![NextStep::NewChapter(58, expected)]]);
+    }
+
+    #[test]
+    fn drink_non_wasting_potions() {
+        let ccst = book_char(Book::Book04);
+        let mut cvar = CharacterVariable::new(14);
+        for p in [Item::Potion6Hp, Item::Potion5Hp, Item::Potion4Hp, Item::Potion2Hp] {
+            cvar.add_item(&p, 1);
+        }
+        let first_drink = |c: &CharacterVariable| -> Vec<String> {
+            flatten_decision::<BigRational, _>(&ccst, c, &Decision::AfterCombat(Box::new(goto(2))))
+                .into_iter()
+                .filter_map(|(d, _)| d.first().cloned())
+                .collect()
+        };
+        let drinks = first_drink(&cvar);
+        for p in ["Potion6Hp", "Potion5Hp", "Potion4Hp", "Potion2Hp"] {
+            assert!(drinks.iter().any(|d| d.contains(p)), "{p} not offered: {drinks:?}");
+        }
+        // 3 HP missing: only the smallest of the potions that heal too much is offered
+        cvar.curendurance = 17;
+        let drinks = first_drink(&cvar);
+        assert!(drinks.iter().any(|d| d.contains("Potion2Hp")));
+        assert!(drinks.iter().any(|d| d.contains("Potion4Hp")));
+        assert!(!drinks.iter().any(|d| d.contains("Potion5Hp") || d.contains("Potion6Hp")));
     }
 
     #[test]
