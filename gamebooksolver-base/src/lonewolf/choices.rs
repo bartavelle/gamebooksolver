@@ -339,13 +339,20 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         }
         Decision::Special(SpecialChapter::B05S127) => {
             let borne = |x: i64| P::from_i64(x.clamp(0, 10), 10);
-            let b1 = borne(ccst.combat_skill as i64 - 10);
-            let b2 = borne(20 - ccst.combat_skill as i64);
+            // the number picked, from 0 to 9, plus 10 must not be more than the combat skill
+            let b1 = borne(ccst.combat_skill as i64 - 9);
+            let b2 = borne(19 - ccst.combat_skill as i64);
             vec![(
                 vec!["No decision".to_string()],
                 ChapterOutcome::Randomly(vec![
                     (b1, ChapterOutcome::Goto(ChapterId(159))),
-                    (b2, ChapterOutcome::Goto(ChapterId(93))),
+                    (
+                        b2,
+                        ChapterOutcome::Simple(
+                            vec![SimpleOutcome::DamagePlayer(Endurance(1))],
+                            Box::new(ChapterOutcome::Goto(ChapterId(93))),
+                        ),
+                    ),
                 ]),
             )]
         }
@@ -707,6 +714,39 @@ mod test {
         cvar.cequipment.add_item(&Item::Weapon(Weapon::Spear), 1);
         let n = flatten_decision(&wuse, &ccst, &cvar, &dec).len();
         assert_eq!(n, 1);
+    }
+
+    #[test]
+    fn locked_door() {
+        let dec = Decision::Special(SpecialChapter::B05S127);
+        let cvar = CharacterVariable::new(20);
+        let opened = |combat_skill: u8| -> BigRational {
+            let ccst = CharacterConstant {
+                combat_skill,
+                ..book_char(Book::Book05)
+            };
+            let res = update(
+                &mut Memoz::default(),
+                &ccst,
+                &cvar,
+                ChapterId(127),
+                &flatten_decision(&WeaponUse::default(), &ccst, &cvar, &dec)[0].1,
+            );
+            let mut hurt = cvar;
+            hurt.curendurance -= 1;
+            assert!(res.iter().all(|r| r.p == BigRational::from_i64(0, 1)
+                || r.v == NextStep::NewChapter(159, cvar)
+                || r.v == NextStep::NewChapter(93, hurt)));
+            res.into_iter()
+                .filter(|r| r.v == NextStep::NewChapter(159, cvar))
+                .map(|r| r.p)
+                .next()
+                .unwrap_or(BigRational::from_i64(0, 1))
+        };
+        assert_eq!(opened(9), BigRational::from_i64(0, 1));
+        assert_eq!(opened(10), BigRational::from_i64(1, 10));
+        assert_eq!(opened(15), BigRational::from_i64(6, 10));
+        assert_eq!(opened(19), BigRational::from_i64(1, 1));
     }
 
     #[test]
