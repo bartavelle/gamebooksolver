@@ -70,6 +70,7 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
             FightModifier::OnLose(cid) => Some(*cid),
             FightModifier::OnNotYetWon(cid) => Some(*cid),
             FightModifier::StopFight(cid) => Some(*cid),
+            FightModifier::OnPickOne(cid) => Some(*cid),
             _ => None,
         }
     }
@@ -125,7 +126,6 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
         Decision::RetrieveEquipment(nxt) => get_destinations(nxt),
         Decision::Special(s) => match s {
             SpecialChapter::B05S127 => [159, 93].iter().copied().map(ChapterId).collect(),
-            SpecialChapter::B05S357 => [293, 207, 224].iter().copied().map(ChapterId).collect(),
             SpecialChapter::Cartwheel => [169, 136].iter().copied().map(ChapterId).collect(),
             SpecialChapter::Portholes => [197].iter().copied().map(ChapterId).collect(),
         },

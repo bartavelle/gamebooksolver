@@ -256,7 +256,10 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
                 FightModifier::OnLose(cid) => onlose = Some(*cid),
                 FightModifier::OnDamage(cid) => ondamage = Some(*cid),
                 FightModifier::OnNotYetWon(cid) => notyetwon = Some(*cid),
-                FightModifier::Poisonous(_) | FightModifier::StopFight(_) | FightModifier::Evaded(_) => {
+                FightModifier::Poisonous(_)
+                | FightModifier::StopFight(_)
+                | FightModifier::Evaded(_)
+                | FightModifier::OnPickOne(_) => {
                     panic!("Can't be played one round at a time: {m:?}")
                 }
                 _ => (),
@@ -351,6 +354,42 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
             }];
             memo.whole_fight.insert(self.clone(), outcome.clone());
             return outcome;
+        }
+
+        if let Some(cid) = self.modifiers.iter().find_map(|m| match m {
+            FightModifier::OnPickOne(cid) => Some(*cid),
+            _ => None,
+        }) {
+            let outcome = self.round_results().into_iter().enumerate().flat_map(|(n, r)| {
+                if n == 0 {
+                    vec![Proba {
+                        p: r.p,
+                        v: Escaped::Stopped(cid, self.lwendurance),
+                    }]
+                } else if r.v.0.dead() {
+                    vec![Proba { p: r.p, v: lost() }]
+                } else if r.v.1.dead() {
+                    vec![Proba {
+                        p: r.p,
+                        v: Escaped::Std(r.v.0),
+                    }]
+                } else {
+                    let mut ncinfo = self.clone();
+                    ncinfo.lwendurance = r.v.0;
+                    ncinfo.opendurance = r.v.1;
+                    ncinfo
+                        .fight(memo)
+                        .into_iter()
+                        .map(|r2| Proba {
+                            p: r2.p.mul(&r.p),
+                            v: r2.v,
+                        })
+                        .collect()
+                }
+            });
+            let o = optimize_outcome(outcome.collect());
+            memo.whole_fight.insert(self.clone(), o.clone());
+            return o;
         }
 
         // evasion
@@ -680,6 +719,39 @@ mod test {
         cstt.discipline.push(Discipline::WeaponSkill(Weapon::BroadSword));
         let cinfo = CombatInfo::make(&cstt, &ncvar, &mk_def_combat());
         assert_eq!(cinfo.get_ratio(), CombatSkill(-3));
+    }
+
+    #[test]
+    fn picking_one_ends_the_fight() {
+        // the player can't be hurt, so that the fight ends either by falling or by winning
+        let fd = FightDetails::<BigRational> {
+            opponent: "x".to_string(),
+            combat_skill: CombatSkill(15),
+            endurance: Endurance(1),
+            fight_mod: vec![
+                FightModifier::OnPickOne(ChapterId(293)),
+                FightModifier::PlayerInvulnerable,
+            ],
+        };
+        let ccst = CharacterConstant {
+            bookid: Book::Book05,
+            combat_skill: 15,
+            discipline: vec![],
+            maxendurance: 20,
+        };
+        let cinfo = CombatInfo::make(&ccst, &CharacterVariable::new(20), &fd);
+        let mut memo = Memoz::default();
+        let res = cinfo.fight(&mut memo);
+        let fall = res
+            .iter()
+            .find(|r| r.v == Escaped::Stopped(ChapterId(293), Endurance(20)))
+            .expect("can fall");
+        assert!(fall.p >= BigRational::from_i64(1, 10));
+        assert!(res.iter().any(|r| matches!(r.v, Escaped::Std(Endurance(20)))));
+        assert_eq!(
+            res.iter().map(|r| r.p.clone()).sum::<BigRational>(),
+            BigRational::from_i64(1, 1)
+        );
     }
 
     #[test]

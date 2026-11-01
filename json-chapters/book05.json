@@ -12097,7 +12097,26 @@
     {
       "desc": "The gangplank springs up and down as you stride across the gap, and you are forced to slow your pace for fear of falling over the edge. The sentry wheels round, alerted by the noise of creaking planks. He runs to intercept your attack, his spear levelled to thrust at your waist. You cannot avoid combat and must fight the sentry to the death. Deduct 2 from your COMBAT SKILL for the duration of this fight, for the plank on which you are standing is very unstable.\n",
       "pchoice": {
-        "Special": "B05S357"
+        "NoDecision": {
+          "Fight": [
+            {
+              "fcombatSkill": 15,
+              "fendurance": 23,
+              "fightMod": [
+                {
+                  "CombatBonus": -2
+                },
+                {
+                  "OnPickOne": 293
+                }
+              ],
+              "opponent": "Platform Sentry"
+            },
+            {
+              "Goto": 452
+            }
+          ]
+        }
       },
       "title": "357"
     }
@@ -15388,6 +15407,33 @@
         }
       },
       "title": "451"
+    }
+  ],
+  [
+    452,
+    {
+      "desc": "",
+      "pchoice": {
+        "Decisions": [
+          [
+            "If you win the combat and decide to search the sentry's body, turn to 207.",
+            {
+              "NoDecision": {
+                "Goto": 207
+              }
+            }
+          ],
+          [
+            "If you win but decide to ignore the body and hurry into the Itikar's pen, turn to 224.",
+            {
+              "NoDecision": {
+                "Goto": 224
+              }
+            }
+          ]
+        ]
+      },
+      "title": "452"
     }
   ]
 ]

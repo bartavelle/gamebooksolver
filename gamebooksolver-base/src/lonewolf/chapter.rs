@@ -96,10 +96,6 @@ impl<'t, P: Rational> Iterator for OutcomeIt<'t, P> {
                         (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(159))),
                         (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(93))),
                     ]))),
-                    SpecialChapter::B05S357 => Some(Cow::Owned(ChapterOutcome::Randomly(vec![
-                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(207))),
-                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(224))),
-                    ]))),
                 },
                 Decision::None(chapter_outcome) | Decision::EvadeFight(_, _, _, chapter_outcome) => {
                     Some(Cow::Borrowed(chapter_outcome))
@@ -150,7 +146,6 @@ pub enum SpecialChapter {
     Cartwheel,
     Portholes,
     B05S127,
-    B05S357,
 }
 
 #[derive(PartialEq, Eq, Debug, Deserialize, Clone)]
@@ -338,6 +333,8 @@ pub enum FightModifier<P> {
     EnemyInvulnerable,
     OnLose(ChapterId),
     StopFight(ChapterId),
+    /// Picking a 1 from the random number table during a round ends the fight in that chapter
+    OnPickOne(ChapterId),
     #[serde(rename = "DPR")]
     Dpr(Endurance),
     NoPotion,
@@ -370,6 +367,7 @@ impl<P: Clone> FightModifier<P> {
             MultiFight => MultiFight,
             EnemyInvulnerable => EnemyInvulnerable,
             OnLose(cid) => OnLose(cid),
+            OnPickOne(cid) => OnPickOne(cid),
             StopFight(cid) => StopFight(cid),
             Dpr(e) => Dpr(e),
             NoPotion => NoPotion,
