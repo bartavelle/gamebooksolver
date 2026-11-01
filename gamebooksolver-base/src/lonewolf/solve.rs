@@ -8,7 +8,7 @@ use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
 use crate::solver::base::{Choice, Outcome, Proba, Solution, optimize_outcome};
 use crate::solver::rational::Rational;
-use crate::solver::solve;
+use crate::solver::{CompactSolved, solve, solve_compact};
 use std::collections::HashMap;
 
 pub fn step<P: Rational, PREV: StoredEquipment>(
@@ -110,6 +110,46 @@ where
     let wuse = WeaponUse::new(&mbook);
     let mut memo = Memoz::default();
     let o = solve::<NextStep<PREV>, _, _, _, _, _>(
+        &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),
+        &|ns| get_score(&scorer, tgt, ns),
+        &NextStep::NewChapter(startat, cvar.clone()),
+        &|c| {
+            if verbose {
+                eprintln!("State cache efficiency {:.2}%", c.efficiency() * 100.0)
+            }
+        },
+    );
+    if verbose {
+        eprintln!(
+            "Cache efficiency: wholefight[{:.2}%] vanilla[{:.2}%] mindblasted[{:.2}%]",
+            memo.whole_fight.efficiency() * 100.0,
+            memo.fight_vanilla.efficiency() * 100.0,
+            memo.fight_mindblasted.efficiency() * 100.0
+        );
+    }
+    o
+}
+
+/// Same as `solve_lws`, keeping only the score and the index of the best choice of each state, which uses a lot less memory.
+/// The scorer must not depend on ordinary weapons, see `WeaponUse`.
+pub fn solve_lws_compact<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
+    scorer: F,
+    tgt: &[ChapterId],
+    book: &[(ChapterId, Chapter<P>)],
+    ccst: &CharacterConstant,
+    cvar: &CharacterVariableG<PREV>,
+    startat: u16,
+    verbose: bool,
+) -> CompactSolved<P, NextStep<PREV>>
+where
+    F: Fn(Equipment, Flags) -> P,
+{
+    let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
+    expand_evasions(ccst.bookid, &mut mbook);
+    let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
+    let wuse = WeaponUse::new(&mbook);
+    let mut memo = Memoz::default();
+    let o = solve_compact::<NextStep<PREV>, _, _, _, _, _>(
         &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),
         &|ns| get_score(&scorer, tgt, ns),
         &NextStep::NewChapter(startat, cvar.clone()),
