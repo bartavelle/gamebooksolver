@@ -755,6 +755,16 @@ mod test {
     }
 
     #[test]
+    fn potent_strength_potion_is_a_backpack_item() {
+        // book 3, section 311: "mark it on your Action Chart as a Backpack Item"
+        assert_eq!(Item::StrengthPotion4.slot(), Slot::Backpack);
+        let ccst = book_char(Book::Book03);
+        let dec = Decision::CanTake(Item::StrengthPotion4, 1, Box::new(goto(2)));
+        let cvar = CharacterVariable::new(20);
+        assert_eq!(choices_results(&ccst, &cvar, &dec), vec![vec![NextStep::NewChapter(2, cvar)]]);
+    }
+
+    #[test]
     fn backpack_items_need_a_backpack() {
         let ccst = book_char(Book::Book02);
         let cvar = CharacterVariable::new(20);

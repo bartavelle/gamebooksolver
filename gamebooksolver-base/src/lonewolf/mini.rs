@@ -722,6 +722,7 @@ impl Item {
             Item::Meal => Slot::Backpack,
             Item::Laumspur => Slot::Backpack,
             Item::StrengthPotion => Slot::Backpack,
+            Item::StrengthPotion4 => Slot::Backpack,
             Item::GenBackpack(_) => Slot::Backpack,
             Item::Potion2Hp => Slot::Backpack,
             Item::Potion4Hp => Slot::Backpack,
