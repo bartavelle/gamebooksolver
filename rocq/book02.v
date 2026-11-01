@@ -31,7 +31,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (28%nat,Decisions [none (Goto 106%nat); none (Goto 320%nat)]);
   (29%nat,none (Simple [DamagePlayer 2%nat] (Goto 222%nat)));
   (31%nat,can_take Backpack 1%nat (none (Simple [HealPlayer 6%nat] (Randomly [(Goto 176%nat , (Q2Qc (1 / 2)%Q)); (Goto 254%nat , (Q2Qc (1 / 2)%Q))]))));
-  (32%nat,Decisions [none (Simple [MustEat Hunt] (Goto 136%nat)); none (Simple [MustEat Hunt] (Goto 238%nat))]);
+  (32%nat,Decisions [conditional (HasItem Gold 20%nat) (none (Simple [MustEat Hunt] (Goto 136%nat))); none (Simple [MustEat Hunt] (Goto 238%nat))]);
   (33%nat,Decisions [none (Conditionally [(HasItem Gold 12%nat , Simple [LoseItemKind [SPouch]; GainItem Gold 12%nat] (Goto 296%nat)); (Always true , Goto 296%nat)]); none (Conditionally [(HasItem Gold 12%nat , Simple [LoseItemKind [SPouch]; GainItem Gold 12%nat] (Goto 88%nat)); (Always true , Goto 88%nat)])]);
   (35%nat,Decisions [conditional (HasDiscipline (Tracking)) (none (Goto 13%nat)); conditional (Not (HasDiscipline (Tracking))) (none (Goto 155%nat)); conditional (Not (HasDiscipline (Tracking))) (none (Goto 293%nat))]);
   (36%nat,none (Conditionally [(HasItem Laumspur 1%nat , Goto 145%nat); (HasDiscipline (Healing) , Goto 210%nat); (Always true , Goto 275%nat)]));

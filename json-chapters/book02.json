@@ -1036,18 +1036,28 @@
           [
             "After the Meal, if you decide to approach the coachmen and ask to buy a ticket for the journey to Port Bax",
             {
-              "NoDecision": {
-                "Simple": [
-                  [
-                    {
-                      "MustEat": "Hunt"
-                    }
-                  ],
-                  {
-                    "Goto": 136
+              "Conditional": [
+                {
+                  "HasItem": [
+                    "Gold",
+                    20
+                  ]
+                },
+                {
+                  "NoDecision": {
+                    "Simple": [
+                      [
+                        {
+                          "MustEat": "Hunt"
+                        }
+                      ],
+                      {
+                        "Goto": 136
+                      }
+                    ]
                   }
-                ]
-              }
+                }
+              ]
             }
           ],
           [
