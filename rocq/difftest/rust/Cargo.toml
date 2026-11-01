@@ -1,0 +1,10 @@
+[package]
+name = "difftest"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+gamebooksolver-base = { path = "../../../gamebooksolver-base", features = ["rug"] }
+serde_json = "1"
