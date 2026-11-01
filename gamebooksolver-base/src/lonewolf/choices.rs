@@ -100,6 +100,9 @@ fn has_combat<P>(o: &ChapterOutcome<P>) -> Option<&FightDetails<P>> {
     match o {
         Fight(fd, _) => Some(fd),
         OneRound(fd, _, _, _) => Some(fd),
+        EnterFight(fd, _) => Some(fd),
+        // a potion can only be used before the first round
+        Round(_, _, _) => None,
         Randomly(choices) => choices.iter().map(|x| &x.1).flat_map(has_combat).next(),
         Conditionally(conds) => conds.iter().map(|x| &x.1).flat_map(has_combat).next(),
         Simple(_, o2) => has_combat(o2),
@@ -233,25 +236,6 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
             } else {
                 Vec::new()
             }
-        }
-        Decision::EvadeFight(nrounds, cid, fd, co) => {
-            let mut nfd: FightDetails<P> = fd.clone();
-            let evaded_fm = FightModifier::Evaded(*cid);
-            nfd.fight_mod.push(if nrounds.0 > 0 {
-                FightModifier::Timed(nrounds.0, Box::new(evaded_fm))
-            } else {
-                evaded_fm
-            });
-            vec![
-                (
-                    vec!["no evasion".to_string()],
-                    ChapterOutcome::Fight(fd.clone(), Box::new(co.clone())),
-                ),
-                (
-                    vec!["evasion".to_string()],
-                    ChapterOutcome::Fight(nfd, Box::new(co.clone())),
-                ),
-            ]
         }
         Decision::Decisions(lst) => lst
             .iter()

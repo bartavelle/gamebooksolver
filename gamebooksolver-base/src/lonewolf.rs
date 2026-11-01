@@ -3,6 +3,7 @@ pub mod chapter;
 pub mod choices;
 pub mod combat;
 pub mod data;
+pub mod evasion;
 pub mod mini;
 pub mod rules;
 pub mod solve;

@@ -6,6 +6,7 @@ use wasm_bindgen::prelude::*;
 use gamebooksolver_base::lonewolf::chapter::{Chapter, ChapterId};
 use gamebooksolver_base::lonewolf::combat::Memoz;
 use gamebooksolver_base::lonewolf::data::{WeaponUse, order_chapters};
+use gamebooksolver_base::lonewolf::evasion::expand_evasions;
 use gamebooksolver_base::lonewolf::mini::{
     CharacterVariable, CompactSolution, Equipment, NextStep, SolDesc,
 };
@@ -228,11 +229,12 @@ impl WState {
     pub fn new(buf: &[u8], bk: &str) -> WState {
         let sol: CompactSolution<Equipment> = minicbor::decode(buf).unwrap();
         let book: Vec<(ChapterId, Chapter<JRatio>)> = serde_json::from_str(bk).unwrap();
-        let chapters: HashMap<ChapterId, Chapter<BigRational>> = book
+        let mut chapters: HashMap<ChapterId, Chapter<BigRational>> = book
             .into_iter()
             .map(|(cid, c)| (cid, c.map_proba(&|p: &JRatio| BigRational::from_jratio(p))))
             .collect();
         let soldesc = sol.soldesc;
+        expand_evasions(soldesc.ccst.bookid, &mut chapters);
         let order = order_chapters(&chapters);
         let wuse = WeaponUse::new(&chapters);
         let scores = sol
@@ -253,12 +255,13 @@ impl WState {
 
     pub fn from_desc(desc: &str, bk: &str) -> WState {
         let book: Vec<(ChapterId, Chapter<JRatio>)> = serde_json::from_str(bk).unwrap();
-        let chapters: HashMap<ChapterId, Chapter<BigRational>> = book
+        let mut chapters: HashMap<ChapterId, Chapter<BigRational>> = book
             .into_iter()
             .map(|(cid, c)| (cid, c.map_proba(&|p: &JRatio| BigRational::from_jratio(p))))
             .collect();
         let scores = HashMap::new();
         let soldesc: SolDesc = serde_json::from_str(desc).unwrap();
+        expand_evasions(soldesc.ccst.bookid, &mut chapters);
         let order = order_chapters(&chapters);
         let wuse = WeaponUse::new(&chapters);
 

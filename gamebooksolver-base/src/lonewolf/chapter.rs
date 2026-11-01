@@ -169,6 +169,11 @@ pub enum ChapterOutcome<P> {
     GameLost,
     GameWon,
     LoseItemFrom(Slot, u8, Box<ChapterOutcome<P>>),
+    /// Starts a fight whose rounds are played one by one, in the given chapter. Never found in a book file, see `evasion`.
+    EnterFight(FightDetails<P>, ChapterId),
+    /// A single round of a fight. If nobody is defeated, the fight continues in the chapter found at the index of the
+    /// remaining endurance of the opponent. Never found in a book file, see `evasion`.
+    Round(FightDetails<P>, Box<ChapterOutcome<P>>, Vec<ChapterId>),
 }
 
 pub struct SimpleOutcomeIt<'t, P> {
@@ -189,7 +194,9 @@ impl<'t, P> Iterator for SimpleOutcomeIt<'t, P> {
                     self.co.push(co1);
                     self.next()
                 }
-                ChapterOutcome::Fight(_, chapter_outcome) | ChapterOutcome::LoseItemFrom(_, _, chapter_outcome) => {
+                ChapterOutcome::Fight(_, chapter_outcome)
+                | ChapterOutcome::Round(_, chapter_outcome, _)
+                | ChapterOutcome::LoseItemFrom(_, _, chapter_outcome) => {
                     self.co.push(chapter_outcome);
                     self.next()
                 }
@@ -206,7 +213,10 @@ impl<'t, P> Iterator for SimpleOutcomeIt<'t, P> {
                     self.si.extend(simple_outcomes);
                     self.next()
                 }
-                ChapterOutcome::Goto(_) | ChapterOutcome::GameWon | ChapterOutcome::GameLost => self.next(),
+                ChapterOutcome::Goto(_)
+                | ChapterOutcome::EnterFight(_, _)
+                | ChapterOutcome::GameWon
+                | ChapterOutcome::GameLost => self.next(),
             },
         }
     }
@@ -240,6 +250,8 @@ impl<P: Clone> ChapterOutcome<P> {
             Conditionally(lst) => Conditionally(lst.into_iter().map(|(c, co2)| (c, co2.map_proba(f))).collect()),
             LoseItemFrom(slot, n, cl) => LoseItemFrom(slot, n, convert(cl)),
             Simple(sos, nxt) => Simple(sos, convert(nxt)),
+            EnterFight(fd, cid) => EnterFight(fd.map_proba(f), cid),
+            Round(fd, co, nxt) => Round(fd.map_proba(f), convert(co), nxt),
             Goto(cid) => Goto(cid),
             GameLost => GameLost,
             GameWon => GameWon,

@@ -1,6 +1,7 @@
 use gamebooksolver_base::lonewolf::chapter::{Chapter, ChapterId};
 use gamebooksolver_base::lonewolf::combat::Memoz;
 use gamebooksolver_base::lonewolf::data::WeaponUse;
+use gamebooksolver_base::lonewolf::evasion::expand_evasions;
 use gamebooksolver_base::lonewolf::mini::{
     CharacterConstant, CompactSolution, NextStep, SolutionDump, StoredEquipment, mkchar,
 };
@@ -27,7 +28,9 @@ pub fn explore_compact<PREV: StoredEquipment>(
 
     let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
     let mut memo = Memoz::default();
-    let mbook: HashMap<ChapterId, Chapter<MF64>> = book.iter().cloned().map(|(k, c)| (k, convert_chapter(c))).collect();
+    let mut mbook: HashMap<ChapterId, Chapter<MF64>> =
+        book.iter().cloned().map(|(k, c)| (k, convert_chapter(c))).collect();
+    expand_evasions(soldump.soldesc.ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = HashMap::new();
     let wuse = WeaponUse::new(&mbook);
     let mut memo_score = HashMap::new();
@@ -50,7 +53,8 @@ pub fn explore_solution<PREV: StoredEquipment>(
 ) {
     let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
     let mut memo = Memoz::default();
-    let mbook: HashMap<ChapterId, Chapter<Rational>> = book.iter().cloned().collect();
+    let mut mbook: HashMap<ChapterId, Chapter<Rational>> = book.iter().cloned().collect();
+    expand_evasions(soldump.soldesc.ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = HashMap::new();
     let wuse = WeaponUse::new(&mbook);
     let content: HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>> =

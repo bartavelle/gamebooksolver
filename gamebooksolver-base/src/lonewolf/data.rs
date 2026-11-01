@@ -83,6 +83,13 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
                 }
                 o
             }
+            ChapterOutcome::EnterFight(_, cid) => [*cid].into_iter().collect(),
+            ChapterOutcome::Round(fds, nxt, next_rounds) => {
+                let mut o = get_destinations_o(nxt);
+                o.extend(fds.fight_mod.iter().filter_map(get_destinations_fd));
+                o.extend(next_rounds.iter().copied());
+                o
+            }
             ChapterOutcome::GameLost => HashSet::new(),
             ChapterOutcome::GameWon => HashSet::new(),
             ChapterOutcome::Goto(cid) => [*cid].into_iter().collect(),
@@ -176,7 +183,9 @@ impl WeaponSet {
 
     fn outcome<P>(&mut self, co: &ChapterOutcome<P>) {
         match co {
-            ChapterOutcome::Fight(_, o) | ChapterOutcome::LoseItemFrom(_, _, o) => self.outcome(o),
+            ChapterOutcome::Fight(_, o) | ChapterOutcome::Round(_, o, _) | ChapterOutcome::LoseItemFrom(_, _, o) => {
+                self.outcome(o)
+            }
             ChapterOutcome::OneRound(_, a, b, c) => {
                 self.outcome(a);
                 self.outcome(b);
@@ -205,7 +214,10 @@ impl WeaponSet {
                 }
                 self.outcome(o);
             }
-            ChapterOutcome::Goto(_) | ChapterOutcome::GameLost | ChapterOutcome::GameWon => (),
+            ChapterOutcome::Goto(_)
+            | ChapterOutcome::EnterFight(_, _)
+            | ChapterOutcome::GameLost
+            | ChapterOutcome::GameWon => (),
         }
     }
 

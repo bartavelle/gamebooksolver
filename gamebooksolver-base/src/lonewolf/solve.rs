@@ -2,6 +2,7 @@ use crate::lonewolf::chapter::{Chapter, ChapterId};
 use crate::lonewolf::choices::flatten_decision;
 use crate::lonewolf::combat::Memoz;
 use crate::lonewolf::data::{WeaponUse, order_chapters};
+use crate::lonewolf::evasion::expand_evasions;
 use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
@@ -103,7 +104,8 @@ pub fn solve_lws<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
 where
     F: Fn(Equipment, Flags) -> P,
 {
-    let mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
+    let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
+    expand_evasions(ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
     let wuse = WeaponUse::new(&mbook);
     let mut memo = Memoz::default();

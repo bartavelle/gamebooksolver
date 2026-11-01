@@ -1,5 +1,8 @@
-use crate::lonewolf::chapter::{BoolCond, CanHunt, ChapterId, ChapterOutcome, Endurance, FightModifier, SimpleOutcome};
-use crate::lonewolf::combat::{CombatInfo, Escaped, Memoz};
+use crate::lonewolf::chapter::{
+    BoolCond, CanHunt, ChapterId, ChapterOutcome, Endurance, FightDetails, FightModifier, SimpleOutcome,
+};
+use crate::lonewolf::combat::{CombatInfo, Escaped, Memoz, RoundEnd};
+use crate::lonewolf::evasion::is_story_chapter;
 use crate::lonewolf::mini::{Book, CharacterConstant, Equipment, Item, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Discipline, Flag, max_hp};
 use crate::solver::base::{Outcome, Proba, optimize_outcome};
@@ -90,16 +93,16 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
     match outcome {
         ChapterOutcome::Goto(cid2) => {
             // must be checked before healing
-            let max_chapter = ChapterId(if ccst.bookid == Book::Book05 { 400 } else { 350 });
+            let story_chapter = is_story_chapter(ccst.bookid, cid);
             let mut nv = *cvar;
-            if cid < max_chapter && cvar.flags.has(Flag::Poisonned2) {
+            if story_chapter && cvar.flags.has(Flag::Poisonned2) {
                 update_simple(&mut nv, ccst, &SimpleOutcome::DamagePlayer(Endurance(2)));
                 if nv.curendurance > 0 {
                     vec![Proba::certain(NextStep::NewChapter(cid2.0, nv))]
                 } else {
                     vec![Proba::certain(NextStep::HasLost(cid.0))]
                 }
-            } else if cid < max_chapter
+            } else if story_chapter
                 && ccst.discipline.contains(&Discipline::Healing)
                 && !cvar.flags.has(Flag::HadCombat)
             {
@@ -201,66 +204,83 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
             let out: Outcome<P, NextStep<PREV>> = cinfo
                 .fight(memo)
                 .into_iter()
-                .flat_map(|r| {
-                    let (noutcome, charendurance): (ChapterOutcome<P>, Endurance) = match r.v {
-                        Escaped::Std(n) => {
-                            let x: &ChapterOutcome<P> = nxt;
-                            (x.clone(), n)
-                        }
-                        Escaped::Escaped(ecid, n) => (ChapterOutcome::Goto(ecid), n),
-                        Escaped::LateWin(ecid, n) => (ChapterOutcome::Goto(ecid), n),
-                        Escaped::Lost(ecid) => (ChapterOutcome::Goto(ecid), Endurance(1)),
-                        Escaped::Stopped(ecid, n) => (ChapterOutcome::Goto(ecid), n),
-                    };
-                    let mut nv: CharacterVariableG<PREV> = *cvar;
-                    nv.flags.set(Flag::HadCombat);
-                    if !fd.fight_mod.contains(&FightModifier::MultiFight) {
-                        nv.flags.unset(Flag::StrengthPotionActive);
-                        nv.flags.unset(Flag::PotentStrengthPotionActive);
-                    }
-                    if let Some(cid2) = fd
-                        .fight_mod
-                        .iter()
-                        .filter_map(|m| match m {
-                            FightModifier::FakeFight(cid) => Some(cid),
-                            _ => None,
-                        })
-                        .next()
-                    {
-                        if charendurance.dead() {
-                            vec![Proba {
-                                v: NextStep::NewChapter(cid2.0, nv),
-                                p: r.p,
-                            }]
-                        } else {
-                            update(memo, ccst, &nv, cid, &noutcome)
-                                .into_iter()
-                                .map(|r2| Proba {
-                                    p: r2.p.mul(&r.p),
-                                    v: r2.v,
-                                })
-                                .collect()
-                        }
-                    } else if charendurance.dead() {
+                .flat_map(|r| after_fight(memo, ccst, cvar, cid, fd, nxt, r))
+                .collect();
+            optimize_outcome(out)
+        }
+        ChapterOutcome::EnterFight(_, first_round) => {
+            let mut nv = *cvar;
+            nv.flags.set(Flag::HadCombat);
+            vec![Proba::certain(NextStep::NewChapter(first_round.0, nv))]
+        }
+        ChapterOutcome::Round(fd, nxt, next_rounds) => {
+            let out: Outcome<P, NextStep<PREV>> = CombatInfo::make(ccst, cvar, fd)
+                .one_round()
+                .into_iter()
+                .flat_map(|r| match r.v {
+                    RoundEnd::Over(e) => after_fight(memo, ccst, cvar, cid, fd, nxt, Proba { p: r.p, v: e }),
+                    RoundEnd::Next(lw, op) => {
+                        let mut nv = *cvar;
+                        nv.flags.set(Flag::HadCombat);
+                        nv.curendurance = lw.0;
+                        let next = next_rounds[op.0 as usize];
                         vec![Proba {
-                            v: NextStep::HasLost(cid.0),
                             p: r.p,
+                            v: NextStep::NewChapter(next.0, nv),
                         }]
-                    } else {
-                        nv.curendurance = charendurance.0;
-                        update(memo, ccst, &nv, cid, &noutcome)
-                            .into_iter()
-                            .map(|r2| Proba {
-                                p: r2.p.mul(&r.p),
-                                v: r2.v,
-                            })
-                            .collect()
                     }
                 })
                 .collect();
             optimize_outcome(out)
         }
     }
+}
+
+fn after_fight<P: Rational, PREV: StoredEquipment>(
+    memo: &mut Memoz<P>,
+    ccst: &CharacterConstant,
+    cvar: &CharacterVariableG<PREV>,
+    cid: ChapterId,
+    fd: &FightDetails<P>,
+    nxt: &ChapterOutcome<P>,
+    r: Proba<P, Escaped<Endurance>>,
+) -> Outcome<P, NextStep<PREV>> {
+    let (noutcome, charendurance): (ChapterOutcome<P>, Endurance) = match r.v {
+        Escaped::Std(n) => (nxt.clone(), n),
+        Escaped::Escaped(ecid, n) => (ChapterOutcome::Goto(ecid), n),
+        Escaped::LateWin(ecid, n) => (ChapterOutcome::Goto(ecid), n),
+        Escaped::Lost(ecid) => (ChapterOutcome::Goto(ecid), Endurance(1)),
+        Escaped::Stopped(ecid, n) => (ChapterOutcome::Goto(ecid), n),
+    };
+    let mut nv: CharacterVariableG<PREV> = *cvar;
+    nv.flags.set(Flag::HadCombat);
+    if !fd.fight_mod.contains(&FightModifier::MultiFight) {
+        nv.flags.unset(Flag::StrengthPotionActive);
+        nv.flags.unset(Flag::PotentStrengthPotionActive);
+    }
+    let fake = fd.fight_mod.iter().find_map(|m| match m {
+        FightModifier::FakeFight(cid) => Some(cid),
+        _ => None,
+    });
+    if charendurance.dead() {
+        return vec![Proba {
+            v: match fake {
+                Some(cid2) => NextStep::NewChapter(cid2.0, nv),
+                None => NextStep::HasLost(cid.0),
+            },
+            p: r.p,
+        }];
+    }
+    if fake.is_none() {
+        nv.curendurance = charendurance.0;
+    }
+    update(memo, ccst, &nv, cid, &noutcome)
+        .into_iter()
+        .map(|r2| Proba {
+            p: r2.p.mul(&r.p),
+            v: r2.v,
+        })
+        .collect()
 }
 
 #[cfg(test)]

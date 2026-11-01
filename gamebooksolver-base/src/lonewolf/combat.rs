@@ -22,14 +22,14 @@ pub struct CombatInfo<P> {
     skilldiff: i8,
     specialization: Option<Weapon>,
     weapons: Vec<Weapon>,
-    modifiers: Vec<FightModifier<P>>,
+    pub(crate) modifiers: Vec<FightModifier<P>>,
     mindblast: bool,
     mindshield: bool,
     cflags: Flags,
     shield: bool,
     silverhelm: bool,
-    lwendurance: Endurance,
-    opendurance: Endurance,
+    pub(crate) lwendurance: Endurance,
+    pub(crate) opendurance: Endurance,
 }
 
 type MemoSimpleFight<P> = Cache<(CombatSkill, Endurance, Endurance), Outcome<P, (Endurance, Endurance)>>;
@@ -201,6 +201,11 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
     }
 
     pub fn fight_round(&self) -> Outcome<P, (Endurance, Endurance)> {
+        optimize_outcome(self.round_results())
+    }
+
+    // one result for each random number, starting with 1, and ending with 0
+    fn round_results(&self) -> Outcome<P, (Endurance, Endurance)> {
         let ratio = self.get_ratio();
         let modifiers = self.curmodifiers();
         let mut o: Outcome<P, (Endurance, Endurance)> = Vec::new();
@@ -239,8 +244,48 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
                 ),
             })
         }
+        o
+    }
 
-        optimize_outcome(o)
+    /// A single round of a fight that behaves like `fight`, for fights where the player can decide after each round.
+    pub fn one_round(&self) -> Outcome<P, RoundEnd> {
+        let modifiers = self.curmodifiers();
+        let (mut onlose, mut ondamage, mut notyetwon) = (None, None, None);
+        for m in &modifiers {
+            match m {
+                FightModifier::OnLose(cid) => onlose = Some(*cid),
+                FightModifier::OnDamage(cid) => ondamage = Some(*cid),
+                FightModifier::OnNotYetWon(cid) => notyetwon = Some(*cid),
+                FightModifier::Poisonous(_) | FightModifier::StopFight(_) | FightModifier::Evaded(_) => {
+                    panic!("Can't be played one round at a time: {m:?}")
+                }
+                _ => (),
+            }
+        }
+        // a late win only counts once all the timers have expired
+        let timer_running = self.modifiers.iter().any(|x| matches!(x, FightModifier::Timed(_, _)));
+        optimize_outcome(
+            self.fight_round()
+                .into_iter()
+                .map(|r| Proba {
+                    p: r.p,
+                    v: if r.v.0.dead() {
+                        RoundEnd::Over(onlose.map_or(Escaped::Std(Endurance(0)), Escaped::Lost))
+                    } else if let Some(dcid) = ondamage
+                        && r.v.0 < self.lwendurance
+                    {
+                        RoundEnd::Over(Escaped::Stopped(dcid, r.v.0))
+                    } else if r.v.1.dead() {
+                        RoundEnd::Over(match notyetwon {
+                            Some(ny) if !timer_running => Escaped::LateWin(ny, r.v.0),
+                            _ => Escaped::Std(r.v.0),
+                        })
+                    } else {
+                        RoundEnd::Next(r.v.0, r.v.1)
+                    },
+                })
+                .collect(),
+        )
     }
 
     pub fn fight(&self, memo: &mut Memoz<P>) -> Outcome<P, Escaped<Endurance>> {
@@ -476,7 +521,7 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
     }
 }
 
-fn decrement_timed<P: Rational>(m: FightModifier<P>) -> Option<FightModifier<P>> {
+pub(crate) fn decrement_timed<P: Rational>(m: FightModifier<P>) -> Option<FightModifier<P>> {
     match m {
         FightModifier::Timed(n, x) => {
             if n > 1 {
@@ -504,6 +549,13 @@ fn get_timed<P: Rational>(m: &FightModifier<P>) -> Option<&FightModifier<P>> {
         },
         _ => Some(m),
     }
+}
+
+#[derive(PartialEq, Eq, Hash, Clone, PartialOrd, Ord, Debug)]
+pub enum RoundEnd {
+    Over(Escaped<Endurance>),
+    /// The endurance of the player and of the opponent
+    Next(Endurance, Endurance),
 }
 
 #[derive(PartialEq, Eq, Hash, Clone, PartialOrd, Ord, Debug)]
