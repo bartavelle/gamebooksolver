@@ -206,15 +206,13 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
             }
         }
         Decision::RetrieveEquipment(nxt) => {
-            let mut nv = cvar.clone();
-            let cur = nv.cequipment;
-            nv.cequipment = nv.cprevequipment.into();
             let rdec: &Decision<P> = nxt;
-            let ndec: Decision<P> = cur
+            let ndec: Decision<P> = cvar
+                .cequipment
                 .items()
                 .into_iter()
                 .fold(rdec.clone(), |acc, (i, q)| Decision::CanTake(i, q, Box::new(acc)));
-            flatten_decision(ccst, &nv, &ndec)
+            with_effect(&[SimpleOutcome::RetrieveEquipment], &ndec)
         }
         Decision::AfterCombat(nxt) => {
             let missing_hp = max_hp(ccst, cvar) - cvar.curendurance;
@@ -452,9 +450,58 @@ mod test {
     use super::*;
     use crate::lonewolf::{
         chapter::{BoolCond, ChapterId},
-        mini::CharacterVariable,
+        combat::Memoz,
+        mini::{CharacterVariable, NextStep},
+        rules::update,
     };
     use num_rational::BigRational;
+
+    fn book_char(bookid: Book) -> CharacterConstant {
+        CharacterConstant {
+            bookid,
+            combat_skill: 15,
+            discipline: vec![],
+            maxendurance: 20,
+        }
+    }
+
+    fn goto(cid: u16) -> Decision<BigRational> {
+        Decision::None(ChapterOutcome::Goto(ChapterId(cid)))
+    }
+
+    // every state that can be reached by making any of the choices
+    fn choices_results(
+        ccst: &CharacterConstant,
+        cvar: &CharacterVariable,
+        dec: &Decision<BigRational>,
+    ) -> Vec<Vec<NextStep<Equipment>>> {
+        let mut memo = Memoz::default();
+        flatten_decision(ccst, cvar, dec)
+            .iter()
+            .map(|(_, o)| {
+                update(&mut memo, ccst, cvar, ChapterId(1), o)
+                    .into_iter()
+                    .map(|r| r.v)
+                    .collect()
+            })
+            .collect()
+    }
+
+    #[test]
+    fn retrieve_equipment() {
+        let ccst = book_char(Book::Book05);
+        let mut cvar = CharacterVariable::new(20);
+        cvar.cprevequipment.add_item(&Item::Weapon(Weapon::Sword), 1);
+        cvar.cprevequipment.add_item(&Item::Meal, 2);
+        cvar.cequipment.add_item(&Item::Gold, 3);
+        cvar.cequipment.add_item(&Item::Potion2Hp, 1);
+        let mut expected = CharacterVariable::new(20);
+        expected.cequipment = cvar.cprevequipment;
+        expected.cequipment.add_item(&Item::Gold, 3);
+        expected.cequipment.add_item(&Item::Potion2Hp, 1);
+        let results = choices_results(&ccst, &cvar, &Decision::RetrieveEquipment(Box::new(goto(58))));
+        assert_eq!(results, vec![vec![NextStep::NewChapter(58, expected)]]);
+    }
 
     #[test]
     fn flatten_cond() {

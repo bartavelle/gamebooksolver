@@ -258,6 +258,7 @@ pub enum SimpleOutcome {
     LoseItemKind(Vec<Slot>),
     MustEat(CanHunt),
     StoreEquipment,
+    RetrieveEquipment,
     SetFlag(Flag),
     ClearFlag(Flag),
 }

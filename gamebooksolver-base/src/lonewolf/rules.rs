@@ -49,6 +49,10 @@ pub fn update_simple<PREV: StoredEquipment>(
             cvar.cprevequipment = cvar.cequipment.into();
             cvar.cequipment = Equipment::default();
         }
+        RetrieveEquipment => {
+            cvar.cequipment = cvar.cprevequipment.into();
+            cvar.cprevequipment = PREV::default();
+        }
         MustEat(canhunt) => {
             let b01ls = ccst.bookid == Book::Book01 && cvar.cequipment.has_itemb(&Item::Laumspur);
             if *canhunt == CanHunt::Hunt && ccst.discipline.contains(&Discipline::Hunting) {
