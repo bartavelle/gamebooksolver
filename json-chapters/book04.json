@@ -1092,7 +1092,14 @@
               "Conditional": [
                 {
                   "Not": {
-                    "HasDiscipline": "Tracking"
+                    "CAnd": [
+                      {
+                        "HasDiscipline": "Tracking"
+                      },
+                      {
+                        "HasLevel": "Aspirant"
+                      }
+                    ]
                   }
                 },
                 {
@@ -1713,7 +1720,14 @@
               "Conditional": [
                 {
                   "Not": {
-                    "HasDiscipline": "Healing"
+                    "CAnd": [
+                      {
+                        "HasDiscipline": "Healing"
+                      },
+                      {
+                        "HasLevel": "Warmarn"
+                      }
+                    ]
                   }
                 },
                 {
@@ -7869,7 +7883,14 @@
                         "Conditional": [
                           {
                             "Not": {
-                              "HasDiscipline": "Camouflage"
+                              "CAnd": [
+                                {
+                                  "HasDiscipline": "Camouflage"
+                                },
+                                {
+                                  "HasLevel": "Guardian"
+                                }
+                              ]
                             }
                           },
                           {
