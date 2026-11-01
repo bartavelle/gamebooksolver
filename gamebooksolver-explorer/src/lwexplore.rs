@@ -32,7 +32,7 @@ pub fn explore_compact<PREV: StoredEquipment>(
         book.iter().cloned().map(|(k, c)| (k, convert_chapter(c))).collect();
     expand_evasions(soldump.soldesc.ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = HashMap::new();
-    let wuse = WeaponUse::new(&mbook);
+    let wuse = WeaponUse::new(soldump.soldesc.ccst.bookid, &mbook);
     let mut memo_score = HashMap::new();
 
     go_compact(
@@ -56,7 +56,7 @@ pub fn explore_solution<PREV: StoredEquipment>(
     let mut mbook: HashMap<ChapterId, Chapter<Rational>> = book.iter().cloned().collect();
     expand_evasions(soldump.soldesc.ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = HashMap::new();
-    let wuse = WeaponUse::new(&mbook);
+    let wuse = WeaponUse::new(soldump.soldesc.ccst.bookid, &mbook);
     let content: HashMap<NextStep<PREV>, ChoppedSolution<Rational, NextStep<PREV>>> =
         soldump.content.into_iter().collect();
 

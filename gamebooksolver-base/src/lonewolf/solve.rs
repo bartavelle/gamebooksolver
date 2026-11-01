@@ -91,7 +91,8 @@ where
     }
 }
 
-/// The scorer must not depend on ordinary weapons, see `WeaponUse`.
+/// The scorer must only depend on what `get_boundary` lists for this book, as the rest of the state can be changed, see
+/// `WeaponUse`.
 pub fn solve_lws<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
     scorer: F,
     tgt: &[ChapterId],
@@ -107,7 +108,7 @@ where
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
-    let wuse = WeaponUse::new(&mbook);
+    let wuse = WeaponUse::new(ccst.bookid, &mbook);
     let mut memo = Memoz::default();
     let o = solve::<NextStep<PREV>, _, _, _, _, _>(
         &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),
@@ -131,7 +132,8 @@ where
 }
 
 /// Same as `solve_lws`, keeping only the score and the index of the best choice of each state, which uses a lot less memory.
-/// The scorer must not depend on ordinary weapons, see `WeaponUse`.
+/// The scorer must only depend on what `get_boundary` lists for this book, as the rest of the state can be changed, see
+/// `WeaponUse`.
 pub fn solve_lws_compact<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
     scorer: F,
     tgt: &[ChapterId],
@@ -147,7 +149,7 @@ where
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
-    let wuse = WeaponUse::new(&mbook);
+    let wuse = WeaponUse::new(ccst.bookid, &mbook);
     let mut memo = Memoz::default();
     let o = solve_compact::<NextStep<PREV>, _, _, _, _, _>(
         &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),

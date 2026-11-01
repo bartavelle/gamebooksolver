@@ -3,7 +3,7 @@ mod lwexplore;
 use anyhow::Context;
 use clap::{Parser, Subcommand};
 use gamebooksolver_base::lonewolf::chapter::*;
-use gamebooksolver_base::lonewolf::data::Multistat;
+use gamebooksolver_base::lonewolf::data::{Multistat, get_boundary};
 use gamebooksolver_base::lonewolf::mini::CharacterVariableG;
 use gamebooksolver_base::lonewolf::mini::CompactSolutionG;
 use gamebooksolver_base::lonewolf::mini::GSolDump;
@@ -27,7 +27,7 @@ use std::time::Duration;
 
 use gamebooksolver_base::lonewolf::mini::{
     Book, CVarState, CharacterConstant, CompactSolution, CompactState, Discipline, Equipment, Flag, Flags, Item,
-    NextStep, SolDesc, SolutionDump, Weapon, mkchar,
+    NextStep, SolDesc, SolutionDump, mkchar,
 };
 
 use crate::lwexplore::explore_compact;
@@ -261,35 +261,6 @@ fn chop_solution<PREV: StoredEquipment>(
         SolNode::Chosen(sc, outcome) => {
             ChoppedSolution::CNode(sc, outcome.into_iter().map(|x| (Some(x.v), x.p)).collect())
         }
-    }
-}
-
-fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
-    use Flag::*;
-    use Item::{BodyArmor, Gold, Helmet, StrengthPotion, StrengthPotion4};
-
-    match bookid {
-        Book::Book01 => ([Gold].into_iter().collect(), HashSet::new()),
-        Book::Book02 => ([Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
-        Book::Book03 => (
-            [Item::Weapon(Weapon::Sommerswerd), StrengthPotion4, Item::SILVERHELMET]
-                .into_iter()
-                .collect(),
-            HashSet::new(),
-        ),
-        Book::Book04 => (
-            [
-                Item::Weapon(Weapon::Sommerswerd),
-                Item::SILVERHELMET,
-                BodyArmor,
-                StrengthPotion,
-                StrengthPotion4,
-            ]
-            .into_iter()
-            .collect(),
-            [FoughtElix, PermanentSkillReduction2].into_iter().collect(),
-        ),
-        Book::Book05 => (HashSet::new(), HashSet::new()),
     }
 }
 

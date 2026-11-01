@@ -577,7 +577,7 @@ mod test {
         ]
         .into_iter()
         .collect();
-        (WeaponUse::new(&book), pchoice)
+        (WeaponUse::new(Book::Book02, &book), pchoice)
     }
 
     fn two_weapons() -> CharacterVariable {
@@ -689,6 +689,125 @@ mod test {
         // an unknown chapter renames nothing
         let c = with(&[Weapon::Axe]);
         assert_eq!(wuse.canonical(&ccst, ChapterId(99), &c), c);
+    }
+
+    fn liveness_book(pchoice: Decision<BigRational>, bookid: Book) -> (WeaponUse, ChapterId) {
+        let chapter = |pchoice: Decision<BigRational>| Chapter {
+            title: String::new(),
+            desc: String::new(),
+            pchoice,
+        };
+        let book: HashMap<ChapterId, Chapter<BigRational>> = [
+            (ChapterId(1), chapter(pchoice)),
+            (ChapterId(2), chapter(Decision::None(ChapterOutcome::GameWon))),
+        ]
+        .into_iter()
+        .collect();
+        (WeaponUse::new(bookid, &book), ChapterId(1))
+    }
+
+    fn full_character() -> CharacterVariable {
+        let mut c = CharacterVariable::new(20);
+        c.add_item(&Item::Backpack, 1);
+        c.add_item(&Item::Meal, 2);
+        c.add_item(&Item::Gold, 10);
+        c.add_item(&Item::GenSpecial(1), 1);
+        c.add_item(&Item::GenBackpack(1), 1);
+        c.set_flag(Flag::Knowledge01);
+        c.set_flag(Flag::HadCombat);
+        c
+    }
+
+    #[test]
+    fn what_is_never_read_is_forgotten() {
+        let (wuse, cid) = liveness_book(goto(2), Book::Book02);
+        let got = wuse.canonical(&book_char(Book::Book02), cid, &full_character());
+        let mut expected = CharacterVariable::new(20);
+        expected.add_item(&Item::Backpack, 1);
+        expected.add_item(&Item::Meal, 2);
+        expected.set_flag(Flag::HadCombat);
+        assert_eq!(got, expected);
+    }
+
+    #[test]
+    fn what_can_be_read_is_kept() {
+        let c = full_character();
+        let ccst = book_char(Book::Book02);
+        let check = |cond: BoolCond, item: Option<Item>, flag: Option<Flag>| {
+            let dec = Decision::Conditional(cond, Box::new(goto(2)));
+            let (wuse, cid) = liveness_book(dec, Book::Book02);
+            let got = wuse.canonical(&ccst, cid, &c);
+            if let Some(i) = item {
+                assert!(got.cequipment.has_itemb(&i), "{i:?}");
+            }
+            if let Some(f) = flag {
+                assert!(got.flags.has(f), "{f:?}");
+            }
+        };
+        check(BoolCond::HasItem(Item::Gold, 3), Some(Item::Gold), None);
+        check(BoolCond::HasItem(Item::GenSpecial(1), 1), Some(Item::GenSpecial(1)), None);
+        check(BoolCond::HasItem(Item::GenBackpack(1), 1), Some(Item::GenBackpack(1)), None);
+        check(BoolCond::HasFlag(Flag::Knowledge01), None, Some(Flag::Knowledge01));
+    }
+
+    #[test]
+    fn backpack_items_matter_while_space_matters() {
+        let ccst = book_char(Book::Book02);
+        let dec = Decision::CanTake(Item::Meal, 1, Box::new(goto(2)));
+        let (wuse, cid) = liveness_book(dec, Book::Book02);
+        let got = wuse.canonical(&ccst, cid, &full_character());
+        assert!(got.cequipment.has_itemb(&Item::GenBackpack(1)));
+        // a special item does not use any space
+        assert!(!got.cequipment.has_itemb(&Item::GenSpecial(1)));
+    }
+
+    #[test]
+    fn buying_needs_gold_and_a_sale_needs_the_item() {
+        let ccst = book_char(Book::Book02);
+        let (wuse, cid) = liveness_book(Decision::Canbuy(Item::GenSpecial(5), Price(3), Box::new(goto(2))), Book::Book02);
+        assert!(wuse.canonical(&ccst, cid, &full_character()).cequipment.has_itemb(&Item::Gold));
+        let (wuse, cid) = liveness_book(Decision::Cansell(Item::GenSpecial(1), Price(3), Box::new(goto(2))), Book::Book02);
+        assert!(wuse.canonical(&ccst, cid, &full_character()).cequipment.has_itemb(&Item::GenSpecial(1)));
+    }
+
+    #[test]
+    fn what_is_kept_for_the_next_book_is_not_forgotten() {
+        // the gold is kept after book 1, and the flag after book 4
+        let (wuse, cid) = liveness_book(goto(2), Book::Book01);
+        assert!(wuse.canonical(&book_char(Book::Book01), cid, &full_character()).cequipment.has_itemb(&Item::Gold));
+        let mut c = full_character();
+        c.set_flag(Flag::FoughtElix);
+        let (wuse, cid) = liveness_book(goto(2), Book::Book04);
+        assert!(wuse.canonical(&book_char(Book::Book04), cid, &c).flags.has(Flag::FoughtElix));
+    }
+
+    #[test]
+    fn what_scores_the_next_book_is_never_changed() {
+        use crate::lonewolf::data::get_boundary;
+        // a chapter that reads nothing, so that all that could be forgotten is
+        for bookid in [Book::Book01, Book::Book02, Book::Book03, Book::Book04, Book::Book05] {
+            let (wuse, cid) = liveness_book(goto(2), bookid);
+            let ccst = book_char(bookid);
+            let (items, flags) = get_boundary(bookid);
+            for i in &items {
+                let mut c = CharacterVariable::new(20);
+                c.add_item(i, 3);
+                let got = wuse.canonical(&ccst, cid, &c);
+                assert_eq!(got.cequipment, c.cequipment, "{bookid:?} {i:?}");
+            }
+            for f in &flags {
+                let mut c = CharacterVariable::new(20);
+                c.set_flag(*f);
+                assert!(wuse.canonical(&ccst, cid, &c).flags.has(*f), "{bookid:?} {f:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn unknown_chapters_forget_nothing() {
+        let (wuse, _) = liveness_book(goto(2), Book::Book02);
+        let c = full_character();
+        assert_eq!(wuse.canonical(&book_char(Book::Book02), ChapterId(99), &c), c);
     }
 
     #[test]

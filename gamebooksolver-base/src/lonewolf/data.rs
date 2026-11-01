@@ -3,8 +3,8 @@ use crate::lonewolf::chapter::{
     SpecialChapter,
 };
 use crate::lonewolf::mini::{
-    Book, CVarState, CharacterConstant, CharacterVariableG, Discipline, Equipment, Item, NextStep, SolutionDump,
-    StoredEquipment, Weapon,
+    Book, CVarState, CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Flags, Item, NextStep, Slot,
+    SolutionDump, StoredEquipment, Weapon,
 };
 use crate::solver::rational::Rational;
 use serde::{Deserialize, Serialize};
@@ -132,6 +132,9 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
     }
 }
 
+// the number of generic special and backpack items
+const GEN_ITEMS: u8 = 12;
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
 pub struct WeaponSet(u16);
 
@@ -242,14 +245,216 @@ impl WeaponSet {
     }
 }
 
-/// For each chapter, the weapons the rest of the game can tell apart from the others, because they are named in that
-/// chapter or in one that can be reached from it. Fights are not looked at, as they only depend on the weapon skill and
-/// on the two magical weapons.
+/// The items and flags that are kept from a book to the next one, and so that have an influence on the final score.
+pub fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
+    use Flag::*;
+    use Item::{BodyArmor, Gold, Helmet, StrengthPotion, StrengthPotion4};
+
+    match bookid {
+        Book::Book01 => ([Gold].into_iter().collect(), HashSet::new()),
+        Book::Book02 => ([Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
+        Book::Book03 => (
+            [Item::Weapon(Weapon::Sommerswerd), StrengthPotion4, Item::SILVERHELMET]
+                .into_iter()
+                .collect(),
+            HashSet::new(),
+        ),
+        Book::Book04 => (
+            [
+                Item::Weapon(Weapon::Sommerswerd),
+                Item::SILVERHELMET,
+                BodyArmor,
+                StrengthPotion,
+                StrengthPotion4,
+            ]
+            .into_iter()
+            .collect(),
+            [FoughtElix, PermanentSkillReduction2].into_iter().collect(),
+        ),
+        Book::Book05 => (HashSet::new(), HashSet::new()),
+    }
+}
+
+/// The parts of the state that can have an influence on the rest of the game. This only covers the parts that are only
+/// read by what is written in the books, the others being always kept: the shield, armor, helmets, backpack, meals and
+/// potions are read by the rules, as well as the flags in RULES_FLAGS.
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
+struct Reads {
+    special: u16,
+    backpack: u16,
+    gold: bool,
+    flags: u32,
+    // the number of items in the backpack, that can make it impossible to take something
+    backpack_space: bool,
+}
+
+impl Reads {
+    const ALL: Reads = Reads {
+        special: u16::MAX,
+        backpack: u16::MAX,
+        gold: true,
+        flags: u32::MAX,
+        backpack_space: true,
+    };
+
+    fn merge(self, o: Reads) -> Reads {
+        Reads {
+            special: self.special | o.special,
+            backpack: self.backpack | o.backpack,
+            gold: self.gold || o.gold,
+            flags: self.flags | o.flags,
+            backpack_space: self.backpack_space || o.backpack_space,
+        }
+    }
+
+    /// What is always read in this book, by the rules or for the final score
+    fn always(bookid: Book) -> Reads {
+        let mut r = Reads {
+            flags: RULES_FLAGS.0,
+            ..Reads::default()
+        };
+        // the silver helmet is used in fights, the potion of book 5 is used by the rules
+        r.item(&Item::SILVERHELMET);
+        if bookid == Book::Book05 {
+            r.item(&Item::GenBackpack(2));
+        }
+        let (items, flags) = get_boundary(bookid);
+        items.iter().for_each(|i| r.item(i));
+        flags.iter().for_each(|f| r.flags |= 1 << (*f as usize));
+        r
+    }
+
+    fn item(&mut self, i: &Item) {
+        match i {
+            Item::GenSpecial(n) => self.special |= 1 << *n,
+            Item::GenBackpack(n) => self.backpack |= 1 << *n,
+            Item::Gold => self.gold = true,
+            _ => (),
+        }
+    }
+
+    fn slot(&mut self, s: &Slot) {
+        match s {
+            Slot::Backpack => self.backpack_space = true,
+            Slot::Special => self.special = u16::MAX,
+            Slot::Pouch => self.gold = true,
+            Slot::Weapon => (),
+        }
+    }
+
+    fn cond(&mut self, bc: &BoolCond) {
+        match bc {
+            BoolCond::HasItem(i, _) => self.item(i),
+            BoolCond::HasFlag(f) => self.flags |= 1 << (*f as usize),
+            BoolCond::Not(c) => self.cond(c),
+            BoolCond::COr(a, b) | BoolCond::CAnd(a, b) => {
+                self.cond(a);
+                self.cond(b);
+            }
+            BoolCond::HasDiscipline(_) | BoolCond::Always(_) | BoolCond::HasEndurance(_) | BoolCond::HasLevel(_) => (),
+        }
+    }
+
+    fn outcome<P>(&mut self, co: &ChapterOutcome<P>) {
+        match co {
+            ChapterOutcome::Fight(_, o) | ChapterOutcome::Round(_, o, _) | ChapterOutcome::Simple(_, o) => self.outcome(o),
+            ChapterOutcome::LoseItemFrom(s, _, o) => {
+                self.slot(s);
+                self.outcome(o);
+            }
+            ChapterOutcome::OneRound(_, a, b, c) => {
+                self.outcome(a);
+                self.outcome(b);
+                self.outcome(c);
+            }
+            ChapterOutcome::Randomly(lst) => lst.iter().for_each(|(_, o)| self.outcome(o)),
+            ChapterOutcome::Conditionally(lst) => lst.iter().for_each(|(c, o)| {
+                self.cond(c);
+                self.outcome(o);
+            }),
+            ChapterOutcome::Goto(_)
+            | ChapterOutcome::EnterFight(_, _)
+            | ChapterOutcome::GameLost
+            | ChapterOutcome::GameWon => (),
+        }
+    }
+
+    fn decision<P>(&mut self, dec: &Decision<P>) {
+        match dec {
+            Decision::Decisions(lst) => lst.iter().for_each(|(_, d)| self.decision(d)),
+            Decision::AfterCombat(d) => self.decision(d),
+            // taking back the items depends on the space in the backpack
+            Decision::RetrieveEquipment(d) => {
+                self.backpack_space = true;
+                self.decision(d);
+            }
+            Decision::RemoveItemFrom(s, _, d) => {
+                self.slot(s);
+                self.decision(d);
+            }
+            Decision::CanTake(i, _, d) => {
+                self.slot_space(i);
+                self.decision(d);
+            }
+            Decision::Canbuy(i, _, d) => {
+                // the gold can be spent only if the item can be taken, and it depends on the items that are held
+                self.item(i);
+                self.gold = true;
+                self.slot_space(i);
+                self.decision(d);
+            }
+            Decision::Cansell(i, _, d) => {
+                self.item(i);
+                self.decision(d);
+            }
+            Decision::Conditional(c, d) => {
+                self.cond(c);
+                self.decision(d);
+            }
+            Decision::Special(SpecialChapter::Cartwheel) => self.gold = true,
+            Decision::Special(SpecialChapter::Portholes | SpecialChapter::B05S127) => (),
+            Decision::None(o) => self.outcome(o),
+            Decision::EvadeFight(_, _, _, o) => self.outcome(o),
+        }
+    }
+
+    fn slot_space(&mut self, i: &Item) {
+        if i.slot() == Slot::Backpack {
+            self.backpack_space = true;
+        }
+    }
+}
+
+const RULES_FLAGS: Flags = Flags(0)
+    .setn(Flag::Poisonned2)
+    .setn(Flag::HadCombat)
+    .setn(Flag::LimbDeath)
+    .setn(Flag::PermanentSkillReduction)
+    .setn(Flag::PermanentSkillReduction2)
+    .setn(Flag::StrengthPotionActive)
+    .setn(Flag::PotentStrengthPotionActive);
+
+/// What can matter from a state in each chapter. For the weapons, those that the rest of the game can tell apart from the
+/// others, because they are named in that chapter or in one that can be reached from it. Fights are not looked at, as
+/// they only depend on the weapon skill and on the two magical weapons. For the other items and flags, those that can
+/// be read in that chapter or in one that can be reached from it, see `Reads`.
 #[derive(Debug, Clone, Default)]
-pub struct WeaponUse(HashMap<ChapterId, WeaponSet>);
+pub struct WeaponUse {
+    weapons: HashMap<ChapterId, WeaponSet>,
+    reads: HashMap<ChapterId, Reads>,
+}
 
 impl WeaponUse {
-    pub fn new<P>(book: &HashMap<ChapterId, Chapter<P>>) -> Self {
+    pub fn new<P>(bookid: Book, book: &HashMap<ChapterId, Chapter<P>>) -> Self {
+        let always = Reads::always(bookid);
+        let mut reads: HashMap<ChapterId, Reads> = book
+            .iter()
+            .map(|(cid, chapter)| {
+                let mut r = always;
+                r.decision(&chapter.pchoice);
+                (*cid, r)
+            })
+            .collect();
         let mut used: HashMap<ChapterId, WeaponSet> = book
             .iter()
             .map(|(cid, chapter)| {
@@ -272,9 +477,16 @@ impl WeaponUse {
                     used.insert(*cid, merged);
                     changed = true;
                 }
+                let merged = dsts
+                    .iter()
+                    .fold(reads[cid], |acc, d| acc.merge(reads.get(d).copied().unwrap_or(Reads::ALL)));
+                if merged != reads[cid] {
+                    reads.insert(*cid, merged);
+                    changed = true;
+                }
             }
             if !changed {
-                return WeaponUse(used);
+                return WeaponUse { weapons: used, reads };
             }
         }
     }
@@ -288,7 +500,7 @@ impl WeaponUse {
         cid: ChapterId,
         cvar: &CharacterVariableG<PREV>,
     ) -> CharacterVariableG<PREV> {
-        let used = self.0.get(&cid).copied().unwrap_or(WeaponSet::ALL);
+        let used = self.weapons.get(&cid).copied().unwrap_or(WeaponSet::ALL);
         let plain: Vec<Weapon> = Weapon::VALUES
             .into_iter()
             .filter(|w| {
@@ -335,6 +547,22 @@ impl WeaponUse {
             prev.add_item(&Item::Weapon(n), 1);
         }
         let mut out = *cvar;
+        // what can't be read anymore does not matter
+        let reads = self.reads.get(&cid).copied().unwrap_or(Reads::ALL);
+        for e in [&mut cur, &mut prev] {
+            if !reads.gold {
+                e.del_item(&Item::Gold, 99);
+            }
+            for n in 0..u16::BITS as u8 {
+                if reads.special & (1 << n) == 0 && n < GEN_ITEMS {
+                    e.del_item(&Item::GenSpecial(n), 1);
+                }
+                if !reads.backpack_space && reads.backpack & (1 << n) == 0 && n < GEN_ITEMS {
+                    e.del_item(&Item::GenBackpack(n), 1);
+                }
+            }
+        }
+        out.flags = Flags(cvar.flags.0 & reads.flags);
         out.cequipment = cur;
         out.cprevequipment = PREV::from(prev);
         out
@@ -346,7 +574,7 @@ impl WeaponUse {
         let mut s = WeaponSet::default();
         s.decision(dec);
         get_destinations(dec).iter().fold(s, |acc, d| {
-            WeaponSet(acc.0 | self.0.get(d).copied().unwrap_or(WeaponSet::ALL).0)
+            WeaponSet(acc.0 | self.weapons.get(d).copied().unwrap_or(WeaponSet::ALL).0)
         })
     }
 }
