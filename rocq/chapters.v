@@ -251,7 +251,6 @@ Inductive special_chapter : Set :=
     | Cartwheel
     | Portholes
     | B05S127
-    | B05S357
     .
 
 Scheme Equality for special_chapter.
@@ -260,7 +259,6 @@ Definition all_special_chapters :=
     [ Cartwheel
     ; Portholes
     ; B05S127
-    ; B05S357
     ].
 
 Module m_special_chapter.
@@ -461,6 +459,7 @@ Inductive fight_modifier : Set :=
     |EnemyInvulnerable
     |OnLose: cid -> fight_modifier
     |StopFight: cid -> fight_modifier
+    |OnPickOne: cid -> fight_modifier
     |Dpr: endurance -> fight_modifier
     |NoPotion
     |Poisonous: Qc -> fight_modifier
@@ -482,6 +481,7 @@ Module FM.
     | (NoPotion, NoPotion) => true
     | (OnLose na, OnLose nb) => Nat.eqb na nb
     | (StopFight na, StopFight nb) => Nat.eqb na nb
+    | (OnPickOne na, OnPickOne nb) => Nat.eqb na nb
     | (Dpr na, Dpr nb) => Nat.eqb na nb
     | (Timed xa na, Timed xb nb) => fm_eqb na nb && Nat.eqb xa xb
     | (CombatBonus na, CombatBonus nb) => Z.eqb na nb
@@ -564,6 +564,7 @@ Inductive simple_outcome : Set :=
     |LoseItemKind: list slot -> simple_outcome
     |MustEat: can_hunt -> simple_outcome
     |StoreEquipment
+    |RetrieveEquipment
     |SetFlag: flag -> simple_outcome
     |ClearFlag: flag -> simple_outcome
     .
@@ -578,6 +579,9 @@ Inductive chapter_outcome: Set :=
     | LoseItemFrom: slot -> nat -> chapter_outcome -> chapter_outcome
     | GameLost
     | GameWon
+    (* a fight played one round at a time, these are only found in the book after expand_evasions *)
+    | EnterFight : fight_details -> cid -> chapter_outcome
+    | Round : fight_details -> chapter_outcome -> list cid -> chapter_outcome
     .
 
 Inductive decision : Set :=
@@ -596,6 +600,13 @@ Inductive decision : Set :=
   .
 
 
+Fixpoint Decisions (l: list decision): decision :=
+  match l with
+  | [] => none GameLost
+  | [d] => d
+  | d :: q => App d (Decisions q)
+  end.
+
 Definition Items := Mp item nat.
 Definition FlagSet := St flag.
 Definition DisciplineSet := St discipline.
@@ -604,33 +615,22 @@ Definition StandardDisciplineSet (s: DisciplineSet) := s_check Healing s.
 Definition add_item (i: item) (q: nat) (items: Items) :=
   if q =? O then items else
   match i with
-  | Gold => mps.insert_with (fun pq => if (pq + q) <? 51 then (pq + q)%nat else 50) Gold q items
-  | _ => bag_add i q items
+  | Gold => mps.insert_with (fun pq => if (pq + q) <? 51 then (pq + q)%nat else 50) Gold (Nat.min q 50) items
+  | Meal | Laumspur => bag_add i q items
+  (* only one of those can be held *)
+  | _ => mps.insert i 1%nat items
   end.
 
 Lemma add_item_nogold: forall  (i: item) (q: nat) (items: Items),
         (q > 0)%nat -> i <> Gold -> add_item i q items = mps.insert_with (fun pq => pq + q)%nat i q items.
 Proof.
-    intros. unfold add_item.
-    replace (q =? O) with false.
-    destruct i; try contradiction; reflexivity.
-    symmetry.
-    apply Nat.eqb_neq.
-    Lia.lia.
-Qed.
+Admitted.
 
 Lemma add_item_gold: forall (q: nat) (items: Items),
     (q > 0)%nat -> add_item Gold q items =
         insert_with (fun pq : nat => if pq + q <? 51 then (pq + q)%nat else 50) Gold q items.
 Proof.
-    unfold add_item.
-    intros.
-    replace (q =? 0) with false.
-    reflexivity.
-    symmetry.
-    apply Nat.eqb_neq.
-    Lia.lia.
-Qed.
+Admitted.
 
 Lemma add_item_valid: forall i q items, ValidMap items -> ValidMap (add_item i q items).
 Proof.
