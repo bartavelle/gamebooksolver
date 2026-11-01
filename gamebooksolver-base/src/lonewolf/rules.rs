@@ -3,7 +3,7 @@ use crate::lonewolf::chapter::{
 };
 use crate::lonewolf::combat::{CombatInfo, Escaped, Memoz, RoundEnd};
 use crate::lonewolf::evasion::is_story_chapter;
-use crate::lonewolf::mini::{Book, CharacterConstant, Equipment, Item, NextStep, StoredEquipment};
+use crate::lonewolf::mini::{Book, CharacterConstant, Equipment, Item, NextStep, Slot, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Discipline, Flag, max_hp};
 use crate::solver::base::{Outcome, Proba, optimize_outcome};
 use crate::solver::rational::Rational;
@@ -42,6 +42,10 @@ pub fn update_simple<PREV: StoredEquipment>(
         GainItem(i, q) => cvar.cequipment.add_item(i, *q as i64),
         LoseItem(i, q) => {
             cvar.cequipment.del_item(i, *q as i64);
+            // what is in the backpack is lost with it
+            if *i == Item::Backpack {
+                cvar.cequipment.del_slot(Slot::Backpack);
+            }
             cvar.clamp_endurance(ccst);
         }
         LoseItemKind(slots) => {
@@ -293,7 +297,7 @@ fn after_fight<P: Rational, PREV: StoredEquipment>(
 mod test {
     use super::*;
     use crate::lonewolf::chapter::{CombatSkill, FightDetails};
-    use crate::lonewolf::mini::{CharacterVariable, NoPrevEq, Slot, Weapon};
+    use crate::lonewolf::mini::{CharacterVariable, NoPrevEq, Weapon};
     use num_bigint::BigInt;
     use num_rational::{BigRational, Ratio};
 

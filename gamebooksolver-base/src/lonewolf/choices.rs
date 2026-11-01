@@ -80,6 +80,7 @@ fn can_take<PREV: Into<Equipment> + From<Equipment> + std::fmt::Debug>(
                 _ => CanTake::MustDrop(weapons.into_iter().map(Item::Weapon).collect()),
             }
         }
+        Slot::Backpack if !cvar.cequipment.has_itemb(&Item::Backpack) => CanTake::Nope,
         Slot::Backpack => {
             let mut bpitems = cvar.cequipment.in_backpack();
             if bpitems.len() > 8 {
@@ -185,6 +186,8 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                 .cequipment
                 .items()
                 .into_iter()
+                // the backpack must be taken before what goes in it
+                .rev()
                 .fold(rdec.clone(), |acc, (i, q)| Decision::CanTake(i, q, Box::new(acc)));
             with_effect(&[SimpleOutcome::RetrieveEquipment], &ndec)
         }
@@ -465,6 +468,7 @@ mod test {
         let ccst = book_char(Book::Book05);
         let mut cvar = CharacterVariable::new(20);
         cvar.cprevequipment.add_item(&Item::Weapon(Weapon::Sword), 1);
+        cvar.cprevequipment.add_item(&Item::Backpack, 1);
         cvar.cprevequipment.add_item(&Item::Meal, 2);
         cvar.cequipment.add_item(&Item::Gold, 3);
         cvar.cequipment.add_item(&Item::Potion2Hp, 1);
@@ -510,6 +514,7 @@ mod test {
     fn can_decline_when_full() {
         let ccst = book_char(Book::Book04);
         let mut cvar = CharacterVariable::new(20);
+        cvar.add_item(&Item::Backpack, 1);
         cvar.add_item(&Item::Meal, 7);
         cvar.add_item(&Item::Potion2Hp, 1);
         let dec = Decision::CanTake(Item::GenBackpack(3), 1, Box::new(goto(2)));
@@ -747,6 +752,48 @@ mod test {
         assert_eq!(opened(10), BigRational::from_i64(1, 10));
         assert_eq!(opened(15), BigRational::from_i64(6, 10));
         assert_eq!(opened(19), BigRational::from_i64(1, 1));
+    }
+
+    #[test]
+    fn backpack_items_need_a_backpack() {
+        let ccst = book_char(Book::Book02);
+        let cvar = CharacterVariable::new(20);
+        let dec = Decision::CanTake(Item::Meal, 1, Box::new(goto(2)));
+        assert_eq!(
+            choices_results(&ccst, &cvar, &dec),
+            vec![vec![NextStep::NewChapter(2, cvar)]]
+        );
+        // taken first, the backpack can hold it
+        let dec = Decision::CanTake(Item::Backpack, 1, Box::new(dec));
+        let mut expected = cvar;
+        expected.add_item(&Item::Backpack, 1);
+        expected.add_item(&Item::Meal, 1);
+        assert_eq!(
+            choices_results(&ccst, &cvar, &dec),
+            vec![vec![NextStep::NewChapter(2, expected)]]
+        );
+    }
+
+    #[test]
+    fn losing_the_backpack_loses_its_content_and_armor_its_points() {
+        let ccst = book_char(Book::Book02);
+        let mut cvar = CharacterVariable::new(24);
+        cvar.add_item(&Item::Backpack, 1);
+        cvar.add_item(&Item::Meal, 2);
+        cvar.add_item(&Item::BodyArmor, 1);
+        let dec = Decision::None(ChapterOutcome::Simple(
+            vec![
+                SimpleOutcome::LoseItem(Item::Backpack, 1),
+                SimpleOutcome::LoseItem(Item::BodyArmor, 1),
+            ],
+            Box::new(ChapterOutcome::Goto(ChapterId(2))),
+        ));
+        let mut expected = CharacterVariable::new(20);
+        expected.curendurance = 20;
+        assert_eq!(
+            choices_results(&ccst, &cvar, &dec),
+            vec![vec![NextStep::NewChapter(2, expected)]]
+        );
     }
 
     #[test]

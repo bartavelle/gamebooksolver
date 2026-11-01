@@ -165,7 +165,8 @@ mod test {
                 },
             ),
         ];
-        let cvar = CharacterVariable::new(20);
+        let mut cvar = CharacterVariable::new(20);
+        cvar.add_item(&Item::Backpack, 1);
         let sol = solve_lws::<BigRational, _, _>(
             |_, _| BigRational::from_i64(1, 1),
             &[ChapterId(3)],
