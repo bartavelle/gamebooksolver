@@ -253,6 +253,7 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
             evaded: Option<ChapterId>,
             poisonous: Option<P>,
             onlose: Option<ChapterId>,
+            ondamage: Option<ChapterId>,
             double_damage: bool,
             undead: bool,
             force_emindblast: bool,
@@ -265,6 +266,7 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
             evaded: None,
             poisonous: None,
             onlose: None,
+            ondamage: None,
             double_damage: false,
             undead: false,
             force_emindblast: false,
@@ -275,6 +277,7 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
         for m in &self.curmodifiers() {
             match m {
                 FightModifier::OnLose(cid) => fightmodifiers.onlose = Some(*cid),
+                FightModifier::OnDamage(cid) => fightmodifiers.ondamage = Some(*cid),
                 FightModifier::StopFight(cid) => fightmodifiers.stop_fight = Some(*cid),
                 FightModifier::Evaded(cid) => fightmodifiers.evaded = Some(*cid),
                 FightModifier::Poisonous(p) => fightmodifiers.poisonous = Some(p.clone()),
@@ -313,6 +316,13 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
                     .map(|r| {
                         if r.v.0.dead() {
                             Proba { p: r.p, v: lost() }
+                        } else if let Some(dcid) = fightmodifiers.ondamage
+                            && r.v.0 < self.lwendurance
+                        {
+                            Proba {
+                                p: r.p,
+                                v: Escaped::Stopped(dcid, r.v.0),
+                            }
                         } else {
                             Proba {
                                 p: r.p,
@@ -386,15 +396,23 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
             return o;
         }
 
-        // round with timed effects and/or Dpr
-        if self
-            .modifiers
-            .iter()
-            .any(|x| matches!(x, FightModifier::Dpr(_) | FightModifier::Timed(_, _)))
-        {
+        // round with timed effects, Dpr and/or a jump on damage
+        if self.modifiers.iter().any(|x| {
+            matches!(
+                x,
+                FightModifier::Dpr(_) | FightModifier::Timed(_, _) | FightModifier::OnDamage(_)
+            )
+        }) {
             let outcome = self.fight_round().into_iter().flat_map(|r| {
                 if r.v.0.dead() {
                     vec![Proba { p: r.p, v: lost() }]
+                } else if let Some(dcid) = fightmodifiers.ondamage
+                    && r.v.0 < self.lwendurance
+                {
+                    vec![Proba {
+                        p: r.p,
+                        v: Escaped::Stopped(dcid, r.v.0),
+                    }]
                 } else if r.v.1.dead() {
                     vec![Proba {
                         p: r.p,
@@ -801,6 +819,52 @@ mod test {
         let mut actual = cinfo.fight(&mut memo);
         actual.sort();
         actual
+    }
+
+    #[test]
+    fn on_damage() {
+        let sword = &[Item::Weapon(Weapon::Sword)];
+        let actual = quick_combat(20, 15, 6, 16, sword, &[], &[FightModifier::OnDamage(ChapterId(271))]);
+        // killing the opponent does not help if a wound was received during that round
+        assert!(actual.iter().any(|r| r.v == Escaped::Stopped(ChapterId(271), Endurance(17))));
+        for r in &actual {
+            match r.v {
+                Escaped::Std(e) => assert_eq!(e, Endurance(20)),
+                Escaped::Stopped(cid, e) => {
+                    assert_eq!(cid, ChapterId(271));
+                    assert!(e < Endurance(20));
+                }
+                _ => panic!("unexpected outcome {:?}", r.v),
+            }
+        }
+    }
+
+    #[test]
+    fn on_damage_evading() {
+        let actual = quick_combat(
+            20,
+            15,
+            6,
+            16,
+            &[Item::Weapon(Weapon::Sword)],
+            &[],
+            &[
+                FightModifier::OnDamage(ChapterId(66)),
+                FightModifier::Evaded(ChapterId(277)),
+            ],
+        );
+        let evaded: Vec<_> = actual
+            .iter()
+            .filter(|r| matches!(r.v, Escaped::Escaped(_, _)))
+            .collect();
+        assert_eq!(evaded.len(), 1);
+        assert_eq!(evaded[0].v, Escaped::Escaped(ChapterId(277), Endurance(20)));
+        assert_eq!(evaded[0].p, BigRational::from_i64(1, 5));
+        assert!(
+            actual
+                .iter()
+                .all(|r| matches!(r.v, Escaped::Escaped(_, _) | Escaped::Stopped(ChapterId(66), _)))
+        );
     }
 
     #[test]
