@@ -5,7 +5,7 @@ use crate::lonewolf::data::{WeaponUse, order_chapters};
 use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
-use crate::solver::base::{Choice, Outcome, Proba, Solution};
+use crate::solver::base::{Choice, Outcome, Proba, Solution, optimize_outcome};
 use crate::solver::rational::Rational;
 use crate::solver::solve;
 use std::collections::HashMap;
@@ -30,7 +30,20 @@ pub fn step<P: Rational, PREV: StoredEquipment>(
                 .into_iter()
                 .map(|(d, outcome)| Choice {
                     desc: d.join(" "),
-                    res: update(memo, ccst, &nv, ChapterId(*cid), &outcome),
+                    res: optimize_outcome(
+                        update(memo, ccst, &nv, ChapterId(*cid), &outcome)
+                            .into_iter()
+                            .map(|r| Proba {
+                                p: r.p,
+                                v: match r.v {
+                                    NextStep::NewChapter(nid, c) => {
+                                        NextStep::NewChapter(nid, wuse.canonical(ccst, ChapterId(nid), &c))
+                                    }
+                                    other => other,
+                                },
+                            })
+                            .collect(),
+                    ),
                 })
                 .collect();
             let scorei = |ns: &NextStep<PREV>| -> u32 {

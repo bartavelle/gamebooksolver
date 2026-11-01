@@ -657,6 +657,53 @@ mod test {
     }
 
     #[test]
+    fn canonical_merges_plain_weapons() {
+        let (wuse, _) = weapons_book(goto(2));
+        let ccst = book_char(Book::Book02);
+        let cid = ChapterId(2);
+        let with = |w: &[Weapon]| {
+            let mut c = CharacterVariable::new(20);
+            w.iter().for_each(|x| c.add_item(&Item::Weapon(*x), 1));
+            c
+        };
+        let a = wuse.canonical(&ccst, cid, &with(&[Weapon::Axe, Weapon::Warhammer]));
+        assert_eq!(a, wuse.canonical(&ccst, cid, &with(&[Weapon::Mace, Weapon::Dagger])));
+        assert_eq!(a.cequipment.weapons().len(), 2);
+        // the magical weapons and the skill keep their names, and the count is preserved
+        let s = wuse.canonical(&ccst, cid, &with(&[Weapon::Sommerswerd, Weapon::Axe]));
+        assert!(s.cequipment.has_itemb(&Item::Weapon(Weapon::Sommerswerd)));
+        let mut skilled = book_char(Book::Book02);
+        skilled.discipline.push(Discipline::WeaponSkill(Weapon::Axe));
+        let k = wuse.canonical(&skilled, cid, &with(&[Weapon::Axe, Weapon::Mace]));
+        assert!(k.cequipment.has_itemb(&Item::Weapon(Weapon::Axe)));
+        assert_eq!(k.cequipment.weapons().len(), 2);
+        // an unknown chapter renames nothing
+        let c = with(&[Weapon::Axe]);
+        assert_eq!(wuse.canonical(&ccst, ChapterId(99), &c), c);
+    }
+
+    #[test]
+    fn canonical_keeps_stored_weapons_consistent() {
+        let (wuse, _) = weapons_book(goto(2));
+        let ccst = book_char(Book::Book02);
+        let cid = ChapterId(2);
+        let with = |cur: &[Weapon], prev: &[Weapon]| {
+            let mut c = CharacterVariable::new(20);
+            cur.iter().for_each(|x| c.add_item(&Item::Weapon(*x), 1));
+            prev.iter()
+                .for_each(|x| c.cprevequipment.add_item(&Item::Weapon(*x), 1));
+            c
+        };
+        use Weapon::*;
+        let same = wuse.canonical(&ccst, cid, &with(&[Axe], &[Axe]));
+        assert_eq!(same.cequipment.weapons(), same.cprevequipment.weapons());
+        let diff = wuse.canonical(&ccst, cid, &with(&[Axe], &[Mace]));
+        assert_ne!(diff.cequipment.weapons(), diff.cprevequipment.weapons());
+        assert_eq!(same, wuse.canonical(&ccst, cid, &with(&[Spear], &[Spear])));
+        assert_eq!(diff, wuse.canonical(&ccst, cid, &with(&[Spear], &[Dagger])));
+    }
+
+    #[test]
     fn having_any_weapon_names_none() {
         let any = Weapon::VALUES
             .iter()

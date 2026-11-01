@@ -2,7 +2,10 @@ use crate::lonewolf::chapter::{
     BoolCond, Chapter, ChapterId, ChapterOutcome, CombatSkill, Decision, Endurance, FightModifier, SimpleOutcome,
     SpecialChapter,
 };
-use crate::lonewolf::mini::{Book, CVarState, Discipline, Item, NextStep, SolutionDump, StoredEquipment, Weapon};
+use crate::lonewolf::mini::{
+    Book, CVarState, CharacterConstant, CharacterVariableG, Discipline, Equipment, Item, NextStep, SolutionDump,
+    StoredEquipment, Weapon,
+};
 use crate::solver::rational::Rational;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -262,6 +265,67 @@ impl WeaponUse {
                 return WeaponUse(used);
             }
         }
+    }
+
+    /// Gives the same names to the weapons of equivalent states. When entering a chapter, the weapons that it can't tell
+    /// apart can be exchanged without changing the score, so that only the lowest ones are used. This means that the
+    /// weapon names of a state aren't always the ones that were picked up.
+    pub fn canonical<PREV: StoredEquipment>(
+        &self,
+        ccst: &CharacterConstant,
+        cid: ChapterId,
+        cvar: &CharacterVariableG<PREV>,
+    ) -> CharacterVariableG<PREV> {
+        let used = self.0.get(&cid).copied().unwrap_or(WeaponSet::ALL);
+        let plain: Vec<Weapon> = Weapon::VALUES
+            .into_iter()
+            .filter(|w| {
+                !matches!(w, Weapon::Sommerswerd | Weapon::MagicSpear)
+                    && !used.contains(*w)
+                    && !ccst.discipline.contains(&Discipline::WeaponSkill(*w))
+            })
+            .collect();
+        let mut cur = cvar.cequipment;
+        let mut prev: Equipment = cvar.cprevequipment.into();
+        let held = |e: &Equipment| -> Vec<Weapon> {
+            plain
+                .iter()
+                .copied()
+                .filter(|w| e.has_itemb(&Item::Weapon(*w)))
+                .collect()
+        };
+        let (hcur, hprev) = (held(&cur), held(&prev));
+        // weapons present in both equipments must stay so
+        let mut names = plain.iter().copied();
+        let mut rename = |e: &mut Equipment, w: &[Weapon]| {
+            for x in w {
+                e.del_item(&Item::Weapon(*x), 1);
+            }
+            w.iter()
+                .map(|_| names.next().expect("as many names as weapons"))
+                .collect::<Vec<_>>()
+        };
+        let in_both: Vec<Weapon> = hcur.iter().copied().filter(|w| hprev.contains(w)).collect();
+        let only_cur: Vec<Weapon> = hcur.iter().copied().filter(|w| !hprev.contains(w)).collect();
+        let only_prev: Vec<Weapon> = hprev.iter().copied().filter(|w| !hcur.contains(w)).collect();
+        let shared = rename(&mut cur, &in_both);
+        for x in &in_both {
+            prev.del_item(&Item::Weapon(*x), 1);
+        }
+        for n in &shared {
+            cur.add_item(&Item::Weapon(*n), 1);
+            prev.add_item(&Item::Weapon(*n), 1);
+        }
+        for n in rename(&mut cur, &only_cur) {
+            cur.add_item(&Item::Weapon(n), 1);
+        }
+        for n in rename(&mut prev, &only_prev) {
+            prev.add_item(&Item::Weapon(n), 1);
+        }
+        let mut out = *cvar;
+        out.cequipment = cur;
+        out.cprevequipment = PREV::from(prev);
+        out
     }
 
     /// The weapons that matter once this decision is about to be made. An unknown chapter could do anything, so all
