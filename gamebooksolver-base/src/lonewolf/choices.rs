@@ -299,8 +299,8 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                 CanTake::Nope => notake(),
                 CanTake::SpaceAvailable => with_effect(&[SimpleOutcome::GainItem(*i, 1)], nxt),
                 CanTake::MustDrop(lst) => {
+                    let mut out = notake();
                     if important_item(i, ccst, cvar) {
-                        let mut out = Vec::new();
                         for l in lst {
                             if l != *i {
                                 out.extend(with_effect(
@@ -309,10 +309,8 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                                 ))
                             }
                         }
-                        if out.is_empty() { notake() } else { out }
-                    } else {
-                        notake()
                     }
+                    out
                 }
             }
         }
@@ -526,6 +524,18 @@ mod test {
         assert!(drinks.iter().any(|d| d.contains("Potion2Hp")));
         assert!(drinks.iter().any(|d| d.contains("Potion4Hp")));
         assert!(!drinks.iter().any(|d| d.contains("Potion5Hp") || d.contains("Potion6Hp")));
+    }
+
+    #[test]
+    fn can_decline_when_full() {
+        let ccst = book_char(Book::Book04);
+        let mut cvar = CharacterVariable::new(20);
+        cvar.add_item(&Item::Meal, 7);
+        cvar.add_item(&Item::Potion2Hp, 1);
+        let dec = Decision::CanTake(Item::GenBackpack(3), 1, Box::new(goto(2)));
+        let results = choices_results(&ccst, &cvar, &dec);
+        assert_eq!(results.len(), 3);
+        assert!(results.contains(&vec![NextStep::NewChapter(2, cvar)]));
     }
 
     #[test]
