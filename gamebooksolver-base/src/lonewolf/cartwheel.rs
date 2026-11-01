@@ -104,17 +104,17 @@ impl Matrix {
 }
 
 fn sol_for_target(target: usize) -> Vec<Outcome<f64, u8>> {
-    let mut o = Matrix::new(target + 7, target + 7);
+    let mut o = Matrix::new(target + 8, target + 8);
     // if money == 0, we lose
     o.set(0, 0, 1.0);
     // for money < target
     for curmoney in 1..target {
         o.set(curmoney, curmoney - 1, 0.7);
-        o.set(curmoney, curmoney + 4, 0.2);
-        o.set(curmoney, curmoney + 7, 0.1);
+        o.set(curmoney, curmoney + 5, 0.2);
+        o.set(curmoney, curmoney + 8, 0.1);
     }
     // once we reach target, we are done
-    for curmoney in target..target + 7 {
+    for curmoney in target..target + 8 {
         o.set(curmoney, curmoney, 1.0);
     }
 
@@ -124,7 +124,7 @@ fn sol_for_target(target: usize) -> Vec<Outcome<f64, u8>> {
 
     (0..target + 1)
         .map(|start_money| {
-            (0..target + 7)
+            (0..target + 8)
                 .map(|end_money| Proba {
                     p: o.get(start_money, end_money),
                     v: end_money as u8,
@@ -158,6 +158,7 @@ pub fn cartwheel<P: Rational>(starting_money: u8, target: u8) -> Outcome<P, u8> 
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::solver::rational::MF64;
 
     #[test]
     fn matrix_mul_trivial() {
@@ -187,6 +188,16 @@ mod test {
         let sq = m.square();
         let expected = Matrix::from_slice(2, 2, &[67.0, 78.0, 91.0, 106.0]);
         assert_eq!(sq, expected);
+    }
+
+    #[test]
+    fn payout_is_a_profit() {
+        // a crown on the right number wins 8, a crown on a neighbouring number wins 5, and the stake is kept
+        let o = cartwheel::<MF64>(19, 20);
+        for (expected, p) in [(24, 0.2), (27, 0.1)] {
+            assert!(o.iter().any(|r| r.v == expected && r.p.t_f64() >= p), "{expected}: {o:?}");
+        }
+        assert!(o.iter().all(|r| r.v <= 27), "{o:?}");
     }
 
     // #[test]

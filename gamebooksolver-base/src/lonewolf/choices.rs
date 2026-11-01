@@ -392,6 +392,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
             )]
         }
         Decision::Special(SpecialChapter::Cartwheel) => {
+            const FARE: u8 = 20;
             let gold = cvar.cequipment.get_item_count(&Item::Gold);
             if gold >= MAX_CARTWHEEL {
                 flatten_decision(ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(136))))
@@ -402,16 +403,23 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                     })
                     .collect()
             } else {
-                let start_target = std::cmp::min(std::cmp::max(20, gold), MAX_CARTWHEEL);
-                (start_target..=MAX_CARTWHEEL)
+                // with enough money for the fare, it is possible not to play at all. Otherwise, the free token can't be
+                // cashed, so the target must be at least one more than what it would be worth
+                let no_play = (gold >= FARE).then_some(gold);
+                let first_target = std::cmp::max(FARE, gold + 2);
+                no_play
+                    .into_iter()
+                    .chain(first_target..=MAX_CARTWHEEL)
                     .flat_map(|target| {
+                        let money = if target == gold { gold } else { gold + 1 };
                         flatten_decision(
                             ccst,
                             cvar,
                             &Decision::None(ChapterOutcome::Randomly(
-                                cartwheel(gold, target)
+                                cartwheel(money, target)
                                     .into_iter()
                                     .map(|pb| {
+                                        let dest = if pb.v < FARE { 169 } else { 136 };
                                         (
                                             pb.p,
                                             ChapterOutcome::Simple(
@@ -419,7 +427,7 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                                                     SimpleOutcome::LoseItemKind(vec![Slot::Pouch]),
                                                     SimpleOutcome::GainItem(Item::Gold, pb.v),
                                                 ],
-                                                Box::new(ChapterOutcome::Goto(ChapterId(136))),
+                                                Box::new(ChapterOutcome::Goto(ChapterId(dest))),
                                             ),
                                         )
                                     })
@@ -536,6 +544,35 @@ mod test {
         let results = choices_results(&ccst, &cvar, &dec);
         assert_eq!(results.len(), 3);
         assert!(results.contains(&vec![NextStep::NewChapter(2, cvar)]));
+    }
+
+    #[test]
+    fn cartwheel_outcomes() {
+        let ccst = book_char(Book::Book02);
+        let dec = Decision::Special(SpecialChapter::Cartwheel);
+        let with_gold = |gold: i64| {
+            let mut cvar = CharacterVariable::new(20);
+            cvar.add_item(&Item::Gold, gold);
+            cvar
+        };
+        // the free token makes it possible to play without any gold, but the fare can't be paid after losing
+        for results in choices_results(&ccst, &with_gold(0), &dec) {
+            assert!(results.contains(&NextStep::NewChapter(169, with_gold(0))));
+            for r in results {
+                if let NextStep::NewChapter(136, c) = r {
+                    assert!(c.cequipment.has_item(&Item::Gold, 20));
+                }
+            }
+        }
+        // the token alone can't be turned into the missing crown
+        let labels: Vec<_> = flatten_decision::<BigRational, _>(&ccst, &with_gold(19), &dec)
+            .into_iter()
+            .map(|(d, _)| d[0].clone())
+            .collect();
+        assert_eq!(labels[0], "Cartwheel target 21");
+        // it is possible not to play
+        let results = choices_results(&ccst, &with_gold(25), &dec);
+        assert_eq!(results[0], vec![NextStep::NewChapter(136, with_gold(25))]);
     }
 
     #[test]

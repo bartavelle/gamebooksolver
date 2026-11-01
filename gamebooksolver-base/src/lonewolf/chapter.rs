@@ -89,7 +89,7 @@ impl<'t, P: Rational> Iterator for OutcomeIt<'t, P> {
                 Decision::Special(special_chapter) => match special_chapter {
                     SpecialChapter::Cartwheel => Some(Cow::Owned(ChapterOutcome::Randomly(vec![
                         (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(169))),
-                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(186))),
+                        (P::f_f64(0.5), ChapterOutcome::Goto(ChapterId(136))),
                     ]))),
                     SpecialChapter::Portholes => Some(Cow::Owned(ChapterOutcome::Goto(ChapterId(197)))),
                     SpecialChapter::B05S127 => Some(Cow::Owned(ChapterOutcome::Randomly(vec![
