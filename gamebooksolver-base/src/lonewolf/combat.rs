@@ -486,6 +486,7 @@ fn decrement_timed<P: Rational>(m: FightModifier<P>) -> Option<FightModifier<P>>
                     FightModifier::Evaded(_) => Some(*x),
                     FightModifier::OnNotYetWon(_) => Some(*x),
                     FightModifier::ForceEMindblast => Some(*x),
+                    FightModifier::StopFight(_) => Some(*x),
                     _ => None,
                 }
             }
@@ -497,7 +498,8 @@ fn decrement_timed<P: Rational>(m: FightModifier<P>) -> Option<FightModifier<P>>
 fn get_timed<P: Rational>(m: &FightModifier<P>) -> Option<&FightModifier<P>> {
     match m {
         FightModifier::Timed(_, x) => match x.as_ref() {
-            FightModifier::Evaded(_) => None,
+            // those only start once the timer has expired
+            FightModifier::Evaded(_) | FightModifier::StopFight(_) | FightModifier::ForceEMindblast => None,
             _ => Some(x),
         },
         _ => Some(m),
@@ -865,6 +867,46 @@ mod test {
                 .iter()
                 .all(|r| matches!(r.v, Escaped::Escaped(_, _) | Escaped::Stopped(ChapterId(66), _)))
         );
+    }
+
+    #[test]
+    fn timed_stopfight() {
+        let mods = [FightModifier::Timed(1, Box::new(FightModifier::StopFight(ChapterId(82))))];
+        let cinfo = quick_combatinfo(20, 15, 28, 21, &[Item::Weapon(Weapon::Sword)], &[], &mods);
+        let mut expected: Outcome<BigRational, Escaped<Endurance>> = optimize_outcome(
+            cinfo
+                .fight_round()
+                .into_iter()
+                .map(|r| Proba {
+                    p: r.p,
+                    v: if r.v.0.dead() {
+                        Escaped::Std(Endurance(0))
+                    } else if r.v.1.dead() {
+                        Escaped::Std(r.v.0)
+                    } else {
+                        Escaped::Stopped(ChapterId(82), r.v.0)
+                    },
+                })
+                .collect(),
+        );
+        expected.sort();
+        let mut actual = cinfo.fight(&mut Memoz::default());
+        actual.sort();
+        assert_eq!(actual, expected);
+        assert!(actual.len() > 1);
+    }
+
+    #[test]
+    fn timed_forced_mindblast_is_delayed() {
+        let sword = &[Item::Weapon(Weapon::Sword)];
+        let timed = FightModifier::Timed(2, Box::new(FightModifier::ForceEMindblast));
+        let plain = quick_combatinfo(20, 15, 37, 16, sword, &[], &[]);
+        let delayed = quick_combatinfo(20, 15, 37, 16, sword, &[], &[timed.clone()]);
+        assert_eq!(plain.fight_round(), delayed.fight_round());
+        let next = decrement_timed(timed).and_then(decrement_timed);
+        assert_eq!(next, Some(FightModifier::ForceEMindblast));
+        let started = quick_combatinfo(20, 15, 37, 16, sword, &[], &[FightModifier::ForceEMindblast]);
+        assert_ne!(plain.fight_round(), started.fight_round());
     }
 
     #[test]
