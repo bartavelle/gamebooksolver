@@ -552,12 +552,279 @@
       "desc": "You fumble for your light, and in doing so, you drop one other item from your Backpack into the crevasse. (If you were not carrying any Backpack Items other than a Torch that you are now using, you have lost a Weapon instead.)\nYou eventually manage to make your way safely across to the other side of the bridge.\n",
       "pchoice": {
         "NoDecision": {
-          "LoseItemFrom": [
-            "BackpackSlot",
-            1,
-            {
-              "Goto": 157
-            }
+          "Conditionally": [
+            [
+              {
+                "CAnd": [
+                  {
+                    "HasItem": [
+                      "BGenCounter 2",
+                      1
+                    ]
+                  },
+                  {
+                    "HasItem": [
+                      "BGenCounter 1",
+                      1
+                    ]
+                  }
+                ]
+              },
+              {
+                "Simple": [
+                  [
+                    {
+                      "LoseItem": [
+                        "BGenCounter 2",
+                        1
+                      ]
+                    }
+                  ],
+                  {
+                    "LoseItemFrom": [
+                      "BackpackSlot",
+                      1,
+                      {
+                        "Simple": [
+                          [
+                            {
+                              "GainItem": [
+                                "BGenCounter 2",
+                                1
+                              ]
+                            }
+                          ],
+                          {
+                            "Goto": 157
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "COr": [
+                  {
+                    "COr": [
+                      {
+                        "COr": [
+                          {
+                            "COr": [
+                              {
+                                "COr": [
+                                  {
+                                    "COr": [
+                                      {
+                                        "COr": [
+                                          {
+                                            "COr": [
+                                              {
+                                                "COr": [
+                                                  {
+                                                    "COr": [
+                                                      {
+                                                        "COr": [
+                                                          {
+                                                            "COr": [
+                                                              {
+                                                                "COr": [
+                                                                  {
+                                                                    "COr": [
+                                                                      {
+                                                                        "COr": [
+                                                                          {
+                                                                            "COr": [
+                                                                              {
+                                                                                "COr": [
+                                                                                  {
+                                                                                    "COr": [
+                                                                                      {
+                                                                                        "COr": [
+                                                                                          {
+                                                                                            "HasItem": [
+                                                                                              "Meal",
+                                                                                              1
+                                                                                            ]
+                                                                                          },
+                                                                                          {
+                                                                                            "HasItem": [
+                                                                                              "Laumspur",
+                                                                                              1
+                                                                                            ]
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      {
+                                                                                        "HasItem": [
+                                                                                          "StrengthPotion",
+                                                                                          1
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "HasItem": [
+                                                                                      "StrengthPotion4",
+                                                                                      1
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "HasItem": [
+                                                                                  "Potion2Hp",
+                                                                                  1
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          {
+                                                                            "HasItem": [
+                                                                              "Potion4Hp",
+                                                                              1
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "HasItem": [
+                                                                          "Potion5Hp",
+                                                                          1
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "HasItem": [
+                                                                      "Potion6Hp",
+                                                                      1
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "HasItem": [
+                                                                  "BGenCounter 0",
+                                                                  1
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "HasItem": [
+                                                              "BGenCounter 1",
+                                                              1
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "HasItem": [
+                                                          "BGenCounter 2",
+                                                          1
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "HasItem": [
+                                                      "BGenCounter 3",
+                                                      1
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "HasItem": [
+                                                  "BGenCounter 4",
+                                                  1
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "HasItem": [
+                                              "BGenCounter 5",
+                                              1
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "HasItem": [
+                                          "BGenCounter 6",
+                                          1
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "HasItem": [
+                                      "BGenCounter 7",
+                                      1
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "HasItem": [
+                                  "BGenCounter 8",
+                                  1
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "HasItem": [
+                              "BGenCounter 9",
+                              1
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "HasItem": [
+                          "BGenCounter 10",
+                          1
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "HasItem": [
+                      "BGenCounter 11",
+                      1
+                    ]
+                  }
+                ]
+              },
+              {
+                "LoseItemFrom": [
+                  "BackpackSlot",
+                  1,
+                  {
+                    "Goto": 157
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "Always": true
+              },
+              {
+                "LoseItemFrom": [
+                  "WeaponSlot",
+                  1,
+                  {
+                    "Goto": 157
+                  }
+                ]
+              }
+            ]
           ]
         }
       },
