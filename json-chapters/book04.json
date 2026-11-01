@@ -5056,51 +5056,69 @@
       "desc": "The wooden pillar is stout and firm; it will take a heavy blow to dislodge it.\nIf you do not possess the Sommerswerd pick a number from the Random Number Table. If you possess either a Pick or a Shovel, add 2 to the number you have picked.\n",
       "pchoice": {
         "NoDecision": {
-          "Simple": [
+          "Conditionally": [
             [
               {
-                "LoseItem": [
-                  "BGenCounter 3",
+                "HasItem": [
+                  "Sommerswerd",
                   1
                 ]
               },
               {
-                "LoseItem": [
-                  "BGenCounter 4",
-                  1
+                "Simple": [
+                  [
+                    {
+                      "LoseItem": [
+                        "BGenCounter 3",
+                        1
+                      ]
+                    },
+                    {
+                      "LoseItem": [
+                        "BGenCounter 4",
+                        1
+                      ]
+                    }
+                  ],
+                  {
+                    "Goto": 275
+                  }
                 ]
               }
             ],
-            {
-              "Conditionally": [
-                [
+            [
+              {
+                "COr": [
                   {
                     "HasItem": [
-                      "Sommerswerd",
+                      "BGenCounter 3",
                       1
                     ]
                   },
                   {
-                    "Goto": 275
-                  }
-                ],
-                [
-                  {
-                    "CAnd": [
-                      {
-                        "HasItem": [
-                          "BGenCounter 3",
-                          1
-                        ]
-                      },
-                      {
-                        "HasItem": [
-                          "BGenCounter 4",
-                          1
-                        ]
-                      }
+                    "HasItem": [
+                      "BGenCounter 4",
+                      1
                     ]
-                  },
+                  }
+                ]
+              },
+              {
+                "Simple": [
+                  [
+                    {
+                      "LoseItem": [
+                        "BGenCounter 3",
+                        1
+                      ]
+                    },
+                    {
+                      "LoseItem": [
+                        "BGenCounter 4",
+                        1
+                      ]
+                    }
+                  ],
                   {
                     "Randomly": [
                       [
@@ -5123,11 +5141,29 @@
                       ]
                     ]
                   }
-                ],
-                [
-                  {
-                    "Always": true
-                  },
+                ]
+              }
+            ],
+            [
+              {
+                "Always": true
+              },
+              {
+                "Simple": [
+                  [
+                    {
+                      "LoseItem": [
+                        "BGenCounter 3",
+                        1
+                      ]
+                    },
+                    {
+                      "LoseItem": [
+                        "BGenCounter 4",
+                        1
+                      ]
+                    }
+                  ],
                   {
                     "Randomly": [
                       [
@@ -5151,8 +5187,8 @@
                     ]
                   }
                 ]
-              ]
-            }
+              }
+            ]
           ]
         }
       },

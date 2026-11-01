@@ -157,7 +157,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (170%nat,Decisions [none (Goto 228%nat); none (Goto 221%nat)]);
   (171%nat,Decisions [none (Goto 63%nat); none (Goto 141%nat)]);
   (172%nat,none (Goto 55%nat));
-  (173%nat,none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Conditionally [(HasItem (Weapon Sommerswerd) 1%nat , Goto 275%nat); (CAnd (HasItem (GenBackpack S3) 1%nat) (HasItem (GenBackpack S4) 1%nat) , Randomly [(Goto 143%nat , (Q2Qc (1 / 2)%Q)); (Goto 179%nat , (Q2Qc (1 / 2)%Q))]); (Always true , Randomly [(Goto 143%nat , (Q2Qc (7 / 10)%Q)); (Goto 179%nat , (Q2Qc (3 / 10)%Q))])])));
+  (173%nat,none (Conditionally [(HasItem (Weapon Sommerswerd) 1%nat , Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 275%nat)); (COr (HasItem (GenBackpack S3) 1%nat) (HasItem (GenBackpack S4) 1%nat) , Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Randomly [(Goto 143%nat , (Q2Qc (1 / 2)%Q)); (Goto 179%nat , (Q2Qc (1 / 2)%Q))])); (Always true , Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Randomly [(Goto 143%nat , (Q2Qc (7 / 10)%Q)); (Goto 179%nat , (Q2Qc (3 / 10)%Q))]))]));
   (174%nat,none (Goto 148%nat));
   (175%nat,none (Goto 297%nat));
   (176%nat,none (Simple [DamagePlayer 3%nat] (Fight (Details ((17)%Z)%Z 25%nat []) (Goto 7%nat))));
