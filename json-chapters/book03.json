@@ -5019,6 +5019,26 @@
                 }
               ]
             }
+          ],
+          [
+            "no gold to throw",
+            {
+              "Conditional": [
+                {
+                  "Not": {
+                    "HasItem": [
+                      "Gold",
+                      1
+                    ]
+                  }
+                },
+                {
+                  "NoDecision": {
+                    "Goto": 181
+                  }
+                }
+              ]
+            }
           ]
         ]
       },
