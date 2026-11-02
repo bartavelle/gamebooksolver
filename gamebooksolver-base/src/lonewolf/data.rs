@@ -282,7 +282,6 @@ pub fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
 struct Reads {
     special: u16,
     backpack: u16,
-    gold: bool,
     flags: u32,
     // the number of items in the backpack, that can make it impossible to take something
     backpack_space: bool,
@@ -292,7 +291,6 @@ impl Reads {
     const ALL: Reads = Reads {
         special: u16::MAX,
         backpack: u16::MAX,
-        gold: true,
         flags: u32::MAX,
         backpack_space: true,
     };
@@ -301,7 +299,6 @@ impl Reads {
         Reads {
             special: self.special | o.special,
             backpack: self.backpack | o.backpack,
-            gold: self.gold || o.gold,
             flags: self.flags | o.flags,
             backpack_space: self.backpack_space || o.backpack_space,
         }
@@ -328,7 +325,6 @@ impl Reads {
         match i {
             Item::GenSpecial(n) => self.special |= 1 << *n,
             Item::GenBackpack(n) => self.backpack |= 1 << *n,
-            Item::Gold => self.gold = true,
             _ => (),
         }
     }
@@ -337,8 +333,7 @@ impl Reads {
         match s {
             Slot::Backpack => self.backpack_space = true,
             Slot::Special => self.special = u16::MAX,
-            Slot::Pouch => self.gold = true,
-            Slot::Weapon => (),
+            Slot::Pouch | Slot::Weapon => (),
         }
     }
 
@@ -399,7 +394,6 @@ impl Reads {
             Decision::Canbuy(i, _, d) => {
                 // the gold can be spent only if the item can be taken, and it depends on the items that are held
                 self.item(i);
-                self.gold = true;
                 self.slot_space(i);
                 self.decision(d);
             }
@@ -411,8 +405,7 @@ impl Reads {
                 self.cond(c);
                 self.decision(d);
             }
-            Decision::Special(SpecialChapter::Cartwheel) => self.gold = true,
-            Decision::Special(SpecialChapter::Portholes | SpecialChapter::B05S127) => (),
+            Decision::Special(_) => (),
             Decision::None(o) => self.outcome(o),
             Decision::EvadeFight(_, _, _, o) => self.outcome(o),
         }
@@ -434,14 +427,102 @@ const RULES_FLAGS: Flags = Flags(0)
     .setn(Flag::StrengthPotionActive)
     .setn(Flag::PotentStrengthPotionActive);
 
+/// The gold that is enough for everything that can be done from now on, given the same value for the following chapters.
+/// A state with at least that much gold can go through the same paths as a state with more. There is no need to take
+/// gains into account, as they can only leave more gold, nor what makes all the gold disappear.
+struct GoldNeeds<'t>(&'t HashMap<ChapterId, u8>);
+
+impl GoldNeeds<'_> {
+    const ALL: u8 = u8::MAX;
+
+    fn chapter(&self, cid: &ChapterId) -> u8 {
+        self.0.get(cid).copied().unwrap_or(Self::ALL)
+    }
+
+    fn cond(&self, bc: &BoolCond) -> u8 {
+        match bc {
+            BoolCond::HasItem(Item::Gold, q) => *q,
+            BoolCond::Not(c) => self.cond(c),
+            BoolCond::COr(a, b) | BoolCond::CAnd(a, b) => self.cond(a).max(self.cond(b)),
+            _ => 0,
+        }
+    }
+
+    fn outcome<P>(&self, co: &ChapterOutcome<P>) -> u8 {
+        match co {
+            ChapterOutcome::Fight(_, o) => self.outcome(o),
+            ChapterOutcome::OneRound(_, a, b, c) => self.outcome(a).max(self.outcome(b)).max(self.outcome(c)),
+            ChapterOutcome::Randomly(lst) => lst.iter().map(|(_, o)| self.outcome(o)).max().unwrap_or(0),
+            ChapterOutcome::Conditionally(lst) => lst
+                .iter()
+                .map(|(c, o)| self.cond(c).max(self.outcome(o)))
+                .max()
+                .unwrap_or(0),
+            ChapterOutcome::Simple(sos, o) => sos.iter().fold(self.outcome(o), |acc, so| match so {
+                SimpleOutcome::LoseItem(Item::Gold, q) => acc.saturating_add(*q),
+                _ => acc,
+            }),
+            ChapterOutcome::Goto(cid) => self.chapter(cid),
+            ChapterOutcome::GameLost | ChapterOutcome::GameWon => 0,
+            // it depends on how much gold there is
+            ChapterOutcome::LoseItemFrom(Slot::Pouch, _, _) => Self::ALL,
+            ChapterOutcome::LoseItemFrom(_, _, o) | ChapterOutcome::Round(_, o, _) => self.outcome(o),
+            ChapterOutcome::EnterFight(_, cid) => self.chapter(cid),
+        }
+    }
+
+    fn decision<P>(&self, dec: &Decision<P>) -> u8 {
+        match dec {
+            Decision::Decisions(lst) => lst.iter().map(|(_, d)| self.decision(d)).max().unwrap_or(0),
+            Decision::RemoveItemFrom(Slot::Pouch, _, _) | Decision::Special(SpecialChapter::Cartwheel) => Self::ALL,
+            Decision::RetrieveEquipment(d)
+            | Decision::AfterCombat(d)
+            | Decision::RemoveItemFrom(_, _, d)
+            | Decision::CanTake(_, _, d)
+            | Decision::Cansell(_, _, d) => self.decision(d),
+            Decision::Canbuy(_, p, d) => self.decision(d).saturating_add(p.0),
+            Decision::Conditional(c, d) => self.cond(c).max(self.decision(d)),
+            Decision::Special(_) => 0,
+            Decision::None(o) | Decision::EvadeFight(_, _, _, o) => self.outcome(o),
+        }
+    }
+}
+
+fn gold_needs<P>(bookid: Book, book: &HashMap<ChapterId, Chapter<P>>) -> HashMap<ChapterId, u8> {
+    // what is left at the end of the book is part of the score
+    if get_boundary(bookid).0.contains(&Item::Gold) {
+        return HashMap::new();
+    }
+    let mut needs: HashMap<ChapterId, u8> = book.keys().map(|cid| (*cid, 0)).collect();
+    loop {
+        let mut changed = false;
+        for (cid, chapter) in book {
+            let cur = GoldNeeds(&needs);
+            // all the destinations count, including those that are found in the fight modifiers
+            let need = get_destinations(&chapter.pchoice)
+                .iter()
+                .fold(cur.decision(&chapter.pchoice), |acc, d| acc.max(cur.chapter(d)));
+            if need != needs[cid] {
+                needs.insert(*cid, need);
+                changed = true;
+            }
+        }
+        if !changed {
+            return needs;
+        }
+    }
+}
+
 /// What can matter from a state in each chapter. For the weapons, those that the rest of the game can tell apart from the
 /// others, because they are named in that chapter or in one that can be reached from it. Fights are not looked at, as
 /// they only depend on the weapon skill and on the two magical weapons. For the other items and flags, those that can
-/// be read in that chapter or in one that can be reached from it, see `Reads`.
+/// be read in that chapter or in one that can be reached from it, see `Reads`. For the gold, how much of it can be of any
+/// use, see `GoldNeeds`.
 #[derive(Debug, Clone, Default)]
 pub struct WeaponUse {
     weapons: HashMap<ChapterId, WeaponSet>,
     reads: HashMap<ChapterId, Reads>,
+    gold: HashMap<ChapterId, u8>,
 }
 
 /// A condition, with what can be known from the disciplines of the character already computed.
@@ -587,7 +668,11 @@ impl WeaponUse {
                 }
             }
             if !changed {
-                return WeaponUse { weapons: used, reads };
+                return WeaponUse {
+                    weapons: used,
+                    reads,
+                    gold: gold_needs(bookid, book),
+                };
             }
         }
     }
@@ -650,10 +735,10 @@ impl WeaponUse {
         let mut out = *cvar;
         // what can't be read anymore does not matter
         let reads = self.reads.get(&cid).copied().unwrap_or(Reads::ALL);
+        let gold = self.gold.get(&cid).copied().unwrap_or(GoldNeeds::ALL);
         for e in [&mut cur, &mut prev] {
-            if !reads.gold {
-                e.del_item(&Item::Gold, 99);
-            }
+            let extra = e.get_item_count(&Item::Gold).saturating_sub(gold);
+            e.del_item(&Item::Gold, extra as i64);
             for n in 0..u16::BITS as u8 {
                 if reads.special & (1 << n) == 0 && n < GEN_ITEMS {
                     e.del_item(&Item::GenSpecial(n), 1);

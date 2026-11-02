@@ -804,6 +804,42 @@ mod test {
     }
 
     #[test]
+    fn gold_is_kept_up_to_what_can_be_used() {
+        let buy = |i: Item, p: u8, d: Decision<BigRational>| Decision::Canbuy(i, Price(p), Box::new(d));
+        let with_gold = |g: i64| {
+            let mut c = CharacterVariable::new(20);
+            c.add_item(&Item::Gold, g);
+            c
+        };
+        let kept = |pchoice: Decision<BigRational>, bookid: Book, g: i64| {
+            let (wuse, cid) = liveness_book(pchoice, bookid);
+            wuse.canonical(&book_char(bookid), cid, &with_gold(g))
+                .cequipment
+                .get_item_count(&Item::Gold)
+        };
+        let shop = buy(Item::Meal, 5, buy(Item::Laumspur, 3, goto(2)));
+        assert_eq!(kept(shop.clone(), Book::Book05, 20), 8);
+        assert_eq!(kept(shop.clone(), Book::Book05, 6), 6);
+        assert_eq!(kept(goto(2), Book::Book05, 20), 0);
+        // it is part of the score of this book
+        assert_eq!(kept(shop, Book::Book01, 20), 20);
+        let cond = Decision::Conditional(BoolCond::Not(Box::new(BoolCond::HasItem(Item::Gold, 12))), Box::new(goto(2)));
+        assert_eq!(kept(cond, Book::Book05, 20), 12);
+        let spend = Decision::None(ChapterOutcome::Simple(
+            vec![SimpleOutcome::LoseItem(Item::Gold, 7)],
+            Box::new(ChapterOutcome::Goto(ChapterId(2))),
+        ));
+        assert_eq!(kept(spend, Book::Book05, 20), 7);
+        assert_eq!(kept(Decision::Special(SpecialChapter::Cartwheel), Book::Book05, 20), 20);
+        let lose = Decision::None(ChapterOutcome::LoseItemFrom(
+            Slot::Pouch,
+            1,
+            Box::new(ChapterOutcome::Goto(ChapterId(2))),
+        ));
+        assert_eq!(kept(lose, Book::Book05, 20), 20);
+    }
+
+    #[test]
     fn what_needs_another_discipline_is_not_read() {
         let book_for = |pchoice: Decision<BigRational>| -> HashMap<ChapterId, Chapter<BigRational>> {
             [(
