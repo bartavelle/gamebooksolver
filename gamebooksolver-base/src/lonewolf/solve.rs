@@ -158,7 +158,7 @@ where
 {
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
-    elide_forced_chapters(&mut mbook);
+    elide_forced_chapters(&mut mbook, tgt);
     let order: FastMap<ChapterId, u32> = order_chapters(&mbook).into_iter().collect();
     let wuse = WeaponUse::for_character(ccst, &mbook);
     let mbook: FastMap<ChapterId, Chapter<P>> = mbook.into_iter().collect();
@@ -260,6 +260,40 @@ mod test {
                 }
             }
         }
+    }
+
+    #[test]
+    fn the_target_chapters_are_not_passed_through() {
+        use crate::lonewolf::chapter::{Endurance, SimpleOutcome};
+        use crate::lonewolf::mini::{CharacterConstant, NoPrevEq};
+        use ChapterOutcome::*;
+        let chapter = |pchoice| Chapter {
+            title: String::new(),
+            desc: String::new(),
+            pchoice,
+        };
+        // the gold is only lost after the target, and it is the score
+        let book = [
+            (ChapterId(1), chapter(Decision::None(Goto(ChapterId(2))))),
+            (
+                ChapterId(2),
+                chapter(Decision::None(Simple(
+                    vec![SimpleOutcome::LoseItem(Item::Gold, 99), SimpleOutcome::DamagePlayer(Endurance(1))],
+                    Box::new(GameWon),
+                ))),
+            ),
+        ];
+        let ccst = CharacterConstant {
+            bookid: Book::Book01,
+            combat_skill: 15,
+            discipline: vec![],
+            maxendurance: 20,
+        };
+        let mut c = CharacterVariableG::<NoPrevEq>::new(10);
+        c.add_item(&Item::Gold, 7);
+        let score = |e: crate::lonewolf::mini::Equipment, _| BigRational::from_i64(e.get_item_count(&Item::Gold) as i64, 10);
+        let got = solve_lws_compact(score, &[ChapterId(2)], &book, &ccst, &c, 1, false);
+        assert_eq!(got.get(&NextStep::NewChapter(1, c)).unwrap().score, BigRational::from_i64(7, 10));
     }
 
     #[test]

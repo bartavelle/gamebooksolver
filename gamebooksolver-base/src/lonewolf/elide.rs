@@ -18,6 +18,8 @@ fn is_forced<P>(o: &ChapterOutcome<P>) -> bool {
 
 struct Elider<'t, P> {
     book: &'t HashMap<ChapterId, Chapter<P>>,
+    // the score of these chapters is known, what happens in them does not matter
+    targets: &'t [ChapterId],
     resolved: HashMap<ChapterId, ChapterOutcome<P>>,
     // a loop is a problem for the solver to report
     visiting: HashSet<ChapterId>,
@@ -25,6 +27,9 @@ struct Elider<'t, P> {
 
 impl<P: Rational> Elider<'_, P> {
     fn forced_chapter(&mut self, cid: ChapterId) -> Option<ChapterOutcome<P>> {
+        if self.targets.contains(&cid) {
+            return None;
+        }
         if let Some(o) = self.resolved.get(&cid) {
             return Some(o.clone());
         }
@@ -86,12 +91,13 @@ impl<P: Rational> Elider<'_, P> {
 
 /// Replaces the arrivals in the chapters with a single next state by what happens in these chapters. All the chapters stay
 /// in the book, as they can still be the first one, or be reached by the modifiers of a fight.
-pub fn elide_forced_chapters<P: Rational>(book: &mut HashMap<ChapterId, Chapter<P>>) {
+pub fn elide_forced_chapters<P: Rational>(book: &mut HashMap<ChapterId, Chapter<P>>, targets: &[ChapterId]) {
     let cids: Vec<ChapterId> = book.keys().copied().collect();
     let mut decisions = Vec::with_capacity(cids.len());
     {
         let mut elider = Elider {
             book,
+            targets,
             resolved: HashMap::new(),
             visiting: HashSet::new(),
         };
