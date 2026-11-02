@@ -83,11 +83,13 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   Whether it is monotone in Book 5 is **Unverified**.
 - **G4. Book 5 starts with 15 gold**, the default of `buildsol-rust.py`, close to the average pouch of 14.5. A player
   carrying gold from Book 4 could have up to 50. **Open**: 50 gold is proposed, see G5 and E1.
-- **G5. In Book 5, gold above 12 changes nothing.** Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12
-  crowns, and the 10-gold score of HU matches the 9-crown option exactly. Unedited scores match their 40-gold values down
-  to 15 for HU, 20 for TR and MS, and 10 for MO and CA apart from a difference of about 0.0000001 points. MO has the same
-  exact fraction at 15 and 50. **Tested** on those characters, with TR and MS at 15 still running. 6S has only been
-  solved unedited at 10, 40 and 50. 12 itself was never solved, and proving it is an obligation if Book 5 relies on it.
+- **G5. In Book 5, gold above 20 changes nothing.** Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12
+  crowns, and the 10-gold score of HU matches the 9-crown option exactly, so most of the effect stops at 12: HU and TR
+  match their 40-gold scores to 9 digits at 15. MO has the same exact fraction at 15 and 50. There is a tiny effect above
+  that: on the edited book of E1, MS scores 0.583265136440 at 15 and 16 gold, 0.583265136985 at 17 to 19, and
+  0.583265137192 at 20 and 50, a total of about 0.00000008 points. A first guess of 12 for all characters was wrong.
+  **Tested** on six characters. 6S has only been solved unedited at 10, 40 and 50, and values below 15 only at 10. Proving
+  this is an obligation if Book 5 relies on it.
 - **G6. Reaching 50 gold at the start of Book 5 is realistic.** A route can pick up 30 crowns in Book 4 (42 for the
   character lacking Camouflage and Tracking), on top of a 10 to 19 pouch. That is an upper bound: disciplines were
   checked, item and flag requirements were not, and survival was ignored. **Tested** by a scratch script only.
@@ -115,10 +117,16 @@ places, so each of these could lower a score if the missing choice were better.
 
 ### Choices the model leaves out
 
-- **R6. Weapons can't be discarded freely.** A weapon can only be dropped to make room for another. The books allow
-  discarding at any time in the Backpack Items section; their weapon rule only sets the limit of two. MO pays for a
-  Dagger at Book 5 c388 to lose the Sommerswerd, which avoids the route through c289, c311 and c350, and reaches that
-  stall about 84% of the time. Free discards could raise Sommerswerd scores. **Open.**
+- **R6. Weapons can be discarded at any time, like Backpack Items.** The books state this for Backpack Items, and their
+  weapon rule only sets the limit of two. This reading was **Decided** on 2026-11-02. The model does not offer it in
+  general: a choice is only added where it is relevant, see R20.
+- **R20. Discarding a weapon only matters when dropping the Sommerswerd at Book 5 c289,** so that is the only place the
+  choice is offered. Holding it there leads to c311 and c350, which destroy it and cost 3 Endurance, where the others go
+  to c219. **Decided**; a proof is wanted that this is the only place it makes a difference. The evidence is narrow: five
+  Sommerswerd cases and one Sword case at 50 gold score the same with the choice only at c289, with it at all four
+  branches on the sword (c212, c264, c289, c333), and on the five that have an unedited score, without it. The MO and MS
+  solutions already swap the sword for a Dagger at c388 and reach c289 without it. Lower gold, and discarding any other
+  weapon or at any other time, were not tested. **Tested** on that sample.
 - **R7. Backpack Items can't be discarded freely** either, although the books allow it. **Unverified**: the experiments
   ran out of memory.
 - **R8. An item is always taken when there is room, and gold is always taken.** The book makes it a choice. Since more gold
@@ -193,11 +201,13 @@ Tried on scratch copies of Book 5, to make low gold cheap. None is applied. See 
 unnecessary.
 
 - **E1. Remove later uses of gold in Book 5, keeping the Sword and Dagger at c388.** This removes the BroadSword at c388,
-  the sash at c169, the potion at c211, and the payments at c248, c265, c276 and c362. At 15 gold, all six scores match,
-  with 1 to 2 GB and 6 to 9 minutes against about 7 GB and 40 minutes or more. MS differs in the last digit, and exact runs
-  are in progress. **Open.**
-- **E2. Removing all of c388's weapons is wrong:** MO falls by 3.8 points. **Tested.**
-- **E3. Keeping only the Dagger at c388 is wrong:** MS falls by 5.4 points. **Tested.**
+  the sash at c169, the potion at c211, and the payments at c248, c265, c276 and c362. At 15 gold, all six scores match the
+  unedited ones to 9 digits, with 1 to 2 GB and 6 to 9 minutes against about 7 GB and 40 minutes or more. At 50 gold, MS
+  matches to 12 digits. The exact solve of MO at 15 gold (6.4 GB, 17 minutes) gives the same fraction as unedited at 50;
+  the difference for MS comes from gold, see G5. These tests predate the discard choice of R20. **Open.**
+- **E2. Removing all of c388's weapons was wrong:** MO fell by 3.8 points. This was before the discard choice of R20, which
+  may change the result. **Tested.**
+- **E3. Keeping only the Dagger at c388 was wrong:** MS fell by 5.4 points, also before R20. **Tested.**
 - **E4. How each edit could be proved.** c248 and c276: paying leads to the same place as not paying, so a static proof
   needs only that the lost crowns don't help later. c265 looks the same, but its destinations were not compared. c169, c211,
   c362 and the BroadSword lead to different outcomes that only turned out not to matter, so a proof would need solved
