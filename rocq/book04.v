@@ -201,7 +201,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (219%nat,Decisions [none (Goto 167%nat); none (Goto 185%nat)]);
   (220%nat,Decisions [none (Goto 90%nat); none (Goto 163%nat)]);
   (221%nat,Decisions [none (Goto 50%nat); none (Goto 228%nat); none (Goto 342%nat)]);
-  (222%nat,can_take (Weapon Sword) 1%nat (none (Goto 165%nat)));
+  (222%nat,Decisions [conditional (Not (HasItem (Weapon Sword) 1%nat)) (can_take (Weapon Sword) 1%nat (none (Simple [SetFlag Special01] (Goto 165%nat)))); none (Goto 165%nat)]);
   (223%nat,Decisions [none (Goto 77%nat); none (Goto 128%nat)]);
   (224%nat,Decisions [conditional (COr (HasDiscipline (Tracking)) (HasDiscipline (SixthSense))) (none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 60%nat))); none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 199%nat)); none (Simple [LoseItem (GenBackpack S3) 1%nat; LoseItem (GenBackpack S4) 1%nat] (Goto 208%nat))]);
   (225%nat,none (Randomly [(Goto 20%nat , (Q2Qc (1 / 2)%Q)); (Goto 300%nat , (Q2Qc (2 / 5)%Q)); (Goto 181%nat , (Q2Qc (1 / 10)%Q))]));

@@ -6938,14 +6938,50 @@
     {
       "desc": "In the plush candlelit interior of the caravan you find the actor, cowering beneath a blanket in the far corner. You flick the blanket aside and ask the petrified man to explain how he came to possess such a fine sword.\n\"I...I bought it in Eshnar,\" he stammers, his eyes wide with fear, \"from the innkeeper of the \"Pick and Shovel\" tavern.\" He grasps the sword by the blade and offers it to you. \"If it is your sword I have unwittingly bought, I am truly sorry. Here, please take it.\"\nYou grip the brass hilt and examine it closely. There is no doubt: it is a Sommlending cavalry sword, but the inscription on the blade makes your heart miss a beat: \"Captain Remir D'Val-King's Guard Regiment\".\nIf you wish to keep this sword, mark Captain D'Val's Sword on your Action Chart as a Weapon.\n",
       "pchoice": {
-        "CanTake": [
-          "Sword",
-          1,
-          {
-            "NoDecision": {
-              "Goto": 165
+        "Decisions": [
+          [
+            "Keep Captain D'Val's Sword",
+            {
+              "Conditional": [
+                {
+                  "Not": {
+                    "HasItem": [
+                      "Sword",
+                      1
+                    ]
+                  }
+                },
+                {
+                  "CanTake": [
+                    "Sword",
+                    1,
+                    {
+                      "NoDecision": {
+                        "Simple": [
+                          [
+                            {
+                              "SetFlag": "Special01"
+                            }
+                          ],
+                          {
+                            "Goto": 165
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
             }
-          }
+          ],
+          [
+            "Leave the sword",
+            {
+              "NoDecision": {
+                "Goto": 165
+              }
+            }
+          ]
         ]
       },
       "title": "222"
