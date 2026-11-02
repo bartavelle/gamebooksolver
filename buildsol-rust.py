@@ -82,6 +82,9 @@ if items:
             cmdline += ["-i", i]
 if mgold:
     cmdline += ["--gold", mgold[1:]]
+elif int(b) == 5:
+    # gold does not cross from Book 4, and above 20 crowns it has not changed a score: see G4 in ASSUMPTIONS.md
+    cmdline += ["--gold", "50"]
 else:
     cmdline += ["--gold", "15"]
 

@@ -81,8 +81,10 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   Book 2 s168 reads "If you can pay for the room, turn to 314. If you cannot, turn to 25", and near death, having no
   crowns is the better position (0.008 against 0 at 3 Endurance). No proof may assume gold is monotone in Book 2.
   Whether it is monotone in Book 5 is **Unverified**.
-- **G4. Book 5 starts with 15 gold**, the default of `buildsol-rust.py`, close to the average pouch of 14.5. A player
-  carrying gold from Book 4 could have up to 50. **Open**: 50 gold is proposed, see G5 and E1.
+- **G4. Book 5 starts with 50 gold**, the default of `buildsol-rust.py` for that book, and gold is not carried from Book 4.
+  This assumes a player who collected gold through Book 4, see G6. It is the cheapest solve, and it gives the true score of
+  any player with at least the amount of G5. A player with less would be overstated, by about 0.15 points at 10 crowns with
+  a Sword kit. **Decided** on 2026-11-02; a proof that the amounts of G5 make no difference is wanted later.
 - **G5. In Book 5, gold above 20 changes nothing.** Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12
   crowns, and the 10-gold score of HU matches the 9-crown option exactly, so most of the effect stops at 12: HU and TR
   match their 40-gold scores to 9 digits at 15. MO has the same exact fraction at 15 and 50. There is a tiny effect above
@@ -124,9 +126,10 @@ places, so each of these could lower a score if the missing choice were better.
   choice is offered. Holding it there leads to c311 and c350, which destroy it and cost 3 Endurance, where the others go
   to c219. **Decided**; a proof is wanted that this is the only place it makes a difference. The evidence is narrow: five
   Sommerswerd cases and one Sword case at 50 gold score the same with the choice only at c289, with it at all four
-  branches on the sword (c212, c264, c289, c333), and on the five that have an unedited score, without it. The MO and MS
-  solutions already swap the sword for a Dagger at c388 and reach c289 without it. Lower gold, and discarding any other
-  weapon or at any other time, were not tested. **Tested** on that sample.
+  branches on the sword (c212, c264, c289, c333), and on the five that have an unedited score, without it. Without the
+  choice, the MO and MS solutions swapped the sword for a Dagger at c388 and reached c289 without it. With it, MO reaches
+  c289 holding the sword in 19 recorded states, for the same exact score. Lower gold, and discarding any other weapon or at
+  any other time, were not tested. **Tested** on that sample.
 - **R7. Backpack Items can't be discarded freely** either, although the books allow it. **Unverified**: the experiments
   ran out of memory.
 - **R8. An item is always taken when there is room, and gold is always taken.** The book makes it a choice. Since more gold
@@ -200,7 +203,8 @@ not the optimizations.
 Tried on scratch copies of Book 5, to make low gold cheap. None is applied. See G5 for why 50 gold may make them
 unnecessary.
 
-- **E1. Remove later uses of gold in Book 5, keeping the Sword and Dagger at c388.** This removes the BroadSword at c388,
+- **E1. Remove later uses of gold in Book 5, keeping the Sword and Dagger at c388.** Not needed with G4, as 50 gold is
+  cheaper. It would only help to solve amounts below that. This removes the BroadSword at c388,
   the sash at c169, the potion at c211, and the payments at c248, c265, c276 and c362. At 15 gold, all six scores match the
   unedited ones to 9 digits, with 1 to 2 GB and 6 to 9 minutes against about 7 GB and 40 minutes or more. At 50 gold, MS
   matches to 12 digits. The exact solve of MO at 15 gold (6.4 GB, 17 minutes) gives the same fraction as unedited at 50;
