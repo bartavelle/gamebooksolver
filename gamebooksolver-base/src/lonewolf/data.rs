@@ -6,6 +6,7 @@ use crate::lonewolf::mini::{
     Book, CVarState, CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Flags, Item, NextStep, Slot,
     SolutionDump, StoredEquipment, Weapon,
 };
+use crate::solver::base::FastMap;
 use crate::solver::rational::Rational;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -521,9 +522,9 @@ fn gold_needs<P>(bookid: Book, book: &HashMap<ChapterId, Chapter<P>>) -> HashMap
 /// use, see `GoldNeeds`.
 #[derive(Debug, Clone, Default)]
 pub struct WeaponUse {
-    weapons: HashMap<ChapterId, WeaponSet>,
-    reads: HashMap<ChapterId, Reads>,
-    gold: HashMap<ChapterId, u8>,
+    weapons: FastMap<ChapterId, WeaponSet>,
+    reads: FastMap<ChapterId, Reads>,
+    gold: FastMap<ChapterId, u8>,
 }
 
 /// A condition, with what can be known from the disciplines of the character already computed.
@@ -670,9 +671,9 @@ impl WeaponUse {
             }
             if !changed {
                 return WeaponUse {
-                    weapons: used,
-                    reads,
-                    gold: gold_needs(bookid, book),
+                    weapons: used.into_iter().collect(),
+                    reads: reads.into_iter().collect(),
+                    gold: gold_needs(bookid, book).into_iter().collect(),
                 };
             }
         }

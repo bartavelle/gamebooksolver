@@ -3,7 +3,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::solver::rational::Rational;
 use std::collections::HashMap;
-use std::hash::{BuildHasher, RandomState};
+use std::hash::BuildHasher;
+
+/// Hashing is a large part of the solving time, and no key comes from an untrusted source.
+pub type FastHash = foldhash::fast::RandomState;
+pub type FastMap<K, V> = HashMap<K, V, FastHash>;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
 pub struct Proba<P, T> {
@@ -61,8 +65,8 @@ pub type Solution<P, S> = HashMap<S, SolNode<P, S>>;
 /// A map split in many smaller ones. A map needs its old and its new table when growing, which would be a very large single
 /// allocation for the hundreds of millions of states of the largest books.
 pub struct Shards<K, V> {
-    hasher: RandomState,
-    maps: Vec<HashMap<K, V>>,
+    hasher: FastHash,
+    maps: Vec<FastMap<K, V>>,
 }
 
 const SHARD_BITS: u32 = 8;
@@ -70,8 +74,8 @@ const SHARD_BITS: u32 = 8;
 impl<K, V> Default for Shards<K, V> {
     fn default() -> Self {
         Shards {
-            hasher: RandomState::new(),
-            maps: (0..1 << SHARD_BITS).map(|_| HashMap::new()).collect(),
+            hasher: FastHash::default(),
+            maps: (0..1 << SHARD_BITS).map(|_| FastMap::default()).collect(),
         }
     }
 }
@@ -92,7 +96,8 @@ impl<K, V> Shards<K, V> {
 
 impl<K: Eq + std::hash::Hash, V> Shards<K, V> {
     fn shard(&self, k: &K) -> usize {
-        (self.hasher.hash_one(k) >> (u64::BITS - SHARD_BITS)) as usize
+        // the maps use the lowest and the highest bits of their own hash
+        ((self.hasher.hash_one(k) >> 48) & ((1 << SHARD_BITS) - 1)) as usize
     }
 
     pub fn get(&self, k: &K) -> Option<&V> {
@@ -115,7 +120,7 @@ impl<K: Eq + std::hash::Hash, V> std::ops::Index<&K> for Shards<K, V> {
 
 impl<K, V> IntoIterator for Shards<K, V> {
     type Item = (K, V);
-    type IntoIter = std::iter::Flatten<std::vec::IntoIter<HashMap<K, V>>>;
+    type IntoIter = std::iter::Flatten<std::vec::IntoIter<FastMap<K, V>>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.maps.into_iter().flatten()
@@ -164,7 +169,7 @@ impl<K: Eq + std::hash::Hash, V> Cache<K, V> {
 /// regroup identical outcomes, sort by decreasing probability
 pub fn optimize_outcome<T: Eq + std::hash::Hash + Ord, P: Rational>(o: Outcome<P, T>) -> Outcome<P, T> {
     // fist, convert to hashmap
-    let mut hm: HashMap<T, P> = HashMap::new();
+    let mut hm: FastMap<T, P> = FastMap::default();
     for pb in o.into_iter() {
         // why can't I use an entry for this ? :(
         let val = match hm.get(&pb.v) {

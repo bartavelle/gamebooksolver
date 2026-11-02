@@ -6,16 +6,17 @@ use crate::lonewolf::evasion::expand_evasions;
 use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
-use crate::solver::base::{Choice, Outcome, Proba, Solution, optimize_outcome};
+use crate::solver::base::{Choice, FastMap, Outcome, Proba, Solution, optimize_outcome};
 use crate::solver::rational::Rational;
 use crate::solver::{CompactSolved, solve, solve_compact};
 use std::collections::HashMap;
+use std::hash::BuildHasher;
 
-pub fn step<P: Rational, PREV: StoredEquipment>(
+pub fn step<P: Rational, PREV: StoredEquipment, S1: BuildHasher, S2: BuildHasher>(
     memo: &mut Memoz<P>,
-    order: &HashMap<ChapterId, u32>,
+    order: &HashMap<ChapterId, u32, S1>,
     wuse: &WeaponUse,
-    chapters: &HashMap<ChapterId, Chapter<P>>,
+    chapters: &HashMap<ChapterId, Chapter<P>, S2>,
     ccst: &CharacterConstant,
     ns: &NextStep<PREV>,
 ) -> Vec<Choice<P, String, NextStep<PREV>>> {
@@ -55,7 +56,9 @@ pub fn step<P: Rational, PREV: StoredEquipment>(
                 }
             };
             let scorer = |outcome: &Outcome<P, NextStep<PREV>>| outcome.iter().map(|r| scorei(&r.v)).max().unwrap_or(0);
-            out.sort_by(|a, b| scorer(&a.res).cmp(&scorer(&b.res)));
+            if out.len() > 1 {
+                out.sort_by_cached_key(|c| scorer(&c.res));
+            }
             if out.is_empty() {
                 panic!("Empty! {:?}", ns);
             } else {
@@ -107,8 +110,9 @@ where
 {
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
-    let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
+    let order: FastMap<ChapterId, u32> = order_chapters(&mbook).into_iter().collect();
     let wuse = WeaponUse::for_character(ccst, &mbook);
+    let mbook: FastMap<ChapterId, Chapter<P>> = mbook.into_iter().collect();
     let mut memo = Memoz::default();
     let o = solve::<NextStep<PREV>, _, _, _, _, _>(
         &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),
@@ -148,8 +152,9 @@ where
 {
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
-    let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
+    let order: FastMap<ChapterId, u32> = order_chapters(&mbook).into_iter().collect();
     let wuse = WeaponUse::for_character(ccst, &mbook);
+    let mbook: FastMap<ChapterId, Chapter<P>> = mbook.into_iter().collect();
     let mut memo = Memoz::default();
     let o = solve_compact::<NextStep<PREV>, _, _, _, _, _>(
         &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),
