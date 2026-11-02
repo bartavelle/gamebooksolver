@@ -43,15 +43,24 @@ effect on later books.
 - **C1. Permanent Combat Skill losses are dropped.** Book 1 c236 and Book 3 c55 flags are not carried, on the idea that
   those paths are not part of the solution. Turning them into a loss changed nothing on 122 characters, but they would
   matter if used (Book 2 falls from 0.838 to 0.780, Book 5 from 0.799 to 0.404). **Decided**; proof wanted in Rocq.
-  The proof must hold with next-book values, as the tests were win = 1.
+  The proof must hold with next-book values, as the tests were win = 1. The two cases differ. Book 3 c335 offers c55 or
+  c182, and c55 is 5 Endurance and the loss, then c182, so a proof is a dominance: more Endurance and more skill are never
+  worse. That needs fights to be monotone, and the rest of Books 3 to 5 not to reward less of either, including `OnDamage`
+  fights and conditions on Endurance. Book 1 c9 forces c236 when the Vordak Gem is held, so there is no choice to compare at
+  that chapter, and a proof has to go back to taking the gem, which R8 makes automatic.
 - **C2. These items and flags have no effect across books:** Crystal Star Pendant, Onyx Medallion, Blue Stone Triangle,
   Firesphere, Rope, the Gorn Cove flag. **Tested**, on a few characters each, win = 1. The medallion and the triangle
-  were only tested from c50 and c150.
+  were only tested from c50 and c150. Book 5 does read `ReceivedCrystalStarPendant`, at c221, c288 and c382, and nothing sets
+  it. The branches can't matter: c336 and c275 have the same outcomes, and c399 and c294 both go to c323. Proving this needs
+  a relation between chapters with the same content, which `value.v` does not have yet. The generic items are numbered per
+  book, so the same `GenSpecial` means something else in another book: Rocq can't check that a later book never mentions an
+  item, only that its transcription doesn't. Checking the text of the later books is a separate step.
 - **C3. `FLGKnowledge01` has no effect**, and was removed from `B03OPTIONS`. **Tested**, on 5 characters, win = 1.
-- **C4. Gold does not cross Book 2 to 3, Book 3 to 4 or Book 4 to 5.** See G4 and G5 for the effect on Book 5. In Book 3,
-  gold had no effect at 0, 15 and 30 on one character. By the rules alone, a static analysis groups Book 3 starts of 10
-  gold or more as identical, and all Book 4 starts as identical. **Tested** on that sample; the analysis is a scratch
-  script, not a proof. The Book 4 branch of `filter_final_state`, which maps gold to 0 or 15, is dead code as a result.
+- **C4. Gold does not cross Book 2 to 3, Book 3 to 4 or Book 4 to 5.** See G4 and G5 for the effect on Book 5. **Proved**
+  for Book 3 from 10 crowns (`book3_gold_above_ten` in `rocq/gold_reads.v`) and for all of Book 4 (`book4_gold_same` in
+  `rocq/reads.v`), for any score of the end of the book that does not read the gold. Starting Book 3 with less than 10
+  crowns is not covered, and Book 3 c152 reads up to 10. In Book 3, gold had no effect at 0, 15 and 30 on one character, which
+  is **Tested** only. The Book 4 branch of `filter_final_state`, which maps gold to 0 or 15, is dead code as a result.
 - **C5. Healing can be learned as late as Book 4.** Cases were added after a rough product of book scores favoured it
   (0.558 against 0.546). **Tested** with chained values on one comparison, using older data.
 - **C6. Book 3 and Book 4 kits with the Sommerswerd or a Sword cover what matters.** Book 2 can't be finished without the
@@ -91,7 +100,9 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   that: on the edited book of E1, MS scores 0.583265136440 at 15 and 16 gold, 0.583265136985 at 17 to 19, and
   0.583265137192 at 20 and 50, a total of about 0.00000008 points. A first guess of 12 for all characters was wrong.
   **Tested** on six characters. 6S has only been solved unedited at 10, 40 and 50, and values below 15 only at 10. Proving
-  this is an obligation if Book 5 relies on it.
+  this is an obligation if Book 5 relies on it. A static proof can't reach this: the need table of `rocq/gold.v` and Rust
+  both give 50 at the start of Book 5, adding up what a path can spend. What is left between 20 and 50 depends on whether
+  the spending is worth it, so a proof has to use solved values, or a finite run of every case at every amount.
 - **G6. Reaching 50 gold at the start of Book 5 is realistic.** A route can pick up 30 crowns in Book 4 (42 for the
   character lacking Camouflage and Tracking), on top of a 10 to 19 pouch. That is an upper bound: disciplines were
   checked, item and flag requirements were not, and survival was ignored. **Tested** by a scratch script only.
@@ -115,7 +126,9 @@ places, so each of these could lower a score if the missing choice were better.
 - **R5. Portholes (Book 2 c308) is not played.** It loses 0.09 crowns per throw on average. An exact model of every
   stopping rule gave the same score in all 36 comparisons (6 characters, 10 to 27 gold), and the same exact fraction on
   the one case checked. **Decided** on 2026-11-02; a static proof is wanted later. Reached only from c53 through c154,
-  and the best path did not visit either in the one exact case inspected.
+  and the best path did not visit either in the one exact case inspected. Showing that the gold is not read afterwards is
+  not available: 21 chapters that can be reached from c197 read or spend gold, including the Cartwheel. A proof has to
+  compare values, and G3 rules out assuming that more gold is better.
 
 ### Choices the model leaves out
 
@@ -170,18 +183,31 @@ places, so each of these could lower a score if the missing choice were better.
 
 ## 6. Optimizations
 
-These must not change a result, and each needs a proof against a rules model on the five books. None has one yet.
-Rocq models the Rust with the optimizations left out, and agreed with Rust on 4,391 cases, which checks the model and
-not the optimizations.
+These must not change a result, and each needs a proof against a rules model on the five books. Rocq models the Rust with
+the optimizations left out, and agreed with Rust on 4,391 cases, which checks the model and not the optimizations.
+
+The proofs are about `value` in `rocq/value.v`, the expectimax of a book as played by `rules.v`. `value_same` gives the same
+value to states that a `Tracker` can't tell apart, for any depth of search. They rely on functional extensionality and on
+the `cartwheel` parameter of `rules.v`, and on no `Admitted`. They inherit what `rules.v` assumes, which is section 5. They
+are about the model: the link to the Rust is the comparison above, and for tables, a mirror of the Rust.
 
 - **O1. Plain weapons are interchangeable.** A weapon with no skill, not magical, and not named in reachable chapters is
   treated as any other (`WeaponUse`, `useful_drops`, `canonical`). No mismatch on 42 + 42 pairs. **Tested.**
 - **O2. What can't be read again is cleared** (`Reads`): gold, generic items, and story flags. No mismatch on 15 pairs.
-  **Tested.**
+  **Tested.** **Proved** for a flag that a whole book does not read: `flag_unread_same` and the lists in `rocq/reads.v`. A
+  flag that is read in some chapters and cleared before them, chapter by chapter as `Reads` does, and the generic items,
+  are not proved. The tool for flags is there: `flag_value_same` takes a table per chapter.
 - **O3. Character specialisation** removes branches needing a discipline the character lacks. **Tested** on all 24
   characters of Books 1 to 4.
 - **O4. Gold above what can still be spent is cleared** (`gold_needs`). Must hold given G3: it only cuts gold that no
-  later test or payment can tell apart. **Tested** on the same 24.
+  later test or payment can tell apart. **Proved** in `rocq/gold.v` and `rocq/gold_reads.v` for Books 1 to 4, against a table
+  checked on the books. A Python mirror of `GoldNeeds` gives the same table on all 391 chapters of Book 2 and all 400 of
+  Book 3, and 0 everywhere in Book 4; the mirror was compared and not the Rust itself. Book 1 keeps all the gold in Rust. **Book 5
+  is only partly proved:** the same on 281 of 452 chapters. On the other 171, the proof asks for all the gold, because storing
+  and getting back the equipment (c69, c14) are treated as reading it, and Rust has no such rule and clamps more. Rust is
+  never below the proof elsewhere. These 171 are **Tested** at best, and the 24 characters of the test did not include
+  Book 5. Closing this means comparing the outcomes of `flatten_d` instead of requiring the same list, as c14 offers the gold
+  that is held. 323 chapters can be reached from a store without going through c14, and gold is gained in them.
 - **O5. Forced chapters can be elided** (`elide.rs`), replaying what they do. On and off: 44 of 48 cases identical, 0
   different, 4 not compared because they ran out of memory. **Tested.**
 - **O6. Round-by-round evasion matches a whole fight** when no evasion is taken. The rounds are assumed acyclic because each
