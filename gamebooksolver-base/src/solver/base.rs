@@ -109,6 +109,10 @@ impl<K: Eq + std::hash::Hash, V> Shards<K, V> {
         self.maps[shard].insert(k, v)
     }
 
+    pub fn retain(&mut self, mut keep: impl FnMut(&K, &mut V) -> bool) {
+        self.maps.iter_mut().for_each(|m| m.retain(&mut keep));
+    }
+
     pub fn remove(&mut self, k: &K) -> Option<V> {
         let shard = self.shard(k);
         self.maps[shard].remove(k)

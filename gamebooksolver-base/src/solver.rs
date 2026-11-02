@@ -15,12 +15,17 @@ pub struct CompactNode<P> {
 }
 
 /// Which states are kept once they are solved.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Retention {
+pub enum Retention<'t, STT> {
     All,
-    /// Not the states with a known score, nor those with a single choice and outcome, which are nearly as fast to solve
-    /// again as to find. The scores are the same, only the first state and the others are not always available afterwards.
-    Reduced,
+    /// The scores are the same, but the first state is the only one that is always available afterwards. These states
+    /// are not kept:
+    /// * those with a known score, or with a single choice and outcome, as they are nearly as fast to solve again as to find
+    /// * those for which `transient` holds, once there are `max_transient` of them, and until the end of the search only
+    ///   those being searched are kept. They should be states that are only useful for a short time
+    Reduced {
+        transient: &'t dyn Fn(&STT) -> bool,
+        max_transient: usize,
+    },
 }
 
 /// The score and best choice of the states that were kept, see `Retention`.
@@ -53,14 +58,32 @@ const WIN: u16 = u16::MAX - 1;
 
 struct Search<'t, P, STT: PackedState> {
     cache: Cache<STT::Key, CompactNode<P>>,
+    transient: Shards<STT::Key, CompactNode<P>>,
+    transient_count: usize,
     common: STT::Common,
-    retention: Retention,
+    retention: Retention<'t, STT>,
     root: &'t STT,
 }
 
 impl<P, STT: PackedState + PartialEq> Search<'_, P, STT> {
     fn discardable(&self, state: &STT) -> bool {
-        self.retention == Retention::Reduced && state != self.root
+        !matches!(self.retention, Retention::All) && state != self.root
+    }
+
+    fn is_transient(&self, state: &STT) -> bool {
+        match self.retention {
+            Retention::All => false,
+            Retention::Reduced { transient, .. } => state != self.root && transient(state),
+        }
+    }
+
+    fn make_room(&mut self) {
+        if let Retention::Reduced { max_transient, .. } = self.retention
+            && self.transient_count >= max_transient
+        {
+            self.transient.retain(|_, node| node.choice == SEARCHING);
+            self.transient_count = self.transient.len();
+        }
     }
 }
 
@@ -77,7 +100,7 @@ pub fn solve_compact<
     get_score: &FS,
     inistate: &STT,
     inspect: &INSPECT,
-    retention: Retention,
+    retention: Retention<'_, STT>,
 ) -> CompactSolved<P, STT>
 where
     FC: FnMut(&STT) -> Vec<Choice<P, DESC, STT>>,
@@ -86,6 +109,8 @@ where
 {
     let mut search = Search {
         cache: Cache::default(),
+        transient: Shards::default(),
+        transient_count: 0,
         common: STT::Common::default(),
         retention,
         root: inistate,
@@ -166,9 +191,15 @@ where
     }
 
     let key = curstate.pack(&mut search.common);
-    if let Some(ns) = search.cache.get(&key) {
+    let transient = search.is_transient(curstate);
+    let found = if transient {
+        search.transient.get(&key)
+    } else {
+        search.cache.get(&key)
+    };
+    if let Some(ns) = found {
         if ns.choice == SEARCHING {
-            for (k, v) in search.cache.cache.iter() {
+            for (k, v) in search.cache.cache.iter().chain(search.transient.iter()) {
                 if v.choice == SEARCHING {
                     println!(" * {}", STT::unpack(k, &search.common))
                 }
@@ -178,13 +209,18 @@ where
         return ns.score.clone();
     }
 
-    search.cache.insert(
-        curstate.pack(&mut search.common),
-        CompactNode {
-            score: P::from_i64(0, 1),
-            choice: SEARCHING,
-        },
-    );
+    let searching = CompactNode {
+        score: P::from_i64(0, 1),
+        choice: SEARCHING,
+    };
+    let key2 = curstate.pack(&mut search.common);
+    if transient {
+        search.make_room();
+        search.transient.insert(key2, searching);
+        search.transient_count += 1;
+    } else {
+        search.cache.insert(key2, searching);
+    }
 
     let choices = get_choices(curstate);
     if choices.is_empty() {
@@ -221,16 +257,24 @@ where
             get_choices(curstate)
         ),
         Some((choice, _)) => {
-            if single_outcome && search.discardable(curstate) {
-                search.cache.cache.remove(&key);
-            } else {
-                search.cache.insert(
-                    key,
-                    CompactNode {
-                        score: best_score.clone(),
-                        choice,
-                    },
-                );
+            let node = CompactNode {
+                score: best_score.clone(),
+                choice,
+            };
+            match (single_outcome && search.discardable(curstate), transient) {
+                (true, true) => {
+                    search.transient.remove(&key);
+                    search.transient_count -= 1;
+                }
+                (true, false) => {
+                    search.cache.cache.remove(&key);
+                }
+                (false, true) => {
+                    search.transient.insert(key, node);
+                }
+                (false, false) => {
+                    search.cache.insert(key, node);
+                }
             }
         }
     }
@@ -282,16 +326,43 @@ mod test {
         assert_eq!(compact.get(&3).unwrap().choice, WIN);
     }
 
+    fn reduced<'t>(transient: &'t dyn Fn(&u8) -> bool) -> Retention<'t, u8> {
+        Retention::Reduced {
+            transient,
+            max_transient: 1,
+        }
+    }
+
+    #[test]
+    fn transient_states_are_not_kept() {
+        let compact = solve_compact(&mut choices, &score, &0, &|_| (), reduced(&|s| *s == 2));
+        assert_eq!(compact.get(&0).unwrap().score, BigRational::from_i64(3, 4));
+        assert!(compact.get(&2).is_none());
+        // a search with almost no room for these states, and the root is never one of them
+        let all = solve_compact(&mut choices, &score, &0, &|_| (), reduced(&|_| true));
+        assert_eq!(all.get(&0).unwrap().score, BigRational::from_i64(3, 4));
+        assert_eq!(all.get(&0).unwrap().choice, 1);
+    }
+
+    #[test]
+    fn loops_are_detected_in_transient_states() {
+        let res = std::panic::catch_unwind(|| {
+            let mut looping = |s: &u8| vec![Choice { desc: 0, res: vec![Proba::<BigRational, u8>::certain(1 - *s)] }, Choice { desc: 1, res: vec![Proba::certain(1 - *s)] }];
+            solve_compact(&mut looping, &|_: &u8| None, &0, &|_| (), reduced(&|_| true));
+        });
+        assert!(res.is_err());
+    }
+
     #[test]
     fn reduced_retention_gives_the_same_scores() {
-        let compact = solve_compact(&mut choices, &score, &0, &|_| (), Retention::Reduced);
+        let compact = solve_compact(&mut choices, &score, &0, &|_| (), reduced(&|_| false));
         assert_eq!(compact.get(&0).unwrap().score, BigRational::from_i64(3, 4));
         assert_eq!(compact.get(&0).unwrap().choice, 1);
         // a choice is kept, what is known is not
         assert!(compact.get(&2).is_some());
         assert!(compact.get(&3).is_none());
         // the first state is always kept
-        let forced = solve_compact(&mut |_: &u8| vec![Choice { desc: 0, res: vec![Proba::certain(3)] }], &score, &5, &|_| (), Retention::Reduced);
+        let forced = solve_compact(&mut |_: &u8| vec![Choice { desc: 0, res: vec![Proba::certain(3)] }], &score, &5, &|_| (), reduced(&|_| false));
         assert!(forced.get(&5).is_some());
     }
 

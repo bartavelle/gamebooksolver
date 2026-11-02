@@ -123,6 +123,11 @@ impl<P: Rational> NewChapters<P> {
     }
 }
 
+/// Whether this chapter is one of those added for playing a fight round by round.
+pub fn is_round_chapter(cid: u16) -> bool {
+    cid >= FIRST_STORY_ROUND
+}
+
 /// Must be called on the book before using it, as `step` does not know about `Decision::EvadeFight`.
 pub fn expand_evasions<P: Rational>(bookid: Book, book: &mut HashMap<ChapterId, Chapter<P>>) {
     let mut new = NewChapters {

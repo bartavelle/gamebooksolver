@@ -2,7 +2,7 @@ use crate::lonewolf::chapter::{Chapter, ChapterId};
 use crate::lonewolf::choices::flatten_decision;
 use crate::lonewolf::combat::Memoz;
 use crate::lonewolf::data::{WeaponUse, order_chapters};
-use crate::lonewolf::evasion::expand_evasions;
+use crate::lonewolf::evasion::{expand_evasions, is_round_chapter};
 use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
@@ -135,6 +135,10 @@ where
     o
 }
 
+// The states of a fight are mostly useful while the same equipment is being looked at. Keeping more of them saves little
+// time, and they would use more memory than all the other states.
+const MAX_ROUND_STATES: usize = 1_000_000;
+
 /// Same as `solve_lws`, keeping only the score and the index of the best choice of the states that take longer to solve
 /// again, see `Retention`, which uses a lot less memory.
 /// The scorer must only depend on what `get_boundary` lists for this book, as the rest of the state can be changed, see
@@ -166,7 +170,10 @@ where
                 eprintln!("State cache efficiency {:.2}%", c.efficiency() * 100.0)
             }
         },
-        Retention::Reduced,
+        Retention::Reduced {
+            transient: &|ns: &NextStep<PREV>| ns.chapter().is_some_and(is_round_chapter),
+            max_transient: MAX_ROUND_STATES,
+        },
     );
     if verbose {
         eprintln!(
