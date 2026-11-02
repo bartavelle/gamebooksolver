@@ -14,7 +14,29 @@ pub struct CompactNode<P> {
     pub choice: u16,
 }
 
-pub type CompactSolved<P, STT> = Shards<STT, CompactNode<P>>;
+/// The score and best choice of the states that can be reached.
+pub struct CompactSolved<P, STT: PackedState> {
+    nodes: Shards<STT::Key, CompactNode<P>>,
+    common: STT::Common,
+}
+
+impl<P, STT: PackedState> CompactSolved<P, STT> {
+    pub fn len(&self) -> usize {
+        self.nodes.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.nodes.is_empty()
+    }
+
+    pub fn get(&self, state: &STT) -> Option<&CompactNode<P>> {
+        self.nodes.get(&state.find(&self.common)?)
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (STT, &CompactNode<P>)> {
+        self.nodes.iter().map(|(k, node)| (STT::unpack(k, &self.common), node))
+    }
+}
 
 // the values of the choice that do not stand for a choice
 const SEARCHING: u16 = u16::MAX;
@@ -22,7 +44,7 @@ const WIN: u16 = u16::MAX - 1;
 
 /// Finds the score and the best choice of all the states that can be reached.
 pub fn solve_compact<
-    STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd + std::fmt::Display,
+    STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd + std::fmt::Display + PackedState,
     FC,
     FS,
     INSPECT,
@@ -37,19 +59,23 @@ pub fn solve_compact<
 where
     FC: FnMut(&STT) -> Vec<Choice<P, DESC, STT>>,
     FS: Fn(&STT) -> Option<P>,
-    INSPECT: Fn(&Cache<STT, CompactNode<P>>),
+    INSPECT: Fn(&Cache<STT::Key, CompactNode<P>>),
 {
-    let mut stt: Cache<STT, CompactNode<P>> = Cache::default();
+    let mut stt: Cache<STT::Key, CompactNode<P>> = Cache::default();
+    let mut common = STT::Common::default();
 
-    go(get_choices, get_score, &mut stt, inistate);
+    go(get_choices, get_score, &mut stt, &mut common, inistate);
     inspect(&stt);
 
-    stt.cache
+    CompactSolved {
+        nodes: stt.cache,
+        common,
+    }
 }
 
 /// Same as `solve_compact`, with the outcomes of the best choice of each state.
 pub fn solve<
-    STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd + std::fmt::Display,
+    STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd + std::fmt::Display + PackedState,
     FC,
     FS,
     INSPECT,
@@ -64,11 +90,14 @@ pub fn solve<
 where
     FC: FnMut(&STT) -> Vec<Choice<P, DESC, STT>>,
     FS: Fn(&STT) -> Option<P>,
-    INSPECT: Fn(&Cache<STT, CompactNode<P>>),
+    INSPECT: Fn(&Cache<STT::Key, CompactNode<P>>),
 {
-    solve_compact(get_choices, get_score, inistate, inspect)
+    let solved = solve_compact(get_choices, get_score, inistate, inspect);
+    solved
+        .nodes
         .into_iter()
         .map(|(k, node)| {
+            let k = STT::unpack(&k, &solved.common);
             let sol = if node.choice == WIN {
                 SolNode::Win(node.score)
             } else {
@@ -81,7 +110,7 @@ where
 }
 
 fn go<
-    STT: Eq + Hash + Clone + std::fmt::Debug + std::fmt::Display + PartialOrd,
+    STT: Eq + Hash + Clone + std::fmt::Debug + std::fmt::Display + PartialOrd + PackedState,
     FC,
     FS,
     DESC: std::fmt::Debug,
@@ -89,16 +118,18 @@ fn go<
 >(
     get_choices: &mut FC,
     get_score: &FS,
-    search_state: &mut Cache<STT, CompactNode<P>>,
+    search_state: &mut Cache<STT::Key, CompactNode<P>>,
+    common: &mut STT::Common,
     curstate: &STT,
 ) -> P
 where
     FC: FnMut(&STT) -> Vec<Choice<P, DESC, STT>>,
     FS: Fn(&STT) -> Option<P>,
 {
+    let key = curstate.pack(common);
     if let Some(score) = get_score(curstate) {
         search_state.insert(
-            curstate.clone(),
+            key,
             CompactNode {
                 score: score.clone(),
                 choice: WIN,
@@ -107,11 +138,11 @@ where
         return score;
     }
 
-    if let Some(ns) = search_state.get(curstate) {
+    if let Some(ns) = search_state.get(&key) {
         if ns.choice == SEARCHING {
             for (k, v) in search_state.cache.iter() {
                 if v.choice == SEARCHING {
-                    println!(" * {k}")
+                    println!(" * {}", STT::unpack(k, common))
                 }
             }
             panic!("loop at {}", curstate)
@@ -120,7 +151,7 @@ where
     }
 
     search_state.insert(
-        curstate.clone(),
+        curstate.pack(common),
         CompactNode {
             score: P::from_i64(0, 1),
             choice: SEARCHING,
@@ -137,7 +168,7 @@ where
         let idx = u16::try_from(idx).expect("too many choices");
         let mut cur_score = P::from_i64(0, 1);
         for outcome in &choice.res {
-            cur_score = cur_score.add(&go(get_choices, get_score, search_state, &outcome.v).mul(&outcome.p));
+            cur_score = cur_score.add(&go(get_choices, get_score, search_state, common, &outcome.v).mul(&outcome.p));
         }
         if cur_score > best_score {
             best_choice = Some((idx, SolNode::from_choices(cur_score.clone(), choice.res)));
@@ -162,7 +193,7 @@ where
         ),
         Some((choice, _)) => {
             search_state.insert(
-                curstate.clone(),
+                key,
                 CompactNode {
                     score: best_score.clone(),
                     choice,
@@ -212,10 +243,10 @@ mod test {
     #[test]
     fn best_choice_is_kept() {
         let compact = solve_compact(&mut choices, &score, &0, &|_| ());
-        assert_eq!(compact[&0].score, BigRational::from_i64(3, 4));
-        assert_eq!(compact[&0].choice, 1);
-        assert_eq!(compact[&2].choice, 1);
-        assert_eq!(compact[&3].choice, WIN);
+        assert_eq!(compact.get(&0).unwrap().score, BigRational::from_i64(3, 4));
+        assert_eq!(compact.get(&0).unwrap().choice, 1);
+        assert_eq!(compact.get(&2).unwrap().choice, 1);
+        assert_eq!(compact.get(&3).unwrap().choice, WIN);
     }
 
     #[test]

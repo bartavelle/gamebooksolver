@@ -1,4 +1,4 @@
-use crate::solver::base::ChoppedSolution;
+use crate::solver::base::{ChoppedSolution, PackedState, FastMap};
 use crate::solver::rational::Rational;
 use crate::solver::rational::r::MRational;
 use bincode::{Decode, Encode};
@@ -102,6 +102,111 @@ pub enum NextStep<PREV: StoredEquipment> {
     HasLost(u16),
     HasWon(CharacterVariableG<PREV>),
     NewChapter(u16, CharacterVariableG<PREV>),
+}
+
+/// The form of a `NextStep` kept by the solver: the chapter, the index of the stored equipment, the flags with the kind of
+/// step in the two highest of their 24 bits, the endurance and the equipment.
+#[derive(PartialEq, Eq, Clone)]
+pub struct PackedStep([u8; 16]);
+
+impl std::hash::Hash for PackedStep {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write(&self.0)
+    }
+}
+
+/// There are only a few different stored equipments in a book, and most states do not have any.
+#[derive(Default)]
+pub struct StoredEquipments {
+    all: Vec<Equipment>,
+    index: FastMap<Equipment, u16>,
+}
+
+impl StoredEquipments {
+    fn intern(&mut self, e: Equipment) -> u16 {
+        *self.index.entry(e).or_insert_with(|| {
+            self.all.push(e);
+            u16::try_from(self.all.len() - 1).expect("too many stored equipments")
+        })
+    }
+}
+
+const STEP_WON: u32 = 1 << 22;
+const STEP_LOST: u32 = 2 << 22;
+
+impl<PREV: StoredEquipment> PackedState for NextStep<PREV> {
+    type Key = PackedStep;
+    type Common = StoredEquipments;
+
+    fn pack(&self, common: &mut StoredEquipments) -> PackedStep {
+        let idx = match self.cvar() {
+            Some(cv) if PREV::exists() => common.intern(cv.cprevequipment.into()),
+            _ => 0,
+        };
+        self.pack_with(idx)
+    }
+
+    fn find(&self, common: &StoredEquipments) -> Option<PackedStep> {
+        let idx = match self.cvar() {
+            Some(cv) if PREV::exists() => *common.index.get(&cv.cprevequipment.into())?,
+            _ => 0,
+        };
+        Some(self.pack_with(idx))
+    }
+
+    fn unpack(key: &PackedStep, common: &StoredEquipments) -> Self {
+        let b = &key.0;
+        let chapter = u16::from_le_bytes([b[0], b[1]]);
+        let bits = u32::from_le_bytes([b[4], b[5], b[6], 0]);
+        if bits & STEP_LOST != 0 {
+            return NextStep::HasLost(chapter);
+        }
+        let cv = CharacterVariableG {
+            curendurance: b[7] as i8,
+            flags: Flags(bits & (STEP_WON - 1)),
+            cequipment: Equipment {
+                gold: b[8],
+                meal_ls: b[9],
+                a: u16::from_le_bytes([b[10], b[11]]),
+                b: u32::from_le_bytes([b[12], b[13], b[14], b[15]]),
+            },
+            cprevequipment: if PREV::exists() {
+                PREV::from(common.all[u16::from_le_bytes([b[2], b[3]]) as usize])
+            } else {
+                PREV::default()
+            },
+        };
+        if bits & STEP_WON != 0 {
+            NextStep::HasWon(cv)
+        } else {
+            NextStep::NewChapter(chapter, cv)
+        }
+    }
+}
+
+impl<PREV: StoredEquipment> NextStep<PREV> {
+    fn pack_with(&self, idx: u16) -> PackedStep {
+        let mut b = [0; 16];
+        let (chapter, kind) = match self {
+            NextStep::HasLost(c) => (*c, STEP_LOST),
+            NextStep::HasWon(_) => (0, STEP_WON),
+            NextStep::NewChapter(c, _) => (*c, 0),
+        };
+        b[0..2].copy_from_slice(&chapter.to_le_bytes());
+        b[2..4].copy_from_slice(&idx.to_le_bytes());
+        let flags = self.cvar().map_or(0, |cv| cv.flags.0);
+        assert!(flags < STEP_WON, "flags do not fit: {flags}");
+        b[4..7].copy_from_slice(&(flags | kind).to_le_bytes()[..3]);
+        if let Some(cv) = self.cvar() {
+            b[7] = cv.curendurance as u8;
+            let e = cv.cequipment;
+            b[8] = e.gold;
+            b[9] = e.meal_ls;
+            b[10..12].copy_from_slice(&e.a.to_le_bytes());
+            b[12..16].copy_from_slice(&e.b.to_le_bytes());
+        }
+        PackedStep(b)
+    }
 }
 
 impl<PREV: StoredEquipment> std::fmt::Display for NextStep<PREV> {
@@ -1042,6 +1147,50 @@ pub enum CompactSolutionG {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn packed_steps() {
+        use crate::solver::CompactNode;
+        use crate::solver::rational::MF64;
+        assert_eq!(std::mem::size_of::<(PackedStep, CompactNode<MF64>)>(), 26);
+
+        let mut cv = CharacterVariable::new(17);
+        cv.add_item(&Item::Gold, 33);
+        cv.add_item(&Item::Meal, 3);
+        cv.add_item(&Item::Weapon(Weapon::Spear), 1);
+        cv.add_item(&Item::GenSpecial(5), 1);
+        cv.set_flag(Flag::PotentStrengthPotionActive);
+        cv.set_flag(Flag::HadCombat);
+        let mut stored = cv;
+        stored.cprevequipment = cv.cequipment;
+        stored.cequipment = Equipment::default();
+        let mut common = StoredEquipments::default();
+        for s in [
+            NextStep::NewChapter(30215, cv),
+            NextStep::NewChapter(u16::MAX, stored),
+            NextStep::HasWon(cv),
+            NextStep::HasWon(stored),
+            NextStep::HasLost(392),
+        ] {
+            let key = s.pack(&mut common);
+            assert_eq!(NextStep::unpack(&key, &common), s);
+            assert!(s.find(&common) == Some(key));
+        }
+        assert_eq!(common.all.len(), 2);
+
+        // no stored equipment can be converted in these books
+        let mut c2 = CharacterVariableG::<NoPrevEq>::new(9);
+        c2.add_item(&Item::Gold, 3);
+        let s = NextStep::NewChapter(4, c2);
+        assert_eq!(NextStep::unpack(&s.pack(&mut common), &common), s);
+
+        let unknown = NextStep::NewChapter(1, {
+            let mut c = CharacterVariable::new(1);
+            c.cprevequipment.add_item(&Item::Gold, 1);
+            c
+        });
+        assert!(unknown.find(&common).is_none());
+    }
 
     #[test]
     fn equipment_rb() {

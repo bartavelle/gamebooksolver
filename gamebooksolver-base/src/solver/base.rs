@@ -127,6 +127,33 @@ impl<K, V> IntoIterator for Shards<K, V> {
     }
 }
 
+/// A state in the form kept by the solver. The largest books have about a billion states, so that each byte counts.
+pub trait PackedState: Sized {
+    type Key: Eq + std::hash::Hash;
+    /// What is needed to go from a state to its key and back, that is common to many states.
+    type Common: Default;
+
+    fn pack(&self, common: &mut Self::Common) -> Self::Key;
+    /// The key of a state, if it can be one of those that have already been packed.
+    fn find(&self, common: &Self::Common) -> Option<Self::Key>;
+    fn unpack(key: &Self::Key, common: &Self::Common) -> Self;
+}
+
+impl PackedState for u8 {
+    type Key = u8;
+    type Common = ();
+
+    fn pack(&self, _: &mut ()) -> u8 {
+        *self
+    }
+    fn find(&self, _: &()) -> Option<u8> {
+        Some(*self)
+    }
+    fn unpack(key: &u8, _: &()) -> u8 {
+        *key
+    }
+}
+
 pub struct Cache<K, V> {
     pub cache: Shards<K, V>,
     checks: u64,

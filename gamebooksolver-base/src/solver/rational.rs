@@ -251,10 +251,23 @@ pub mod r {
     }
 }
 
-#[repr(transparent)]
-#[derive(Serialize, Deserialize, Clone, PartialEq, Default, Debug)]
-#[serde(transparent)]
+// the alignment is lowered so that the solver only uses 10 bytes for a score and a choice
+#[repr(packed(2))]
+#[derive(Clone, Copy, PartialEq, Default, Debug)]
 pub struct MF64(f64);
+
+impl Serialize for MF64 {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let v = self.0;
+        v.serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for MF64 {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        f64::deserialize(deserializer).map(MF64)
+    }
+}
 
 impl std::iter::Sum for MF64 {
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
@@ -272,9 +285,10 @@ impl Eq for MF64 {}
 
 impl Ord for MF64 {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match self.0.partial_cmp(&other.0) {
+        let (a, b) = (self.0, other.0);
+        match a.partial_cmp(&b) {
             Some(x) => x,
-            None => self.0.to_le_bytes().cmp(&other.0.to_le_bytes()),
+            None => a.to_le_bytes().cmp(&b.to_le_bytes()),
         }
     }
 }
