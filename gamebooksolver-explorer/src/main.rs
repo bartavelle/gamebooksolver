@@ -10,7 +10,10 @@ use gamebooksolver_base::lonewolf::mini::GSolDump;
 use gamebooksolver_base::lonewolf::mini::NoPrevEq;
 use gamebooksolver_base::lonewolf::mini::SoldumpContent;
 use gamebooksolver_base::lonewolf::mini::StoredEquipment;
-use gamebooksolver_base::lonewolf::solve::{solve_lws, solve_lws_best_path};
+use gamebooksolver_base::lonewolf::evasion::expand_evasions;
+use gamebooksolver_base::lonewolf::solve::{PathStates, solve_lws, solve_lws_best_path, visit_best_path};
+use gamebooksolver_base::solver::rational::MF64;
+use std::io::Write;
 use gamebooksolver_base::solver::base::Proba;
 use gamebooksolver_base::solver::base::optimize_outcome;
 use gamebooksolver_base::solver::base::{ChoppedSolution, SolNode};
@@ -90,6 +93,8 @@ enum PSub {
     },
     /// soldump and optimize
     SoldumpOptimize(OSolDesc),
+    /// write what can happen on the best path, with the value of all the choices, one state per line
+    Decisions(OSolDesc),
 }
 
 #[derive(Debug, Parser)]
@@ -799,6 +804,107 @@ fn cmd_soldump(cnt: &OSolDesc, jsonpath: &str, verbose: bool) -> anyhow::Result<
     Ok(sd)
 }
 
+fn write_decisions<PREV: StoredEquipment>(
+    cnt: &OSolDesc,
+    book: Vec<(ChapterId, Chapter<Rational>)>,
+    path: &str,
+    verbose: bool,
+) -> anyhow::Result<()> {
+    let (iitems, iflags) = get_boundary(cnt.bookid);
+    let mscoremap = cnt
+        .resultspath
+        .as_ref()
+        .map(|pth| load_results(cnt.discipline.iter().copied().collect(), &iitems, &iflags, pth, verbose))
+        .transpose()?;
+    let ccst = CharacterConstant {
+        bookid: cnt.bookid,
+        combat_skill: cnt.combat_skill,
+        discipline: cnt.discipline.clone(),
+        maxendurance: cnt.maxendurance,
+    };
+    let mut items: BTreeMap<Item, i64> = BTreeMap::new();
+    for i in &cnt.items {
+        *items.entry(*i).or_insert(0) += 1;
+    }
+    let cvar = CVarState {
+        flags: cnt.flags.iter().cloned().collect(),
+        gold: cnt.gold,
+        items: Some(items),
+    };
+    let cvar = mkchar::<PREV>(&ccst, &cvar);
+    let fchapters: Vec<ChapterId> = if !cnt.finalchapters.is_empty() {
+        cnt.finalchapters.iter().copied().map(ChapterId).collect()
+    } else if ccst.bookid == Book::Book05 {
+        vec![ChapterId(400)]
+    } else {
+        vec![ChapterId(350)]
+    };
+    // an exact score isn't needed for this, and takes a lot more memory
+    let book: Vec<(ChapterId, Chapter<MF64>)> = book
+        .into_iter()
+        .map(|(cid, c)| (cid, c.map_proba(&|p: &Rational| MF64::f_f64(p.to_f64()))))
+        .collect();
+    let opponents: HashMap<u16, (String, i8)> = {
+        let mut expanded: HashMap<ChapterId, Chapter<MF64>> = book.iter().cloned().collect();
+        expand_evasions(ccst.bookid, &mut expanded);
+        expanded
+            .iter()
+            .filter_map(|(cid, c)| round_details(&c.pchoice).map(|fd| (cid.0, (fd.opponent.clone(), fd.endurance.0))))
+            .collect()
+    };
+    let mut out = std::io::BufWriter::new(File::create(path)?);
+    let mut failure = None;
+    visit_best_path(
+        |e, f| MF64::f_f64(score_with(ccst.bookid, &mscoremap, &iitems, &iflags, e, f).to_f64()),
+        &fchapters,
+        &book,
+        &ccst,
+        &cvar,
+        cnt.startat,
+        verbose,
+        PathStates::Actual,
+        &mut |st, leaf| {
+            let round = st.state.chapter().and_then(|c| opponents.get(&c));
+            let line = serde_json::json!({
+                "state": st.state.to_string(),
+                "chapter": st.state.chapter(),
+                "cvar": st.state.cvar().map(|c| serde_json::json!({
+                    "endurance": c.curendurance,
+                    "flags": c.flags.all().iter().map(|f| format!("{f:?}")).collect::<Vec<_>>(),
+                    "items": c.cequipment.to_string(),
+                    "stored": c.cprevequipment.into().to_string(),
+                })),
+                "opponent": round.map(|r| &r.0),
+                "opponent_endurance": round.map(|r| r.1),
+                "score": leaf.map(|s| s.t_f64()),
+                "best": st.best,
+                "choices": st.choices.iter().map(|(desc, score, res)| serde_json::json!({
+                    "desc": desc,
+                    "score": score.t_f64(),
+                    "next": res.iter().map(|o| (o.p.t_f64(), o.v.to_string())).collect::<Vec<_>>(),
+                })).collect::<Vec<_>>(),
+            });
+            if failure.is_none()
+                && let Err(e) = writeln!(out, "{line}")
+            {
+                failure = Some(e);
+            }
+        },
+    );
+    match failure {
+        Some(e) => Err(e.into()),
+        None => Ok(out.flush()?),
+    }
+}
+
+fn round_details<P>(d: &Decision<P>) -> Option<&FightDetails<P>> {
+    match d {
+        Decision::None(ChapterOutcome::Round(fd, _, _)) => Some(fd),
+        Decision::Decisions(lst) => lst.iter().find_map(|(_, d)| round_details(d)),
+        _ => None,
+    }
+}
+
 fn cmd_optimize(
     soldump: &GSolDump<Rational>,
     target: &str,
@@ -894,6 +1000,22 @@ fn main() -> anyhow::Result<()> {
             let mut zwriter = zstd::Encoder::new(file, 3)?;
             bincode::encode_into_std_write(&sd, &mut zwriter, bincode::config::standard())?;
             zwriter.finish()?;
+        }
+        Some(PSub::Decisions(cnt)) => {
+            let fl = File::open(&cnt.bookpath)?;
+            let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl)?;
+            let has_prev_eq = book
+                .iter()
+                .flat_map(|x| x.1.pchoice.iter_outcomes())
+                .collect::<Vec<_>>()
+                .iter()
+                .flat_map(|co| co.simple_outcomes())
+                .any(|so| matches!(so, SimpleOutcome::StoreEquipment));
+            if has_prev_eq {
+                write_decisions::<Equipment>(cnt, book, &opt.solpath, opt.verbose)?;
+            } else {
+                write_decisions::<NoPrevEq>(cnt, book, &opt.solpath, opt.verbose)?;
+            }
         }
         Some(PSub::SoldumpOptimize(cnt)) => {
             let cur = std::time::Instant::now();
