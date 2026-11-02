@@ -478,6 +478,7 @@ Proof.
     bn := fun _ p a => Nat.max a (Nat.min ALL (a + p));
     en := fun i _ a => if item_beq i Gold then Nat.max ALL a else a;
     cw := ALL;
+    rn := ALL;
   |}.
   - exact gr_mono.
   - exact gr_top.
@@ -534,6 +535,8 @@ Proof.
   - intros i p a. destruct (eq_dec i Gold) as [EG|NG].
     + subst. cbn [gold_sn]. change (item_beq Gold Gold) with true. cbn iota. lia.
     + cbn [gold_sn]. rewrite !beq_gold by assumption. lia.
+  - intros i a L. lia.
+  - intros a L. lia.
 Defined.
 
 Module PM := FMapPositive.PositiveMap.

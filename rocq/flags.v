@@ -198,6 +198,7 @@ Section FlagSection.
       bn := fun _ _ a => a;
       en := fun _ _ a => a;
       cw := 0;
+      rn := 0;
     |}.
     - exact fr_mono.
     - exact fr_top.
@@ -237,6 +238,8 @@ Section FlagSection.
     - intros. apply le_n.
     - intros. apply le_n.
     - intros. apply le_n.
+    - intros. reflexivity.
+    - intros. reflexivity.
   Defined.
 
   Lemma flag_value_same: forall (ch: cid -> nat) wn chapters score,

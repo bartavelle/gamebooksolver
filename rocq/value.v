@@ -393,6 +393,7 @@ Record Tracker := {
   bn : item -> nat -> nat -> nat;
   en : item -> nat -> nat -> nat;
   cw : nat;
+  rn : nat;
 
   R_mono : forall m n s t, m <= n -> R n s t -> R m s t;
   R_top : forall n m s t, ALL <= n -> ALL <= m -> R n s t -> R m s t;
@@ -414,7 +415,7 @@ Record Tracker := {
   R_simple : forall so a n s t, sn so a <= n -> R n s t -> R a (update_simple s so) (update_simple t so);
   R_cond : forall c n s t, cn c <= n -> R n s t -> check_cond s c = check_cond t c;
   R_held : forall sl n s t, ln sl <= n -> R n s t -> held_items sl s = held_items sl t;
-  R_all_held : forall n s t, ALL <= n -> R n s t -> all_held_items s = all_held_items t;
+  R_all_held : forall n s t, rn <= n -> R n s t -> all_held_items s = all_held_items t;
   R_take : forall i a n s t, tn i a <= n -> R n s t -> tcan_take i s = tcan_take i t;
   R_buy : forall i p a n s t, bn i p a <= n -> R n s t ->
       Nat.leb p (sitems Gold s) = Nat.leb p (sitems Gold t) /\ tcan_take i s = tcan_take i t;
@@ -436,6 +437,8 @@ Record Tracker := {
   bn_gain : forall i p a, sn (LoseItem Gold p) (sn (GainItem i 1) a) <= bn i p a;
   en_ext : forall i p a, a <= en i p a;
   en_gain : forall i p a, sn (LoseItem i 1) (sn (GainItem Gold p) a) <= en i p a;
+  rn_tn : forall i a, rn < ALL -> tn i a = a;
+  rn_sn : forall a, rn < ALL -> sn RetrieveEquipment a = a;
 }.
 
 Section Sim.
@@ -468,7 +471,7 @@ Section Sim.
   Fixpoint dec_need (d: decision) : nat :=
     match d with
     | App a b => Nat.max (dec_need a) (dec_need b)
-    | retrieve_equipment n => Nat.max ALL (dec_need n)
+    | retrieve_equipment n => Nat.max (rn T) (dec_need n)
     | can_take i _ n => tn T i (dec_need n)
     | can_buy i p n => bn T i p (dec_need n)
     | can_sell i p n => en T i p (dec_need n)
@@ -746,6 +749,12 @@ Section Sim.
       apply in_rev in J. apply filter_In in J. tauto.
   Qed.
 
+  Lemma fold_take_need: forall (l: list (item * nat)) nxt, rn T < ALL ->
+    dec_need (fold_left (fun acc (iq: item * nat) => can_take (fst iq) (snd iq) acc) l nxt) = dec_need nxt.
+  Proof.
+    induction l as [|x l IH]; intros nxt S; simpl; auto. rewrite IH by assumption. simpl. apply rn_tn. assumption.
+  Qed.
+
   Lemma flatten_same: forall fl n s t d, dec_need d <= n -> R T n s t -> FlatOk fl n s t d.
   Proof.
     induction fl as [|fl IH]; intros n s t d HN HR.
@@ -765,10 +774,12 @@ Section Sim.
       destruct (NX d1) as [E1 M1]; [lia|]. destruct (NX d2) as [E2 M2]; [lia|].
       apply app_ok; auto.
     - (* retrieve_equipment *)
-      assert (ALL <= n) as AN by lia.
-      rewrite (R_all_held _ _ _ _ AN HR).
+      rewrite (R_all_held T n s t ltac:(lia) HR).
       match goal with |- context [map (Simple [RetrieveEquipment]) (flatten_d fl (apply_effects t [RetrieveEquipment]) ?nd)] =>
         set (ndec := nd) end.
+      destruct (Nat.le_gt_cases ALL (rn T)) as [BIG|SM].
+      2: { apply WE. simpl. unfold ndec. rewrite rn_sn by assumption. rewrite fold_take_need by assumption. lia. }
+      assert (ALL <= n) as AN by lia.
       set (n2 := sn T RetrieveEquipment (Nat.max n (dec_need ndec))).
       assert (Nat.max n (dec_need ndec) <= n2) as N2 by apply sn_ext.
       assert (R T n2 s t) as R2 by (eapply R_top; [exact AN| |exact HR]; lia).
