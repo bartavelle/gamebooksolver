@@ -19,7 +19,7 @@ pub enum Retention<'t, STT> {
     All,
     /// The scores are the same, but the first state is the only one that is always available afterwards. These states
     /// are not kept:
-    /// * those with a known score, or with a single choice and outcome, as they are nearly as fast to solve again as to find
+    /// * those with a known score, as it is as fast to find again
     /// * those for which `transient` holds, once there are `max_transient` of them, and until the end of the search only
     ///   those being searched are kept. They should be states that are only useful for a short time
     Reduced {
@@ -226,7 +226,6 @@ where
     if choices.is_empty() {
         panic!("Empty choice at state {}", curstate);
     }
-    let single_outcome = matches!(choices.as_slice(), [c] if c.res.len() == 1);
     let mut best_choice: Option<(u16, SolNode<P, STT>)> = None;
     let mut best_score = P::from_i64(-1, 1);
     for (idx, choice) in choices.into_iter().enumerate() {
@@ -261,20 +260,10 @@ where
                 score: best_score.clone(),
                 choice,
             };
-            match (single_outcome && search.discardable(curstate), transient) {
-                (true, true) => {
-                    search.transient.remove(&key);
-                    search.transient_count -= 1;
-                }
-                (true, false) => {
-                    search.cache.cache.remove(&key);
-                }
-                (false, true) => {
-                    search.transient.insert(key, node);
-                }
-                (false, false) => {
-                    search.cache.insert(key, node);
-                }
+            if transient {
+                search.transient.insert(key, node);
+            } else {
+                search.cache.insert(key, node);
             }
         }
     }
