@@ -385,9 +385,6 @@ fn score_with(
             for gainedgold in 10..=19 {
                 let mut nre = re;
                 nre.add_item(&Item::Gold, gainedgold);
-                if nre.gold > 27 {
-                    nre.gold = 27;
-                }
                 match scoremap.get(&(nre, rf)) {
                     None => {
                         eprintln!(
