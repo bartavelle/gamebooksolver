@@ -145,17 +145,20 @@ def geneqps(base: List[str], options: List[str]) -> Iterator[str]:
 DISCS = {"CA", "HU", "6S", "TR", "HL", "MS", "MB", "AK", "MO"}
 RDISCS = {"CA", "HU", "6S", "TR", "MS", "MO"}
 RDISCSb = {"CA", "HU", "6S", "TR", "MS", "MO", "AK"}
+# Healing can be learned as late as Book 4: having another skill in Book 3 is worth more than having it in Book 2
+RDISCSh = RDISCS | {"HL"}
+RDISCSbh = RDISCSb | {"HL"}
 
 TGTS1: set[str] = set()
 for t in B01BASE:
-    for d1 in RDISCSb:
-        for d2 in RDISCSb:
+    for d1 in RDISCSbh:
+        for d2 in RDISCSbh:
             if d1 > d2:
-                for d3 in RDISCSb:
+                for d3 in RDISCSbh:
                     if d2 > d3:
-                        for d4 in RDISCSb:
+                        for d4 in RDISCSbh:
                             if d3 > d4:
-                                for d5 in RDISCSb:
+                                for d5 in RDISCSbh:
                                     if d4 > d5:
                                         for gold in range(0,10):
                                             if t == "*MOREGOLD*":
@@ -171,12 +174,12 @@ for t in B01BASE:
 
 TGTS2: set[str] = set()
 for t in geneqps(B02bBASE, B02OPTIONS):
-    for d1 in RDISCS:
-        for d2 in RDISCS:
+    for d1 in RDISCSh:
+        for d2 in RDISCSh:
             if d1 > d2:
-                for d3 in RDISCS:
+                for d3 in RDISCSh:
                     if d2 > d3:
-                        for d4 in RDISCS:
+                        for d4 in RDISCSh:
                             if d3 > d4:
                                 for gold in range(10, 28):
                                     if gold == 15:
@@ -190,12 +193,12 @@ for t in geneqps(B02bBASE, B02OPTIONS):
                                             % (d1, d2, d3, d4, gold, t)
                                         )
 for t in geneqps(B02bBASE, B02OPTIONS):
-    for d1 in RDISCSb:
-        for d2 in RDISCSb:
+    for d1 in RDISCSbh:
+        for d2 in RDISCSbh:
             if d1 > d2:
-                for d3 in RDISCSb:
+                for d3 in RDISCSbh:
                     if d2 > d3:
-                        for d4 in RDISCSb:
+                        for d4 in RDISCSbh:
                             if d3 > d4:
                                 for gold in range(23, 24):
                                     if gold == 15:
@@ -211,10 +214,10 @@ for t in geneqps(B02bBASE, B02OPTIONS):
 
 TGTS3: List[str] = []
 for t in geneqps(B03BASE, B03OPTIONS):
-    for d1 in RDISCS:
-        for d2 in RDISCS:
+    for d1 in RDISCSh:
+        for d2 in RDISCSh:
             if d1 > d2:
-                for d3 in RDISCS:
+                for d3 in RDISCSh:
                     if d2 > d3:
                         TGTS3.append("data/B03/2010SW.%s.%s.%s%s.bin" % (d1, d2, d3, t))
 
