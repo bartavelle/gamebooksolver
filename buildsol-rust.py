@@ -47,6 +47,8 @@ else:
         stem + ".json",
         "--fullsol",
         stem + ".bin.zstd",
+        "--decisions",
+        stem + ".decisions.jsonl.zst",
         "soldump-optimize",
     ]
 

@@ -6,6 +6,7 @@ fails, see `check`.
 import collections
 import json
 import re
+import subprocess
 
 TIE = 1e-9
 
@@ -13,12 +14,16 @@ TIE = 1e-9
 def load(path):
     states = {}
     root = None
-    with open(path) as f:
-        for line in f:
-            st = json.loads(line)
-            states[st["state"]] = st
-            if root is None:
-                root = st["state"]
+    if path.endswith(".zst"):
+        lines = subprocess.run(["zstd", "-dc", path], check=True, capture_output=True, text=True).stdout.splitlines()
+    else:
+        with open(path) as f:
+            lines = f.read().splitlines()
+    for line in lines:
+        st = json.loads(line)
+        states[st["state"]] = st
+        if root is None:
+            root = st["state"]
     return root, states
 
 

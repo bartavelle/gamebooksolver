@@ -11,7 +11,9 @@ use gamebooksolver_base::lonewolf::mini::NoPrevEq;
 use gamebooksolver_base::lonewolf::mini::SoldumpContent;
 use gamebooksolver_base::lonewolf::mini::StoredEquipment;
 use gamebooksolver_base::lonewolf::evasion::expand_evasions;
-use gamebooksolver_base::lonewolf::solve::{PathStates, solve_lws, solve_lws_best_path, visit_best_path};
+use gamebooksolver_base::lonewolf::solve::{
+    BestPathState, PathStates, solve_lws, solve_lws_best_path, solve_lws_best_path_and_visit, visit_best_path,
+};
 use gamebooksolver_base::solver::rational::MF64;
 use std::io::Write;
 use gamebooksolver_base::solver::base::Proba;
@@ -114,6 +116,9 @@ struct Opt {
     /// Optional path to the full .bin solution
     #[structopt(long)]
     fullsol: Option<String>,
+    /// Optional path where soldump writes the value of all the choices on the best path. It is compressed if it ends in .zst
+    #[structopt(long)]
+    decisions: Option<String>,
     /// Alternate commands
     #[structopt(subcommand)]
     cmd: Option<PSub>,
@@ -703,8 +708,13 @@ fn soldump<PREV: StoredEquipment>(
     cnt: &OSolDesc,
     book: Vec<(ChapterId, Chapter<Rational>)>,
     json_path: &str,
+    decisions_path: Option<&str>,
     verbose: bool,
 ) -> anyhow::Result<SolutionDump<Rational, PREV>> {
+    anyhow::ensure!(
+        !(cnt.allstates && decisions_path.is_some()),
+        "--decisions only works with the best path, and not with --allstates"
+    );
     let (iitems, iflags) = get_boundary(cnt.bookid);
     let mscoremap = cnt
         .resultspath
@@ -758,20 +768,25 @@ fn soldump<PREV: StoredEquipment>(
     };
     let cvar = soldesc.cvariable::<PREV>();
     let scorer = |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f);
-    let solver = if cnt.allstates {
-        solve_lws
+    let sol = if cnt.allstates {
+        solve_lws(scorer, &fchapters, &book, &soldesc.ccst, &cvar, cnt.startat, verbose)
+    } else if let Some(path) = decisions_path {
+        let mut writer = DecisionsWriter::new(path, soldesc.ccst.bookid, &book)?;
+        let sol = solve_lws_best_path_and_visit(
+            scorer,
+            &fchapters,
+            &book,
+            &soldesc.ccst,
+            &cvar,
+            cnt.startat,
+            verbose,
+            &mut |st, leaf| writer.write(st, leaf),
+        );
+        writer.finish()?;
+        sol
     } else {
-        solve_lws_best_path
+        solve_lws_best_path(scorer, &fchapters, &book, &soldesc.ccst, &cvar, cnt.startat, verbose)
     };
-    let sol = solver(
-        scorer,
-        &fchapters,
-        &book,
-        &soldesc.ccst,
-        &cvar,
-        cnt.startat,
-        verbose,
-    );
     let soldump = SolutionDump {
         soldesc,
         content: sol.into_iter().map(|(ns, x)| (ns, chop_solution(x))).collect(),
@@ -784,7 +799,12 @@ fn soldump<PREV: StoredEquipment>(
     Ok(soldump)
 }
 
-fn cmd_soldump(cnt: &OSolDesc, jsonpath: &str, verbose: bool) -> anyhow::Result<GSolDump<Rational>> {
+fn cmd_soldump(
+    cnt: &OSolDesc,
+    jsonpath: &str,
+    decisions: Option<&str>,
+    verbose: bool,
+) -> anyhow::Result<GSolDump<Rational>> {
     let fl = File::open(&cnt.bookpath)?;
     let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl)?;
     let cos = book
@@ -797,11 +817,83 @@ fn cmd_soldump(cnt: &OSolDesc, jsonpath: &str, verbose: bool) -> anyhow::Result<
         .any(|so| matches!(so, SimpleOutcome::StoreEquipment));
 
     let sd = if has_prev_eq {
-        soldump::<Equipment>(cnt, book, jsonpath, verbose).map(GSolDump::Prev)?
+        soldump::<Equipment>(cnt, book, jsonpath, decisions, verbose).map(GSolDump::Prev)?
     } else {
-        soldump::<NoPrevEq>(cnt, book, jsonpath, verbose).map(GSolDump::Noprev)?
+        soldump::<NoPrevEq>(cnt, book, jsonpath, decisions, verbose).map(GSolDump::Noprev)?
     };
     Ok(sd)
+}
+
+/// Writes the states of the best path with the value of all the choices, one per line. A file ending in .zst is compressed.
+struct DecisionsWriter {
+    out: Box<dyn Write>,
+    opponents: HashMap<u16, (String, i8)>,
+    failure: Option<std::io::Error>,
+}
+
+impl DecisionsWriter {
+    fn new<P: gamebooksolver_base::solver::rational::Rational>(
+        path: &str,
+        bookid: Book,
+        book: &[(ChapterId, Chapter<P>)],
+    ) -> anyhow::Result<Self> {
+        let mut expanded: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
+        expand_evasions(bookid, &mut expanded);
+        let opponents = expanded
+            .iter()
+            .filter_map(|(cid, c)| round_details(&c.pchoice).map(|fd| (cid.0, (fd.opponent.clone(), fd.endurance.0))))
+            .collect();
+        let file = File::create(path)?;
+        let out: Box<dyn Write> = if path.ends_with(".zst") {
+            Box::new(zstd::Encoder::new(file, 9)?.auto_finish())
+        } else {
+            Box::new(std::io::BufWriter::new(file))
+        };
+        Ok(DecisionsWriter {
+            out,
+            opponents,
+            failure: None,
+        })
+    }
+
+    fn write<P: gamebooksolver_base::solver::rational::Rational, PREV: StoredEquipment>(
+        &mut self,
+        st: BestPathState<P, PREV>,
+        leaf: Option<&P>,
+    ) {
+        let round = st.state.chapter().and_then(|c| self.opponents.get(&c));
+        let line = serde_json::json!({
+            "state": st.state.to_string(),
+            "chapter": st.state.chapter(),
+            "cvar": st.state.cvar().map(|c| serde_json::json!({
+                "endurance": c.curendurance,
+                "flags": c.flags.all().iter().map(|f| format!("{f:?}")).collect::<Vec<_>>(),
+                "items": c.cequipment.to_string(),
+                "stored": c.cprevequipment.into().to_string(),
+            })),
+            "opponent": round.map(|r| &r.0),
+            "opponent_endurance": round.map(|r| r.1),
+            "score": leaf.map(|s| s.t_f64()),
+            "best": st.best,
+            "choices": st.choices.iter().map(|(desc, score, res)| serde_json::json!({
+                "desc": desc,
+                "score": score.t_f64(),
+                "next": res.iter().map(|o| (o.p.t_f64(), o.v.to_string())).collect::<Vec<_>>(),
+            })).collect::<Vec<_>>(),
+        });
+        if self.failure.is_none()
+            && let Err(e) = writeln!(self.out, "{line}")
+        {
+            self.failure = Some(e);
+        }
+    }
+
+    fn finish(mut self) -> anyhow::Result<()> {
+        match self.failure {
+            Some(e) => Err(e.into()),
+            None => Ok(self.out.flush()?),
+        }
+    }
 }
 
 fn write_decisions<PREV: StoredEquipment>(
@@ -844,16 +936,7 @@ fn write_decisions<PREV: StoredEquipment>(
         .into_iter()
         .map(|(cid, c)| (cid, c.map_proba(&|p: &Rational| MF64::f_f64(p.to_f64()))))
         .collect();
-    let opponents: HashMap<u16, (String, i8)> = {
-        let mut expanded: HashMap<ChapterId, Chapter<MF64>> = book.iter().cloned().collect();
-        expand_evasions(ccst.bookid, &mut expanded);
-        expanded
-            .iter()
-            .filter_map(|(cid, c)| round_details(&c.pchoice).map(|fd| (cid.0, (fd.opponent.clone(), fd.endurance.0))))
-            .collect()
-    };
-    let mut out = std::io::BufWriter::new(File::create(path)?);
-    let mut failure = None;
+    let mut writer = DecisionsWriter::new(path, ccst.bookid, &book)?;
     visit_best_path(
         |e, f| MF64::f_f64(score_with(ccst.bookid, &mscoremap, &iitems, &iflags, e, f).to_f64()),
         &fchapters,
@@ -862,39 +945,9 @@ fn write_decisions<PREV: StoredEquipment>(
         &cvar,
         cnt.startat,
         verbose,
-        PathStates::Actual,
-        &mut |st, leaf| {
-            let round = st.state.chapter().and_then(|c| opponents.get(&c));
-            let line = serde_json::json!({
-                "state": st.state.to_string(),
-                "chapter": st.state.chapter(),
-                "cvar": st.state.cvar().map(|c| serde_json::json!({
-                    "endurance": c.curendurance,
-                    "flags": c.flags.all().iter().map(|f| format!("{f:?}")).collect::<Vec<_>>(),
-                    "items": c.cequipment.to_string(),
-                    "stored": c.cprevequipment.into().to_string(),
-                })),
-                "opponent": round.map(|r| &r.0),
-                "opponent_endurance": round.map(|r| r.1),
-                "score": leaf.map(|s| s.t_f64()),
-                "best": st.best,
-                "choices": st.choices.iter().map(|(desc, score, res)| serde_json::json!({
-                    "desc": desc,
-                    "score": score.t_f64(),
-                    "next": res.iter().map(|o| (o.p.t_f64(), o.v.to_string())).collect::<Vec<_>>(),
-                })).collect::<Vec<_>>(),
-            });
-            if failure.is_none()
-                && let Err(e) = writeln!(out, "{line}")
-            {
-                failure = Some(e);
-            }
-        },
+        &mut [(PathStates::Actual, &mut |st, leaf| writer.write(st, leaf))],
     );
-    match failure {
-        Some(e) => Err(e.into()),
-        None => Ok(out.flush()?),
-    }
+    writer.finish()
 }
 
 fn round_details<P>(d: &Decision<P>) -> Option<&FightDetails<P>> {
@@ -994,7 +1047,7 @@ fn main() -> anyhow::Result<()> {
         }
         Some(PSub::Soldump(cnt)) => {
             let json_path = opt.json.unwrap_or_else(|| opt.solpath.to_owned() + ".json");
-            let sd = cmd_soldump(cnt, &json_path, opt.verbose)?;
+            let sd = cmd_soldump(cnt, &json_path, opt.decisions.as_deref(), opt.verbose)?;
             // save whole stuff
             let file = File::create(&opt.solpath)?;
             let mut zwriter = zstd::Encoder::new(file, 3)?;
@@ -1021,7 +1074,7 @@ fn main() -> anyhow::Result<()> {
             let cur = std::time::Instant::now();
             let json_path = opt.json.unwrap_or_else(|| opt.solpath.to_owned() + ".json");
             let jname = opt.desc.unwrap_or_else(|| opt.solpath.to_owned() + ".desc");
-            let sd = Arc::new(cmd_soldump(cnt, &json_path, opt.verbose)?);
+            let sd = Arc::new(cmd_soldump(cnt, &json_path, opt.decisions.as_deref(), opt.verbose)?);
             let soldump_duration = cur.elapsed();
             fn statsfor<PREV: StoredEquipment>(content: &SoldumpContent<Rational, PREV>) -> (usize, f64) {
                 let win = content

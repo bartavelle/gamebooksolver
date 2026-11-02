@@ -262,8 +262,8 @@ pub enum PathStates {
     Actual,
 }
 
-/// Solves with the memory of `solve_lws_compact`, then calls `visit` for each state that can happen when always making
-/// the best choice, or with the score of those that have one.
+/// Solves with the memory of `solve_lws_compact`, then for each walk, calls its function for each state that can happen when
+/// always making the best choice, with the score of those that have one. A single solve is enough for all the walks.
 #[allow(clippy::too_many_arguments)]
 pub fn visit_best_path<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
     scorer: F,
@@ -273,8 +273,7 @@ pub fn visit_best_path<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipm
     cvar: &CharacterVariableG<PREV>,
     startat: u16,
     verbose: bool,
-    states: PathStates,
-    visit: &mut dyn FnMut(BestPathState<P, PREV>, Option<&P>),
+    walks: &mut [(PathStates, &mut dyn FnMut(BestPathState<P, PREV>, Option<&P>))],
 ) where
     F: Fn(Equipment, Flags) -> P,
 {
@@ -287,10 +286,6 @@ pub fn visit_best_path<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipm
     // the states have to be the same as those that were solved
     let wuse = WeaponUse::for_character(ccst, &elided);
     let no_analysis = WeaponUse::default();
-    let walk_wuse = match states {
-        PathStates::Solved => &wuse,
-        PathStates::Actual => &no_analysis,
-    };
     let order: FastMap<ChapterId, u32> = order_chapters(&full).into_iter().collect();
     let full: FastMap<ChapterId, Chapter<P>> = full.into_iter().collect();
     let elided: FastMap<ChapterId, Chapter<P>> = elided.into_iter().collect();
@@ -308,39 +303,45 @@ pub fn visit_best_path<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipm
         computed: FastMap::default(),
     };
 
-    let mut seen: std::collections::HashSet<NextStep<PREV>> = std::collections::HashSet::new();
-    let mut todo = vec![NextStep::NewChapter(startat, cvar.clone())];
-    while let Some(ns) = todo.pop() {
-        if !seen.insert(ns.clone()) {
-            continue;
-        }
-        if let Some(score) = get_score(&scorer, tgt, &ns) {
-            let leaf = BestPathState {
-                state: ns,
-                choices: Vec::new(),
-                best: 0,
-            };
-            visit(leaf, Some(&score));
-            continue;
-        }
-        let mut choices = Vec::new();
-        let mut best: Option<(usize, P, SolNode<P, NextStep<PREV>>)> = None;
-        for (idx, choice) in step(&mut memo_full, &order, walk_wuse, &full, ccst, &ns).into_iter().enumerate() {
-            let score = values.value_of_any_state(&choice.res);
-            let node = SolNode::from_choices(score.clone(), choice.res.clone());
-            // ties are broken like in the solver
-            let better = match &best {
-                None => true,
-                Some((_, bs, bn)) => score > *bs || (score == *bs && node > *bn),
-            };
-            if better {
-                best = Some((idx, score.clone(), node));
+    for (states, visit) in walks.iter_mut() {
+        let walk_wuse = match states {
+            PathStates::Solved => &wuse,
+            PathStates::Actual => &no_analysis,
+        };
+        let mut seen: std::collections::HashSet<NextStep<PREV>> = std::collections::HashSet::new();
+        let mut todo = vec![NextStep::NewChapter(startat, cvar.clone())];
+        while let Some(ns) = todo.pop() {
+            if !seen.insert(ns.clone()) {
+                continue;
             }
-            choices.push((choice.desc, score, choice.res));
+            if let Some(score) = get_score(&scorer, tgt, &ns) {
+                let leaf = BestPathState {
+                    state: ns,
+                    choices: Vec::new(),
+                    best: 0,
+                };
+                visit(leaf, Some(&score));
+                continue;
+            }
+            let mut choices = Vec::new();
+            let mut best: Option<(usize, P, SolNode<P, NextStep<PREV>>)> = None;
+            for (idx, choice) in step(&mut memo_full, &order, walk_wuse, &full, ccst, &ns).into_iter().enumerate() {
+                let score = values.value_of_any_state(&choice.res);
+                let node = SolNode::from_choices(score.clone(), choice.res.clone());
+                // ties are broken like in the solver
+                let better = match &best {
+                    None => true,
+                    Some((_, bs, bn)) => score > *bs || (score == *bs && node > *bn),
+                };
+                if better {
+                    best = Some((idx, score.clone(), node));
+                }
+                choices.push((choice.desc, score, choice.res));
+            }
+            let (best, _, _) = best.expect("a state always has choices");
+            todo.extend(choices[best].2.iter().map(|o| o.v.clone()));
+            visit(BestPathState { state: ns, choices, best }, None);
         }
-        let (best, _, _) = best.expect("a state always has choices");
-        todo.extend(choices[best].2.iter().map(|o| o.v.clone()));
-        visit(BestPathState { state: ns, choices, best }, None);
     }
 }
 
@@ -358,7 +359,36 @@ pub fn solve_lws_best_path<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEq
 where
     F: Fn(Equipment, Flags) -> P,
 {
+    solve_lws_best_path_and_visit(scorer, tgt, book, ccst, cvar, startat, verbose, &mut |_, _| ())
+}
+
+/// Same as `solve_lws_best_path`, also calling `actual` for the states on the best path as a player would have them, without
+/// having to solve again.
+#[allow(clippy::too_many_arguments)]
+pub fn solve_lws_best_path_and_visit<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
+    scorer: F,
+    tgt: &[ChapterId],
+    book: &[(ChapterId, Chapter<P>)],
+    ccst: &CharacterConstant,
+    cvar: &CharacterVariableG<PREV>,
+    startat: u16,
+    verbose: bool,
+    actual: &mut dyn FnMut(BestPathState<P, PREV>, Option<&P>),
+) -> Solution<P, NextStep<PREV>>
+where
+    F: Fn(Equipment, Flags) -> P,
+{
     let mut out: Solution<P, NextStep<PREV>> = HashMap::new();
+    let mut keep = |mut st: BestPathState<P, PREV>, leaf: Option<&P>| {
+        let node = match leaf {
+            Some(score) => SolNode::Win(score.clone()),
+            None => {
+                let (_, score, res) = st.choices.swap_remove(st.best);
+                SolNode::from_choices(score, res)
+            }
+        };
+        out.insert(st.state, node);
+    };
     visit_best_path(
         scorer,
         tgt,
@@ -367,17 +397,7 @@ where
         cvar,
         startat,
         verbose,
-        PathStates::Solved,
-        &mut |mut st, leaf| {
-            let node = match leaf {
-                Some(score) => SolNode::Win(score.clone()),
-                None => {
-                    let (_, score, res) = st.choices.swap_remove(st.best);
-                    SolNode::from_choices(score, res)
-                }
-            };
-            out.insert(st.state, node);
-        },
+        &mut [(PathStates::Solved, &mut keep), (PathStates::Actual, actual)],
     );
     out
 }
@@ -554,8 +574,7 @@ mod test {
             &c,
             1,
             false,
-            PathStates::Actual,
-            &mut |st, leaf| {
+            &mut [(PathStates::Actual, &mut |st: BestPathState<BigRational, NoPrevEq>, leaf: Option<&BigRational>| {
                 if leaf.is_none() && st.state.chapter() == Some(1) {
                     assert_eq!(st.choices[st.best].0, "play");
                     assert_eq!(st.choices[st.best].1, BigRational::from_i64(1, 2));
@@ -564,7 +583,7 @@ mod test {
                     assert!(cv.cequipment.has_item(&Item::Gold, 7), "{}", st.state);
                 }
                 seen.push(st.state.chapter());
-            },
+            })],
         );
         assert!(seen.contains(&Some(2)));
     }
