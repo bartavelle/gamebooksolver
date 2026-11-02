@@ -158,11 +158,10 @@ places, so each of these could lower a score if the missing choice were better.
   five starts when set back to the book's 244, with 15% to 22% more states. **Open.**
 - **R21. Book 5 c226 is sound.** Its attack option goes to c401, which is c334 with the first 2 rounds without damage, as
   the text of c226 says. c334 itself is also reached from c297 and c360, without that rule. **Decided** after review.
-- **R22. Book 5 c55 skips the chimneys.** The book goes from c55 to c162 or c23, then c114, c90, the baths, c71 and c54. The
-  JSON goes straight to shop choices, skipping the steam damage, the death at c77 and the healing oil, so it isn't an
-  equivalent route. No chapter points to c162 or c23. Restoring them creates no cycle and adds about 0.002% of states, and
-  all 8 cases tested at 50 gold keep the same score to 9 digits. **Open**: a player using c29 or c166 is overstated if the
-  route is ever used.
+- **R22. Book 5 c55 follows the book since 2026-11-02.** It goes to c162 or c23, then c114, c90, the baths, c71 and c54. It
+  used to go straight to shop choices, skipping the steam damage, the death at c77 and the healing oil. Restoring this
+  created no cycle, added about 0.002% of states, and kept the score of all 8 cases tested at 50 gold to 9 digits.
+  **Decided.** Results solved before commit `e3cda37e` used the old route.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
