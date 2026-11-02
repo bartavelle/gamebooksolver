@@ -2,6 +2,7 @@ use crate::lonewolf::chapter::{Chapter, ChapterId};
 use crate::lonewolf::choices::flatten_decision;
 use crate::lonewolf::combat::Memoz;
 use crate::lonewolf::data::{WeaponUse, order_chapters};
+use crate::lonewolf::elide::elide_forced_chapters;
 use crate::lonewolf::evasion::{expand_evasions, is_round_chapter};
 use crate::lonewolf::mini::{CharacterConstant, Equipment, Flag, NextStep, StoredEquipment};
 use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
@@ -157,6 +158,7 @@ where
 {
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
+    elide_forced_chapters(&mut mbook);
     let order: FastMap<ChapterId, u32> = order_chapters(&mbook).into_iter().collect();
     let wuse = WeaponUse::for_character(ccst, &mbook);
     let mbook: FastMap<ChapterId, Chapter<P>> = mbook.into_iter().collect();
@@ -193,6 +195,72 @@ mod test {
     use crate::lonewolf::mini::{Book, CharacterVariable, Item};
     use crate::solver::base::SolNode;
     use num_rational::BigRational;
+
+    #[test]
+    fn passing_through_chapters_gives_the_same_scores() {
+        use crate::lonewolf::chapter::{Endurance, SimpleOutcome};
+        use crate::lonewolf::mini::{CharacterConstant, Discipline, Flag, NoPrevEq};
+        use ChapterOutcome::*;
+        let half = || BigRational::from_i64(1, 2);
+        let goto = |c: u16| Box::new(Goto(ChapterId(c)));
+        let chapter = |pchoice| Chapter {
+            title: String::new(),
+            desc: String::new(),
+            pchoice,
+        };
+        // the score only depends on the endurance when arriving in chapter 4, after going through 2 and 3
+        for needed in 1..30 {
+            let book = [
+                (
+                    ChapterId(1),
+                    chapter(Decision::Decisions(vec![
+                        ("a".to_string(), Decision::None(Goto(ChapterId(2)))),
+                        (
+                            "b".to_string(),
+                            Decision::None(Simple(vec![SimpleOutcome::DamagePlayer(Endurance(1))], goto(3))),
+                        ),
+                    ])),
+                ),
+                (
+                    ChapterId(2),
+                    chapter(Decision::None(Simple(vec![SimpleOutcome::DamagePlayer(Endurance(4))], goto(3)))),
+                ),
+                (ChapterId(3), chapter(Decision::None(Goto(ChapterId(4))))),
+                (
+                    ChapterId(4),
+                    chapter(Decision::None(Conditionally(vec![
+                        (BoolCond::HasEndurance(Endurance(needed)), Goto(ChapterId(5))),
+                        (
+                            BoolCond::Always(true),
+                            Randomly(vec![(half(), Goto(ChapterId(5))), (half(), Goto(ChapterId(6)))]),
+                        ),
+                    ]))),
+                ),
+                (ChapterId(5), chapter(Decision::None(GameWon))),
+                (ChapterId(6), chapter(Decision::None(GameLost))),
+            ];
+            for discipline in [vec![], vec![Discipline::Healing]] {
+                for flags in [vec![], vec![Flag::Poisonned2], vec![Flag::HadCombat]] {
+                    let ccst = CharacterConstant {
+                        bookid: Book::Book01,
+                        combat_skill: 15,
+                        discipline: discipline.clone(),
+                        maxendurance: 20,
+                    };
+                    let mut c = CharacterVariableG::<NoPrevEq>::new(10);
+                    flags.iter().for_each(|f| c.set_flag(*f));
+                    let win = |_, _| BigRational::from_i64(1, 1);
+                    let full = solve_lws(win, &[], &book, &ccst, &c, 1, false);
+                    let compact = solve_lws_compact(win, &[], &book, &ccst, &c, 1, false);
+                    let start = NextStep::NewChapter(1, c);
+                    let expected = match &full[&start] {
+                        SolNode::Single(s, _) | SolNode::Win(s) | SolNode::Chosen(s, _) => s,
+                    };
+                    assert_eq!(&compact.get(&start).unwrap().score, expected, "{needed} {discipline:?} {flags:?}");
+                }
+            }
+        }
+    }
 
     #[test]
     fn dummy_book() {

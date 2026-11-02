@@ -107,7 +107,7 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
                 o
             }
             ChapterOutcome::Randomly(lst) => lst.iter().flat_map(|(_, o)| get_destinations_o(o)).collect(),
-            ChapterOutcome::Simple(_, nxt) => get_destinations_o(nxt),
+            ChapterOutcome::Simple(_, nxt) | ChapterOutcome::PassThrough(_, nxt) => get_destinations_o(nxt),
             ChapterOutcome::LoseItemFrom(_, _, o) => get_destinations_o(o),
         }
     }
@@ -219,6 +219,7 @@ impl WeaponSet {
                 }
                 self.outcome(o);
             }
+            ChapterOutcome::PassThrough(_, o) => self.outcome(o),
             ChapterOutcome::Goto(_)
             | ChapterOutcome::EnterFight(_, _)
             | ChapterOutcome::GameLost
@@ -354,7 +355,10 @@ impl Reads {
 
     fn outcome<P>(&mut self, co: &ChapterOutcome<P>) {
         match co {
-            ChapterOutcome::Fight(_, o) | ChapterOutcome::Round(_, o, _) | ChapterOutcome::Simple(_, o) => self.outcome(o),
+            ChapterOutcome::Fight(_, o)
+            | ChapterOutcome::Round(_, o, _)
+            | ChapterOutcome::Simple(_, o)
+            | ChapterOutcome::PassThrough(_, o) => self.outcome(o),
             ChapterOutcome::LoseItemFrom(s, _, o) => {
                 self.slot(s);
                 self.outcome(o);
@@ -452,7 +456,7 @@ impl GoldNeeds<'_> {
 
     fn outcome<P>(&self, co: &ChapterOutcome<P>) -> u8 {
         match co {
-            ChapterOutcome::Fight(_, o) => self.outcome(o),
+            ChapterOutcome::Fight(_, o) | ChapterOutcome::PassThrough(_, o) => self.outcome(o),
             ChapterOutcome::OneRound(_, a, b, c) => self.outcome(a).max(self.outcome(b)).max(self.outcome(c)),
             ChapterOutcome::Randomly(lst) => lst.iter().map(|(_, o)| self.outcome(o)).max().unwrap_or(0),
             ChapterOutcome::Conditionally(lst) => lst
@@ -577,6 +581,7 @@ fn specialize_outcome<P: Clone>(ccst: &CharacterConstant, co: &ChapterOutcome<P>
         ChapterOutcome::Simple(sos, o) => ChapterOutcome::Simple(sos.clone(), sub(o)),
         ChapterOutcome::LoseItemFrom(s, n, o) => ChapterOutcome::LoseItemFrom(*s, *n, sub(o)),
         ChapterOutcome::Round(fd, o, nxt) => ChapterOutcome::Round(fd.clone(), sub(o), nxt.clone()),
+        ChapterOutcome::PassThrough(cid, o) => ChapterOutcome::PassThrough(*cid, sub(o)),
         ChapterOutcome::Goto(_)
         | ChapterOutcome::EnterFight(_, _)
         | ChapterOutcome::GameLost

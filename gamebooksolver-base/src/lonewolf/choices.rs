@@ -118,6 +118,8 @@ fn has_combat<P>(o: &ChapterOutcome<P>) -> Option<&FightDetails<P>> {
         Conditionally(conds) => conds.iter().map(|x| &x.1).flat_map(has_combat).next(),
         Simple(_, o2) => has_combat(o2),
         Goto(_) => None,
+        // the chapters that are passed through have no fights
+        PassThrough(_, _) => None,
         GameLost => None,
         GameWon => None,
         LoseItemFrom(_, _, o2) => has_combat(o2),

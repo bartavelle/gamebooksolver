@@ -169,6 +169,8 @@ pub enum ChapterOutcome<P> {
     /// A single round of a fight. If nobody is defeated, the fight continues in the chapter found at the index of the
     /// remaining endurance of the opponent. Never found in a book file, see `evasion`.
     Round(FightDetails<P>, Box<ChapterOutcome<P>>, Vec<ChapterId>),
+    /// Arrives in the given chapter, then does what happens there, without stopping. Never found in a book file, see `elide`.
+    PassThrough(ChapterId, Box<ChapterOutcome<P>>),
 }
 
 pub struct SimpleOutcomeIt<'t, P> {
@@ -206,6 +208,10 @@ impl<'t, P> Iterator for SimpleOutcomeIt<'t, P> {
                 ChapterOutcome::Simple(simple_outcomes, chapter_outcome) => {
                     self.co.push(chapter_outcome);
                     self.si.extend(simple_outcomes);
+                    self.next()
+                }
+                ChapterOutcome::PassThrough(_, chapter_outcome) => {
+                    self.co.push(chapter_outcome);
                     self.next()
                 }
                 ChapterOutcome::Goto(_)
@@ -247,6 +253,7 @@ impl<P: Clone> ChapterOutcome<P> {
             Simple(sos, nxt) => Simple(sos, convert(nxt)),
             EnterFight(fd, cid) => EnterFight(fd.map_proba(f), cid),
             Round(fd, co, nxt) => Round(fd.map_proba(f), convert(co), nxt),
+            PassThrough(cid, co) => PassThrough(cid, convert(co)),
             Goto(cid) => Goto(cid),
             GameLost => GameLost,
             GameWon => GameWon,

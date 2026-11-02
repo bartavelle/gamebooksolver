@@ -122,6 +122,17 @@ pub fn update<P: Rational, PREV: StoredEquipment>(
                 vec![Proba::certain(NextStep::NewChapter(cid2.0, nv))]
             }
         }
+        // the same as going to this chapter, then solving it, see `step`
+        ChapterOutcome::PassThrough(cid2, nxt) => update(memo, ccst, cvar, cid, &ChapterOutcome::Goto(*cid2))
+            .into_iter()
+            .flat_map(|arrival| match arrival.v {
+                NextStep::NewChapter(_, mut nv) => {
+                    nv.flags.unset(Flag::HadCombat);
+                    update(memo, ccst, &nv, *cid2, nxt)
+                }
+                _ => vec![arrival],
+            })
+            .collect(),
         ChapterOutcome::GameLost => vec![Proba::certain(NextStep::HasLost(cid.0))],
         ChapterOutcome::GameWon => vec![Proba::certain(NextStep::HasWon(*cvar))],
         ChapterOutcome::Simple(effects, nxt) => {
