@@ -1,5 +1,5 @@
 type 'a opt = OSome of 'a | ONone
-(* same computation as cartwheel.rs; the rational type mirrors the extracted one *)
+(* same chances as cartwheel.rs, up to rounding; the rational type mirrors the extracted one *)
 type positive = XI of positive | XO of positive | XH
 type z = Z0 | Zpos of positive | Zneg of positive
 type q = { qnum : z; qden : positive }

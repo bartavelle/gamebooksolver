@@ -12,6 +12,15 @@ pub struct JRatio {
     value: String,
 }
 
+impl From<&BigRational> for JRatio {
+    fn from(r: &BigRational) -> Self {
+        JRatio {
+            radix: 10,
+            value: format!("{}/{}", r.numer(), r.denom()),
+        }
+    }
+}
+
 pub trait Rational: Sized + Clone + Eq + Ord + std::fmt::Debug + std::hash::Hash + std::iter::Sum {
     fn from_i64(n: i64, d: i64) -> Self;
     fn f_f64(i: f64) -> Self;

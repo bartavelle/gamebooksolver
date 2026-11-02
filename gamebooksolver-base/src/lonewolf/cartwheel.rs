@@ -1,8 +1,10 @@
 use crate::solver::base::Outcome;
 use crate::solver::base::Proba;
-use crate::solver::rational::Rational;
+use crate::solver::rational::{JRatio, Rational};
 
 use lazy_static::lazy_static;
+use num_rational::BigRational;
+use num_traits::identities::{One, Zero};
 
 pub static MAX_CARTWHEEL: u8 = 30;
 pub static CARTWHEEL_LABEL: &[&str] = &[
@@ -38,106 +40,68 @@ pub static CARTWHEEL_LABEL: &[&str] = &[
     "Cartwheel target 49",
 ];
 
-#[derive(Debug, PartialEq)]
-struct Matrix {
-    sx: usize,
-    sy: usize,
-    content: Vec<f64>,
-}
-
-impl Matrix {
-    fn new(sx: usize, sy: usize) -> Self {
-        Matrix {
-            sx,
-            sy,
-            content: std::iter::repeat_n(0.0, sx * sy).collect(),
-        }
-    }
-
-    #[cfg(test)]
-    fn from_slice(sx: usize, sy: usize, sl: &[f64]) -> Self {
-        assert_eq!(sx * sy, sl.len());
-        Matrix {
-            sx,
-            sy,
-            content: sl.to_vec(),
-        }
-    }
-
-    fn set(&mut self, x: usize, y: usize, v: f64) {
-        assert!(x < self.sx);
-        assert!(y < self.sy);
-        self.content[x + y * self.sx] = v;
-    }
-
-    fn get(&self, x: usize, y: usize) -> f64 {
-        assert!(x < self.sx);
-        assert!(y < self.sy);
-        self.content[x + y * self.sx]
-    }
-
-    fn mul(&self, other: &Self) -> Self {
-        assert_eq!(self.sx, other.sy);
-
-        let calc = |idx| {
-            let x = idx % other.sx;
-            let y = idx / other.sx;
-
-            let mut o = 0.0;
-            for i in 0..self.sx {
-                o += self.get(i, y) * other.get(x, i);
+/// The exact chance of ending with each amount of gold, when playing with one crown each round until the gold is lost
+/// or until it reaches the target, for each amount of gold below the target. A game can last for any number of rounds,
+/// but these chances are the solution of a system of linear equations, and so are rational numbers: writing x(m) for
+/// the chance of ending with a given amount when holding m crowns, x(m) = 7/10 x(m-1) + 2/10 x(m+5) + 1/10 x(m+8).
+fn sol_for_target(target: usize) -> Vec<Outcome<JRatio, u8>> {
+    // the amounts that end a game, that come after the amounts from 1 to target - 1 in the columns
+    let ends: Vec<usize> = std::iter::once(0).chain(target..target + 8).collect();
+    let unknowns = target - 1;
+    // what is gained in a round, nothing standing for the lost crown, and its chance in tenths
+    let round = [(0, 7), (5, 2), (8, 1)];
+    let mut rows = vec![vec![BigRational::zero(); unknowns + ends.len()]; unknowns];
+    for money in 1..target {
+        let row = &mut rows[money - 1];
+        row[money - 1] = BigRational::one();
+        for (gain, tenths) in round {
+            let next = if gain == 0 { money - 1 } else { money + gain };
+            let p = <BigRational as Rational>::from_i64(tenths, 10);
+            if (1..target).contains(&next) {
+                row[next - 1] -= p;
+            } else {
+                let end = ends.iter().position(|e| *e == next).expect("known end");
+                row[unknowns + end] += p;
             }
-
-            o
-        };
-
-        Matrix {
-            sx: other.sx,
-            sy: self.sy,
-            content: (0..other.sx * self.sy).map(calc).collect(),
         }
     }
-
-    fn square(&self) -> Self {
-        self.mul(self)
+    for col in 0..unknowns {
+        let pivot = (col..unknowns)
+            .find(|r| !rows[*r][col].is_zero())
+            .expect("all games end, so there is a single solution");
+        rows.swap(col, pivot);
+        let scale = rows[col][col].clone();
+        rows[col].iter_mut().for_each(|v| *v = &*v / &scale);
+        let pivot_row = rows[col].clone();
+        for (r, row) in rows.iter_mut().enumerate() {
+            if r != col && !row[col].is_zero() {
+                let factor = row[col].clone();
+                row.iter_mut()
+                    .zip(&pivot_row)
+                    .for_each(|(v, pv)| *v = &*v - &factor * pv);
+            }
+        }
     }
-}
-
-fn sol_for_target(target: usize) -> Vec<Outcome<f64, u8>> {
-    let mut o = Matrix::new(target + 8, target + 8);
-    // if money == 0, we lose
-    o.set(0, 0, 1.0);
-    // for money < target
-    for curmoney in 1..target {
-        o.set(curmoney, curmoney - 1, 0.7);
-        o.set(curmoney, curmoney + 5, 0.2);
-        o.set(curmoney, curmoney + 8, 0.1);
-    }
-    // once we reach target, we are done
-    for curmoney in target..target + 8 {
-        o.set(curmoney, curmoney, 1.0);
-    }
-
-    for _ in 0..12 {
-        o = o.square()
-    }
-
-    (0..target + 1)
-        .map(|start_money| {
-            (0..target + 8)
-                .map(|end_money| Proba {
-                    p: o.get(start_money, end_money),
-                    v: end_money as u8,
+    let lost = vec![Proba {
+        p: JRatio::from(&BigRational::one()),
+        v: 0,
+    }];
+    std::iter::once(lost)
+        .chain(rows.iter().map(|row| {
+            ends.iter()
+                .zip(&row[unknowns..])
+                .filter(|(_, p)| !p.is_zero())
+                .map(|(end, p)| Proba {
+                    p: JRatio::from(p),
+                    v: *end as u8,
                 })
-                // all the games are over by then, what is left of the other amounts is a rounding artifact
-                .filter(|pb| pb.p != 0.0 && (pb.v == 0 || pb.v as usize >= target))
                 .collect()
-        })
+        }))
         .collect()
 }
 
 lazy_static! {
-    static ref CARTWHEEL: Vec<Vec<Outcome<f64, u8>>> = (20..50).map(sol_for_target).collect();
+    static ref CARTWHEEL: Vec<Vec<Outcome<JRatio, u8>>> = (20..50).map(sol_for_target).collect();
 }
 
 pub fn cartwheel<P: Rational>(starting_money: u8, target: u8) -> Outcome<P, u8> {
@@ -150,7 +114,7 @@ pub fn cartwheel<P: Rational>(starting_money: u8, target: u8) -> Outcome<P, u8> 
             .iter()
             .map(|pb| Proba {
                 v: pb.v,
-                p: P::f_f64(pb.p),
+                p: P::from_jratio(&pb.p),
             })
             .collect()
     }
@@ -162,33 +126,44 @@ mod test {
     use crate::solver::rational::MF64;
 
     #[test]
-    fn matrix_mul_trivial() {
-        let m1 = Matrix::from_slice(2, 2, &[1.0, 2.0, 3.0, 4.0]);
-        let m2 = Matrix::from_slice(2, 2, &[5.0, 6.0, 7.0, 8.0]);
-        let expected = Matrix::from_slice(2, 2, &[19.0, 22.0, 43.0, 50.0]);
-
-        let mr = m1.mul(&m2);
-
-        assert_eq!(mr, expected);
-    }
-
-    #[test]
-    fn matrix_mul_nonsquare() {
-        let m1 = Matrix::from_slice(2, 3, &[1.0, 2.0, 3.0, 4.0, 7.0, 7.0]);
-        let m2 = Matrix::from_slice(2, 2, &[5.0, 6.0, 7.0, 8.0]);
-        let expected = Matrix::from_slice(2, 3, &[19.0, 22.0, 43.0, 50.0, 84.0, 98.0]);
-
-        let mr = m1.mul(&m2);
-
-        assert_eq!(mr, expected);
-    }
-
-    #[test]
-    fn matrix_squared() {
-        let m = Matrix::from_slice(2, 2, &[5.0, 6.0, 7.0, 8.0]);
-        let sq = m.square();
-        let expected = Matrix::from_slice(2, 2, &[67.0, 78.0, 91.0, 106.0]);
-        assert_eq!(sq, expected);
+    fn chances_are_exact() {
+        let bust = cartwheel::<BigRational>(1, 20)
+            .into_iter()
+            .find(|r| r.v == 0)
+            .unwrap()
+            .p;
+        let expected = BigRational::new(
+            "3786146215199390399".parse().unwrap(),
+            "5124287423038106270".parse().unwrap(),
+        );
+        assert_eq!(bust, expected);
+        for target in [20, 30, 49] {
+            let chance = |money: u8, end: u8| -> BigRational {
+                if money >= target {
+                    return if money == end {
+                        BigRational::one()
+                    } else {
+                        BigRational::zero()
+                    };
+                }
+                let o = cartwheel::<BigRational>(money, target);
+                o.into_iter()
+                    .find(|r| r.v == end)
+                    .map(|r| r.p)
+                    .unwrap_or_else(BigRational::zero)
+            };
+            let tenths = |n: i64| <BigRational as Rational>::from_i64(n, 10);
+            for money in 1..target {
+                let total: BigRational = cartwheel::<BigRational>(money, target).into_iter().map(|r| r.p).sum();
+                assert_eq!(total, BigRational::one());
+                for end in std::iter::once(0).chain(target..target + 8) {
+                    let next = tenths(7) * chance(money - 1, end)
+                        + tenths(2) * chance(money + 5, end)
+                        + tenths(1) * chance(money + 8, end);
+                    assert_eq!(chance(money, end), next, "{money} {target} {end}");
+                }
+            }
+        }
     }
 
     #[test]
