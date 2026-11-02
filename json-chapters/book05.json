@@ -1936,50 +1936,19 @@
       "pchoice": {
         "Decisions": [
           [
-            "If you need the Oede herb",
+            "If you wish to climb the left chimney, turn to 162.",
             {
-              "Conditional": [
-                {
-                  "HasFlag": "LimbDeath"
-                },
-                {
-                  "NoDecision": {
-                    "Goto": 68
-                  }
-                }
-              ]
+              "NoDecision": {
+                "Goto": 162
+              }
             }
           ],
           [
-            "otherwise",
+            "If you wish to climb the right chimney, turn to 23.",
             {
-              "Conditional": [
-                {
-                  "Not": {
-                    "HasFlag": "LimbDeath"
-                  }
-                },
-                {
-                  "Decisions": [
-                    [
-                      "If you do not need this herb, but still decide to enter the shop",
-                      {
-                        "NoDecision": {
-                          "Goto": 154
-                        }
-                      }
-                    ],
-                    [
-                      "If you wish to continue along in a new alleyway that heads off towards the Grand Palace",
-                      {
-                        "NoDecision": {
-                          "Goto": 179
-                        }
-                      }
-                    ]
-                  ]
-                }
-              ]
+              "NoDecision": {
+                "Goto": 23
+              }
             }
           ]
         ]
