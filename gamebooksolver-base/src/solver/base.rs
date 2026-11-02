@@ -108,6 +108,11 @@ impl<K: Eq + std::hash::Hash, V> Shards<K, V> {
         let shard = self.shard(&k);
         self.maps[shard].insert(k, v)
     }
+
+    pub fn remove(&mut self, k: &K) -> Option<V> {
+        let shard = self.shard(k);
+        self.maps[shard].remove(k)
+    }
 }
 
 impl<K: Eq + std::hash::Hash, V> std::ops::Index<&K> for Shards<K, V> {

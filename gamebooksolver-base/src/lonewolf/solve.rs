@@ -8,7 +8,7 @@ use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
 use crate::solver::base::{Choice, FastMap, Outcome, Proba, Solution, optimize_outcome};
 use crate::solver::rational::Rational;
-use crate::solver::{CompactSolved, solve, solve_compact};
+use crate::solver::{CompactSolved, Retention, solve, solve_compact};
 use std::collections::HashMap;
 use std::hash::BuildHasher;
 
@@ -135,7 +135,8 @@ where
     o
 }
 
-/// Same as `solve_lws`, keeping only the score and the index of the best choice of each state, which uses a lot less memory.
+/// Same as `solve_lws`, keeping only the score and the index of the best choice of the states that take longer to solve
+/// again, see `Retention`, which uses a lot less memory.
 /// The scorer must only depend on what `get_boundary` lists for this book, as the rest of the state can be changed, see
 /// `WeaponUse`.
 pub fn solve_lws_compact<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
@@ -165,6 +166,7 @@ where
                 eprintln!("State cache efficiency {:.2}%", c.efficiency() * 100.0)
             }
         },
+        Retention::Reduced,
     );
     if verbose {
         eprintln!(
