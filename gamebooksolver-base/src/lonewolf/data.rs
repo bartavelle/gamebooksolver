@@ -698,7 +698,12 @@ impl WeaponUse {
             })
             .collect();
         let mut cur = cvar.cequipment;
-        let mut prev: Equipment = cvar.cprevequipment.into();
+        // some books never store the equipment, and their states have no room for it
+        let mut prev: Equipment = if PREV::exists() {
+            cvar.cprevequipment.into()
+        } else {
+            Equipment::default()
+        };
         let held = |e: &Equipment| -> Vec<Weapon> {
             plain
                 .iter()
@@ -752,7 +757,9 @@ impl WeaponUse {
         }
         out.flags = Flags(cvar.flags.0 & reads.flags);
         out.cequipment = cur;
-        out.cprevequipment = PREV::from(prev);
+        if PREV::exists() {
+            out.cprevequipment = PREV::from(prev);
+        }
         out
     }
 

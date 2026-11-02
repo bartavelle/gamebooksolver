@@ -906,6 +906,16 @@ mod test {
     }
 
     #[test]
+    fn states_without_stored_equipment_can_be_made_canonical() {
+        use crate::lonewolf::mini::{CharacterVariableG, NoPrevEq};
+        let (wuse, cid) = liveness_book(goto(2), Book::Book02);
+        let mut c = CharacterVariableG::<NoPrevEq>::new(20);
+        c.add_item(&Item::Gold, 3);
+        let got = wuse.canonical(&book_char(Book::Book02), cid, &c);
+        assert_eq!(got.cequipment.get_item_count(&Item::Gold), 0);
+    }
+
+    #[test]
     fn unknown_chapters_forget_nothing() {
         let (wuse, _) = liveness_book(goto(2), Book::Book02);
         let c = full_character();
