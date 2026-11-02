@@ -154,8 +154,15 @@ places, so each of these could lower a score if the missing choice were better.
   would create a cycle: Book 1 c36, c70, c125, c290, c323; Book 2 c47, c136, c172; Book 3 c181; Book 5 c67, c373. Whether
   each preserves the game is **Unverified**.
 - **R16. Other JSON differences from the XML are assumed sound.** Book 2 c160, c186, c200, c238, c265, c302; Book 3 c10,
-  c146, c164, c180; Book 4 c234, c280; Book 5 c55, c226. They create no cycle, and have not been reviewed. Book 2 c302
-  gave the same score on five starts when set back to the book's 244, with 15% to 22% more states. **Open.**
+  c146, c164, c180; Book 4 c234, c280. They create no cycle, and have not been reviewed. Book 2 c302 gave the same score on
+  five starts when set back to the book's 244, with 15% to 22% more states. **Open.**
+- **R21. Book 5 c226 is sound.** Its attack option goes to c401, which is c334 with the first 2 rounds without damage, as
+  the text of c226 says. c334 itself is also reached from c297 and c360, without that rule. **Decided** after review.
+- **R22. Book 5 c55 skips the chimneys.** The book goes from c55 to c162 or c23, then c114, c90, the baths, c71 and c54. The
+  JSON goes straight to shop choices, skipping the steam damage, the death at c77 and the healing oil, so it isn't an
+  equivalent route. No chapter points to c162 or c23. Restoring them creates no cycle and adds about 0.002% of states, and
+  all 8 cases tested at 50 gold keep the same score to 9 digits. **Open**: a player using c29 or c166 is overstated if the
+  route is ever used.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
