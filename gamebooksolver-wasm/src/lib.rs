@@ -236,7 +236,7 @@ impl WState {
         let soldesc = sol.soldesc;
         expand_evasions(soldesc.ccst.bookid, &mut chapters);
         let order = order_chapters(&chapters);
-        let wuse = WeaponUse::new(soldesc.ccst.bookid, &chapters);
+        let wuse = WeaponUse::for_character(&soldesc.ccst, &chapters);
         let scores = sol
             .content
             .into_iter()
@@ -263,7 +263,7 @@ impl WState {
         let soldesc: SolDesc = serde_json::from_str(desc).unwrap();
         expand_evasions(soldesc.ccst.bookid, &mut chapters);
         let order = order_chapters(&chapters);
-        let wuse = WeaponUse::new(soldesc.ccst.bookid, &chapters);
+        let wuse = WeaponUse::for_character(&soldesc.ccst, &chapters);
 
         WState {
             soldesc,
