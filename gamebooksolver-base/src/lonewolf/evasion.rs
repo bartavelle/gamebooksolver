@@ -147,6 +147,7 @@ mod test {
     use super::*;
     use crate::lonewolf::chapter::{CombatSkill, Rounds};
     use crate::lonewolf::combat::{CombatInfo, Escaped, Memoz, RoundEnd};
+    use crate::lonewolf::data::get_destinations;
     use crate::lonewolf::mini::{CharacterConstant, CharacterVariable, Discipline, NextStep};
     use crate::lonewolf::solve::solve_lws;
     use crate::solver::base::{Outcome, Proba, SolNode, optimize_outcome};
@@ -167,6 +168,34 @@ mod test {
             combat_skill: CombatSkill(15),
             endurance: Endurance(endurance),
             fight_mod,
+        }
+    }
+
+    #[test]
+    fn all_destinations_exist() {
+        let chapter = |pchoice| Chapter {
+            title: String::new(),
+            desc: String::new(),
+            pchoice,
+        };
+        let evade = Decision::EvadeFight(
+            Rounds(2),
+            ChapterId(2),
+            details(3, vec![]),
+            ChapterOutcome::Goto(ChapterId(2)),
+        );
+        let mut book: HashMap<ChapterId, Chapter<BigRational>> = [
+            (ChapterId(1), chapter(evade)),
+            (ChapterId(2), chapter(Decision::None(ChapterOutcome::GameWon))),
+        ]
+        .into_iter()
+        .collect();
+        expand_evasions(Book::Book02, &mut book);
+        assert!(book.len() > 2);
+        for chapter in book.values() {
+            for d in get_destinations(&chapter.pchoice) {
+                assert!(book.contains_key(&d), "{d:?}");
+            }
         }
     }
 

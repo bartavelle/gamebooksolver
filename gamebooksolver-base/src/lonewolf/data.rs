@@ -88,7 +88,8 @@ pub fn get_destinations<P>(dec: &Decision<P>) -> HashSet<ChapterId> {
             ChapterOutcome::Round(fds, nxt, next_rounds) => {
                 let mut o = get_destinations_o(nxt);
                 o.extend(fds.fight_mod.iter().filter_map(get_destinations_fd));
-                o.extend(next_rounds.iter().copied());
+                // the first one is for an opponent without any endurance left, and the fight is over by then
+                o.extend(next_rounds.iter().skip(1).copied());
                 o
             }
             ChapterOutcome::GameLost => HashSet::new(),
