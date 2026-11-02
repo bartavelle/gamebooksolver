@@ -277,7 +277,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (305%nat,Decisions [none (Goto 8%nat); none (Goto 281%nat)]);
   (306%nat,Decisions [none (Goto 206%nat); none (Goto 6%nat)]);
   (307%nat,Decisions [none (Goto 327%nat); none (Goto 178%nat)]);
-  (308%nat,can_take (GenSpecial S10) 1%nat (none (Goto 323%nat)));
+  (308%nat,Decisions [can_take (GenSpecial S10) 1%nat (none (Simple [LoseItem Helmet 1%nat] (Goto 323%nat))); conditional (HasItem Helmet 1%nat) (none (Goto 323%nat))]);
   (309%nat,can_take (GenSpecial S2) 1%nat (can_take (GenSpecial S3) 1%nat (none (Goto 132%nat))));
   (310%nat,Decisions [none (Goto 306%nat); none (Goto 72%nat)]);
   (312%nat,none (GameLost));
