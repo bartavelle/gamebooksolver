@@ -444,7 +444,108 @@ pub struct WeaponUse {
     reads: HashMap<ChapterId, Reads>,
 }
 
+/// A condition, with what can be known from the disciplines of the character already computed.
+fn specialize_cond(ccst: &CharacterConstant, bc: &BoolCond) -> BoolCond {
+    use BoolCond::*;
+    match bc {
+        HasDiscipline(d) => Always(ccst.discipline.contains(d)),
+        HasLevel(lvl) => Always(ccst.discipline.len() >= *lvl as usize),
+        Not(c) => match specialize_cond(ccst, c) {
+            Always(b) => Always(!b),
+            c => Not(Box::new(c)),
+        },
+        COr(a, b) => match (specialize_cond(ccst, a), specialize_cond(ccst, b)) {
+            (Always(true), _) | (_, Always(true)) => Always(true),
+            (Always(false), c) | (c, Always(false)) => c,
+            (a, b) => COr(Box::new(a), Box::new(b)),
+        },
+        CAnd(a, b) => match (specialize_cond(ccst, a), specialize_cond(ccst, b)) {
+            (Always(false), _) | (_, Always(false)) => Always(false),
+            (Always(true), c) | (c, Always(true)) => c,
+            (a, b) => CAnd(Box::new(a), Box::new(b)),
+        },
+        c => c.clone(),
+    }
+}
+
+fn specialize_outcome<P: Clone>(ccst: &CharacterConstant, co: &ChapterOutcome<P>) -> ChapterOutcome<P> {
+    let sub = |o: &ChapterOutcome<P>| Box::new(specialize_outcome(ccst, o));
+    match co {
+        ChapterOutcome::Fight(fd, o) => ChapterOutcome::Fight(fd.clone(), sub(o)),
+        ChapterOutcome::OneRound(fd, a, b, c) => ChapterOutcome::OneRound(fd.clone(), sub(a), sub(b), sub(c)),
+        ChapterOutcome::Randomly(lst) => {
+            ChapterOutcome::Randomly(lst.iter().map(|(p, o)| (p.clone(), specialize_outcome(ccst, o))).collect())
+        }
+        // the first condition that holds is the one that is used
+        ChapterOutcome::Conditionally(lst) => {
+            let mut out = Vec::new();
+            for (c, o) in lst {
+                let c = specialize_cond(ccst, c);
+                let stop = c == BoolCond::Always(true);
+                if c != BoolCond::Always(false) {
+                    out.push((c, specialize_outcome(ccst, o)));
+                }
+                if stop {
+                    break;
+                }
+            }
+            ChapterOutcome::Conditionally(out)
+        }
+        ChapterOutcome::Simple(sos, o) => ChapterOutcome::Simple(sos.clone(), sub(o)),
+        ChapterOutcome::LoseItemFrom(s, n, o) => ChapterOutcome::LoseItemFrom(*s, *n, sub(o)),
+        ChapterOutcome::Round(fd, o, nxt) => ChapterOutcome::Round(fd.clone(), sub(o), nxt.clone()),
+        ChapterOutcome::Goto(_)
+        | ChapterOutcome::EnterFight(_, _)
+        | ChapterOutcome::GameLost
+        | ChapterOutcome::GameWon => co.clone(),
+    }
+}
+
+/// The decision, without what this character can never do. This is only fit for analysing the book, as a choice that
+/// can't be made is not removed from the list, but replaced by an empty decision.
+fn specialize_decision<P: Clone>(ccst: &CharacterConstant, dec: &Decision<P>) -> Decision<P> {
+    let sub = |d: &Decision<P>| Box::new(specialize_decision(ccst, d));
+    match dec {
+        Decision::Decisions(lst) => {
+            Decision::Decisions(lst.iter().map(|(n, d)| (n.clone(), specialize_decision(ccst, d))).collect())
+        }
+        Decision::RetrieveEquipment(d) => Decision::RetrieveEquipment(sub(d)),
+        Decision::CanTake(i, q, d) => Decision::CanTake(*i, *q, sub(d)),
+        Decision::Canbuy(i, p, d) => Decision::Canbuy(*i, *p, sub(d)),
+        Decision::Cansell(i, p, d) => Decision::Cansell(*i, *p, sub(d)),
+        Decision::Conditional(c, d) => match specialize_cond(ccst, c) {
+            BoolCond::Always(false) => Decision::Decisions(Vec::new()),
+            c => Decision::Conditional(c, sub(d)),
+        },
+        Decision::Special(s) => Decision::Special(*s),
+        Decision::None(o) => Decision::None(specialize_outcome(ccst, o)),
+        Decision::EvadeFight(r, cid, fd, o) => Decision::EvadeFight(*r, *cid, fd.clone(), specialize_outcome(ccst, o)),
+        Decision::AfterCombat(d) => Decision::AfterCombat(sub(d)),
+        Decision::RemoveItemFrom(s, n, d) => Decision::RemoveItemFrom(*s, *n, sub(d)),
+    }
+}
+
 impl WeaponUse {
+    /// The analysis of the book for a given character. The disciplines do not change during a book, so what is only
+    /// available to other characters can be ignored.
+    pub fn for_character<P: Clone>(ccst: &CharacterConstant, book: &HashMap<ChapterId, Chapter<P>>) -> Self {
+        let specialized: HashMap<ChapterId, Chapter<P>> = book
+            .iter()
+            .map(|(cid, chapter)| {
+                let pchoice = specialize_decision(ccst, &chapter.pchoice);
+                (
+                    *cid,
+                    Chapter {
+                        title: String::new(),
+                        desc: String::new(),
+                        pchoice,
+                    },
+                )
+            })
+            .collect();
+        WeaponUse::new(ccst.bookid, &specialized)
+    }
+
     pub fn new<P>(bookid: Book, book: &HashMap<ChapterId, Chapter<P>>) -> Self {
         let always = Reads::always(bookid);
         let mut reads: HashMap<ChapterId, Reads> = book

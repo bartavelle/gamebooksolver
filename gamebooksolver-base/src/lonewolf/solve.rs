@@ -108,7 +108,7 @@ where
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
-    let wuse = WeaponUse::new(ccst.bookid, &mbook);
+    let wuse = WeaponUse::for_character(ccst, &mbook);
     let mut memo = Memoz::default();
     let o = solve::<NextStep<PREV>, _, _, _, _, _>(
         &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),
@@ -149,7 +149,7 @@ where
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
     let order: HashMap<ChapterId, u32> = order_chapters(&mbook);
-    let wuse = WeaponUse::new(ccst.bookid, &mbook);
+    let wuse = WeaponUse::for_character(ccst, &mbook);
     let mut memo = Memoz::default();
     let o = solve_compact::<NextStep<PREV>, _, _, _, _, _>(
         &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),

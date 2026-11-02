@@ -804,6 +804,62 @@ mod test {
     }
 
     #[test]
+    fn what_needs_another_discipline_is_not_read() {
+        let book_for = |pchoice: Decision<BigRational>| -> HashMap<ChapterId, Chapter<BigRational>> {
+            [(
+                ChapterId(1),
+                Chapter {
+                    title: String::new(),
+                    desc: String::new(),
+                    pchoice,
+                },
+            )]
+            .into_iter()
+            .chain([(
+                ChapterId(2),
+                Chapter {
+                    title: String::new(),
+                    desc: String::new(),
+                    pchoice: Decision::None(ChapterOutcome::GameWon),
+                },
+            )])
+            .collect()
+        };
+        let camouflage = || BoolCond::HasDiscipline(Discipline::Camouflage);
+        let gold = || BoolCond::HasItem(Item::Gold, 1);
+        let to2 = || ChapterOutcome::Goto(ChapterId(2));
+        let without = book_char(Book::Book05);
+        let with = CharacterConstant {
+            discipline: vec![Discipline::Camouflage],
+            ..book_char(Book::Book05)
+        };
+        let mut c = CharacterVariable::new(20);
+        c.add_item(&Item::Gold, 3);
+        let kept = |ccst: &CharacterConstant, book: &HashMap<ChapterId, Chapter<BigRational>>| {
+            WeaponUse::for_character(ccst, book)
+                .canonical(ccst, ChapterId(1), &c)
+                .cequipment
+                .has_itemb(&Item::Gold)
+        };
+
+        let gated = book_for(Decision::Conditional(
+            BoolCond::CAnd(Box::new(camouflage()), Box::new(gold())),
+            Box::new(goto(2)),
+        ));
+        assert!(!kept(&without, &gated));
+        assert!(kept(&with, &gated));
+
+        // only the first condition that holds is used
+        let first = book_for(Decision::None(ChapterOutcome::Conditionally(vec![
+            (camouflage(), to2()),
+            (gold(), to2()),
+            (BoolCond::Always(true), to2()),
+        ])));
+        assert!(kept(&without, &first));
+        assert!(!kept(&with, &first));
+    }
+
+    #[test]
     fn unknown_chapters_forget_nothing() {
         let (wuse, _) = liveness_book(goto(2), Book::Book02);
         let c = full_character();
