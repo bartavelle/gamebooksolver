@@ -254,10 +254,10 @@ pub fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
     use Item::{BodyArmor, Gold, Helmet, StrengthPotion, StrengthPotion4};
 
     match bookid {
-        Book::Book01 => ([Gold].into_iter().collect(), HashSet::new()),
+        Book::Book01 => ([Gold, Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
         Book::Book02 => ([Helmet, BodyArmor].into_iter().collect(), HashSet::new()),
         Book::Book03 => (
-            [Item::Weapon(Weapon::Sommerswerd), StrengthPotion4, Item::SILVERHELMET]
+            [Item::Weapon(Weapon::Sommerswerd), StrengthPotion4, Item::SILVERHELMET, Helmet]
                 .into_iter()
                 .collect(),
             HashSet::new(),
@@ -266,6 +266,7 @@ pub fn get_boundary(bookid: Book) -> (HashSet<Item>, HashSet<Flag>) {
             [
                 Item::Weapon(Weapon::Sommerswerd),
                 Item::SILVERHELMET,
+                Helmet,
                 BodyArmor,
                 StrengthPotion,
                 StrengthPotion4,
