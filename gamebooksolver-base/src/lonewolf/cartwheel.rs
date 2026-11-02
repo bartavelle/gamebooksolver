@@ -129,7 +129,8 @@ fn sol_for_target(target: usize) -> Vec<Outcome<f64, u8>> {
                     p: o.get(start_money, end_money),
                     v: end_money as u8,
                 })
-                .filter(|pb| pb.p != 0.0)
+                // all the games are over by then, what is left of the other amounts is a rounding artifact
+                .filter(|pb| pb.p != 0.0 && (pb.v == 0 || pb.v as usize >= target))
                 .collect()
         })
         .collect()
@@ -188,6 +189,18 @@ mod test {
         let sq = m.square();
         let expected = Matrix::from_slice(2, 2, &[67.0, 78.0, 91.0, 106.0]);
         assert_eq!(sq, expected);
+    }
+
+    #[test]
+    fn games_are_over_at_the_end() {
+        for target in 20..50 {
+            for money in 1..target {
+                let o = cartwheel::<MF64>(money, target);
+                assert!(o.iter().all(|r| r.v == 0 || r.v >= target), "{money} {target}: {o:?}");
+                let total: f64 = o.iter().map(|r| r.p.t_f64()).sum();
+                assert!((total - 1.0).abs() < 1e-12, "{money} {target}: {total}");
+            }
+        }
     }
 
     #[test]
