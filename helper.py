@@ -92,16 +92,17 @@ def adjust_jsons(dir: str, options: List[str]):
 B01BASE = ["-Sword", "-Helmet", "-Meal-Meal", "-BodyArmor", "-Potion4Hp", "*MOREGOLD*"]
 
 B02BASE = ["-Sword-Shield", "-Sword-BodyArmor", "-Sword-Meal-Meal", "-Sword-Laumspur"]
+B02OPTIONS = ["Helmet", "BodyArmor"]
 B02bBASE = ["-Sword-Shield"]
 
-B03OPTIONS = ["FLGKnowledge01", "Helmet"]
+B03OPTIONS = ["Helmet"]
 B03BASE = [
     "-Sommerswerd-Laumspur-Meal-Meal",
     "-Sommerswerd-BodyArmor-Meal-Meal",
     "-Sommerswerd-Laumspur-BodyArmor",
 ]
 
-B04OPTIONS = ["SilverHelmet", "StrengthPotion4"]
+B04OPTIONS = ["SilverHelmet", "StrengthPotion4", "Helmet"]
 B04BASE = [
     "g0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
     "g0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
@@ -113,6 +114,7 @@ B05OPTIONS = [
     "FLGFoughtElix",
     "BodyArmor",
     "StrengthPotion",
+    "Helmet",
 ]
 B05BASE = [
     "-Sword-Meal-Meal-Shield-Laumspur",
@@ -134,6 +136,9 @@ def combinations(l: List[str], acc: List[str]) -> Iterator[List[str]]:
 def geneqps(base: List[str], options: List[str]) -> Iterator[str]:
     for b in base:
         for o in combinations(options, []):
+            # the Silver Helm can't be worn with another Helmet, and none can be found after it
+            if "SilverHelmet" in o and "Helmet" in o:
+                continue
             yield "-".join([b] + o)
 
 
@@ -165,7 +170,7 @@ for t in B01BASE:
                                                 )
 
 TGTS2: set[str] = set()
-for t in B02bBASE:
+for t in geneqps(B02bBASE, B02OPTIONS):
     for d1 in RDISCS:
         for d2 in RDISCS:
             if d1 > d2:
@@ -184,7 +189,7 @@ for t in B02bBASE:
                                             "data/B02/2010SW.%s.%s.%s.%sg%d%s.bin"
                                             % (d1, d2, d3, d4, gold, t)
                                         )
-for t in B02bBASE:
+for t in geneqps(B02bBASE, B02OPTIONS):
     for d1 in RDISCSb:
         for d2 in RDISCSb:
             if d1 > d2:
