@@ -181,7 +181,7 @@ for t in geneqps(B02bBASE, B02OPTIONS):
                     if d2 > d3:
                         for d4 in RDISCSh:
                             if d3 > d4:
-                                for gold in range(10, 28):
+                                for gold in range(10, 51):
                                     if gold == 15:
                                         TGTS2.add(
                                             "data/B02/2010SW.%s.%s.%s.%s%s.bin"
@@ -200,7 +200,7 @@ for t in geneqps(B02bBASE, B02OPTIONS):
                     if d2 > d3:
                         for d4 in RDISCSbh:
                             if d3 > d4:
-                                for gold in range(23, 24):
+                                for gold in range(10, 51):
                                     if gold == 15:
                                         TGTS2.add(
                                             "data/B02/2010SW.%s.%s.%s.%s%s.bin"
