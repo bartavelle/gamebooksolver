@@ -10,7 +10,7 @@ use gamebooksolver_base::lonewolf::mini::GSolDump;
 use gamebooksolver_base::lonewolf::mini::NoPrevEq;
 use gamebooksolver_base::lonewolf::mini::SoldumpContent;
 use gamebooksolver_base::lonewolf::mini::StoredEquipment;
-use gamebooksolver_base::lonewolf::solve::solve_lws;
+use gamebooksolver_base::lonewolf::solve::{solve_lws, solve_lws_best_path};
 use gamebooksolver_base::solver::base::Proba;
 use gamebooksolver_base::solver::base::optimize_outcome;
 use gamebooksolver_base::solver::base::{ChoppedSolution, SolNode};
@@ -58,6 +58,10 @@ struct OSolDesc {
     pub resultspath: Option<String>,
     #[arg(long, default_value_t = 1)]
     pub startat: u16,
+    /// Keep all the states that can be reached, not only those on the best path. This is required for exploring what
+    /// happens after other choices, but uses a lot more memory.
+    #[arg(long)]
+    pub allstates: bool,
 }
 
 #[derive(Debug, Subcommand)]
@@ -748,8 +752,14 @@ fn soldump<PREV: StoredEquipment>(
             .map(|mp| mp.iter().map(|((k1, k2), v)| (*k1, *k2, v.clone())).collect()),
     };
     let cvar = soldesc.cvariable::<PREV>();
-    let sol = solve_lws(
-        |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f),
+    let scorer = |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f);
+    let solver = if cnt.allstates {
+        solve_lws
+    } else {
+        solve_lws_best_path
+    };
+    let sol = solver(
+        scorer,
         &fchapters,
         &book,
         &soldesc.ccst,
