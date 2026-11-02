@@ -1,4 +1,4 @@
-use crate::lonewolf::cartwheel::{CARTWHEEL_LABEL, MAX_CARTWHEEL, cartwheel};
+use crate::lonewolf::cartwheel::{CARTWHEEL_FREE_BET, CARTWHEEL_LABEL, MAX_CARTWHEEL, cartwheel_with_token};
 use crate::lonewolf::chapter::{
     ChapterId, ChapterOutcome, Decision, Endurance, FightDetails, FightModifier, SimpleOutcome, SpecialChapter,
 };
@@ -375,55 +375,54 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
         Decision::Special(SpecialChapter::Cartwheel) => {
             const FARE: u8 = 20;
             let gold = cvar.cequipment.get_item_count(&Item::Gold);
-            if gold >= MAX_CARTWHEEL {
-                flatten_decision(wuse, ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(136))))
-                    .into_iter()
-                    .map(|(mut dsc, out)| {
-                        dsc.insert(0, "cartwheel ok".into());
-                        (dsc, out)
-                    })
-                    .collect()
-            } else {
-                // with enough money for the fare, it is possible not to play at all. Otherwise, the free token can't be
-                // cashed, so the target must be at least one more than what it would be worth
-                let no_play = (gold >= FARE).then_some(gold);
-                let first_target = std::cmp::max(FARE, gold + 2);
-                no_play
-                    .into_iter()
-                    .chain(first_target..=MAX_CARTWHEEL)
-                    .flat_map(|target| {
-                        let money = if target == gold { gold } else { gold + 1 };
-                        flatten_decision(
-                            wuse,
-                            ccst,
-                            cvar,
-                            &Decision::None(ChapterOutcome::Randomly(
-                                cartwheel(money, target)
-                                    .into_iter()
-                                    .map(|pb| {
-                                        let dest = if pb.v < FARE { 169 } else { 136 };
-                                        (
-                                            pb.p,
-                                            ChapterOutcome::Simple(
-                                                vec![
-                                                    SimpleOutcome::LoseItemKind(vec![Slot::Pouch]),
-                                                    SimpleOutcome::GainItem(Item::Gold, pb.v),
-                                                ],
-                                                Box::new(ChapterOutcome::Goto(ChapterId(dest))),
-                                            ),
-                                        )
-                                    })
-                                    .collect(),
-                            )),
-                        )
+            let play = |label: &'static str, target: u8| {
+                flatten_decision(
+                    wuse,
+                    ccst,
+                    cvar,
+                    &Decision::None(ChapterOutcome::Randomly(
+                        cartwheel_with_token(gold, target)
+                            .into_iter()
+                            .map(|pb| {
+                                let dest = if pb.v < FARE { 169 } else { 136 };
+                                (
+                                    pb.p,
+                                    ChapterOutcome::Simple(
+                                        vec![
+                                            SimpleOutcome::LoseItemKind(vec![Slot::Pouch]),
+                                            SimpleOutcome::GainItem(Item::Gold, pb.v),
+                                        ],
+                                        Box::new(ChapterOutcome::Goto(ChapterId(dest))),
+                                    ),
+                                )
+                            })
+                            .collect(),
+                    )),
+                )
+                .into_iter()
+                .map(move |(mut dsc, out)| {
+                    dsc.insert(0, label.into());
+                    (dsc, out)
+                })
+                .collect::<Vec<_>>()
+            };
+            let mut out = Vec::new();
+            // with enough money for the fare, it is possible not to play at all, or to only bet the free token
+            if gold >= FARE {
+                out.extend(
+                    flatten_decision(wuse, ccst, cvar, &Decision::None(ChapterOutcome::Goto(ChapterId(136))))
                         .into_iter()
-                        .map(move |(mut dsc, out)| {
-                            dsc.insert(0, CARTWHEEL_LABEL[target as usize - 20].into());
-                            (dsc, out)
-                        })
-                    })
-                    .collect()
+                        .map(|(mut dsc, res)| {
+                            dsc.insert(0, "cartwheel ok".into());
+                            (dsc, res)
+                        }),
+                );
+                out.extend(play(CARTWHEEL_FREE_BET, gold));
             }
+            for target in std::cmp::max(FARE, gold + 1)..=MAX_CARTWHEEL {
+                out.extend(play(CARTWHEEL_LABEL[target as usize - 20], target));
+            }
+            out
         }
         // do not play portholes!
         Decision::Special(SpecialChapter::Portholes) => {
@@ -554,15 +553,26 @@ mod test {
                 }
             }
         }
-        // the token alone can't be turned into the missing crown
-        let labels: Vec<_> = flatten_decision::<BigRational, _>(&WeaponUse::default(), &ccst, &with_gold(19), &dec)
-            .into_iter()
-            .map(|(d, _)| d[0].clone())
-            .collect();
-        assert_eq!(labels[0], "Cartwheel target 21");
+        let labels = |gold: i64| -> Vec<String> {
+            flatten_decision::<BigRational, _>(&WeaponUse::default(), &ccst, &with_gold(gold), &dec)
+                .into_iter()
+                .map(|(d, _)| d[0].clone())
+                .collect()
+        };
+        // the token is played first, so that it is possible to aim for the fare with 19 crowns
+        assert_eq!(labels(19)[0], "Cartwheel target 20");
         // it is possible not to play
         let results = choices_results(&ccst, &with_gold(25), &dec);
         assert_eq!(results[0], vec![NextStep::NewChapter(136, with_gold(25))]);
+        // or to only bet the token, which can't lose any crown
+        assert_eq!(labels(25)[1], CARTWHEEL_FREE_BET);
+        for r in &results[1] {
+            let NextStep::NewChapter(136, c) = r else { panic!("{r:?}") };
+            assert!(c.cequipment.has_item(&Item::Gold, 25));
+        }
+        // this is also possible with too much gold to aim for anything else
+        assert_eq!(labels(35), vec!["cartwheel ok", CARTWHEEL_FREE_BET]);
+        assert_eq!(labels(50), vec!["cartwheel ok", CARTWHEEL_FREE_BET]);
     }
 
     fn weapons_book(pchoice: Decision<BigRational>) -> (WeaponUse, Decision<BigRational>) {

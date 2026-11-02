@@ -1,5 +1,6 @@
 use crate::solver::base::Outcome;
 use crate::solver::base::Proba;
+use crate::solver::base::optimize_outcome;
 use crate::solver::rational::{JRatio, Rational};
 
 use lazy_static::lazy_static;
@@ -7,6 +8,7 @@ use num_rational::BigRational;
 use num_traits::identities::{One, Zero};
 
 pub static MAX_CARTWHEEL: u8 = 30;
+pub static CARTWHEEL_FREE_BET: &str = "Cartwheel token only";
 pub static CARTWHEEL_LABEL: &[&str] = &[
     "Cartwheel target 20",
     "Cartwheel target 21",
@@ -120,6 +122,27 @@ pub fn cartwheel<P: Rational>(starting_money: u8, target: u8) -> Outcome<P, u8> 
     }
 }
 
+/// The final amounts of gold when arriving with this gold and the free silver token. It is played first, as the amount
+/// of money evolves the same way with a token or a crown, and otherwise it could be left unused, and it can't be
+/// cashed. A win pays like any other stake: the stake is kept as a crown. The game then goes on if the gold is below
+/// the target.
+pub fn cartwheel_with_token<P: Rational>(gold: u8, target: u8) -> Outcome<P, u8> {
+    let mut out = Vec::new();
+    for (gain, tenths) in [(0, 7), (6, 2), (9, 1)] {
+        let money = gold + gain;
+        let p = P::from_i64(tenths, 10);
+        if money >= target {
+            out.push(Proba { v: money, p });
+        } else {
+            out.extend(cartwheel::<P>(money, target).into_iter().map(|r| Proba {
+                v: r.v,
+                p: r.p.mul(&p),
+            }));
+        }
+    }
+    optimize_outcome(out)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -164,6 +187,38 @@ mod test {
                 }
             }
         }
+    }
+
+    #[test]
+    fn the_token_is_played_first() {
+        let tenths = |n: i64| <BigRational as Rational>::from_i64(n, 10);
+        let get = |o: &Outcome<BigRational, u8>, v: u8| o.iter().find(|r| r.v == v).map(|r| r.p.clone());
+        // a bet that can't lose any crown
+        let free = cartwheel_with_token::<BigRational>(25, 25);
+        assert_eq!(free.len(), 3);
+        assert_eq!(get(&free, 25), Some(tenths(7)));
+        assert_eq!(get(&free, 31), Some(tenths(2)));
+        assert_eq!(get(&free, 34), Some(tenths(1)));
+        // it is possible to stop at the fare with 19 crowns: a win ends the game, otherwise it goes on with 19 crowns
+        let o = cartwheel_with_token::<BigRational>(19, 20);
+        for r in cartwheel::<BigRational>(19, 20) {
+            let win = match r.v {
+                25 => tenths(2),
+                28 => tenths(1),
+                _ => tenths(0),
+            };
+            assert_eq!(get(&o, r.v).unwrap(), win + r.p * tenths(7), "{}", r.v);
+        }
+        let fare: BigRational = o.iter().filter(|r| r.v >= 20).map(|r| r.p.clone()).sum();
+        assert!(fare.t_f64() > 0.99844 && fare.t_f64() < 0.99845, "{fare}");
+        for (gold, target) in [(0, 20), (19, 20), (20, 21), (28, 30)] {
+            let o = cartwheel_with_token::<BigRational>(gold, target);
+            let total: BigRational = o.into_iter().map(|r| r.p).sum();
+            assert_eq!(total, BigRational::one());
+        }
+        // without any gold, losing the token ends the game
+        let o = cartwheel_with_token::<BigRational>(0, 20);
+        assert!(get(&o, 0).unwrap() > tenths(7));
     }
 
     #[test]

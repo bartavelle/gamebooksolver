@@ -326,11 +326,22 @@ Parameter cartwheel: nat -> nat -> list (nat * Qc).
 Definition max_cartwheel: nat := 30.
 Definition cartwheel_fare: nat := 20.
 
-Definition cartwheel_choice (money target: nat): chapter_outcome :=
+(* The final gold when arriving with this gold and the free token, which is played first. A win pays like any other
+   stake, as cartwheel_with_token in cartwheel.rs. *)
+Definition cartwheel_with_token (gold target: nat): list (nat * Qc) :=
+  flat_map (fun gp : nat * Q =>
+    let (gain, p) := gp in
+    let money := (gold + gain)%nat in
+    if Nat.leb target money
+      then [(money, Q2Qc p)]
+      else map (fun vq : nat * Qc => (fst vq, (snd vq * Q2Qc p)%Qc)) (cartwheel money target))
+  [(0%nat, (7 # 10)%Q); (6%nat, (2 # 10)%Q); (9%nat, (1 # 10)%Q)].
+
+Definition cartwheel_choice (gold target: nat): chapter_outcome :=
   Randomly (map (fun vp : nat * Qc =>
     let (v, p) := vp in
     (Simple [LoseItemKind [SPouch]; GainItem Gold v]
-       (Goto (if Nat.ltb v cartwheel_fare then 169%nat else 136%nat)), p)) (cartwheel money target)).
+       (Goto (if Nat.ltb v cartwheel_fare then 169%nat else 136%nat)), p)) (cartwheel_with_token gold target)).
 
 Fixpoint flatten_d (fuel: nat) (stt: Stt) (d: decision) : list chapter_outcome :=
   match fuel with
@@ -423,15 +434,12 @@ Fixpoint flatten_d (fuel: nat) (stt: Stt) (d: decision) : list chapter_outcome :
                   ; (Simple [DamagePlayer 1] (Goto 93%nat), borne (19 - cs)%nat)]]
     | special Cartwheel =>
         let gold := sitems Gold stt in
-        if Nat.leb max_cartwheel gold
-          then flatten_d f stt (none (Goto 136%nat))
-          else
-            let no_play := if Nat.leb cartwheel_fare gold then [gold] else [] in
-            let first := Nat.max cartwheel_fare (gold + 2) in
-            flat_map (fun target =>
-                let money := if Nat.eqb target gold then gold else (gold + 1)%nat in
-                flatten_d f stt (none (cartwheel_choice money target)))
-              (no_play ++ seq first (max_cartwheel + 1 - first))
+        let first := Nat.max cartwheel_fare (gold + 1) in
+        (if Nat.leb cartwheel_fare gold
+           then flatten_d f stt (none (Goto 136%nat)) ++ flatten_d f stt (none (cartwheel_choice gold gold))
+           else [])
+        ++ flat_map (fun target => flatten_d f stt (none (cartwheel_choice gold target)))
+             (seq first (max_cartwheel + 1 - first))
     | special Portholes => flatten_d f stt (none (Goto 197%nat))
     (* see expand_evasions *)
     | evade_fight _ _ _ _ => []
