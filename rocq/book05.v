@@ -278,7 +278,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 36%nat); none (Goto 176%nat
   (286%nat,Decisions [conditional (HasDiscipline (MindOverMatter)) (none (Goto 214%nat)); conditional (Not (HasDiscipline (MindOverMatter))) (Decisions [none (Goto 239%nat)])]);
   (287%nat,none (Simple [DamagePlayer 1%nat] (Goto 343%nat)));
   (288%nat,none (Conditionally [(HasFlag ReceivedCrystalStarPendant , Goto 399%nat); (Always true , Goto 294%nat)]));
-  (289%nat,Decisions [conditional (HasItem (Weapon Sommerswerd) 1%nat) (none (Goto 311%nat)); conditional (Not (HasItem (Weapon Sommerswerd) 1%nat)) (Decisions [none (Goto 219%nat)])]);
+  (289%nat,Decisions [conditional (HasItem (Weapon Sommerswerd) 1%nat) (none (Goto 311%nat)); conditional (HasItem (Weapon Sommerswerd) 1%nat) (none (Simple [LoseItem (Weapon Sommerswerd) 1%nat] (Goto 219%nat))); conditional (Not (HasItem (Weapon Sommerswerd) 1%nat)) (Decisions [none (Goto 219%nat)])]);
   (290%nat,Decisions [can_take (GenSpecial S8) 1%nat (none (Goto 246%nat)); none (Goto 246%nat)]);
   (291%nat,none (Goto 359%nat));
   (292%nat,none (Goto 206%nat));

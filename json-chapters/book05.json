@@ -10180,6 +10180,36 @@
             }
           ],
           [
+            "Discard the Sommerswerd",
+            {
+              "Conditional": [
+                {
+                  "HasItem": [
+                    "Sommerswerd",
+                    1
+                  ]
+                },
+                {
+                  "NoDecision": {
+                    "Simple": [
+                      [
+                        {
+                          "LoseItem": [
+                            "Sommerswerd",
+                            1
+                          ]
+                        }
+                      ],
+                      {
+                        "Goto": 219
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          [
             "otherwise",
             {
               "Conditional": [
