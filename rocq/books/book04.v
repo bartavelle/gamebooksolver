@@ -287,7 +287,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (313%nat,none (Goto 96%nat));
   (314%nat,Decisions [none (Goto 53%nat); none (Goto 258%nat)]);
   (315%nat,Decisions [conditional (HasDiscipline (Tracking)) (none (Goto 48%nat)); conditional (Not (HasDiscipline (Tracking))) (Decisions [none (Goto 269%nat); none (Goto 145%nat)])]);
-  (316%nat,evade_fight 0%nat 31%nat (Details ((16)%Z)%Z 26%nat []) (Goto 146%nat));
+  (316%nat,evade_fight 0%nat 31%nat (Details ((16)%Z)%Z 26%nat [CombatBonus (-2)%Z]) (Goto 146%nat));
   (317%nat,none (Goto 348%nat));
   (318%nat,Decisions [conditional (HasItem (GenSpecial S2) 1%nat) (none (Goto 279%nat)); conditional (Not (HasItem (GenSpecial S2) 1%nat)) (Decisions [none (Goto 57%nat)])]);
   (319%nat,none (Randomly [(Goto 25%nat , (Q2Qc (1 / 2)%Q)); (Goto 171%nat , (Q2Qc (1 / 2)%Q))]));

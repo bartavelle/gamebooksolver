@@ -10023,7 +10023,11 @@
           {
             "fcombatSkill": 16,
             "fendurance": 26,
-            "fightMod": [],
+            "fightMod": [
+              {
+                "CombatBonus": -2
+              }
+            ],
             "opponent": "Bandit Warrior"
           },
           {
