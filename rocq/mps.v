@@ -1409,6 +1409,65 @@ Proof.
   * apply IHmp; auto.
 Qed.
 
+  Section MapLemmas.
+    Context {K V: Set} `{OrdDec K}.
+
+    Lemma lt_head_none: forall (m: Mp K V) k k0, ValidMap m -> Forall (fun pr : K * V => let (ck, _) := pr in lt k0 ck) m ->
+      cmp k k0 <> GT -> lookup k m = None.
+    Proof.
+      intros m k k0 VM F C. apply lowkey_not_found; auto.
+      eapply Forall_impl; [|exact F]. intros [ck cv] L. simpl in *.
+      destruct (cmp k k0) eqn: E; [|apply cmp_eq in E; subst; assumption|contradiction].
+      apply cmp_correct in E. eapply lt_trans; eauto.
+    Qed.
+
+    Lemma map_ext_valid: forall (a b: Mp K V), ValidMap a -> ValidMap b -> (forall k, lookup k a = lookup k b) -> a = b.
+    Proof.
+      induction a as [|[k1 v1] a IH]; intros b VA VB E.
+      - destruct b as [|[k2 v2] b]; auto. specialize (E k2). simpl in E. rewrite cmp_refl in E. discriminate.
+      - destruct b as [|[k2 v2] b].
+        + specialize (E k1). simpl in E. rewrite cmp_refl in E. discriminate.
+        + apply Valid.head in VA. apply Valid.head in VB. destruct VA as [VA FA], VB as [VB FB].
+          destruct (cmp k1 k2) eqn: C.
+          * specialize (E k1). simpl in E. rewrite cmp_refl, C in E. discriminate.
+          * apply cmp_eq in C. subst k2.
+            pose proof (E k1) as E1. simpl in E1. rewrite cmp_refl in E1. inversion E1; subst v2. f_equal.
+            apply IH; auto. intro k. specialize (E k). simpl in E.
+            destruct (cmp k k1) eqn: D; try assumption;
+              (rewrite (lt_head_none a k k1), (lt_head_none b k k1); auto; rewrite D; discriminate).
+          * apply cmp_opp in C. specialize (E k2). simpl in E. rewrite cmp_refl, C in E. discriminate.
+    Qed.
+
+    Lemma lookup_delete_diff: forall (m: Mp K V) k1 k2, ValidMap m -> k1 <> k2 -> lookup k1 (delete k2 m) = lookup k1 m.
+    Proof.
+      induction m as [|[ck cv] m IH]; intros k1 k2 VM D; simpl; auto.
+      apply Valid.head in VM. destruct VM as [VM F].
+      destruct (cmp k2 ck) eqn: C; simpl; auto.
+      - apply cmp_eq in C. subst ck. destruct (cmp k1 k2) eqn: C1; auto.
+        + apply lt_head_none with (k0 := k2); auto. rewrite C1. discriminate.
+        + apply cmp_eq in C1. contradiction.
+      - rewrite IH; auto.
+    Qed.
+
+    Lemma lookup_filter: forall (m: Mp K V) p k, ValidMap m ->
+      lookup k (filter p m) = match lookup k m with Some v => if p (k, v) then Some v else None | None => None end.
+    Proof.
+      induction m as [|[ck cv] m IH]; intros p k VM; simpl; auto.
+      apply Valid.head in VM. destruct VM as [VM F].
+      assert (cmp k ck <> GT -> lookup k (filter p m) = None) as NONE.
+      { intro C. apply lt_head_none with (k0 := ck); auto.
+        - apply Valid.filter. assumption.
+        - apply Forall_forall. intros x I. apply filter_In in I. destruct I as [I _].
+          rewrite Forall_forall in F. apply F. assumption. }
+      destruct (cmp k ck) eqn: C; destruct (p (ck, cv)) eqn: P; simpl; rewrite ?C.
+      - reflexivity.
+      - apply NONE. discriminate.
+      - apply cmp_eq in C. subst. rewrite P. reflexivity.
+      - apply cmp_eq in C. subst. rewrite P. apply NONE. discriminate.
+      - apply IH. assumption.
+      - apply IH. assumption.
+    Qed.
+  End MapLemmas.
 End Lookup.
 
 Definition St (K: Set) := Mp K unit.
@@ -1463,6 +1522,22 @@ Proof.
   intros k1 k2 s vm df.
   unfold s_unset, s_set, insert.
   rewrite Delete.reorder_insert_delete; auto.
+Qed.
+
+Lemma s_check_set {K: Set} `{OrdDec K}: forall (m: St K) x y, ValidMap m ->
+  s_check y (s_set x m) = if eqb y x then true else s_check y m.
+Proof.
+  intros m x y V. unfold s_check, s_set, insert. destruct (eqb y x) eqn: E.
+  - apply eqb_correct in E. subst. rewrite Lookup.lookup_insert_with; auto. destruct (lookup x m); reflexivity.
+  - rewrite Lookup.lookup_insert_with_diff; auto. intro C. subst. rewrite eqb_refl in E. discriminate.
+Qed.
+
+Lemma s_check_unset {K: Set} `{OrdDec K}: forall (m: St K) x y, ValidMap m ->
+  s_check y (s_unset x m) = if eqb y x then false else s_check y m.
+Proof.
+  intros m x y V. unfold s_check, s_unset. destruct (eqb y x) eqn: E.
+  - apply eqb_correct in E. subst. rewrite Lookup.lookup_delete; auto.
+  - rewrite Lookup.lookup_delete_diff; auto. intro C. subst. rewrite eqb_refl in E. discriminate.
 Qed.
 
 Definition foldMap {K V: Set} (f: V -> V -> V) (e: V) (m: Mp K V) := fold_right f e (map snd m).

@@ -92,34 +92,20 @@ Section FlagSection.
     intros n s t q H. unfold heal. apply fr_endur; auto. rewrite (r_cur _ _ _ H), (fr_maxhp _ _ _ H). reflexivity.
   Qed.
 
-  Lemma check_set: forall (m: FlagSet) x y, ValidMap m -> s_check y (s_set x m) = if flag_beq y x then true else s_check y m.
-  Proof.
-    intros m x y V. unfold s_check, s_set, insert. destruct (flag_beq y x) eqn: E.
-    - apply m_flag.eqb_correct in E. subst. rewrite Lookup.lookup_insert_with; auto. destruct (lookup x m); reflexivity.
-    - rewrite Lookup.lookup_insert_with_diff; auto. intro C. subst. rewrite (proj1 (m_flag.eqb_correct x x) Logic.eq_refl) in E. discriminate.
-  Qed.
-
-  Lemma check_unset: forall (m: FlagSet) x y, ValidMap m -> s_check y (s_unset x m) = if flag_beq y x then false else s_check y m.
-  Proof.
-    intros m x y V. unfold s_check, s_unset. destruct (flag_beq y x) eqn: E.
-    - apply m_flag.eqb_correct in E. subst. rewrite Lookup.lookup_delete; auto.
-    - rewrite lookup_delete_diff; auto. intro C. subst. rewrite (proj1 (m_flag.eqb_correct x x) Logic.eq_refl) in E. discriminate.
-  Qed.
-
   Lemma fr_set: forall n s t x, FlagR n s t -> FlagR n (update_flags (s_set x) s) (update_flags (s_set x) t).
   Proof.
     intros n s t x H. destruct H; constructor; unfold has_flag in *; simpl; auto;
       try (apply Insert.insert_with_valid; assumption).
-    - intros y Y. rewrite !check_set; auto. destruct (flag_beq y x); auto.
-    - intro A. rewrite !check_set; auto. destruct (flag_beq f x); auto.
+    - intros y Y. rewrite !s_check_set; auto. destruct (order.eqb y x); auto.
+    - intro A. rewrite !s_check_set; auto. destruct (order.eqb f x); auto.
   Qed.
 
   Lemma fr_unset: forall n s t x, FlagR n s t -> FlagR n (update_flags (s_unset x) s) (update_flags (s_unset x) t).
   Proof.
     intros n s t x H. destruct H; constructor; unfold has_flag in *; simpl; auto;
       try (apply Delete.valid; assumption).
-    - intros y Y. rewrite !check_unset; auto. destruct (flag_beq y x); auto.
-    - intro A. rewrite !check_unset; auto. destruct (flag_beq f x); auto.
+    - intros y Y. rewrite !s_check_unset; auto. destruct (order.eqb y x); auto.
+    - intro A. rewrite !s_check_unset; auto. destruct (order.eqb f x); auto.
   Qed.
 
   Lemma fr_simple: forall so n s t, FlagR n s t -> FlagR n (update_simple s so) (update_simple t so).
