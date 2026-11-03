@@ -5349,6 +5349,14 @@
                 "Goto": 256
               }
             }
+          ],
+          [
+            "If you want to run back to the junction and take the left path, turn to 64.",
+            {
+              "NoDecision": {
+                "Goto": 405
+              }
+            }
           ]
         ]
       },
@@ -12060,6 +12068,33 @@
         }
       },
       "title": "404"
+    }
+  ],
+  [
+    405,
+    {
+      "title": "",
+      "desc": "",
+      "pchoice": {
+        "Decisions": [
+          [
+            "If you wish to enter the wagon, turn to 134.",
+            {
+              "NoDecision": {
+                "Goto": 134
+              }
+            }
+          ],
+          [
+            "If you want to dash past the wagon and run for safety, turn to 208.",
+            {
+              "NoDecision": {
+                "Goto": 208
+              }
+            }
+          ]
+        ]
+      }
     }
   ]
 ]

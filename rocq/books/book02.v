@@ -156,7 +156,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (168%nat,none (Conditionally [(HasItem Gold 1%nat , Simple [LoseItem Gold 1%nat] (Goto 314%nat)); (Always true , Goto 25%nat)]));
   (169%nat,none (Randomly [(Goto 39%nat , (Q2Qc (2 / 5)%Q)); (Goto 249%nat , (Q2Qc (3 / 10)%Q)); (Goto 339%nat , (Q2Qc (3 / 10)%Q))]));
   (171%nat,Decisions [none (Goto 27%nat); none (Goto 114%nat)]);
-  (172%nat,Decisions [none (Goto 52%nat); none (Goto 256%nat)]);
+  (172%nat,Decisions [none (Goto 52%nat); none (Goto 256%nat); none (Goto 405%nat)]);
   (173%nat,Decisions [none (Goto 91%nat); none (Goto 6%nat); none (Goto 283%nat)]);
   (174%nat,none (Goto 162%nat));
   (175%nat,none (Randomly [(Goto 53%nat , (Q2Qc (1 / 2)%Q)); (Goto 209%nat , (Q2Qc (1 / 2)%Q))]));
@@ -393,4 +393,5 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (402%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 184%nat))));
   (345%nat,none (Simple [SetFlag HadCombat] (Goto 403%nat)));
   (403%nat,none (Fight (Details ((16)%Z)%Z 24%nat []) (Goto 404%nat)));
-  (404%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 243%nat))))].
+  (404%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 243%nat))));
+  (405%nat,Decisions [none (Goto 134%nat); none (Goto 208%nat)])].
