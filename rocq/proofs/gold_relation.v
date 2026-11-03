@@ -210,7 +210,7 @@ Proof.
   - reflexivity.
   - rewrite (g_cur _ _ _ H). reflexivity.
   - unfold has_flag. rewrite (g_flags _ _ _ H). reflexivity.
-  - unfold level. rewrite (g_disc _ _ _ H). reflexivity.
+  - unfold level, discipline_count. rewrite (g_disc _ _ _ H). reflexivity.
 Qed.
 
 Definition gold_held_need (sl: slot) : nat := match sl with SPouch => ALL | _ => 0 end.

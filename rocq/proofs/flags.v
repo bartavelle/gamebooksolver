@@ -158,7 +158,7 @@ Section FlagSection.
     - destruct (flag_beq f0 f) eqn: E.
       + apply m_flag.eqb_correct in E. subst. exact (r_read _ _ _ H L).
       + apply (r_other _ _ _ H). intro C. subst. rewrite (proj1 (m_flag.eqb_correct f f) Logic.eq_refl) in E. discriminate.
-    - unfold level. rewrite (r_disc _ _ _ H). reflexivity.
+    - unfold level, discipline_count. rewrite (r_disc _ _ _ H). reflexivity.
   Qed.
 
   Lemma fr_take: forall i n s t, FlagR n s t -> tcan_take i s = tcan_take i t.

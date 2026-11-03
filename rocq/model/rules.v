@@ -283,15 +283,6 @@ Inductive can_take_result :=
   | Nope : can_take_result
   .
 
-Definition SilverHelmet: item := GenSpecial S10.
-
-(* In book 4, the Pickaxe and the Shovel "each occupy the same amount of space in your Backpack as two normal items" *)
-Definition backpack_slots (bk: nat) (i: item): nat :=
-  match i with
-  | GenBackpack S3 | GenBackpack S4 => if Nat.eqb bk 4 then 2 else 1
-  | _ => 1
-  end.
-
 Definition tcan_take (i: item) (s: Stt): can_take_result :=
   match item_slot i with
   | SPouch => SpaceAvailable

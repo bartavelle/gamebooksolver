@@ -779,3 +779,12 @@ Qed.
 
 Definition lose_all_slot (s: slot) (items: Items): Items :=
     fold_right (fun i itms => mps.delete i itms) items (slot_items s).
+
+Definition SilverHelmet: item := GenSpecial S10.
+
+(* In book 4, the Pickaxe and the Shovel "each occupy the same amount of space in your Backpack as two normal items" *)
+Definition backpack_slots (bk: nat) (i: item): nat :=
+  match i with
+  | GenBackpack S3 | GenBackpack S4 => if Nat.eqb bk 4 then 2 else 1
+  | _ => 1
+  end.

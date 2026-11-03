@@ -301,9 +301,10 @@ Definition c_rm_items (i: item) (q: nat) (stt: Stt): Stt :=
 Definition heal (stt: Stt) (q: nat) : Stt :=
   update_endurance (fun e => Nat.min (max_hp stt) (curendurance stt + q)) stt.
 
-Definition level (stt: Stt): kai_level :=
-  let amnt := length (filter (fun d => s_check d (disciplines stt)) all_disciplines)
-   in nat_to_level amnt.
+Definition discipline_count (stt: Stt): nat :=
+  length (filter (fun d => s_check d (disciplines stt)) all_disciplines).
+
+Definition level (stt: Stt): kai_level := nat_to_level (discipline_count stt).
 
 Definition all_held_items (s: Stt): list (item * nat) :=
   filter (fun iq : item * nat => Nat.ltb 0 (snd iq)) (map (fun i => (i, sitems i s)) all_items).
@@ -475,22 +476,52 @@ Proof.
   intro H. discriminate (H Sword Axe ltac:(vm_compute; reflexivity) ltac:(vm_compute; reflexivity)).
 Qed.
 
-Definition ValidState (s: Stt) :=
-           lt 0 (curendurance s)
-        /\ lt (book s) 6
-        /\ lt 0 (book s)
-        /\ lt 4 (level_to_nat (level s))
-        /\ lt (sitems Gold s) 51
-        /\ le (all_character_items_slot_count s SBackpack) 8
-        /\ le (all_character_items_slot_count s SWeapon) 2
-        /\ ValidBag (items s)
-        /\ ValidMap (disciplines s)
-        /\ ValidMap (flags s)
-        /\ ValidBag (previtems s)
-        /\ OneWeaponSpecMax s
-        /\ le (curendurance s) (max_hp s)
-        /\ lt 0 (maxendurance s)
-        .
+Definition items_slot_count (m: Items) (sl: slot): nat :=
+  list_sum (map snd (filter (fun kv: item * nat => order.eqb (item_slot (fst kv)) sl) m)).
+
+(* The space that is used in the Backpack, which is what can_take looks at *)
+Definition backpack_used (bk: nat) (m: Items): nat :=
+  list_sum (map (fun kv: item * nat => backpack_slots bk (fst kv) * snd kv)
+    (filter (fun kv: item * nat => order.eqb (item_slot (fst kv)) SBackpack) m)).
+
+Definition stackable (i: item): bool :=
+  match i with Gold | Meal | Laumspur => true | _ => false end.
+
+(* What can be carried at any time. It also holds for the stored equipment, which comes back as it is. *)
+Record ValidItems (bk: nat) (m: Items) : Prop := mkValidItems
+  { vi_bag : ValidBag m
+  ; vi_gold : match lookup Gold m with Some x => x | None => 0 end <= 50
+  ; vi_backpack : backpack_used bk m <= 8
+  ; vi_weapons : items_slot_count m SWeapon <= 2
+  ; vi_single : forallb (fun kv: item * nat => stackable (fst kv) || Nat.leb (snd kv) 1) m = true
+  ; vi_helmets : negb (has Helmet m && has SilverHelmet m) = true
+  ; vi_contents : has Backpack m || Nat.eqb (items_slot_count m SBackpack) 0 = true
+  }.
+
+(* What holds for any character in the rules of the books: book, skill, endurance and disciplines don't change while
+   playing a book, and one discipline is learned with each book. *)
+Record ValidState (s: Stt) : Prop := mkValidState
+  { v_book : 1 <= book s <= 5
+  ; v_skill : (10 <= sk s <= 19)%Z
+  ; v_maxe : 20 <= maxendurance s <= 29
+  ; v_cur_pos : 0 < curendurance s
+  ; v_cur_le : curendurance s <= max_hp s
+  ; v_disc : ValidMap (disciplines s)
+  ; v_disc_count : discipline_count s = book s + 4
+  ; v_weapon_skill : OneWeaponSpecMax s
+  ; v_flags : ValidMap (flags s)
+  ; v_items : ValidItems (book s) (items s)
+  ; v_prev : ValidItems (book s) (previtems s)
+  }.
+
+(* A character starting the first book is valid *)
+Example valid_start: ValidState
+  (build_test_stt 20 10 (WeaponSkill Sword :: MindBlast :: SixthSense :: Hunting :: Healing :: nil) (Backpack :: Weapon Sword :: Meal :: nil) nil).
+Proof.
+  constructor; try (split; vm_compute; discriminate);
+    try (vm_compute; repeat constructor; fail); try (vm_compute; reflexivity).
+  - intros w1 w2 H1 H2. destruct w1; try (vm_compute in H1; discriminate); destruct w2; try (vm_compute in H2; discriminate); reflexivity.
+Qed.
 
 Module VS.
 
@@ -502,26 +533,12 @@ Module VS.
 
   Lemma update_flags: forall stt f, (forall flgs, ValidMap flgs -> ValidMap (f flgs)) -> ValidState stt -> ValidState (update_flags f stt).
   Proof.
-    intros.
-    unfold ValidState in *.
-    unfold ValidBag in *.
-    repeat split; try tauto.
-    destruct stt. simpl in *.
-    apply H. tauto.
+    intros stt f Hf H. destruct stt, H; constructor; simpl in *; auto.
   Qed.
 
   Lemma update_endurance: forall stt f, (forall hp : nat, lt 0%nat (f hp) /\ le (f hp) (max_hp stt)) -> ValidState stt -> ValidState (update_endurance f stt).
   Proof.
-    intros.
-    unfold ValidState, ValidBag in *.
-    repeat split; try tauto.
-    destruct stt; simpl in *.  apply H. 
-    unfold update_endurance. destruct stt. simpl in *.
-    destruct (H curendurance0).
-    unfold max_hp in *.
-    unfold has_item in *.
-    simpl in *.
-    assumption.
+    intros stt f Hf H. destruct stt, H; constructor; simpl in *; auto; apply Hf.
   Qed.
 
   Lemma has_item_kept: forall stt itm itm2 q, ValidMap (items stt) -> has_item itm stt = true -> has_item itm (update_items (add_item itm2 q) stt) = true.
@@ -548,44 +565,10 @@ Admitted.
     repeat bubu.
   Qed.
 
-  Lemma v_c_rm_items: forall stt i q, ValidState stt -> ValidState (c_rm_items i q stt).
+  (* Losing the Backpack has to lose its content as well, which c_rm_items doesn't do *)
+  Lemma v_c_rm_items: forall stt i q, i <> Backpack -> ValidState stt -> ValidState (c_rm_items i q stt).
   Proof.
-    unfold ValidState, ValidBag.
-    simpl.
-    intros.
-    pose proof (rm_valid (items stt) i q) as VB. unfold ValidBag in VB.
-    repeat (split; try tauto).
-    * unfold max_hp, update_items; simpl.
-      Lia.lia.
-    * unfold sitems, c_rm_items, rm_item, bag_rm; simpl.
-      destruct (eq_dec i Gold).
-      + subst.
-        rewrite Lookup.update_eq_b; auto.
-        unfold sitems in H.
-        destruct (lookup Gold (items stt)); try Lia.lia.
-        destruct (n <=? q); Lia.lia.
-        unfold ValidBag in H.
-        tauto.
-      + rewrite Lookup.update_diff; auto.
-        unfold sitems in H.
-        destruct (lookup Gold (items stt)); try Lia.lia.
-        unfold ValidBag in H.
-        tauto.
-    * lapply (Slot.rm stt (update_items (rm_item i q) stt) i q SBackpack); auto .
-      intros.
-      unfold c_rm_items.
-      unfold all_character_items_slot_count, all_character_items_slot in *; simpl in *.
-      Lia.lia.
-    * lapply (Slot.rm stt (update_items (rm_item i q) stt) i q SWeapon); auto .
-      intros.
-      unfold c_rm_items.
-      unfold all_character_items_slot_count, all_character_items_slot in *; simpl in *.
-      Lia.lia.
-    * admit.
-    all: admit.
   Admitted.
-
-
 End VS.
 
 Module MH.
