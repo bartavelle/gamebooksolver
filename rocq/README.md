@@ -37,4 +37,5 @@ another by its short name, whatever its directory.
   - `no_overflow.v`: endurance can't overflow on a doubled kill.
   - `cartwheel.v`: staking one crown is optimal at the Cartwheel.
 - `difftest/`: tests on the extracted model. `run.sh` runs it against the Rust solver on random characters, and `valid.sh`
-  checks on the books that playing keeps `ValidState` true.
+  checks on the books that playing keeps `ValidState` true. `evasion.sh` checks the fights of Book 4 that can be evaded against
+  a separate calculation, which reads the combat table from the XML of the book.
