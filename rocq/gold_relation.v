@@ -110,7 +110,7 @@ Proof.
   - apply rel_rm_other; auto. apply H.
 Qed.
 
-Definition gold_sn (so: simple_outcome) (a: nat) : nat :=
+Definition gold_simple_need (so: simple_outcome) (a: nat) : nat :=
   match so with
   | LoseItem i q => if item_beq i Gold then Nat.max a (Nat.min ALL (a + q)) else a
   | _ => a
@@ -130,10 +130,10 @@ Proof.
   - right. rewrite !gold_rm; auto. lia.
 Qed.
 
-Lemma gr_simple: forall so a n s t, gold_sn so a <= n -> GoldR n s t -> GoldR a (update_simple s so) (update_simple t so).
+Lemma gr_simple: forall so a n s t, gold_simple_need so a <= n -> GoldR n s t -> GoldR a (update_simple s so) (update_simple t so).
 Proof.
   intros so a n s t L H. pose proof H as H0.
-  destruct so as [dmg|v| | |i q|i q|slts|c| | |fl|fl]; cbn [update_simple gold_sn] in *.
+  destruct so as [dmg|v| | |i q|i q|slts|c| | |fl|fl]; cbn [update_simple gold_simple_need] in *.
   - apply gr_endur; [rewrite (g_cur _ _ _ H); reflexivity|eapply gr_mono; eauto].
   - apply gr_heal. eapply gr_mono; eauto.
   - apply gr_endur; [rewrite (gr_maxhp _ _ _ H); reflexivity|eapply gr_mono; eauto].
@@ -186,17 +186,17 @@ Proof.
     assert (GoldR a s t) as H1 by (eapply gr_mono; eauto). destruct H1; constructor; simpl; auto. rewrite g_flags0. reflexivity.
 Qed.
 
-Fixpoint gold_cn (c: bool_cond) : nat :=
+Fixpoint gold_cond_need (c: bool_cond) : nat :=
   match c with
   | HasItem i q => if item_beq i Gold then q else 0
-  | Not x => gold_cn x
-  | COr a b | CAnd a b => Nat.max (gold_cn a) (gold_cn b)
+  | Not x => gold_cond_need x
+  | COr a b | CAnd a b => Nat.max (gold_cond_need a) (gold_cond_need b)
   | _ => 0
   end.
 
-Lemma gr_cond: forall c n s t, gold_cn c <= n -> GoldR n s t -> check_cond s c = check_cond t c.
+Lemma gr_cond: forall c n s t, gold_cond_need c <= n -> GoldR n s t -> check_cond s c = check_cond t c.
 Proof.
-  induction c; intros n0 s t L H; cbn [gold_cn check_cond] in *.
+  induction c; intros n0 s t L H; cbn [gold_cond_need check_cond] in *.
   - rewrite (g_disc _ _ _ H). reflexivity.
   - rewrite (IHc n0 s t); auto.
   - rewrite (IHc1 n0 s t), (IHc2 n0 s t); auto; lia.
@@ -213,7 +213,7 @@ Proof.
   - unfold level. rewrite (g_disc _ _ _ H). reflexivity.
 Qed.
 
-Definition gold_ln (sl: slot) : nat := match sl with SPouch => ALL | _ => 0 end.
+Definition gold_held_need (sl: slot) : nat := match sl with SPouch => ALL | _ => 0 end.
 
 Lemma gr_sitems_full: forall n s t i, ALL <= n -> GoldR n s t -> sitems i s = sitems i t.
 Proof.
@@ -282,14 +282,14 @@ Definition gold_tracker : Tracker.
 Proof.
   refine {|
     R := GoldR;
-    cn := gold_cn;
-    sn := gold_sn;
-    ln := gold_ln;
-    tn := fun _ a => a;
-    bn := fun _ p a => Nat.max a (Nat.min ALL (a + p));
-    en := fun i _ a => if item_beq i Gold then Nat.max ALL a else a;
-    cw := ALL;
-    rn := ALL;
+    need_cond := gold_cond_need;
+    need_simple := gold_simple_need;
+    need_held := gold_held_need;
+    need_take := fun _ a => a;
+    need_buy := fun _ p a => Nat.max a (Nat.min ALL (a + p));
+    need_sell := fun i _ a => if item_beq i Gold then Nat.max ALL a else a;
+    need_cartwheel := ALL;
+    need_retrieve := ALL;
   |}.
   - exact gr_mono.
   - exact gr_top.
@@ -325,17 +325,17 @@ Proof.
       rewrite (gr_sitems_full n s t Gold); [reflexivity|lia|exact H].
     + rewrite (sitems_same n s t i NG H). reflexivity.
   - intros n s t L H. apply (gr_sitems_full n); auto.
-  - intros so a b L. destruct so; cbn [gold_sn]; try lia. destruct (item_beq i Gold); lia.
-  - intros so a. destruct so; cbn [gold_sn]; try lia. destruct (item_beq i Gold); lia.
-  - intros so a RE. destruct so; cbn [gold_sn]; try reflexivity; try (simpl in RE; discriminate).
+  - intros so a b L. destruct so; cbn [gold_simple_need]; try lia. destruct (item_beq i Gold); lia.
+  - intros so a. destruct so; cbn [gold_simple_need]; try lia. destruct (item_beq i Gold); lia.
+  - intros so a RE. destruct so; cbn [gold_simple_need]; try reflexivity; try (simpl in RE; discriminate).
     destruct (eq_dec i Gold) as [EG|NG]; [|rewrite beq_gold; auto].
     subst. destruct n as [|[|n]]; simpl in RE; discriminate.
-  - intros sl i a I. cbn [gold_sn]. destruct (eq_dec i Gold) as [EG|NG].
+  - intros sl i a I. cbn [gold_simple_need]. destruct (eq_dec i Gold) as [EG|NG].
     + subst. apply character.Slot.in_slot_items_slot in I. simpl in I. subst.
-      change (item_beq Gold Gold) with true. cbn iota. unfold gold_ln. lia.
+      change (item_beq Gold Gold) with true. cbn iota. unfold gold_held_need. lia.
     + rewrite beq_gold by assumption. lia.
-  - intros i s lst l a E I. cbn [gold_sn]. rewrite beq_gold; [reflexivity|]. eapply gold_not_dropped; eauto.
-  - intros v a. cbn [gold_sn]. lia.
+  - intros i s lst l a E I. cbn [gold_simple_need]. rewrite beq_gold; [reflexivity|]. eapply gold_not_dropped; eauto.
+  - intros v a. cbn [gold_simple_need]. lia.
   - intros. apply le_n.
   - intros. assumption.
   - intros. apply le_n.
@@ -344,8 +344,8 @@ Proof.
   - intros. reflexivity.
   - intros i p a. destruct (item_beq i Gold); lia.
   - intros i p a. destruct (eq_dec i Gold) as [EG|NG].
-    + subst. cbn [gold_sn]. change (item_beq Gold Gold) with true. cbn iota. lia.
-    + cbn [gold_sn]. rewrite !beq_gold by assumption. lia.
+    + subst. cbn [gold_simple_need]. change (item_beq Gold Gold) with true. cbn iota. lia.
+    + cbn [gold_simple_need]. rewrite !beq_gold by assumption. lia.
   - intros i a L. lia.
   - intros a L. lia.
 Defined.

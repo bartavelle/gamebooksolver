@@ -137,17 +137,17 @@ Section FlagSection.
     - apply fr_unset. assumption.
   Qed.
 
-  Fixpoint flag_cn (c: bool_cond) : nat :=
+  Fixpoint flag_cond_need (c: bool_cond) : nat :=
     match c with
     | HasFlag x => if flag_beq x f then ALL else 0
-    | Not x => flag_cn x
-    | COr a b | CAnd a b => Nat.max (flag_cn a) (flag_cn b)
+    | Not x => flag_cond_need x
+    | COr a b | CAnd a b => Nat.max (flag_cond_need a) (flag_cond_need b)
     | _ => 0
     end.
 
-  Lemma fr_cond: forall c n s t, flag_cn c <= n -> FlagR n s t -> check_cond s c = check_cond t c.
+  Lemma fr_cond: forall c n s t, flag_cond_need c <= n -> FlagR n s t -> check_cond s c = check_cond t c.
   Proof.
-    induction c; intros n0 s t L H; cbn [flag_cn check_cond] in *.
+    induction c; intros n0 s t L H; cbn [flag_cond_need check_cond] in *.
     - rewrite (r_disc _ _ _ H). reflexivity.
     - rewrite (IHc n0 s t); auto.
     - rewrite (IHc1 n0 s t), (IHc2 n0 s t); auto; lia.
@@ -180,14 +180,14 @@ Section FlagSection.
   Proof.
     refine {|
       R := FlagR;
-      cn := flag_cn;
-      sn := fun _ a => a;
-      ln := fun _ => 0;
-      tn := fun _ a => a;
-      bn := fun _ _ a => a;
-      en := fun _ _ a => a;
-      cw := 0;
-      rn := 0;
+      need_cond := flag_cond_need;
+      need_simple := fun _ a => a;
+      need_held := fun _ => 0;
+      need_take := fun _ a => a;
+      need_buy := fun _ _ a => a;
+      need_sell := fun _ _ a => a;
+      need_cartwheel := 0;
+      need_retrieve := 0;
     |}.
     - exact fr_mono.
     - exact fr_top.

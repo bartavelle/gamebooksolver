@@ -52,18 +52,21 @@ Definition rule_effect (so: simple_outcome) : bool :=
   end.
 
 (* A way of telling that two states can't be told apart by what is left to play. R n s t reads: s and t are the same as
-   far as a part of the game that needs n can tell. ALL is a need that only the same states can fulfil. The other fields
-   say what each part of a book needs. *)
+   far as a part of the game that needs n can tell. ALL is a need that only the same states can fulfil. The need_ fields
+   say what each part of a book needs, and when they take a need, it is the need of what follows that part: need_simple
+   for an effect, need_cond for a condition, need_held for looking at the items of a slot, need_take, need_buy and
+   need_sell for items that change hands, need_cartwheel for the game of Book 2, and need_retrieve for getting the
+   equipment back. *)
 Record Tracker := {
   R : nat -> Stt -> Stt -> Prop;
-  cn : bool_cond -> nat;
-  sn : simple_outcome -> nat -> nat;
-  ln : slot -> nat;
-  tn : item -> nat -> nat;
-  bn : item -> nat -> nat -> nat;
-  en : item -> nat -> nat -> nat;
-  cw : nat;
-  rn : nat;
+  need_cond : bool_cond -> nat;
+  need_simple : simple_outcome -> nat -> nat;
+  need_held : slot -> nat;
+  need_take : item -> nat -> nat;
+  need_buy : item -> nat -> nat -> nat;
+  need_sell : item -> nat -> nat -> nat;
+  need_cartwheel : nat;
+  need_retrieve : nat;
 
   R_mono : forall m n s t, m <= n -> R n s t -> R m s t;
   R_top : forall n m s t, ALL <= n -> ALL <= m -> R n s t -> R m s t;
@@ -82,33 +85,33 @@ Record Tracker := {
   R_set_had : forall n s t, R n s t -> R n (update_flags (s_set HadCombat) s) (update_flags (s_set HadCombat) t);
   R_unset_had : forall n s t, R n s t -> R n (update_flags (s_unset HadCombat) s) (update_flags (s_unset HadCombat) t);
   R_unset_pot : forall n s t, R n s t -> R n (unset_potions s) (unset_potions t);
-  R_simple : forall so a n s t, sn so a <= n -> R n s t -> R a (update_simple s so) (update_simple t so);
-  R_cond : forall c n s t, cn c <= n -> R n s t -> check_cond s c = check_cond t c;
-  R_held : forall sl n s t, ln sl <= n -> R n s t -> held_items sl s = held_items sl t;
-  R_all_held : forall n s t, rn <= n -> R n s t -> all_held_items s = all_held_items t;
-  R_take : forall i a n s t, tn i a <= n -> R n s t -> tcan_take i s = tcan_take i t;
-  R_buy : forall i p a n s t, bn i p a <= n -> R n s t ->
+  R_simple : forall so a n s t, need_simple so a <= n -> R n s t -> R a (update_simple s so) (update_simple t so);
+  R_cond : forall c n s t, need_cond c <= n -> R n s t -> check_cond s c = check_cond t c;
+  R_held : forall sl n s t, need_held sl <= n -> R n s t -> held_items sl s = held_items sl t;
+  R_all_held : forall n s t, need_retrieve <= n -> R n s t -> all_held_items s = all_held_items t;
+  R_take : forall i a n s t, need_take i a <= n -> R n s t -> tcan_take i s = tcan_take i t;
+  R_buy : forall i p a n s t, need_buy i p a <= n -> R n s t ->
       Nat.leb p (sitems Gold s) = Nat.leb p (sitems Gold t) /\ tcan_take i s = tcan_take i t;
-  R_sell : forall i p a n s t, en i p a <= n -> R n s t -> Nat.ltb 0 (sitems i s) = Nat.ltb 0 (sitems i t);
-  R_cw : forall n s t, cw <= n -> R n s t -> sitems Gold s = sitems Gold t;
+  R_sell : forall i p a n s t, need_sell i p a <= n -> R n s t -> Nat.ltb 0 (sitems i s) = Nat.ltb 0 (sitems i t);
+  R_cartwheel : forall n s t, need_cartwheel <= n -> R n s t -> sitems Gold s = sitems Gold t;
 
-  sn_mono : forall so a b, a <= b -> sn so a <= sn so b;
-  sn_ext : forall so a, a <= sn so a;
-  sn_rule : forall so a, rule_effect so = true -> sn so a = a;
-  sn_slot : forall sl i a, In i (slot_items sl) -> sn (LoseItem i 1) a <= Nat.max (ln sl) a;
-  sn_drop : forall i s lst l a, tcan_take i s = MustDrop lst -> In l lst -> sn (LoseItem l 1) a = a;
-  sn_cw : forall v a, sn (LoseItemKind [SPouch]) (sn (GainItem Gold v) a) <= Nat.max cw a;
+  need_simple_mono : forall so a b, a <= b -> need_simple so a <= need_simple so b;
+  need_simple_ext : forall so a, a <= need_simple so a;
+  need_simple_rule : forall so a, rule_effect so = true -> need_simple so a = a;
+  need_simple_slot : forall sl i a, In i (slot_items sl) -> need_simple (LoseItem i 1) a <= Nat.max (need_held sl) a;
+  need_simple_drop : forall i s lst l a, tcan_take i s = MustDrop lst -> In l lst -> need_simple (LoseItem l 1) a = a;
+  need_simple_cartwheel : forall v a, need_simple (LoseItemKind [SPouch]) (need_simple (GainItem Gold v) a) <= Nat.max need_cartwheel a;
 
-  tn_ext : forall i a, a <= tn i a;
-  tn_mono : forall i a b, a <= b -> tn i a <= tn i b;
-  tn_idem : forall i a, tn i (tn i a) <= tn i a;
-  tn_gain : forall i q a, sn (GainItem i q) a <= tn i a;
-  bn_ext : forall i p a, a <= bn i p a;
-  bn_gain : forall i p a, sn (LoseItem Gold p) (sn (GainItem i 1) a) <= bn i p a;
-  en_ext : forall i p a, a <= en i p a;
-  en_gain : forall i p a, sn (LoseItem i 1) (sn (GainItem Gold p) a) <= en i p a;
-  rn_tn : forall i a, rn < ALL -> tn i a = a;
-  rn_sn : forall a, rn < ALL -> sn RetrieveEquipment a = a;
+  need_take_ext : forall i a, a <= need_take i a;
+  need_take_mono : forall i a b, a <= b -> need_take i a <= need_take i b;
+  need_take_idem : forall i a, need_take i (need_take i a) <= need_take i a;
+  need_take_gain : forall i q a, need_simple (GainItem i q) a <= need_take i a;
+  need_buy_ext : forall i p a, a <= need_buy i p a;
+  need_buy_gain : forall i p a, need_simple (LoseItem Gold p) (need_simple (GainItem i 1) a) <= need_buy i p a;
+  need_sell_ext : forall i p a, a <= need_sell i p a;
+  need_sell_gain : forall i p a, need_simple (LoseItem i 1) (need_simple (GainItem Gold p) a) <= need_sell i p a;
+  need_retrieve_take : forall i a, need_retrieve < ALL -> need_take i a = a;
+  need_retrieve_simple : forall a, need_retrieve < ALL -> need_simple RetrieveEquipment a = a;
 }.
 
 Section Sim.
@@ -121,10 +124,10 @@ Section Sim.
     | Fight fd n => Nat.max (lmax ch (mods_dests (fd_mods fd))) (co_need n)
     | OneRound _ a b c => Nat.max (co_need a) (Nat.max (co_need b) (co_need c))
     | Randomly l => fold_right (fun x acc => Nat.max (co_need (fst x)) acc) 0 l
-    | Conditionally l => fold_right (fun x acc => Nat.max (Nat.max (cn T (fst x)) (co_need (snd x))) acc) 0 l
-    | Simple l n => fold_right (sn T) (co_need n) l
+    | Conditionally l => fold_right (fun x acc => Nat.max (Nat.max (need_cond T (fst x)) (co_need (snd x))) acc) 0 l
+    | Simple l n => fold_right (need_simple T) (co_need n) l
     | Goto c => ch c
-    | LoseItemFrom sl _ n => Nat.max (ln T sl) (co_need n)
+    | LoseItemFrom sl _ n => Nat.max (need_held T sl) (co_need n)
     | GameLost => 0
     | GameWon => wn
     | EnterFight _ c => ch c
@@ -134,21 +137,21 @@ Section Sim.
   Fixpoint dec_need (d: decision) : nat :=
     match d with
     | App a b => Nat.max (dec_need a) (dec_need b)
-    | retrieve_equipment n => Nat.max (rn T) (dec_need n)
-    | can_take i _ n => tn T i (dec_need n)
-    | can_buy i p n => bn T i p (dec_need n)
-    | can_sell i p n => en T i p (dec_need n)
-    | conditional c n => Nat.max (cn T c) (dec_need n)
-    | special Cartwheel => Nat.max (cw T) (Nat.max (ch 169) (ch 136))
+    | retrieve_equipment n => Nat.max (need_retrieve T) (dec_need n)
+    | can_take i _ n => need_take T i (dec_need n)
+    | can_buy i p n => need_buy T i p (dec_need n)
+    | can_sell i p n => need_sell T i p (dec_need n)
+    | conditional c n => Nat.max (need_cond T c) (dec_need n)
+    | special Cartwheel => Nat.max (need_cartwheel T) (Nat.max (ch 169) (ch 136))
     | special Portholes => ch 197
     | special B05S127 => Nat.max (ch 159) (ch 93)
     | none o => co_need o
     | evade_fight _ _ _ _ => 0
     | after_combat n => dec_need n
-    | remove_item_from sl _ n => Nat.max (ln T sl) (dec_need n)
+    | remove_item_from sl _ n => Nat.max (need_held T sl) (dec_need n)
     end.
 
-  Lemma apply_same: forall sos a n s t, fold_right (sn T) a sos <= n -> R T n s t ->
+  Lemma apply_same: forall sos a n s t, fold_right (need_simple T) a sos <= n -> R T n s t ->
     R T a (apply_effects s sos) (apply_effects t sos).
   Proof.
     unfold apply_effects. induction sos as [|so q IH]; intros a n s t L H; simpl in *.
@@ -156,23 +159,23 @@ Section Sim.
     - eapply IH; [apply le_n|]. eapply R_simple; eauto.
   Qed.
 
-  Lemma fold_mono: forall sos a b, a <= b -> fold_right (sn T) a sos <= fold_right (sn T) b sos.
+  Lemma fold_mono: forall sos a b, a <= b -> fold_right (need_simple T) a sos <= fold_right (need_simple T) b sos.
   Proof.
-    induction sos; intros; simpl; auto. apply sn_mono. auto.
+    induction sos; intros; simpl; auto. apply need_simple_mono. auto.
   Qed.
 
-  Lemma fold_ext: forall sos a, a <= fold_right (sn T) a sos.
+  Lemma fold_ext: forall sos a, a <= fold_right (need_simple T) a sos.
   Proof.
-    induction sos; intros; simpl; auto. eapply Nat.le_trans; [apply IHsos|apply sn_ext].
+    induction sos; intros; simpl; auto. eapply Nat.le_trans; [apply IHsos|apply need_simple_ext].
   Qed.
 
-  Definition le' (x n: nat) := x <= n \/ ALL <= n.
+  Definition le_or_all (x n: nat) := x <= n \/ ALL <= n.
 
   Variable f: next_step -> Qc.
   Hypothesis fN: forall x y, R T (ch (chapter x)) x y -> f (New x) = f (New y).
   Hypothesis fW: forall x y, R T wn x y -> f (Won x) = f (Won y).
 
-  Lemma af_core: forall (rec1 rec2: Stt -> chapter_outcome -> Proba next_step) s t n mds nco nhp,
+  Lemma after_fight_core: forall (rec1 rec2: Stt -> chapter_outcome -> Proba next_step) s t n mds nco nhp,
     R T n s t -> lmax ch (mods_dests mds) <= n -> co_need nco <= n ->
     (forall a x y o, co_need o <= a -> R T a x y -> ev f (rec1 x o) = ev f (rec2 y o)) ->
     let af (rec: Stt -> chapter_outcome -> Proba next_step) (stt: Stt) :=
@@ -199,7 +202,7 @@ Section Sim.
       eapply REC; [exact HC|]. apply R_endur; [reflexivity|assumption].
   Qed.
 
-  Lemma af_same: forall rec1 rec2 s t n mds co te,
+  Lemma after_fight_same: forall rec1 rec2 s t n mds co te,
     R T n s t -> te_dest_in mds te -> lmax ch (mods_dests mds) <= n -> co_need co <= n ->
     (forall a x y o, co_need o <= a -> R T a x y -> ev f (rec1 x o) = ev f (rec2 y o)) ->
     ev f (after_fight rec1 s mds co te) = ev f (after_fight rec2 t mds co te).
@@ -207,7 +210,7 @@ Section Sim.
     intros rec1 rec2 s t n mds co te HR HI HL HC REC.
     assert (forall c, In c (mods_dests mds) -> co_need (Goto c) <= n) as HG.
     { intros c I. simpl. eapply Nat.le_trans; [|exact HL]. apply lmax_le. assumption. }
-    unfold after_fight. destruct te; simpl in HI; eapply af_core; eauto.
+    unfold after_fight. destruct te; simpl in HI; eapply after_fight_core; eauto.
   Qed.
 
   Lemma ev_update: forall fuel s t o n, co_need o <= n -> R T n s t ->
@@ -223,7 +226,7 @@ Section Sim.
             = ev f (merge_probas (map (fun tep : TEscaped * Qc => let (te, p) := tep in (p, after_fight (s_update_d md) t mds co te)) (fight t osk opphp mds)))).
       rewrite <- (fight_same _ _ osk opphp mds (R_fight _ _ _ _ HR)).
       apply ev_merge_map2. intros [te p] I. simpl. split; [reflexivity|].
-      eapply af_same; eauto; try lia.
+      eapply after_fight_same; eauto; try lia.
       apply (fight_dests s osk opphp). apply (in_map fst) in I. exact I.
     - (* OneRound *)
       destruct fd as [osk opphp mds]. simpl in HN.
@@ -236,9 +239,9 @@ Section Sim.
       eapply IH; [|exact HR].
       eapply Nat.le_trans; [|exact HN]. exact (lmax_le (fun x => co_need (fst x)) lst (co, p) I).
     - (* Conditionally *)
-      assert (forall x, In x lst -> Nat.max (cn T (fst x)) (co_need (snd x)) <= n) as HL.
+      assert (forall x, In x lst -> Nat.max (need_cond T (fst x)) (co_need (snd x)) <= n) as HL.
       { intros x I. eapply Nat.le_trans; [|exact HN].
-        exact (lmax_le (fun x => Nat.max (cn T (fst x)) (co_need (snd x))) lst x I). }
+        exact (lmax_le (fun x => Nat.max (need_cond T (fst x)) (co_need (snd x))) lst x I). }
       assert (filter (fun kv => check_cond s (fst kv)) lst = filter (fun kv => check_cond t (fst kv)) lst) as FE.
       { apply filter_ext_in. intros x I. eapply R_cond; [|exact HR]. specialize (HL x I). lia. }
       assert (forall c co q, filter (fun kv => check_cond t (fst kv)) lst = (c, co) :: q -> In (c, co) lst) as IL.
@@ -278,8 +281,8 @@ Section Sim.
           eapply R_simple; [|exact HR].
           assert (In (i, amnt) (held_items sl s)) as I2 by (rewrite HH; exact I).
           pose proof (held_in_slot _ _ _ I2) as IS. simpl in IS.
-          pose proof (sn_slot T sl i (co_need (LoseItemFrom sl nq co)) IS) as SL.
-          change (co_need (LoseItemFrom sl nq co)) with (Nat.max (ln T sl) (co_need co)) in *. lia.
+          pose proof (need_simple_slot T sl i (co_need (LoseItemFrom sl nq co)) IS) as SL.
+          change (co_need (LoseItemFrom sl nq co)) with (Nat.max (need_held T sl) (co_need co)) in *. lia.
     - (* GameLost *)
       reflexivity.
     - (* GameWon *)
@@ -294,7 +297,7 @@ Section Sim.
       + change (ev f (merge_probas (map (fun tep : TEscaped * Qc => let (te, p) := tep in (p, after_fight (s_update_d md) s mds co te)) (fst (one_round s osk opphp mds))))
               = ev f (merge_probas (map (fun tep : TEscaped * Qc => let (te, p) := tep in (p, after_fight (s_update_d md) t mds co te)) (fst (one_round s osk opphp mds))))).
         apply ev_merge_map2. intros [te p] I. simpl. split; [reflexivity|].
-        eapply af_same; eauto; try lia.
+        eapply after_fight_same; eauto; try lia.
         apply (one_round_ok s osk opphp). apply (in_map fst) in I. exact I.
       + apply ev_map_same. intros [[lw op] p] I. simpl. split; [reflexivity|].
         apply fN. simpl. apply R_goto.
@@ -307,7 +310,7 @@ Section Sim.
         lia.
   Qed.
 
-  Lemma le'_up: forall sos x a n, le' x a -> fold_right (sn T) a sos <= n -> le' (fold_right (sn T) x sos) n.
+  Lemma le_or_all_up: forall sos x a n, le_or_all x a -> fold_right (need_simple T) a sos <= n -> le_or_all (fold_right (need_simple T) x sos) n.
   Proof.
     intros sos x a n [H|H] L.
     - left. eapply Nat.le_trans; [apply fold_mono; exact H|exact L].
@@ -315,40 +318,40 @@ Section Sim.
   Qed.
 
   Definition FlatOk (fl: nat) (n: nat) (s t: Stt) (d: decision) : Prop :=
-    flatten_d fl s d = flatten_d fl t d /\ forall o, In o (flatten_d fl s d) -> le' (co_need o) n.
+    flatten_d fl s d = flatten_d fl t d /\ forall o, In o (flatten_d fl s d) -> le_or_all (co_need o) n.
 
   Lemma with_effect_ok: forall fl sos nxt n s t,
     (forall m x y d, dec_need d <= m -> R T m x y -> FlatOk fl m x y d) ->
-    fold_right (sn T) (dec_need nxt) sos <= n -> R T n s t ->
+    fold_right (need_simple T) (dec_need nxt) sos <= n -> R T n s t ->
     map (Simple sos) (flatten_d fl (apply_effects s sos) nxt) = map (Simple sos) (flatten_d fl (apply_effects t sos) nxt)
-    /\ forall o, In o (map (Simple sos) (flatten_d fl (apply_effects s sos) nxt)) -> le' (co_need o) n.
+    /\ forall o, In o (map (Simple sos) (flatten_d fl (apply_effects s sos) nxt)) -> le_or_all (co_need o) n.
   Proof.
     intros fl sos nxt n s t IH L HR.
     destruct (IH (dec_need nxt) _ _ nxt (le_n _) (apply_same _ _ _ _ _ L HR)) as [E M].
     split.
     - rewrite E. reflexivity.
     - intros o I. apply in_map_iff in I. destruct I as [x [X J]]. subst. simpl.
-      eapply le'_up; [apply M; exact J|exact L].
+      eapply le_or_all_up; [apply M; exact J|exact L].
   Qed.
 
   Lemma app_ok: forall (a b c d: list chapter_outcome) n,
-    a = b -> c = d -> (forall o, In o a -> le' (co_need o) n) -> (forall o, In o c -> le' (co_need o) n) ->
-    a ++ c = b ++ d /\ forall o, In o (a ++ c) -> le' (co_need o) n.
+    a = b -> c = d -> (forall o, In o a -> le_or_all (co_need o) n) -> (forall o, In o c -> le_or_all (co_need o) n) ->
+    a ++ c = b ++ d /\ forall o, In o (a ++ c) -> le_or_all (co_need o) n.
   Proof.
     intros. subst. split; auto. intros o I. apply in_app_iff in I. destruct I; auto.
   Qed.
 
   Lemma app_ok2: forall (a b c d: list chapter_outcome) n,
-    a = b -> (forall o, In o a -> le' (co_need o) n) ->
-    (c = d /\ forall o, In o c -> le' (co_need o) n) ->
-    a ++ c = b ++ d /\ forall o, In o (a ++ c) -> le' (co_need o) n.
+    a = b -> (forall o, In o a -> le_or_all (co_need o) n) ->
+    (c = d /\ forall o, In o c -> le_or_all (co_need o) n) ->
+    a ++ c = b ++ d /\ forall o, In o (a ++ c) -> le_or_all (co_need o) n.
   Proof.
     intros a b c d n E M [E2 M2]. apply app_ok; auto.
   Qed.
 
   Lemma flat_map_ok {A: Type}: forall (l: list A) (g h: A -> list chapter_outcome) n,
-    (forall a, In a l -> g a = h a /\ forall o, In o (g a) -> le' (co_need o) n) ->
-    flat_map g l = flat_map h l /\ forall o, In o (flat_map g l) -> le' (co_need o) n.
+    (forall a, In a l -> g a = h a /\ forall o, In o (g a) -> le_or_all (co_need o) n) ->
+    flat_map g l = flat_map h l /\ forall o, In o (flat_map g l) -> le_or_all (co_need o) n.
   Proof.
     induction l as [|a l IH]; intros g h n P; simpl.
     - split; auto. intros o [].
@@ -357,12 +360,12 @@ Section Sim.
       apply app_ok; auto.
   Qed.
 
-  Lemma cartwheel_choice_need: forall g tgt, co_need (cartwheel_choice g tgt) <= Nat.max (cw T) (Nat.max (ch 169) (ch 136)).
+  Lemma cartwheel_choice_need: forall g tgt, co_need (cartwheel_choice g tgt) <= Nat.max (need_cartwheel T) (Nat.max (ch 169) (ch 136)).
   Proof.
     intros. unfold cartwheel_choice. generalize (cartwheel_with_token g tgt). intro l.
     induction l as [|[v p] l IH]; simpl; [lia|].
     apply Nat.max_lub; [|exact IH].
-    eapply Nat.le_trans; [apply sn_cw|].
+    eapply Nat.le_trans; [apply need_simple_cartwheel|].
     destruct (v <? cartwheel_fare); lia.
   Qed.
 
@@ -388,21 +391,21 @@ Section Sim.
       apply in_rev in J. apply filter_In in J. tauto.
   Qed.
 
-  Lemma fold_take_need: forall (l: list (item * nat)) nxt, rn T < ALL ->
+  Lemma fold_take_need: forall (l: list (item * nat)) nxt, need_retrieve T < ALL ->
     dec_need (fold_left (fun acc (iq: item * nat) => can_take (fst iq) (snd iq) acc) l nxt) = dec_need nxt.
   Proof.
-    induction l as [|x l IH]; intros nxt S; simpl; auto. rewrite IH by assumption. simpl. apply rn_tn. assumption.
+    induction l as [|x l IH]; intros nxt S; simpl; auto. rewrite IH by assumption. simpl. apply need_retrieve_take. assumption.
   Qed.
 
   Lemma flatten_same: forall fl n s t d, dec_need d <= n -> R T n s t -> FlatOk fl n s t d.
   Proof.
     induction fl as [|fl IH]; intros n s t d HN HR.
     { split; [reflexivity|intros o []]. }
-    assert (forall sos nxt, fold_right (sn T) (dec_need nxt) sos <= n ->
+    assert (forall sos nxt, fold_right (need_simple T) (dec_need nxt) sos <= n ->
       map (Simple sos) (flatten_d fl (apply_effects s sos) nxt) = map (Simple sos) (flatten_d fl (apply_effects t sos) nxt)
-      /\ forall o, In o (map (Simple sos) (flatten_d fl (apply_effects s sos) nxt)) -> le' (co_need o) n) as WE.
+      /\ forall o, In o (map (Simple sos) (flatten_d fl (apply_effects s sos) nxt)) -> le_or_all (co_need o) n) as WE.
     { intros. eapply with_effect_ok; eauto. }
-    assert (forall so x, rule_effect so = true -> sn T so x = x) as RU by (intros; apply sn_rule; assumption).
+    assert (forall so x, rule_effect so = true -> need_simple T so x = x) as RU by (intros; apply need_simple_rule; assumption).
     assert (forall d2, dec_need d2 <= n -> FlatOk fl n s t d2) as NX by (intros; apply IH; auto).
     unfold FlatOk. cbn [flatten_d].
     rewrite (R_poison _ _ _ _ HR), (R_potion _ n s t Laumspur ltac:(simpl; tauto) HR).
@@ -416,52 +419,52 @@ Section Sim.
       rewrite (R_all_held T n s t ltac:(lia) HR).
       match goal with |- context [map (Simple [RetrieveEquipment]) (flatten_d fl (apply_effects t [RetrieveEquipment]) ?nd)] =>
         set (ndec := nd) end.
-      destruct (Nat.le_gt_cases ALL (rn T)) as [BIG|SM].
-      2: { apply WE. simpl. unfold ndec. rewrite rn_sn by assumption. rewrite fold_take_need by assumption. lia. }
+      destruct (Nat.le_gt_cases ALL (need_retrieve T)) as [BIG|SM].
+      2: { apply WE. simpl. unfold ndec. rewrite need_retrieve_simple by assumption. rewrite fold_take_need by assumption. lia. }
       assert (ALL <= n) as AN by lia.
-      set (n2 := sn T RetrieveEquipment (Nat.max n (dec_need ndec))).
-      assert (Nat.max n (dec_need ndec) <= n2) as N2 by apply sn_ext.
+      set (n2 := need_simple T RetrieveEquipment (Nat.max n (dec_need ndec))).
+      assert (Nat.max n (dec_need ndec) <= n2) as N2 by apply need_simple_ext.
       assert (R T n2 s t) as R2 by (eapply R_top; [exact AN| |exact HR]; lia).
       destruct (with_effect_ok fl [RetrieveEquipment] ndec n2 s t) as [E M].
       + intros. apply IH; auto.
-      + simpl. apply sn_mono. lia.
+      + simpl. apply need_simple_mono. lia.
       + exact R2.
       + split; [exact E|]. intros x I. right. exact AN.
     - (* can_take *)
       destruct (eq_dec i Gold) as [EG|NG].
-      { subst i. apply WE. simpl. eapply Nat.le_trans; [apply tn_gain|exact HN]. }
-      assert (dec_need nxt <= n) as HA by (eapply Nat.le_trans; [apply tn_ext|exact HN]).
+      { subst i. apply WE. simpl. eapply Nat.le_trans; [apply need_take_gain|exact HN]. }
+      assert (dec_need nxt <= n) as HA by (eapply Nat.le_trans; [apply need_take_ext|exact HN]).
       destruct i; try congruence;
       (destruct q as [|[|q]];
       [ apply NX; exact HA
       | rewrite (R_take T _ (dec_need nxt) n s t HN HR), (R_book _ _ _ _ HR);
         match goal with |- context [tcan_take ?it t] => destruct (tcan_take it t) as [|lst|] eqn: TC end;
-        [ apply WE; simpl; eapply Nat.le_trans; [apply tn_gain|exact HN]
+        [ apply WE; simpl; eapply Nat.le_trans; [apply need_take_gain|exact HN]
         | destruct (NX nxt HA) as [E1 M1]; apply app_ok2; auto; apply flat_map_ok;
           intros l Il; (destruct (_ <? backpack_slots _ _)%nat;
-            [ apply WE; simpl; rewrite (sn_drop T _ t lst l _ TC Il); exact HN
+            [ apply WE; simpl; rewrite (need_simple_drop T _ t lst l _ TC Il); exact HN
             | destruct (order.eqb l _);
               [ split; [reflexivity|intros x []]
-              | apply WE; simpl; rewrite (sn_drop T _ t lst l _ TC Il); eapply Nat.le_trans; [apply tn_gain|exact HN]]])
+              | apply WE; simpl; rewrite (need_simple_drop T _ t lst l _ TC Il); eapply Nat.le_trans; [apply need_take_gain|exact HN]]])
         | apply NX; exact HA ]
-      | apply NX; simpl; eapply Nat.le_trans; [apply tn_idem|exact HN] ]).
+      | apply NX; simpl; eapply Nat.le_trans; [apply need_take_idem|exact HN] ]).
     - (* can_buy *)
-      assert (dec_need nxt <= n) as HA by (eapply Nat.le_trans; [apply bn_ext|exact HN]).
+      assert (dec_need nxt <= n) as HA by (eapply Nat.le_trans; [apply need_buy_ext|exact HN]).
       destruct (R_buy T i p _ n s t HN HR) as [BG BT].
       rewrite BG, BT. destruct (NX nxt HA) as [E1 M1].
       destruct (p <=? sitems Gold t)%nat.
       + destruct (tcan_take i t) as [|lst|] eqn: TC.
-        * edestruct (WE [LoseItem Gold p; GainItem i 1] nxt) as [E2 M2]; [simpl; eapply Nat.le_trans; [apply bn_gain|exact HN]|].
+        * edestruct (WE [LoseItem Gold p; GainItem i 1] nxt) as [E2 M2]; [simpl; eapply Nat.le_trans; [apply need_buy_gain|exact HN]|].
           apply app_ok; auto.
-        * apply app_ok2; auto. apply flat_map_ok. intros l Il. apply WE. simpl. rewrite (sn_drop T _ t lst l _ TC Il).
-          eapply Nat.le_trans; [apply bn_gain|exact HN].
+        * apply app_ok2; auto. apply flat_map_ok. intros l Il. apply WE. simpl. rewrite (need_simple_drop T _ t lst l _ TC Il).
+          eapply Nat.le_trans; [apply need_buy_gain|exact HN].
         * apply app_ok; auto. intros x [].
       + apply app_ok; auto. intros x [].
     - (* can_sell *)
-      assert (dec_need nxt <= n) as HA by (eapply Nat.le_trans; [apply en_ext|exact HN]).
+      assert (dec_need nxt <= n) as HA by (eapply Nat.le_trans; [apply need_sell_ext|exact HN]).
       rewrite (R_sell T i p _ n s t HN HR). destruct (NX nxt HA) as [E1 M1].
       destruct (0 <? sitems i t)%nat.
-      + edestruct (WE [LoseItem i 1; GainItem Gold p] nxt) as [E2 M2]; [simpl; eapply Nat.le_trans; [apply en_gain|exact HN]|].
+      + edestruct (WE [LoseItem i 1; GainItem Gold p] nxt) as [E2 M2]; [simpl; eapply Nat.le_trans; [apply need_sell_gain|exact HN]|].
         apply app_ok; auto.
       + apply app_ok; auto. intros x [].
     - (* conditional *)
@@ -471,7 +474,7 @@ Section Sim.
     - (* special *)
       destruct sp; cbn [dec_need] in HN.
       + (* Cartwheel *)
-        rewrite (R_cw T n s t ltac:(lia) HR).
+        rewrite (R_cartwheel T n s t ltac:(lia) HR).
         assert (forall tgt, dec_need (none (cartwheel_choice (sitems Gold t) tgt)) <= n) as HC.
         { intro tgt. simpl. eapply Nat.le_trans; [apply cartwheel_choice_need|exact HN]. }
         destruct (NX (none (Goto 136))) as [E1 M1]; [simpl; lia|].
@@ -513,7 +516,7 @@ Section Sim.
       intros [[u i] h] J. cbn beta iota. apply WE.
       apply drink_sub in J. apply filter_In in J. destruct J as [J _].
       specialize (PL _ J). simpl in PL. simpl.
-      rewrite RU by reflexivity. rewrite sn_rule; [exact HN|].
+      rewrite RU by reflexivity. rewrite need_simple_rule; [exact HN|].
       repeat (destruct PL as [PL|PL]; [subst; reflexivity|]). destruct PL.
     - (* remove_item_from *)
       assert (dec_need nxt <= n) as HA by lia.
@@ -522,7 +525,7 @@ Section Sim.
       destruct (held_items sl t) as [|x tl] eqn: E; [apply NX; exact HA|].
       apply flat_map_ok. intros iq J. apply WE. simpl.
       assert (In iq (held_items sl s)) as J2 by (rewrite HH; exact J).
-      pose proof (sn_slot T sl (fst iq) (Nat.max (ln T sl) (dec_need nxt)) (held_in_slot _ _ _ J2)). lia.
+      pose proof (need_simple_slot T sl (fst iq) (Nat.max (need_held T sl) (dec_need nxt)) (held_in_slot _ _ _ J2)). lia.
   Qed.
 End Sim.
 

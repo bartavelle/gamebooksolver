@@ -45,10 +45,10 @@ Proof.
   - split; reflexivity.
 Qed.
 
-Lemma keep_need: forall so a, keeps so -> gold_sn so a = a.
+Lemma keep_need: forall so a, keeps so -> gold_simple_need so a = a.
 Proof.
   intros so a K. destruct so; simpl in K; try contradiction; try reflexivity.
-  cbn [gold_sn]. rewrite beq_gold; auto.
+  cbn [gold_simple_need]. rewrite beq_gold; auto.
 Qed.
 
 Section Retrieve.
