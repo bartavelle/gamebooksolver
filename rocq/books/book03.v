@@ -392,7 +392,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (411%nat,none (Fight (Details ((14)%Z)%Z 25%nat []) (Goto 412%nat)));
   (412%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 340%nat))));
   (296%nat,none (Simple [SetFlag HadCombat] (Goto 413%nat)));
-  (413%nat,none (Fight (Details ((17)%Z)%Z 30%nat []) (Goto 414%nat)));
+  (413%nat,none (Fight (Details ((17)%Z)%Z 30%nat [Timed 3%nat (StopFight 414%nat)]) (Goto 414%nat)));
   (414%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 173%nat))));
   (304%nat,none (Simple [SetFlag HadCombat] (Goto 415%nat)));
   (415%nat,none (Fight (Details ((22)%Z)%Z 30%nat [MindblastImmune; EnemyMindblast; Undead]) (Goto 416%nat)));

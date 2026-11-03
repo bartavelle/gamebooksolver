@@ -13294,7 +13294,16 @@
             {
               "fcombatSkill": 17,
               "fendurance": 30,
-              "fightMod": [],
+              "fightMod": [
+                {
+                  "Timed": [
+                    3,
+                    {
+                      "StopFight": 414
+                    }
+                  ]
+                }
+              ],
               "opponent": "Ice Barbarians"
             },
             {
