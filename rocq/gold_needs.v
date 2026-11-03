@@ -63,3 +63,19 @@ Proof.
   destruct d; try (left; exact OK).
   right. apply retrieve_top; [eapply Nat.le_trans; [apply Nat.le_max_l|exact OK]|eapply Nat.le_trans; [apply Nat.le_max_r|exact OK]].
 Qed.
+
+(* A book that never looks at the gold *)
+(* Book 4 never looks at the gold: all its starts are the same as far as gold goes. *)
+Definition gold_unread_in (chapters: list (cid * decision)) : bool :=
+  forallb (fun cd : cid * decision => Nat.eqb (dec_need gold_tracker (fun _ => 0) 0 (snd cd)) 0) chapters.
+
+Lemma gold_unread_same: forall chapters score,
+  gold_unread_in chapters = true ->
+  (forall s t, GoldR 0 s t -> score s = score t) ->
+  forall fuel s t, GoldR 0 s t -> value chapters score fuel s = value chapters score fuel t.
+Proof.
+  intros chapters score U HS fuel s t H.
+  apply (value_same gold_tracker (fun _ => 0) 0 chapters score HS); auto.
+  intros c d Fd. apply find_chapter_in in Fd.
+  unfold gold_unread_in in U. rewrite forallb_forall in U. specialize (U _ Fd). apply Nat.eqb_eq in U. simpl in U. rewrite U. apply Nat.le_0_l.
+Qed.

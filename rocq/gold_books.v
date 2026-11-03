@@ -1,5 +1,6 @@
-(* The tables of gold_tables.v are checked on the five books: no chapter needs more gold than what they say. *)
-Require Import character chapters mps rules value simulation gold_relation gold_needs reads gold_tables.
+(* What the five books do with their gold. The tables of gold_tables.v are checked on the books: no chapter needs more
+   gold than what they say. *)
+Require Import character chapters mps rules value simulation gold_relation gold_needs books gold_tables.
 Require Import Stdlib.Lists.List.
 Import ListNotations.
 Require Import Stdlib.QArith.Qcanon.
@@ -37,3 +38,19 @@ Proof.
   apply (gold_needs_sound book3 0 score table3 table3_ok HS fuel s t).
   rewrite C, book3_start_needs. exact H.
 Qed.
+
+(* Book 4 never looks at the gold: all its starts are the same as far as gold goes. *)
+Theorem book4_gold_unread: gold_unread_in book4 = true.
+Proof. vm_compute. reflexivity. Qed.
+
+Corollary book4_gold_same: forall score,
+  (forall s t, GoldR 0 s t -> score s = score t) ->
+  forall fuel s t, GoldR 0 s t -> value book4 score fuel s = value book4 score fuel t.
+Proof.
+  intros score HS. exact (gold_unread_same book4 score book4_gold_unread HS).
+Qed.
+
+(* The check is not vacuous: book 3 reads the gold *)
+(* The checks are not vacuous: book 3 reads the gold, and these flags *)
+Example book3_gold_read: gold_unread_in book3 = false.
+Proof. vm_compute. reflexivity. Qed.

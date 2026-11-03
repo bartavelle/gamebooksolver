@@ -239,3 +239,18 @@ Section FlagSection.
     intros ch wn chapters score HS HB fuel s t H. exact (value_same flag_tracker ch wn chapters score HS HB fuel s t H).
   Qed.
 End FlagSection.
+
+(* A flag that a whole book never reads *)
+Definition flag_unread_in (chapters: list (cid * decision)) (f: flag) (H: rule_flag f = false) : bool :=
+  forallb (fun cd : cid * decision => Nat.eqb (dec_need (flag_tracker f H) (fun _ => 0) 0 (snd cd)) 0) chapters.
+
+Lemma flag_unread_same: forall chapters f H score,
+  flag_unread_in chapters f H = true ->
+  (forall s t, FlagR f 0 s t -> score s = score t) ->
+  forall fuel s t, FlagR f 0 s t -> value chapters score fuel s = value chapters score fuel t.
+Proof.
+  intros chapters f H score U HS fuel s t HR.
+  apply (flag_value_same f H (fun _ => 0) 0 chapters score HS); auto.
+  intros c d Fd. apply find_chapter_in in Fd.
+  unfold flag_unread_in in U. rewrite forallb_forall in U. specialize (U _ Fd). apply Nat.eqb_eq in U. simpl in U. rewrite U. apply Nat.le_0_l.
+Qed.
