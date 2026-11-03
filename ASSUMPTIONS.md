@@ -166,8 +166,8 @@ places, so each of these could lower a score if the missing choice were better.
 - **R15. The JSON differs from the XML on purpose, to avoid cycles.** Keep this when sound. **Decided.** Restoring these
   would create a cycle: Book 1 c36, c70, c125, c290, c323; Book 2 c47, c136, c172; Book 3 c181; Book 5 c67, c373. Whether
   each preserves the game is **Unverified**.
-- **R16. Other JSON differences from the XML are assumed sound.** Book 2 c160, c186, c200, c238, c265, c302; Book 3 c10,
-  c146, c164, c180. They create no cycle, and have not been reviewed. Book 2 c302 gave the same score on
+- **R16. Other JSON differences from the XML are assumed sound.** Book 2 c160, c186, c200, c238, c265, c302. They create no cycle, and have not been reviewed. Book 3 c10 and c146 were reviewed in
+  R28 and follow the book, and c164 and c180 were wrong and are fixed. Book 2 c302 gave the same score on
   five starts when set back to the book's 244, with 15% to 22% more states. **Open.**
 - **R23. Book 2 c40 and Book 3 c10 offer their item instead of forcing it.** **Decided** on 2026-11-03. The book gives the
   potion of c40 and the graveweed of c10 outright. They used to be added with no check, which could make 9 Backpack Items,
@@ -213,20 +213,30 @@ places, so each of these could lower a score if the missing choice were better.
   round", where that round is calculated and only Lone Wolf can lose Endurance. c14 and others allow evading "at any time", and
   a free escape before any blow is another possible reading. The solver and the separate calculation both play the round, so
   the check of O6 can't tell them apart. **Decided** by the user: keep the cautious reading.
-- **R28. Book 3 was compared with `project-aon/en/xml/03tcok.xml` on 2026-11-03, and does not follow it yet.** All sections are
-  accounted for, as c54, c77, c90, c156, c171, c177, c225, c233, c250, c268, c289 and c311 are merged into c10 and added chapters.
-  Fight statistics match. The sentences with a game term of 246 sections were read next to the JSON, and the other 104 have none.
-  **Open**, nothing is fixed. Differences from the book: c17 has the effects of c18 (3 Endurance and all weapons), and c18 has
-  none; c192 has the 2 Endurance loss of c193; c29 swaps the odds of c226 and c266; c36 swaps c124 and c264; c88 lacks the immunity
-  to Mind Blast; c116 keeps the Gem and the Laumspur; c129 lacks 3 Endurance without Baknar oil; c132 lacks 3 Endurance when
-  coming from c5 or c176 without eating; c164 lacks the limit of five rounds; c180 lacks the jump to c129 on damage; c210 does not
-  offer the Bone Sword; c260 lacks the two rounds without loss and the immunity to Mind Blast; c275 only tests Hunting, not Tracking
-  or Animal Kinship; c290 tests Sixth Sense or Aspirant, not Sixth Sense and Guardian; c296 does not stop after 3 rounds; c302 tests
-  Hunting, not Sixth Sense; c304 allows a potion; c331 costs 6 Endurance, not 4; c369 (the orange potion of c171) tests Healing or
-  Sixth Sense, not Sixth Sense or Weaponskill; the Rope takes 1 Backpack place, not 2. To decide: c83 (2 Endurance per round, where
-  the book may mean once), c32 (damage done to a Kalkoth before evading is not carried over), c15 (any Sword opens the lock, not
-  only a Bone Sword), c86 (any Weaponskill counts, not only with the weapon in use), and c173 (the Effigy is tested, the Sommerswerd is not).
-  c10, c146 and c152 were read and follow the book, apart from c369. This updates R16 for c10, c146, c164 and c180.
+- **R28. Book 3 was compared with `project-aon/en/xml/03tcok.xml` on 2026-11-03,** which is the authoritative text, and now
+  follows it apart from what is listed here. c54, c77, c90, c156, c171, c177, c225, c233, c250, c268, c289 and c311 are merged
+  into c10 and added chapters. Fight statistics match. The sentences with a game term of 246 sections were read next to the JSON,
+  and the other 104 have none. **Decided.** Fixed: c16 (the lost items are chosen), c17 and c18 (the effects of c18 were on c17),
+  c192 and c193 (the same), c29 (odds of c226 and c266 swapped), c36 (c124 and c264 swapped), c83, c88 (immune to Mind Blast),
+  c116 (discards the Gem and the Laumspur), c129 (3 Endurance without Baknar oil), c132, c164 (limit of five rounds), c180 (damage
+  goes to c129), c210 (the Bone Sword), c260 (two rounds without loss, immune to Mind Blast), c275 (Tracking and Animal Kinship too),
+  c290 (Sixth Sense and Guardian), c296 (stops after 3 rounds), c302 (Sixth Sense, not Hunting), c304 (no potion), c331 (4 Endurance,
+  not 6), c369 (the orange potion of c171 needs Sixth Sense or Weaponskill), and the Rope, which takes 2 Backpack places. Kept, as
+  no kit can tell them apart: c15 accepts any Sword where the book says a Bone Sword, as the kits start without one and Bone Swords
+  are the only ones in the book; c86 gives its bonus for any Weaponskill, where the book means the weapon in use, as the kits have
+  Weaponskill with the Sword, and a Dagger is never better to hold; c173 does not test the Sommerswerd, which all the kits have.
+  Results for Book 3 solved before these commits are out of date.
+- **R29. Book 3 c83 costs 2 Endurance once, not every round.** The book says "you lose 2 ENDURANCE points due to this attack",
+  without "for every round" as in c99 and c304. **Decided** by the user.
+- **R30. Book 3 c132 costs 3 Endurance when coming from c5 or c176.** The book says "Unless you have just eaten", and the only food
+  on the way is at c295 and c309. A Meal from the Backpack can't be eaten here, as the book does not offer it. **Decided**, the
+  cautious reading.
+- **R31. Damage done to a Kalkoth does not carry over to Book 3 c32.** The book carries it over from c138 and c263 after an evasion,
+  and the character state can't hold it, so that the JSON starts them with full Endurance. The user's assumption is that evading
+  there is a bad path, so that it can't change a result. With a win worth 1, replacing the fights of c32 by a free pass to c25, which
+  is better than any carried damage, changed no exact score on 21 cases (6 kits of 20 Endurance and skill 10, 15 weaker characters).
+  This says little: 20 of them score 100% either way, as Book 3 has a path with no risk of death at these statistics. The test that
+  matters uses the values of Book 4, and is still to be run once they are computed. **Open.**
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
@@ -280,8 +290,9 @@ the memory.
   have no such fight, and their evasions are not checked this way.
 - **O7. Scores only depend on what `get_boundary` lists.** A scorer that reads anything else gives wrong results, since the
   state may already be cleared. **Tested** by `what_scores_the_next_book_is_never_changed`.
-- **O8. Endurance can't overflow** on a doubled kill. **Proved** for the books in `rocq/proofs/no_overflow.v`, using the chapter
-  data.
+- **O8. Endurance can't overflow** on a doubled kill. This used to rest on no such fight being played round by round, **proved** in
+  `rocq/proofs/no_overflow.v`. The fix of Book 3 c164 added one, which that proof caught, so `Endurance::damage` now computes on a
+  larger type, and holds for any damage. **Tested** by `a_doubled_kill_is_still_a_kill`.
 - **O9. Reduced retention keeps the score.** It only frees states it can compute again. **Tested** by unchanged scores.
 
 ## 7. Numbers and results
