@@ -9,7 +9,8 @@ Require Import rules.
 Require Import value.
 Require Import fight_facts.
 Require Import simulation.
-Require Import gold.
+Require Import gold_items.
+Require Import gold_relation.
 Require Import Stdlib.Lists.List.
 Import ListNotations.
 Require Import Stdlib.Arith.Arith.

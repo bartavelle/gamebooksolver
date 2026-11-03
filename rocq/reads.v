@@ -1,7 +1,7 @@
 (* What the five books can't read, checked on the books as they are played, with the rounds of the fights added. Each
    theorem holds for any way of scoring the end of the book that doesn't look at what is ignored, so that it holds with
    the values of the following books as well. *)
-Require Import character chapters mps rules value simulation gold flags.
+Require Import character chapters mps rules value simulation gold_relation gold_needs flags.
 Require book01 book02 book03 book04 book05.
 Require Import Stdlib.Lists.List.
 Import ListNotations.
