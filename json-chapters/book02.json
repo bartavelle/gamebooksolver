@@ -10792,7 +10792,9 @@
           {
             "fcombatSkill": 10,
             "fendurance": 16,
-            "fightMod": [],
+            "fightMod": [
+              "MultiFight"
+            ],
             "opponent": "Villager 1"
           },
           {
@@ -10817,21 +10819,21 @@
     {
       "desc": "Dummy fight chapter 365",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 6,
-              "fendurance": 9,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Szall 1"
-            },
-            {
-              "Goto": 366
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          132,
+          {
+            "fcombatSkill": 6,
+            "fendurance": 9,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Szall 1"
+          },
+          {
+            "Goto": 366
+          }
+        ]
       },
       "title": "365"
     }
@@ -10841,21 +10843,21 @@
     {
       "desc": "Dummy fight chapter 366",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 11,
-              "fendurance": 14,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Villager 2"
-            },
-            {
-              "Goto": 367
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          132,
+          {
+            "fcombatSkill": 11,
+            "fendurance": 14,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Villager 2"
+          },
+          {
+            "Goto": 367
+          }
+        ]
       },
       "title": "366"
     }
@@ -10865,21 +10867,21 @@
     {
       "desc": "Dummy fight chapter 367",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 5,
-              "fendurance": 8,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Szall 2"
-            },
-            {
-              "Goto": 368
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          132,
+          {
+            "fcombatSkill": 5,
+            "fendurance": 8,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Szall 2"
+          },
+          {
+            "Goto": 368
+          }
+        ]
       },
       "title": "367"
     }
@@ -10889,19 +10891,19 @@
     {
       "desc": "Dummy fight chapter 368",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 11,
-              "fendurance": 17,
-              "fightMod": [],
-              "opponent": "Villager 3"
-            },
-            {
-              "Goto": 369
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          132,
+          {
+            "fcombatSkill": 11,
+            "fendurance": 17,
+            "fightMod": [],
+            "opponent": "Villager 3"
+          },
+          {
+            "Goto": 369
+          }
+        ]
       },
       "title": "368"
     }
@@ -11009,6 +11011,7 @@
             "fcombatSkill": 15,
             "fendurance": 23,
             "fightMod": [
+              "MultiFight",
               "BareHanded"
             ],
             "opponent": "Street Thief Leader"
@@ -11035,22 +11038,22 @@
     {
       "desc": "Dummy fight chapter 372",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 13,
-              "fendurance": 21,
-              "fightMod": [
-                "MultiFight",
-                "BareHanded"
-              ],
-              "opponent": "Street Thief 1"
-            },
-            {
-              "Goto": 373
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          121,
+          {
+            "fcombatSkill": 13,
+            "fendurance": 21,
+            "fightMod": [
+              "MultiFight",
+              "BareHanded"
+            ],
+            "opponent": "Street Thief 1"
+          },
+          {
+            "Goto": 373
+          }
+        ]
       },
       "title": "372"
     }
@@ -11060,21 +11063,21 @@
     {
       "desc": "Dummy fight chapter 373",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 13,
-              "fendurance": 20,
-              "fightMod": [
-                "BareHanded"
-              ],
-              "opponent": "Street Thief 2"
-            },
-            {
-              "Goto": 374
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          121,
+          {
+            "fcombatSkill": 13,
+            "fendurance": 20,
+            "fightMod": [
+              "BareHanded"
+            ],
+            "opponent": "Street Thief 2"
+          },
+          {
+            "Goto": 374
+          }
+        ]
       },
       "title": "373"
     }
@@ -11245,7 +11248,9 @@
           {
             "fcombatSkill": 17,
             "fendurance": 25,
-            "fightMod": [],
+            "fightMod": [
+              "MultiFight"
+            ],
             "opponent": "Drakkar 1"
           },
           {
@@ -11270,19 +11275,19 @@
     {
       "desc": "Dummy fight chapter 379",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 16,
-              "fendurance": 26,
-              "fightMod": [],
-              "opponent": "Drakkar 2"
-            },
-            {
-              "Goto": 380
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          286,
+          {
+            "fcombatSkill": 16,
+            "fendurance": 26,
+            "fightMod": [],
+            "opponent": "Drakkar 2"
+          },
+          {
+            "Goto": 380
+          }
+        ]
       },
       "title": "379"
     }
@@ -11622,7 +11627,9 @@
           {
             "fcombatSkill": 13,
             "fendurance": 22,
-            "fightMod": [],
+            "fightMod": [
+              "MultiFight"
+            ],
             "opponent": "Town Guard Sergeant"
           },
           {
@@ -11647,21 +11654,21 @@
     {
       "desc": "Dummy fight chapter 390",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 12,
-              "fendurance": 20,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Town Guard Corporal"
-            },
-            {
-              "Goto": 391
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          88,
+          {
+            "fcombatSkill": 12,
+            "fendurance": 20,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Town Guard Corporal"
+          },
+          {
+            "Goto": 391
+          }
+        ]
       },
       "title": "390"
     }
@@ -11671,21 +11678,21 @@
     {
       "desc": "Dummy fight chapter 391",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 11,
-              "fendurance": 19,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Town Guard 1"
-            },
-            {
-              "Goto": 392
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          88,
+          {
+            "fcombatSkill": 11,
+            "fendurance": 19,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Town Guard 1"
+          },
+          {
+            "Goto": 392
+          }
+        ]
       },
       "title": "391"
     }
@@ -11695,21 +11702,21 @@
     {
       "desc": "Dummy fight chapter 392",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 11,
-              "fendurance": 19,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Town Guard 2"
-            },
-            {
-              "Goto": 393
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          88,
+          {
+            "fcombatSkill": 11,
+            "fendurance": 19,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Town Guard 2"
+          },
+          {
+            "Goto": 393
+          }
+        ]
       },
       "title": "392"
     }
@@ -11719,21 +11726,21 @@
     {
       "desc": "Dummy fight chapter 393",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 10,
-              "fendurance": 18,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Town Guard 3"
-            },
-            {
-              "Goto": 394
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          88,
+          {
+            "fcombatSkill": 10,
+            "fendurance": 18,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Town Guard 3"
+          },
+          {
+            "Goto": 394
+          }
+        ]
       },
       "title": "393"
     }
@@ -11743,19 +11750,19 @@
     {
       "desc": "Dummy fight chapter 394",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 10,
-              "fendurance": 17,
-              "fightMod": [],
-              "opponent": "Town Guard 4"
-            },
-            {
-              "Goto": 395
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          88,
+          {
+            "fcombatSkill": 10,
+            "fendurance": 17,
+            "fightMod": [],
+            "opponent": "Town Guard 4"
+          },
+          {
+            "Goto": 395
+          }
+        ]
       },
       "title": "394"
     }
@@ -11795,6 +11802,7 @@
             "fcombatSkill": 15,
             "fendurance": 23,
             "fightMod": [
+              "MultiFight",
               "BareHanded"
             ],
             "opponent": "Street Thief Leader"
@@ -11821,22 +11829,22 @@
     {
       "desc": "Dummy fight chapter 396",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 13,
-              "fendurance": 21,
-              "fightMod": [
-                "MultiFight",
-                "BareHanded"
-              ],
-              "opponent": "Street Thief 1"
-            },
-            {
-              "Goto": 397
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          121,
+          {
+            "fcombatSkill": 13,
+            "fendurance": 21,
+            "fightMod": [
+              "MultiFight",
+              "BareHanded"
+            ],
+            "opponent": "Street Thief 1"
+          },
+          {
+            "Goto": 397
+          }
+        ]
       },
       "title": "396"
     }
@@ -11846,21 +11854,21 @@
     {
       "desc": "Dummy fight chapter 397",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 13,
-              "fendurance": 20,
-              "fightMod": [
-                "BareHanded"
-              ],
-              "opponent": "Street Thief 2"
-            },
-            {
-              "Goto": 398
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          121,
+          {
+            "fcombatSkill": 13,
+            "fendurance": 20,
+            "fightMod": [
+              "BareHanded"
+            ],
+            "opponent": "Street Thief 2"
+          },
+          {
+            "Goto": 398
+          }
+        ]
       },
       "title": "397"
     }
