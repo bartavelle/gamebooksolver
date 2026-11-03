@@ -212,7 +212,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (230%nat,can_take Gold 9%nat (can_take Meal 2%nat (can_take (Weapon Sword) 1%nat (can_take (Weapon Dagger) 1%nat (none (Goto 224%nat))))));
   (231%nat,can_take Gold 3%nat (can_take Meal 1%nat (can_take (Weapon Sword) 1%nat (none (Goto 348%nat)))));
   (232%nat,Decisions [none (Goto 68%nat); none (Goto 130%nat)]);
-  (234%nat,none (Goto 194%nat));
+  (234%nat,none (Conditionally [(HasDiscipline (MindOverMatter) , Randomly [(Fight (Details ((16)%Z)%Z 37%nat [Timed 3%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 4%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 5%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 6%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 7%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 8%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 9%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 10%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 11%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 12%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q))]); (Always true , Randomly [(Fight (Details ((16)%Z)%Z 37%nat [Timed 1%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 2%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 3%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 4%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 5%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 6%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 7%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 8%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 9%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q)); (Fight (Details ((16)%Z)%Z 37%nat [Timed 10%nat (ForceEMindblast)]) (Goto 32%nat) , (Q2Qc (1 / 10)%Q))])]));
   (235%nat,Decisions [none (Goto 177%nat); none (Goto 100%nat)]);
   (236%nat,Decisions [none (Simple [DamagePlayer 4%nat] (Goto 123%nat)); none (Simple [DamagePlayer 4%nat] (Goto 169%nat))]);
   (237%nat,none (Goto 348%nat));
@@ -256,7 +256,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (276%nat,Decisions [none (Goto 88%nat); none (Goto 26%nat)]);
   (278%nat,Decisions [none (Goto 123%nat); none (Goto 169%nat)]);
   (279%nat,none (Conditionally [(CAnd (HasItem (Weapon Sword) 1%nat) (HasFlag Special01) , Goto 327%nat); (Always true , Goto 289%nat)]));
-  (280%nat,none (Goto 231%nat));
+  (280%nat,can_take Gold 3%nat (can_take Meal 1%nat (can_take (Weapon Sword) 1%nat (none (Goto 348%nat)))));
   (281%nat,none (Goto 185%nat));
   (282%nat,none (Goto 257%nat));
   (283%nat,none (Simple [DamagePlayer 3%nat] (Goto 350%nat)));
