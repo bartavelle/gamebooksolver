@@ -17,7 +17,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (12%nat,can_take Meal 3%nat (can_take (GenBackpack S0) 1%nat (Decisions [none (Simple [MustEat NoHunt] (Goto 180%nat)); none (Simple [MustEat NoHunt] (Goto 259%nat))])));
   (13%nat,Decisions [none (Goto 128%nat); none (Goto 254%nat)]);
   (15%nat,none (Conditionally [(HasDiscipline (MindOverMatter) , Goto 185%nat); (COr (HasItem (Weapon Dagger) 1%nat) (HasItem (Weapon Sword) 1%nat) , Goto 86%nat); (Always true , Goto 323%nat)]));
-  (16%nat,none (LoseItemFrom SBackpack 2%nat (Goto 63%nat)));
+  (16%nat,remove_item_from SBackpack 2%nat (none (Goto 63%nat)));
   (17%nat,Decisions [none (Goto 62%nat); none (Goto 251%nat)]);
   (18%nat,remove_item_from SWeapon 1%nat (Decisions [none (Simple [DamagePlayer 3%nat] (Goto 211%nat)); none (Simple [DamagePlayer 3%nat] (Goto 95%nat))]));
   (19%nat,Decisions [none (Goto 327%nat); none (Goto 307%nat)]);
