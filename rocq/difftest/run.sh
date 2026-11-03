@@ -13,7 +13,8 @@ mkdir -p "$B"
 
 cd "$ROCQ"
 python3 gen_books.py
-for f in mps proba chapters character hits combat rules book01 book02 book03 book04 book05; do
+for f in base/order base/mps base/lists base/proba model/chapters model/character model/hits model/combat model/rules \
+    books/book01 books/book02 books/book03 books/book04 books/book05; do
   rocq compile -w none -R . LoneWolfProofs "$f.v"
 done
 rocq compile -w none -R . LoneWolfProofs -R difftest Difftest difftest/difft.v

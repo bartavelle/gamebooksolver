@@ -47,7 +47,7 @@ def main():
         entries = [e for e in parse(table(b)) if e[1] != 0]
         body = "; ".join(f"({c},{n})" for c, n in entries)
         lines.append(f"Definition needs{b} : list (nat * nat) := [{body}].")
-    with open(os.path.join(HERE, "gold_tables.v"), "w", encoding="utf-8") as f:
+    with open(os.path.join(HERE, "proofs", "gold_tables.v"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
 

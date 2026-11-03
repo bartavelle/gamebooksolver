@@ -150,7 +150,7 @@ def book(n):
 
 
 if __name__ == "__main__":
-    out = sys.argv[1] if len(sys.argv) > 1 else HERE
+    out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "books")
     for n in range(1, 6):
         with open(os.path.join(out, f"book0{n}.v"), "w", encoding="utf-8") as f:
             f.write(book(n))
