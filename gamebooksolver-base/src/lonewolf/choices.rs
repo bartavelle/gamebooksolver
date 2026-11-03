@@ -215,7 +215,10 @@ pub fn flatten_decision<P: Rational, PREV: StoredEquipment>(
                     (true, Item::Potion6Hp, 6),
                     (true, Item::Potion5Hp, 5),
                     (true, Item::Potion4Hp, 4),
-                    (ccst.bookid != Book::Book01, Item::Laumspur, 4),
+                    (!matches!(ccst.bookid, Book::Book01 | Book::Book02), Item::Laumspur, 4),
+                    (ccst.bookid == Book::Book02, Item::Laumspur, 3),
+                    // the Healing Potion of sections 15 and 302
+                    (ccst.bookid == Book::Book02, Item::GenBackpack(2), 3),
                     (true, Item::Potion2Hp, 2),
                 ]
                 .into_iter()
@@ -1043,6 +1046,28 @@ mod test {
         let results = choices_results(&book_char(Book::Book03), &with_meals(7), &dec);
         assert_eq!(results.len(), 1);
         assert!(has_pick(&results[0]));
+    }
+
+    #[test]
+    fn laumspur_restores_3_in_book_2() {
+        let ccst = CharacterConstant {
+            bookid: Book::Book02,
+            combat_skill: 15,
+            discipline: Vec::new(),
+            maxendurance: 25,
+        };
+        let mut cvar = CharacterVariable::new(10);
+        cvar.add_item(&Item::Backpack, 1);
+        cvar.add_item(&Item::Laumspur, 1);
+        let dec: Decision<BigRational> =
+            Decision::AfterCombat(Box::new(Decision::None(ChapterOutcome::Goto(ChapterId(2)))));
+        let wuse = WeaponUse::new(ccst.bookid, &HashMap::<ChapterId, Chapter<BigRational>>::new());
+        let drinks: Vec<String> = flatten_decision(&wuse, &ccst, &cvar, &dec)
+            .into_iter()
+            .flat_map(|(d, _)| d)
+            .collect();
+        assert_eq!(drinks.len(), 1, "{drinks:?}");
+        assert!(drinks[0].contains("Endurance(3)"), "{drinks:?}");
     }
 
     #[test]

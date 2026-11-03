@@ -67,7 +67,9 @@ pub fn update_simple<PREV: StoredEquipment>(
             cvar.clamp_endurance(ccst);
         }
         MustEat(canhunt) => {
-            let b01ls = ccst.bookid == Book::Book01 && cvar.cequipment.has_itemb(&Item::Laumspur);
+            // in the first two books, Laumspur can stand for a Meal
+            let b01ls =
+                matches!(ccst.bookid, Book::Book01 | Book::Book02) && cvar.cequipment.has_itemb(&Item::Laumspur);
             if *canhunt == CanHunt::Hunt && ccst.discipline.contains(&Discipline::Hunting) {
                 return;
             }

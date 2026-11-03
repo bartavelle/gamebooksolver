@@ -314,9 +314,9 @@ impl Reads {
             flags: RULES_FLAGS.0,
             ..Reads::default()
         };
-        // the silver helmet is used in fights, the potion of book 5 is used by the rules
+        // the silver helmet is used in fights, the potions of books 2 and 5 are used by the rules
         r.item(&Item::SILVERHELMET);
-        if bookid == Book::Book05 {
+        if matches!(bookid, Book::Book02 | Book::Book05) {
             r.item(&Item::GenBackpack(2));
         }
         let (items, flags) = get_boundary(bookid);

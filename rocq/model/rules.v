@@ -35,7 +35,7 @@ Definition update_simple (stt: Stt) (so: simple_outcome) : Stt :=
         match (ch, s_check Hunting (disciplines stt)) with
         | (Hunt, true) => stt
         | _ =>
-            let b01ls := Nat.eqb (book stt) 1 && has_item Laumspur stt
+            let b01ls := (Nat.eqb (book stt) 1 || Nat.eqb (book stt) 2) && has_item Laumspur stt
              in if b01ls && Nat.leb 3 (max_hp stt - curendurance stt)
               then update_items (rm_item Laumspur 1) (heal stt 3)
               else if has_item Meal stt
@@ -377,7 +377,9 @@ Fixpoint flatten_d (fuel: nat) (stt: Stt) (d: decision) : list chapter_outcome :
             ; (true, Potion6Hp, 6%nat)
             ; (true, Potion5Hp, 5%nat)
             ; (true, Potion4Hp, 4%nat)
-            ; (negb (Nat.eqb (book stt) 1), Laumspur, 4%nat)
+            ; (negb (Nat.eqb (book stt) 1 || Nat.eqb (book stt) 2), Laumspur, 4%nat)
+            ; (Nat.eqb (book stt) 2, Laumspur, 3%nat)
+            ; (Nat.eqb (book stt) 2, GenBackpack S2, 3%nat)
             ; (true, Potion2Hp, 2%nat)
             ] in
           let not_wasted := filter (fun ih : bool * item * nat => let '(_, _, h) := ih in Nat.leb h missing) usable in
