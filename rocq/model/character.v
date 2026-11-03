@@ -336,7 +336,7 @@ Module Slot.
     reflexivity.
   Qed.
 
-  Lemma increase: forall stt i q sl, ValidMap (items stt) -> sl = item_slot i -> i <> Gold -> all_character_items_slot_count (update_items (add_item i q) stt) sl
+  Lemma increase: forall stt i q sl, ValidMap (items stt) -> sl = item_slot i -> i = Meal \/ i = Laumspur -> all_character_items_slot_count (update_items (add_item i q) stt) sl
           = all_character_items_slot_count stt sl + q.
   Proof.
     intros.
@@ -345,7 +345,8 @@ Module Slot.
     unfold all_character_items_slot.
     Arguments order.eqb : simpl never.
     simpl.
-    rewrite add_item_nogold; auto.
+    rewrite add_item_stack; auto; try Lia.lia.
+    unfold bag_add.
     subst.
     simpl in H.
     clear book0 maxendurance0 curendurance0 sk0 disciplines0 chapter0 flags0 previtems0.
@@ -380,7 +381,6 @@ Module Slot.
           Lia.lia.
           apply Valid.head in H.
           tauto.
-    * Lia.lia.
   Qed.
 
   Lemma no_increase: forall stt i q sl, ValidBag (items stt) -> sl <> item_slot i -> all_character_items_slot_count (update_items (add_item i q) stt) sl
@@ -415,6 +415,7 @@ Admitted.
 
   Lemma add_rm: forall stt i drp,
     ValidBag (items stt) ->
+    i = Meal \/ i = Laumspur ->
     i <> drp ->
     item_slot i = item_slot drp ->
     sitems drp stt > 0 ->
@@ -422,17 +423,8 @@ Admitted.
     forall s,
     all_character_items_slot_count nstt s = all_character_items_slot_count stt s.
   Proof.
-    intros stt i drp VM Hneq Hslot Hgt nstt s.
+    intros stt i drp VM Hst Hneq Hslot Hgt nstt s.
 
-    (* Rule out Gold edge-cases since item_slot matches but they aren't equal *)
-    assert (i <> Gold /\ drp <> Gold).
-    {
-      split; intro C; subst; simpl in Hslot.
-      - destruct drp; simpl in Hslot; try discriminate. apply Hneq. reflexivity.
-      - destruct i; simpl in Hslot; try discriminate. apply Hneq. reflexivity.
-    }
-    destruct H as [Hnotgold_i Hnotgold_drp].
-  
     unfold all_character_items_slot_count, all_character_items_slot.
     unfold update_items in nstt.
     subst nstt.
@@ -442,8 +434,8 @@ Admitted.
     simpl in *.
     clear book0 maxendurance0 curendurance0 sk0 disciplines0 chapter0 flags0 previtems0.
     destruct VM as [VM NEO].
-    rewrite add_item_nogold; auto.
-    unfold rm_item, bag_rm.
+    rewrite add_item_stack; auto.
+    unfold rm_item, bag_rm, bag_add.
     rewrite sum_filter_insert_1.
     rewrite Hslot.
     symmetry.

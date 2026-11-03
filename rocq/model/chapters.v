@@ -621,35 +621,53 @@ Definition add_item (i: item) (q: nat) (items: Items) :=
   | _ => mps.insert i 1%nat items
   end.
 
-Lemma add_item_nogold: forall  (i: item) (q: nat) (items: Items),
-        (q > 0)%nat -> i <> Gold -> add_item i q items = mps.insert_with (fun pq => pq + q)%nat i q items.
-Proof.
-Admitted.
-
 Lemma add_item_gold: forall (q: nat) (items: Items),
     (q > 0)%nat -> add_item Gold q items =
-        insert_with (fun pq : nat => if pq + q <? 51 then (pq + q)%nat else 50) Gold q items.
+        insert_with (fun pq : nat => if pq + q <? 51 then (pq + q)%nat else 50) Gold (Nat.min q 50) items.
 Proof.
-Admitted.
+  intros q items Q. destruct q; [Lia.lia|reflexivity].
+Qed.
+
+Lemma add_item_stack: forall (i: item) (q: nat) (items: Items),
+    (q > 0)%nat -> i = Meal \/ i = Laumspur -> add_item i q items = bag_add i q items.
+Proof.
+  intros i q items Q [E|E]; subst; destruct q; try Lia.lia; reflexivity.
+Qed.
+
+Lemma add_item_single: forall (i: item) (q: nat) (items: Items),
+    (q > 0)%nat -> i <> Gold -> i <> Meal -> i <> Laumspur -> add_item i q items = insert i 1%nat items.
+Proof.
+  intros i q items Q G M L. destruct q; [Lia.lia|]. destruct i; try congruence; reflexivity.
+Qed.
+
+(* All the ways of adding an item give a positive quantity *)
+Lemma add_item_form: forall (i: item) (q: nat), (q > 0)%nat ->
+    exists f v, (v > 0)%nat /\ (forall x, (f x > 0)%nat) /\ forall items, add_item i q items = insert_with f i v items.
+Proof.
+  intros i q Q.
+  destruct (eq_dec i Gold) as [->|G].
+  { exists (fun pq : nat => if pq + q <? 51 then (pq + q)%nat else 50), (Nat.min q 50). split; [Lia.lia|split].
+    - intro x. destruct (x + q <? 51); Lia.lia.
+    - intro. apply add_item_gold; auto. }
+  destruct (eq_dec i Meal) as [->|M].
+  { exists (fun prev : nat => (prev + q)%nat), q. split; [Lia.lia|split; [intro; Lia.lia|]]. intro. apply add_item_stack; auto. }
+  destruct (eq_dec i Laumspur) as [->|L].
+  { exists (fun prev : nat => (prev + q)%nat), q. split; [Lia.lia|split; [intro; Lia.lia|]]. intro. apply add_item_stack; auto. }
+  exists (fun _ : nat => 1%nat), 1%nat. split; [Lia.lia|split; [intro; Lia.lia|]]. intro. apply add_item_single; auto.
+Qed.
 
 Lemma add_item_valid: forall i q items, ValidMap items -> ValidMap (add_item i q items).
 Proof.
-  intros.
-  destruct q. unfold add_item. simpl. exact H.
-  destruct (eq_dec i Gold).
-  * subst.
-    unfold add_item.
-    simpl.
-    apply Insert.insert_with_valid.
-    assumption.
-  * rewrite add_item_nogold; auto; try Lia.lia.
-    apply Insert.insert_with_valid.
-    assumption.
+  intros i q items V.
+  destruct q; [exact V|].
+  destruct (add_item_form i (S q)) as [f [v [_ [_ E]]]]; [Lia.lia|].
+  rewrite E. apply Insert.insert_with_valid. exact V.
 Qed.
 
 Lemma add_item_valid_bag: forall i q items, (q > 0)%nat -> ValidBag items -> ValidBag (add_item i q items).
 Proof.
   intros i q items POS H.
+  destruct (add_item_form i q POS) as [f [v [VP [FP E]]]].
   unfold ValidBag in *.
   split. apply add_item_valid; tauto.
   apply Forall_forall.
@@ -662,29 +680,15 @@ Proof.
   apply vmap_in in H0. 2: {
     apply add_item_valid. assumption.
   }
-  destruct (eq_dec i Gold), (eq_dec i0 Gold); subst; simpl in H0.
-  * rewrite add_item_gold in H0; auto.
+  rewrite E in H0.
+  destruct (eq_dec i i0).
+  * subst.
     rewrite Lookup.lookup_insert_with in H0; auto.
-    destruct (lookup Gold items); inversion H0; subst; clear H0.
-    destruct (n + q <? 51); Lia.lia.
+    destruct (lookup i0 items); inversion H0; subst; clear H0.
+    specialize (FP n). Lia.lia.
     Lia.lia.
-  * rewrite add_item_gold in H0; auto.
-    rewrite Lookup.lookup_insert_with_diff in H0; auto.
-    apply lookup_cant_be_zero in H0.
-    contradiction.
-    unfold ValidBag. tauto.
-  * rewrite add_item_nogold in H0; auto.
-    rewrite Lookup.lookup_insert_with_diff in H0; auto.
+  * rewrite Lookup.lookup_insert_with_diff in H0; auto.
     apply lookup_cant_be_zero in H0; unfold ValidBag; tauto.
-  * rewrite add_item_nogold in H0; auto.
-    destruct (eq_dec i i0).
-    + subst.
-      rewrite Lookup.lookup_insert_with in H0; auto.
-      destruct (lookup i0 items) eqn:LO.
-      inversion H0; subst. Lia.lia.
-      inversion H0; subst. Lia.lia.
-    + rewrite Lookup.lookup_insert_with_diff in H0; auto.
-      apply lookup_cant_be_zero in H0; unfold ValidBag; tauto.
 Qed.
 
 Definition rm_item (i: item) (q: nat) (items: Items) :=

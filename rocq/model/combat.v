@@ -255,14 +255,6 @@ Fixpoint wspec (d: DisciplineSet) (wpns: list weapon): option weapon :=
                end
     end.
 
-  Lemma get_cur_mods_cons: forall mds md,
-       (exists n ev, md = Timed n (Evaded ev) /\ get_cur_mods (md::mds) = get_cur_mods mds)
-    \/ (exists n sd, ~(exists ev, sd = Evaded ev) /\ md = Timed n sd /\ get_cur_mods (md::mds) = sd::get_cur_mods mds)
-    \/ ((~exists n df, md = Timed n df) /\ get_cur_mods (md::mds) = md :: get_cur_mods mds)
-    .
-Proof.
-Admitted.
-
   Definition ValidMods (mds: list fight_modifier): Prop :=
     let cur := get_cur_mods mds in
     let valid_mods := fun md => match md with | PlayerInvulnerable | EnemyInvulnerable | Timed _ (Timed _ _) => False | _ => True end in
