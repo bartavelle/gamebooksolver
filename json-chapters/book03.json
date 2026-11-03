@@ -8744,7 +8744,21 @@
             {
               "Conditional": [
                 {
-                  "HasDiscipline": "Hunting"
+                  "COr": [
+                    {
+                      "COr": [
+                        {
+                          "HasDiscipline": "Hunting"
+                        },
+                        {
+                          "HasDiscipline": "Tracking"
+                        }
+                      ]
+                    },
+                    {
+                      "HasDiscipline": "AnimalKinship"
+                    }
+                  ]
                 },
                 {
                   "NoDecision": {
@@ -8760,7 +8774,21 @@
               "Conditional": [
                 {
                   "Not": {
-                    "HasDiscipline": "Hunting"
+                    "COr": [
+                      {
+                        "COr": [
+                          {
+                            "HasDiscipline": "Hunting"
+                          },
+                          {
+                            "HasDiscipline": "Tracking"
+                          }
+                        ]
+                      },
+                      {
+                        "HasDiscipline": "AnimalKinship"
+                      }
+                    ]
                   }
                 },
                 {
