@@ -151,6 +151,24 @@ pub mod r {
         pub fn to_f64(&self) -> f64 {
             self.inner.to_f64()
         }
+
+        /// The exact decimal representation, with halves rounded to the even digit
+        pub fn to_fixed(&self, decimals: u32) -> String {
+            let scale = rug::Integer::from(rug::Integer::u_pow_u(10, decimals));
+            let exact = self.inner.clone().abs() * scale;
+            let tie = *exact.denom() == 2;
+            // ties are rounded away from zero here
+            let rounded = exact.round().into_numer_denom().0;
+            let scaled = if tie && rounded.is_odd() { rounded - 1 } else { rounded };
+            let digits = format!("{scaled:0>width$}", width = decimals as usize + 1);
+            let (int, frac) = digits.split_at(digits.len() - decimals as usize);
+            let sign = if self.inner < 0 { "-" } else { "" };
+            if decimals == 0 {
+                format!("{sign}{int}")
+            } else {
+                format!("{sign}{int}.{frac}")
+            }
+        }
     }
 
     impl std::fmt::Debug for MRational {
@@ -338,5 +356,25 @@ impl Rational for MF64 {
 
     fn from_jratio(r: &JRatio) -> Self {
         MF64(BigRational::from_jratio(r).to_f64().unwrap_or_default())
+    }
+}
+
+#[cfg(all(test, feature = "rug"))]
+mod tests {
+    use super::Rational;
+    use super::r::MRational;
+
+    #[test]
+    fn to_fixed() {
+        let fixed = |n, d, decimals| MRational::from_i64(n, d).to_fixed(decimals);
+        assert_eq!(fixed(1, 1, 3), "1.000");
+        assert_eq!(fixed(1, 3, 2), "0.33");
+        assert_eq!(fixed(2, 3, 2), "0.67");
+        assert_eq!(fixed(1, 2000, 3), "0.000");
+        assert_eq!(fixed(1, 1000, 3), "0.001");
+        assert_eq!(fixed(3053, 400, 3), "7.632");
+        assert_eq!(fixed(3, 2000, 3), "0.002");
+        assert_eq!(fixed(-1, 4, 1), "-0.2");
+        assert_eq!(fixed(5, 2, 0), "2");
     }
 }

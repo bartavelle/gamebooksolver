@@ -1,3 +1,4 @@
+mod dot;
 mod lwexplore;
 
 use anyhow::Context;
@@ -97,6 +98,14 @@ enum PSub {
     SoldumpOptimize(OSolDesc),
     /// write what can happen on the best path, with the value of all the choices, one state per line
     Decisions(OSolDesc),
+    /// write a dot graph of a .jot file (the solution path), over the chapters of the book
+    Dot {
+        #[arg(long)]
+        bookpath: String,
+        /// Path to the description of what is displayed in the nodes
+        #[arg(long)]
+        display: String,
+    },
 }
 
 #[derive(Debug, Parser)]
@@ -126,7 +135,7 @@ struct Opt {
     verbose: bool,
 }
 
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct ChapterStats {
     endurance: BTreeMap<i8, Rational>,
     flags: BTreeMap<u32, Rational>,
@@ -252,9 +261,9 @@ fn count_states<A, PREV: StoredEquipment>(cnt: &BTreeMap<NextStep<PREV>, A>) -> 
     o
 }
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, serde::Deserialize)]
 struct Output {
-    bookid: String,
+    bookid: Book,
     res: BTreeMap<u16, ChapterStats>,
     sttmap: BTreeMap<u16, u64>,
 }
@@ -591,7 +600,7 @@ fn mkjot<PREV: StoredEquipment>(soldump: &SolutionDump<Rational, PREV>, out: Opt
         soldump.content.iter().map(|(a, b)| (a.clone(), b)).collect();
     let res = mksol(ini, searchmap);
     let output = Output {
-        bookid: format!("{:?}", bookid),
+        bookid,
         res,
         sttmap,
     };
@@ -1066,6 +1075,13 @@ fn main() -> anyhow::Result<()> {
             } else {
                 write_decisions::<NoPrevEq>(cnt, book, &opt.solpath, opt.verbose)?;
             }
+        }
+        Some(PSub::Dot { bookpath, display }) => {
+            let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(BufReader::new(File::open(bookpath)?))?;
+            let display: Vec<dot::DotInfo> = serde_json::from_reader(BufReader::new(File::open(display)?))?;
+            let stats: Output = serde_json::from_reader(BufReader::new(File::open(&opt.solpath)?))
+                .with_context(|| anyhow::anyhow!("loading {}", opt.solpath))?;
+            println!("{}", dot::mkdot(&book, &display, &stats));
         }
         Some(PSub::SoldumpOptimize(cnt)) => {
             let cur = std::time::Instant::now();
