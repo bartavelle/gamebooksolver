@@ -284,7 +284,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (310%nat,none (Goto 32%nat));
   (311%nat,none (Goto 299%nat));
   (312%nat,Decisions [none (Goto 117%nat); none (Goto 89%nat)]);
-  (313%nat,none (Simple [DamagePlayer 4%nat] (Goto 349%nat)));
+  (313%nat,none (Simple [DamagePlayer 4%nat; LoseItem (Weapon MagicSpear) 1%nat] (Goto 349%nat)));
   (314%nat,Decisions [conditional (HasDiscipline (Hunting)) (none (Conditionally [(HasItem Gold 12%nat , Simple [LoseItemKind [SPouch]; GainItem Gold 12%nat] (Goto 290%nat)); (Always true , Goto 290%nat)])); conditional (Not (HasDiscipline (Hunting))) (none (Conditionally [(HasItem Gold 12%nat , Simple [LoseItemKind [SPouch]; GainItem Gold 12%nat] (Goto 36%nat)); (Always true , Goto 36%nat)])); conditional (Not (HasDiscipline (Hunting))) (none (Conditionally [(HasItem Gold 12%nat , Simple [LoseItemKind [SPouch]; GainItem Gold 12%nat] (Simple [MustEat NoHunt] (Goto 178%nat))); (Always true , Simple [MustEat NoHunt] (Goto 178%nat))]))]);
   (315%nat,Decisions [conditional (HasDiscipline (MindOverMatter)) (none (Goto 287%nat)); conditional (Not (HasDiscipline (MindOverMatter))) (none (Goto 190%nat)); conditional (Not (HasDiscipline (MindOverMatter))) (none (Goto 175%nat))]);
   (316%nat,none (Randomly [(Goto 107%nat , (Q2Qc (1 / 2)%Q)); (Goto 94%nat , (Q2Qc (1 / 2)%Q))]));
@@ -306,7 +306,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (335%nat,Decisions [none (Goto 161%nat); none (Goto 61%nat)]);
   (336%nat,Decisions [none (Goto 109%nat); none (Goto 185%nat)]);
   (337%nat,Decisions [conditional (HasDiscipline (Hunting)) (none (Simple [LoseItemKind [SBackpack; SWeapon]] (Goto 139%nat))); conditional (Not (HasDiscipline (Hunting))) (none (Simple [LoseItemKind [SBackpack; SWeapon]] (Goto 228%nat))); conditional (Not (HasDiscipline (Hunting))) (none (Simple [DamagePlayer 3%nat; LoseItemKind [SBackpack; SWeapon]] (Goto 171%nat)))]);
-  (338%nat,Decisions [none (Simple [DamagePlayer 2%nat] (Goto 269%nat)); none (Simple [DamagePlayer 2%nat] (Goto 349%nat))]);
+  (338%nat,Decisions [none (Simple [DamagePlayer 2%nat] (Goto 269%nat)); none (Simple [DamagePlayer 2%nat; LoseItem (Weapon MagicSpear) 1%nat] (Goto 349%nat))]);
   (339%nat,none (Conditionally [(HasItem Gold 1%nat , Simple [LoseItem Gold 1%nat] (Goto 249%nat)); (Always true , Goto 50%nat)]));
   (340%nat,Decisions [none (Goto 64%nat); none (Goto 164%nat)]);
   (341%nat,none (Goto 240%nat));

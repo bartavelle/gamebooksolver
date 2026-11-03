@@ -8884,6 +8884,12 @@
             [
               {
                 "DamagePlayer": 4
+              },
+              {
+                "LoseItem": [
+                  "MagicSpear",
+                  1
+                ]
               }
             ],
             {
@@ -9898,6 +9904,12 @@
                   [
                     {
                       "DamagePlayer": 2
+                    },
+                    {
+                      "LoseItem": [
+                        "MagicSpear",
+                        1
+                      ]
                     }
                   ],
                   {
