@@ -300,7 +300,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (329%nat,can_take Gold 10%nat (none (Goto 197%nat)));
   (330%nat,none (Simple [DamagePlayer 5%nat] (Goto 200%nat)));
   (331%nat,can_take Gold 3%nat (can_take (Weapon Dagger) 1%nat (can_take (Weapon Sword) 1%nat (none (Goto 65%nat)))));
-  (332%nat,evade_fight 0%nat 92%nat (Details ((21)%Z)%Z 30%nat [EnemyMindblast; Undead; MindblastImmune]) (Goto 183%nat));
+  (332%nat,evade_fight 0%nat 183%nat (Details ((21)%Z)%Z 30%nat [EnemyMindblast; Undead; MindblastImmune]) (Goto 92%nat));
   (333%nat,Decisions [none (Goto 300%nat); none (Goto 67%nat)]);
   (334%nat,Decisions [conditional (HasDiscipline (Tracking)) (none (Goto 98%nat)); conditional (Not (HasDiscipline (Tracking))) (none (Goto 115%nat)); conditional (Not (HasDiscipline (Tracking))) (none (Goto 291%nat))]);
   (335%nat,Decisions [none (Goto 161%nat); none (Goto 61%nat)]);
