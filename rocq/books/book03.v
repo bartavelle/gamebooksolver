@@ -191,7 +191,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (206%nat,Decisions [conditional (HasDiscipline (Camouflage)) (none (Simple [DamagePlayer 1%nat] (Goto 74%nat))); conditional (Not (HasDiscipline (Camouflage))) (Decisions [none (Simple [DamagePlayer 1%nat] (Goto 183%nat)); none (Simple [DamagePlayer 1%nat] (Goto 161%nat))])]);
   (207%nat,Decisions [none (Goto 80%nat); none (Goto 253%nat)]);
   (209%nat,none (Simple [DamagePlayer 2%nat] (Goto 155%nat)));
-  (210%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 316%nat)); none (Goto 236%nat); none (Goto 215%nat)]);
+  (210%nat,can_take (Weapon Sword) 1%nat (Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 316%nat)); none (Goto 236%nat); none (Goto 215%nat)]));
   (211%nat,none (Conditionally [(HasEndurance 10%nat , Randomly [(Goto 95%nat , (Q2Qc (2 / 5)%Q)); (Goto 196%nat , (Q2Qc (3 / 5)%Q))]); (Always true , Randomly [(Goto 95%nat , (Q2Qc (7 / 10)%Q)); (Goto 196%nat , (Q2Qc (3 / 10)%Q))])]));
   (212%nat,none (Goto 238%nat));
   (213%nat,none (Goto 252%nat));

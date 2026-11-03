@@ -6733,38 +6733,44 @@
     {
       "desc": "A tooth-encrusted Bone Sword lies at the Barbarian's side. You may take this weapon if you wish. You search his body and also discover a Gold Bracelet on his left wrist.\n",
       "pchoice": {
-        "Decisions": [
-          [
-            "If you have the Kai Discipline of Sixth Sense, turn to 316.",
-            {
-              "Conditional": [
+        "CanTake": [
+          "Sword",
+          1,
+          {
+            "Decisions": [
+              [
+                "If you have the Kai Discipline of Sixth Sense, turn to 316.",
                 {
-                  "HasDiscipline": "SixthSense"
-                },
+                  "Conditional": [
+                    {
+                      "HasDiscipline": "SixthSense"
+                    },
+                    {
+                      "NoDecision": {
+                        "Goto": 316
+                      }
+                    }
+                  ]
+                }
+              ],
+              [
+                "If you wish to take the Gold Bracelet, turn to 236.",
                 {
                   "NoDecision": {
-                    "Goto": 316
+                    "Goto": 236
+                  }
+                }
+              ],
+              [
+                "If you do not wish to take the Bracelet, make your way quickly along the corridor towards a distant junction by turning to 215.",
+                {
+                  "NoDecision": {
+                    "Goto": 215
                   }
                 }
               ]
-            }
-          ],
-          [
-            "If you wish to take the Gold Bracelet, turn to 236.",
-            {
-              "NoDecision": {
-                "Goto": 236
-              }
-            }
-          ],
-          [
-            "If you do not wish to take the Bracelet, make your way quickly along the corridor towards a distant junction by turning to 215.",
-            {
-              "NoDecision": {
-                "Goto": 215
-              }
-            }
-          ]
+            ]
+          }
         ]
       },
       "title": "210"
