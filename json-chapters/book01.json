@@ -7521,7 +7521,16 @@
       "desc": "You walk for over an hour, during which time you keep a constant vigil for any sign of Kraan in the sky above. You have twice spotted their tell-tale shadows in the sky and on both occasions your quick wits have saved you from capture. You are now very hungry and must eat a Meal.\n",
       "pchoice": {
         "NoDecision": {
-          "Goto": 13
+          "Simple": [
+            [
+              {
+                "MustEat": "Hunt"
+              }
+            ],
+            {
+              "Goto": 13
+            }
+          ]
         }
       },
       "title": "300"

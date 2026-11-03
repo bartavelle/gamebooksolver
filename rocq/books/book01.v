@@ -287,7 +287,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (297%nat,none (Goto 117%nat));
   (298%nat,Decisions [none (Goto 121%nat); none (Goto 38%nat)]);
   (299%nat,Decisions [none (Goto 227%nat); none (Goto 95%nat)]);
-  (300%nat,none (Goto 13%nat));
+  (300%nat,none (Simple [MustEat Hunt] (Goto 13%nat)));
   (301%nat,none (Goto 27%nat));
   (302%nat,none (Randomly [(Goto 110%nat , (Q2Qc (3 / 10)%Q)); (Goto 285%nat , (Q2Qc (7 / 10)%Q))]));
   (303%nat,Decisions [conditional (HasDiscipline (Camouflage)) (none (Goto 237%nat)); conditional (Not (HasDiscipline (Camouflage))) (Decisions [none (Goto 72%nat)])]);
