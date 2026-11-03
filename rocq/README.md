@@ -32,4 +32,5 @@ another by its short name, whatever its directory.
   - `gold_books.v`: the tables checked on the books, and what follows for Books 3 and 4.
   - `no_overflow.v`: endurance can't overflow on a doubled kill.
   - `cartwheel.v`: staking one crown is optimal at the Cartwheel.
-- `difftest/`: runs the model against the Rust solver on random characters.
+- `difftest/`: tests on the extracted model. `run.sh` runs it against the Rust solver on random characters, and `valid.sh`
+  checks on the books that playing keeps `ValidState` true.

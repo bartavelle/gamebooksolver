@@ -180,7 +180,7 @@ places, so each of these could lower a score if the missing choice were better.
 - **R24. `ValidState` in `rocq/model/character.v` says what a character can be while playing a book.** Combat Skill 10 to 19,
   Endurance 20 to 29, `book + 4` disciplines with one Weapon Skill at most, and limits on what is carried, for the stored
   equipment too. No proved result uses it yet, as it is for `flatten_dec_full`. That playing keeps it true is **Tested**
-  and not proved, by following each outcome from random valid states at all the chapters, and it needs fight facts, and a
+  and not proved, by following each outcome from random valid states at all the chapters (`rocq/difftest/valid.sh`), and it needs fight facts, and a
   check of the direct gains of each book. That a valid end of a book gives a valid start of the next is **Unverified**.
 - **R22. Book 5 c55 follows the book since 2026-11-02.** It goes to c162 or c23, then c114, c90, the baths, c71 and c54. It
   used to go straight to shop choices, skipping the steam damage, the death at c77 and the healing oil. Restoring this
