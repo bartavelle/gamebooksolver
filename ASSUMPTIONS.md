@@ -212,7 +212,7 @@ places, so each of these could lower a score if the missing choice were better.
 - **R27. Evading before the first round still plays a round.** The book only describes evading "if you have already engaged in a
   round", where that round is calculated and only Lone Wolf can lose Endurance. c14 and others allow evading "at any time", and
   a free escape before any blow is another possible reading. The solver and the separate calculation both play the round, so
-  the check of O6 can't tell them apart. **Decided** as the cautious reading, until the user says otherwise.
+  the check of O6 can't tell them apart. **Decided** by the user: keep the cautious reading.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
