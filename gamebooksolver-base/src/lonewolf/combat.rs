@@ -224,6 +224,8 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
                 || (!self.mindshield && modifiers.contains(&FightModifier::EnemyMindblast))
             {
                 dmg.lw + 2
+            } else if !self.mindshield && modifiers.contains(&FightModifier::WeakMindblast) {
+                dmg.lw + 1
             } else {
                 dmg.lw
             };
@@ -484,7 +486,7 @@ impl<P: Rational + Ord + std::hash::Hash + std::iter::Sum> CombatInfo<P> {
         if self.modifiers.iter().any(|x| {
             matches!(
                 x,
-                FightModifier::Dpr(_) | FightModifier::Timed(_, _) | FightModifier::OnDamage(_)
+                FightModifier::Dpr(_) | FightModifier::Timed(_, _) | FightModifier::OnDamage(_) | FightModifier::WeakMindblast
             )
         }) {
             let outcome = self.fight_round().into_iter().flat_map(|r| {

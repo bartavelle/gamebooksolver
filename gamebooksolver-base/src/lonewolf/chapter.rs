@@ -330,6 +330,8 @@ pub enum FightModifier<P> {
     BareHanded,
     FakeFight(ChapterId),
     EnemyMindblast,
+    // like EnemyMindblast, for 1 Endurance per round: Book 4 s77
+    WeakMindblast,
     ForceEMindblast,
     PlayerInvulnerable,
     DoubleDamage,
@@ -365,6 +367,7 @@ impl<P: Clone> FightModifier<P> {
             BareHanded => BareHanded,
             FakeFight(cid) => FakeFight(cid),
             EnemyMindblast => EnemyMindblast,
+            WeakMindblast => WeakMindblast,
             ForceEMindblast => ForceEMindblast,
             PlayerInvulnerable => PlayerInvulnerable,
             DoubleDamage => DoubleDamage,

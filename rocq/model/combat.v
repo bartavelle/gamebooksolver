@@ -381,7 +381,9 @@ Definition moddmg (stt: Stt) (opp_hp: nat) (mds: list fight_modifier) (dmgs: nat
   let has_mod := fun m => existsb (FM.fm_eqb m) (Modifiers.get_cur_mods mds) in
   let dmg_lw := if has_mod PlayerInvulnerable then 0:nat else
         if (has_mod ForceEMindblast || (has_mod EnemyMindblast && negb (s_check MindShield (disciplines stt))))%bool
-          then (raw_lw + 2:nat)%nat else raw_lw in
+          then (raw_lw + 2:nat)%nat
+        else if (has_mod WeakMindblast && negb (s_check MindShield (disciplines stt)))%bool
+          then (raw_lw + 1:nat)%nat else raw_lw in
   let dmg_opp := if has_mod EnemyInvulnerable then 0:nat else
         if (has_mod DoubleDamage || (has_mod Undead && has_item (Weapon Sommerswerd) stt))%bool
             then (odmg_opponent * 2)%nat
@@ -439,7 +441,7 @@ Definition over (p: Qc) (te: TEscaped): RoundEnd := ([(te, p)], []).
 Definition next_round (p: Qc) (lw op: nat): RoundEnd := ([], [((lw, op), p)]).
 
 Definition has_timer_branch (mds: list fight_modifier): bool :=
-  existsb (fun m => match m with Dpr _ | Timed _ _ | OnDamage _ => true | _ => false end) mds.
+  existsb (fun m => match m with Dpr _ | Timed _ _ | OnDamage _ | WeakMindblast => true | _ => false end) mds.
 
 Definition has_timer (mds: list fight_modifier): bool :=
   existsb (fun m => match m with Timed _ _ => true | _ => false end) mds.

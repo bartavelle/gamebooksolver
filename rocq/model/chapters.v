@@ -449,6 +449,7 @@ Inductive fight_modifier : Set :=
     |BareHanded
     |FakeFight: cid -> fight_modifier
     |EnemyMindblast
+    |WeakMindblast
     |ForceEMindblast
     |PlayerInvulnerable
     |DoubleDamage
@@ -473,6 +474,7 @@ Module FM.
     | (MindblastImmune, MindblastImmune) => true
     | (BareHanded, BareHanded) => true
     | (EnemyMindblast, EnemyMindblast) => true
+    | (WeakMindblast, WeakMindblast) => true
     | (ForceEMindblast, ForceEMindblast) => true
     | (PlayerInvulnerable, PlayerInvulnerable) => true
     | (DoubleDamage, DoubleDamage) => true
