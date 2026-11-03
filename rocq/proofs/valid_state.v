@@ -281,7 +281,7 @@ Qed.
 
 Lemma slots_pos: forall bk i, 1 <= backpack_slots bk i.
 Proof.
-  intros bk i. unfold backpack_slots. destruct i; try lia. destruct s; try lia; destruct (bk =? 4); lia.
+  intros bk i. unfold backpack_slots. destruct i; try lia. destruct s; try lia; destruct (bk =? 4), (bk =? 3); lia.
 Qed.
 
 Lemma held_eq: forall sl s, held_items sl s = held_of sl (items s).
