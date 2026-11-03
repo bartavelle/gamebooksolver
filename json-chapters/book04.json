@@ -5880,264 +5880,542 @@
       "desc": "You are winded by the blow to your chest and flung backwards into the icy cold water. You surface, but barely in time to catch a breath before a tentacle coils around your legs and drags you down.\nPick a number from the Random Number Table, and note this number down in the margin of your Action Chart. (In this case 0 = 10 instead of zero). This number represents the number of combat rounds that you can endure underwater before you begin to lose additional ENDURANCE points due to lack of oxygen. If you have the Kai Discipline of Mind Over Matter, you can add 2 to the number you have picked.\nFight this combat in the normal way. If the fight lasts longer than the number of rounds you can endure underwater, you will lose an additional 2 ENDURANCE points for every round of combat thereafter due to lack of oxygen.\n",
       "pchoice": {
         "NoDecision": {
-          "Randomly": [
+          "Conditionally": [
             [
               {
-                "radix": 10,
-                "value": "1/10"
+                "HasDiscipline": "MindOverMatter"
               },
               {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          1,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
+                "Randomly": [
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                3,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                4,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                5,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                6,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                7,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                8,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                9,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                10,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                11,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                12,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ]
                 ]
               }
             ],
             [
               {
-                "radix": 10,
-                "value": "1/10"
+                "Always": true
               },
               {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          2,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "radix": 10,
-                "value": "1/10"
-              },
-              {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          3,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "radix": 10,
-                "value": "1/10"
-              },
-              {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          4,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "radix": 10,
-                "value": "1/10"
-              },
-              {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          5,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "radix": 10,
-                "value": "1/10"
-              },
-              {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          6,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "radix": 10,
-                "value": "1/10"
-              },
-              {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          7,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "radix": 10,
-                "value": "1/10"
-              },
-              {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          8,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "radix": 10,
-                "value": "1/10"
-              },
-              {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          9,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
-                ]
-              }
-            ],
-            [
-              {
-                "radix": 10,
-                "value": "1/10"
-              },
-              {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 37,
-                    "fightMod": [
-                      {
-                        "Timed": [
-                          10,
-                          "ForceEMindblast"
-                        ]
-                      }
-                    ],
-                    "opponent": "Giant Meresquid"
-                  },
-                  {
-                    "Goto": 32
-                  }
+                "Randomly": [
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                1,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                2,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                3,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                4,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                5,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                6,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                7,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                8,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                9,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "radix": 10,
+                      "value": "1/10"
+                    },
+                    {
+                      "Fight": [
+                        {
+                          "fcombatSkill": 16,
+                          "fendurance": 37,
+                          "fightMod": [
+                            {
+                              "Timed": [
+                                10,
+                                "ForceEMindblast"
+                              ]
+                            }
+                          ],
+                          "opponent": "Giant Meresquid"
+                        },
+                        {
+                          "Goto": 32
+                        }
+                      ]
+                    }
+                  ]
                 ]
               }
             ]
