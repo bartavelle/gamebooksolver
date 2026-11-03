@@ -1185,7 +1185,7 @@ data/%.bin:
 	time python3 buildsol-rust.py $@
 
 data/%.compact.zstd data/%.desc data/%.jot data/%.json data/%.bin.zstd data/%.decisions.jsonl.zst &:
-	time python3 buildsol-rust.py $@
+	time python3 buildsol-rust.py data/$*.compact.zstd
 
 data/B05/%.dot: data/B05/%.jot json-chapters/book05.json json-chapters/display05.json
 	target/release/gamebooksolver-explorer --solpath $< dot --bookpath json-chapters/book05.json --display json-chapters/display05.json > $@
