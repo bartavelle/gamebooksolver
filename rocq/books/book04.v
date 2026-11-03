@@ -111,7 +111,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (119%nat,Decisions [none (Goto 296%nat); none (Goto 73%nat)]);
   (120%nat,Decisions [none (Goto 33%nat); none (Goto 92%nat)]);
   (121%nat,none (Goto 248%nat));
-  (122%nat,none (Simple [DamagePlayer 1%nat] (Conditionally [(HasDiscipline (MindBlast) , Fight (Details ((25)%Z)%Z 29%nat [MindblastImmune]) (Goto 350%nat)); (Always true , Fight (Details ((25)%Z)%Z 29%nat [MindblastImmune; CombatBonus (-4)%Z]) (Goto 350%nat))])));
+  (122%nat,none (Simple [DamagePlayer 1%nat] (Conditionally [(HasDiscipline (MindShield) , Fight (Details ((25)%Z)%Z 29%nat [MindblastImmune]) (Goto 350%nat)); (Always true , Fight (Details ((25)%Z)%Z 29%nat [MindblastImmune; CombatBonus (-4)%Z]) (Goto 350%nat))])));
   (123%nat,can_take (GenBackpack S2) 1%nat (can_take (GenBackpack S1) 5%nat (none (Goto 315%nat))));
   (124%nat,Decisions [none (Goto 333%nat); none (Goto 107%nat)]);
   (126%nat,none (Simple [MustEat Hunt] (Randomly [(Goto 25%nat , (Q2Qc (1 / 2)%Q)); (Goto 171%nat , (Q2Qc (1 / 2)%Q))])));
