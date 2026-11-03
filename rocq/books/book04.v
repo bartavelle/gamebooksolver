@@ -309,7 +309,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (336%nat,none (Goto 223%nat));
   (337%nat,none (Goto 297%nat));
   (338%nat,none (Goto 235%nat));
-  (339%nat,none (Goto 233%nat));
+  (339%nat,none (Simple [MustEat Hunt] (Goto 233%nat)));
   (340%nat,none (Simple [DamagePlayer 2%nat] (Goto 32%nat)));
   (341%nat,none (Simple [DamagePlayer 4%nat] (Goto 116%nat)));
   (342%nat,none (Simple [LoseItem (GenSpecial S0) 1%nat] (Simple [LoseItemKind [SBackpack]] (Goto 219%nat))));

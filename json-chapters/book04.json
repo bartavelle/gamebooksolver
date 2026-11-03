@@ -10309,7 +10309,16 @@
       "desc": "Although the strangers seem harmless enough, you decide not to take any chances and mount a guard. You are hungry and must eat a Meal or lose 3 ENDURANCE points. Having eaten, you soon settle down to get a good night's sleep.\n",
       "pchoice": {
         "NoDecision": {
-          "Goto": 233
+          "Simple": [
+            [
+              {
+                "MustEat": "Hunt"
+              }
+            ],
+            {
+              "Goto": 233
+            }
+          ]
         }
       },
       "title": "339"
