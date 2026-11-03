@@ -179,9 +179,12 @@ places, so each of these could lower a score if the missing choice were better.
   the text of c226 says. c334 itself is also reached from c297 and c360, without that rule. **Decided** after review.
 - **R24. `ValidState` in `rocq/model/character.v` says what a character can be while playing a book.** Combat Skill 10 to 19,
   Endurance 20 to 29, `book + 4` disciplines with one Weapon Skill at most, and limits on what is carried, for the stored
-  equipment too. No proved result uses it yet, as it is for `flatten_dec_full`. That playing keeps it true is **Tested**
-  and not proved, by following each outcome from random valid states at all the chapters (`rocq/difftest/valid.sh`), and it needs fight facts, and a
-  check of the direct gains of each book. That a valid end of a book gives a valid start of the next is **Unverified**.
+  equipment too. That playing keeps it true is **Proved** for the five books, for any depth and any Cartwheel table
+  (`play_keeps_valid` and `bookN_keeps_valid` in `rocq/proofs/valid_play.v`), and `rocq/difftest/valid.sh` tests it on the
+  extracted model. The proof needs each book to respect a computed check (`rocq/proofs/valid_check.v`): items in the
+  Backpack or Weapon slots, Helmets and the Backpack are never given directly, apart from the swap of Book 4 c22, and buying
+  never needs two slots. That a valid end of a book gives a valid start of the next is **Unverified**, and so is that the
+  solver starts from valid states. `flatten_dec_full`, that the probabilities sum to 1, is not proved.
 - **R22. Book 5 c55 follows the book since 2026-11-02.** It goes to c162 or c23, then c114, c90, the baths, c71 and c54. It
   used to go straight to shop choices, skipping the steam damage, the death at c77 and the healing oil. Restoring this
   created no cycle, added about 0.002% of states, and kept the score of all 8 cases tested at 50 gold to 9 digits.
