@@ -238,7 +238,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (257%nat,Decisions [none (Goto 302%nat); none (Goto 131%nat)]);
   (258%nat,Decisions [conditional (HasItem (GenSpecial S11) 1%nat) (none (Goto 305%nat)); conditional (Not (HasItem (GenSpecial S11) 1%nat)) (Decisions [conditional (CAnd (HasDiscipline (Camouflage)) (HasLevel Guardian)) (none (Goto 49%nat)); conditional (Not (CAnd (HasDiscipline (Camouflage)) (HasLevel Guardian))) (Decisions [none (Goto 159%nat)])])]);
   (259%nat,none (Goto 141%nat));
-  (261%nat,none (Goto 348%nat));
+  (261%nat,can_take Gold 8%nat (can_take Meal 1%nat (none (Goto 348%nat))));
   (262%nat,none (GameLost));
   (263%nat,Decisions [none (Simple [DamagePlayer 4%nat] (Goto 123%nat)); none (Simple [DamagePlayer 4%nat] (Goto 169%nat))]);
   (264%nat,Decisions [none (Goto 134%nat); none (Goto 191%nat)]);

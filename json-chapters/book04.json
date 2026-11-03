@@ -8552,9 +8552,21 @@
     {
       "desc": "On the first body that you search you find:\n * 8 Gold Crowns\n * Enough food for 1 Meal\nYou are about to search the others when you hear the sound of running footsteps approaching from the other side of the chamber. You pull the rope once more and breathe a sigh of relief as the portcullis rises into the ceiling. Rolling under the widening gap, you jump to your feet and make a hasty escape along the tunnel.\n",
       "pchoice": {
-        "NoDecision": {
-          "Goto": 348
-        }
+        "CanTake": [
+          "Gold",
+          8,
+          {
+            "CanTake": [
+              "Meal",
+              1,
+              {
+                "NoDecision": {
+                  "Goto": 348
+                }
+              }
+            ]
+          }
+        ]
       },
       "title": "261"
     }
