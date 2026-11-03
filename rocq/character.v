@@ -1,5 +1,6 @@
 Require Import chapters.
 Require Import mps.
+Require Import lists.
 Require Import proba.
 
 Require Import Nat.
@@ -385,61 +386,6 @@ Module Slot.
           = all_character_items_slot_count stt sl.
 Proof.
 Admitted.
-
-  Lemma list_sum_add {A: Type} `{EqDec A}: forall lst (i: A) (f: A -> nat),
-    In i lst -> NoDup lst ->
-    list_sum (map (fun x => if order.eqb x i then f x + 1 else f x) lst) = list_sum (map f lst) + 1.
-  Proof.
-    induction lst; intros; simpl.
-    * contradiction.
-    * inversion H0; subst; clear H0.
-      + rewrite order.eqb_refl.
-        inversion H1; subst; clear H1.
-        replace (list_sum (map (fun x : A => if order.eqb x i then f x + 1 else f x) lst)) with (list_sum (map f lst)).
-        Lia.lia.
-        f_equal.
-        apply map_ext_in.
-        intros.
-        destruct (order.eqb a i) eqn: EAI; auto.
-        apply eqb_correct in EAI. subst. contradiction.
-      + inversion H1; subst; clear H1.
-        destruct (eq_dec a i).
-        - subst. contradiction.
-        - replace (order.eqb a i) with false. 2: {
-            symmetry.
-            apply eqb_not.
-            assumption.
-          }
-          rewrite IHlst; auto. Lia.lia.
-  Qed.
-
-  Lemma list_sum_sub {A: Type} `{EqDec A}: forall lst (drp: A) (f: A -> nat),
-    In drp lst -> NoDup lst -> f drp > 0 ->
-    list_sum (map (fun x => if order.eqb x drp then f x - 1 else f x) lst) + 1 = list_sum (map f lst).
-  Proof.
-    induction lst; intros; simpl.
-    * contradiction.
-    * inversion H0; subst; clear H0.
-      + rewrite order.eqb_refl.
-        inversion H1; subst; clear H1.
-        replace (list_sum (map (fun x : A => if order.eqb x drp then f x - 1 else f x) lst)) with (list_sum (map f lst)).
-        Lia.lia.
-        f_equal.
-        apply map_ext_in.
-        intros.
-        destruct (order.eqb a drp) eqn: EAI; auto.
-        apply eqb_correct in EAI. subst. contradiction.
-      + inversion H1; subst; clear H1.
-        destruct (eq_dec a drp).
-        - subst. contradiction.
-        - replace (order.eqb a drp) with false. 2: {
-            symmetry.
-            apply eqb_not.
-            assumption.
-          }
-          rewrite <- Nat.add_assoc.
-          rewrite IHlst; auto.
-  Qed.
 
   Lemma nodup_slot_items: forall s, NoDup (slot_items s).
   Proof.

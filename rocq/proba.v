@@ -9,6 +9,7 @@ Require Import Stdlib.Lists.List.
 Import ListNotations.
 
 Require Import mps.
+Require Import lists.
 
 Definition Proba K := Mp K Qc.
 
@@ -451,44 +452,6 @@ Proof.
   apply add_proba_nil. tauto.
 Qed.
 
-Lemma fold_right_all_prop (A: Set) (f: A -> A -> A) (P: A -> Prop):
-  (forall a b, P a -> P b -> P (f a b)) -> forall (ini: A) (l: list A),
-    P ini ->
-    Forall P l ->
-        P (fold_right f ini l).
-Proof.
-  intros.
-  induction l.
-  simpl. assumption.
-  apply Forall_cons_iff in H1.
-  simpl. apply H; tauto.
-Qed.
-
-Lemma fold_right_one_prop (A: Set) (f: A -> A -> A) (P: A -> Prop):
-  forall (l: list A),
-    (forall a b, P a \/ P b -> P (f a b)) ->
-  forall (ini: A),
-    (exists e, In e l /\ P e) ->
-    P (fold_right f ini l).
-Proof.
-  induction l; intros.
-  {
-    destruct H0.
-    destruct H0. inversion H0.
-  }
-  {
-    destruct H0. destruct H0. simpl.
-    destruct H0.
-    {
-      subst. apply H. tauto.
-    }
-    apply H.
-    right.
-    apply IHl; intros. apply H. auto.
-    exists x. tauto.
-  }
-Qed.
-
 Lemma merge_proba_rebuild_full {A B: Set} `{OrdDec B}:
   forall (src: Proba A) (f: A -> Proba B),
     (forall x, In x (map fst src) -> FullProba (f x)) ->
@@ -509,14 +472,6 @@ Proof.
     simpl. left. reflexivity.
     intros.
     apply H1. simpl. tauto.
-Qed.
-
-Lemma map_f_is_id (A : Set): forall (f: A -> A) (lst: list A),
-    f = id -> ListDef.map f lst = lst.
-Proof.
-  intros.
-  subst.
-  apply map_id.
 Qed.
 
 Lemma merge_probas_keeps_keys {K: Set} `{OrdDec K}:
@@ -615,14 +570,6 @@ Proof.
   eapply (in_map (fun x => [x])) in H1.
   rewrite map_map in H1.
   assumption.
-Qed.
-
-Lemma concat_pure_is_id (K: Type):
-    forall l : list K,
-      concat (map (fun x => [x]) l) = l.
-Proof.
-  induction l; auto.
-  simpl. f_equal. auto.
 Qed.
 
 Lemma rebuild_proba_keeps_keys_conv {K: Set} `{OrdDec K}:

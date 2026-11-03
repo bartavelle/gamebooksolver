@@ -2,6 +2,7 @@
 Require Import character.
 Require Import chapters.
 Require Import mps.
+Require Import lists.
 Require Import proba.
 Require Import combat.
 Require Import rules.
@@ -595,24 +596,6 @@ Section Retrieve.
     intros P P2 sos1 sos2 l1 l2 ST F. induction F; simpl; constructor; auto.
     intros fuel p q H1. destruct (ST _ _ H1) as [C P3]. destruct fuel as [|md]; cbn [s_update_d]; rewrite C; [reflexivity|].
     destruct (curendurance q =? 0); [reflexivity|]. apply H. exact P3.
-  Qed.
-
-  Lemma forall2_refl_in {A: Type}: forall (r: A -> A -> Prop) l, (forall x, In x l -> r x x) -> Forall2 r l l.
-  Proof.
-    induction l; intros H; constructor; auto. apply H. left. reflexivity. apply IHl. intros. apply H. right. assumption.
-  Qed.
-
-  Lemma forall2_app {A: Type}: forall (r: A -> A -> Prop) a b c d, Forall2 r a b -> Forall2 r c d -> Forall2 r (a ++ c) (b ++ d).
-  Proof.
-    intros r a b c d F G. induction F; simpl; auto.
-  Qed.
-
-  Lemma forall2_flat {A B: Type}: forall (r: B -> B -> Prop) (g h: A -> list B) l,
-    (forall x, In x l -> Forall2 r (g x) (h x)) -> Forall2 r (flat_map g l) (flat_map h l).
-  Proof.
-    induction l; intros H; simpl; [constructor|]. apply forall2_app.
-    - apply H. left. reflexivity.
-    - apply IHl. intros. apply H. right. assumption.
   Qed.
 
   Lemma same_ok: forall a fl p q d, dn d <= a -> GoldR a p q -> Forall2 (OK (GoldR a)) (flatten_d fl p d) (flatten_d fl q d).

@@ -3,6 +3,7 @@
 Require Import character.
 Require Import chapters.
 Require Import mps.
+Require Import lists.
 Require Import proba.
 Require Import combat.
 Require Import rules.
@@ -445,13 +446,6 @@ Section Sim.
   Variable T: Tracker.
   Variable ch: cid -> nat.
   Variable wn: nat.
-
-  Definition lmax {A: Type} (g: A -> nat) (l: list A) : nat := fold_right (fun x acc => Nat.max (g x) acc) 0 l.
-
-  Lemma lmax_le {A: Type}: forall (g: A -> nat) l x, In x l -> g x <= lmax g l.
-  Proof.
-    induction l; intros x I; simpl in *; [destruct I|]. destruct I; subst; [lia|]. specialize (IHl x H). lia.
-  Qed.
 
   Fixpoint co_need (o: chapter_outcome) : nat :=
     match o with
@@ -897,12 +891,6 @@ Definition TopSim (T: Tracker) (ch: cid -> nat) (wn: nat) (d: decision) (n: nat)
       Forall2 (fun o1 o2 =>
         ev f (s_update_d fuel (update_flags (s_unset HadCombat) s) o1) = ev f (s_update_d fuel (update_flags (s_unset HadCombat) t) o2))
         (flatten_d fl s d) (flatten_d fl t d).
-
-Lemma forall2_map {A B C: Type}: forall (g: A -> C) (h: B -> C) l1 l2,
-  Forall2 (fun a b => g a = h b) l1 l2 -> map g l1 = map h l2.
-Proof.
-  intros g h l1 l2 F. induction F; simpl; auto. f_equal; assumption.
-Qed.
 
 (* States that R can't tell apart at the need of their chapter have the same value, if each chapter needs no more than
    what is written for it, or has outcomes that have the same value. *)
