@@ -52,13 +52,13 @@ effect on later books.
   Firesphere, Rope, the Gorn Cove flag. **Tested**, on a few characters each, win = 1. The medallion and the triangle
   were only tested from c50 and c150. Book 5 does read `ReceivedCrystalStarPendant`, at c221, c288 and c382, and nothing sets
   it. The branches can't matter: c336 and c275 have the same outcomes, and c399 and c294 both go to c323. Proving this needs
-  a relation between chapters with the same content, which `value.v` does not have yet. The generic items are numbered per
+  a relation between chapters with the same content, which `simulation.v` does not have yet. The generic items are numbered per
   book, so the same `GenSpecial` means something else in another book: Rocq can't check that a later book never mentions an
   item, only that its transcription doesn't. Checking the text of the later books is a separate step.
 - **C3. `FLGKnowledge01` has no effect**, and was removed from `B03OPTIONS`. **Tested**, on 5 characters, win = 1.
 - **C4. Gold does not cross Book 2 to 3, Book 3 to 4 or Book 4 to 5.** See G4 and G5 for the effect on Book 5. **Proved**
-  for Book 3 from 10 crowns (`book3_gold_above_ten` in `rocq/gold_reads.v`) and for all of Book 4 (`book4_gold_same` in
-  `rocq/reads.v`), for any score of the end of the book that does not read the gold. Starting Book 3 with less than 10
+  for Book 3 from 10 crowns (`book3_gold_above_ten` in `rocq/proofs/gold_books.v`) and for all of Book 4 (`book4_gold_same` in
+  `rocq/proofs/gold_books.v`), for any score of the end of the book that does not read the gold. Starting Book 3 with less than 10
   crowns is not covered, and Book 3 c152 reads up to 10. In Book 3, gold had no effect at 0, 15 and 30 on one character, which
   is **Tested** only. The Book 4 branch of `filter_final_state`, which maps gold to 0 or 15, is dead code as a result.
 - **C5. Healing can be learned as late as Book 4.** Cases were added after a rough product of book scores favoured it
@@ -100,7 +100,7 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   that: on the edited book of E1, MS scores 0.583265136440 at 15 and 16 gold, 0.583265136985 at 17 to 19, and
   0.583265137192 at 20 and 50, a total of about 0.00000008 points. A first guess of 12 for all characters was wrong.
   **Tested** on six characters. 6S has only been solved unedited at 10, 40 and 50, and values below 15 only at 10. Proving
-  this is an obligation if Book 5 relies on it. A static proof can't reach this: the need table of `rocq/gold.v` and Rust
+  this is an obligation if Book 5 relies on it. A static proof can't reach this: the need table of `rocq/proofs/gold_needs.v` and Rust
   both give 50 at the start of Book 5, adding up what a path can spend. What is left between 20 and 50 depends on whether
   the spending is worth it, so a proof has to use solved values, or a finite run of every case at every amount.
 - **G6. Reaching 50 gold at the start of Book 5 is realistic.** A route can pick up 30 crowns in Book 4 (42 for the
@@ -117,9 +117,9 @@ places, so each of these could lower a score if the missing choice were better.
 
 - **R1. Cartwheel: the free token is played first.** It can't be cashed and could otherwise go unused. **Decided.**
 - **R2. Cartwheel: "win 8" and "win 5" are profits,** and the stake is kept. **Decided.**
-- **R3. Cartwheel: staking one crown is optimal.** **Proved** in `rocq/cartwheel.v`, for any exit values, either payout
+- **R3. Cartwheel: staking one crown is optimal.** **Proved** in `rocq/proofs/cartwheel.v`, for any exit values, either payout
   and any cap, using classical axioms. The result is about the game alone. The link to the Rust table is not proved, and
-  `rules.v` has the table as a `Parameter`.
+  `rocq/model/rules.v` has the table as a `Parameter`.
 - **R4. Cartwheel: playing up to a target is enough, with targets from 20 to 30.** Other stopping rules may do better, as
   gold is not monotone. Single-hole stopping rules and targets up to 40 gave identical scores on 11 Book 2 starts. Seed 9
   showed +1.49e-5 against a baseline without evasion, never settled. **Tested**, with one open result.
@@ -186,21 +186,21 @@ places, so each of these could lower a score if the missing choice were better.
 These must not change a result, and each needs a proof against a rules model on the five books. Rocq models the Rust with
 the optimizations left out, and agreed with Rust on 4,391 cases, which checks the model and not the optimizations.
 
-The proofs are about `value` in `rocq/value.v`, the expectimax of a book as played by `rules.v`. `value_same` gives the same
+The proofs are about `value` in `rocq/model/value.v`, the expectimax of a book as played by `rocq/model/rules.v`. `value_same` in `rocq/proofs/simulation.v` gives the same
 value to states that a `Tracker` can't tell apart, for any depth of search. They rely on functional extensionality and on
-the `cartwheel` parameter of `rules.v`, and on no `Admitted`. They inherit what `rules.v` assumes, which is section 5. They
+the `cartwheel` parameter of `model/rules.v`, and on no `Admitted`. They inherit what `model/rules.v` assumes, which is section 5. They
 are about the model: the link to the Rust is the comparison above, and for tables, a mirror of the Rust.
 
 - **O1. Plain weapons are interchangeable.** A weapon with no skill, not magical, and not named in reachable chapters is
   treated as any other (`WeaponUse`, `useful_drops`, `canonical`). No mismatch on 42 + 42 pairs. **Tested.**
 - **O2. What can't be read again is cleared** (`Reads`): gold, generic items, and story flags. No mismatch on 15 pairs.
-  **Tested.** **Proved** for a flag that a whole book does not read: `flag_unread_same` and the lists in `rocq/reads.v`. A
+  **Tested.** **Proved** for a flag that a whole book does not read: `flag_unread_same` and the lists in `rocq/proofs/flag_books.v`. A
   flag that is read in some chapters and cleared before them, chapter by chapter as `Reads` does, and the generic items,
   are not proved. The tool for flags is there: `flag_value_same` takes a table per chapter.
 - **O3. Character specialisation** removes branches needing a discipline the character lacks. **Tested** on all 24
   characters of Books 1 to 4.
 - **O4. Gold above what can still be spent is cleared** (`gold_needs`). Must hold given G3: it only cuts gold that no
-  later test or payment can tell apart. **Proved** in `rocq/gold.v` and `rocq/gold_reads.v` for Books 1 to 5, against a table
+  later test or payment can tell apart. **Proved** in `rocq/proofs/gold_needs.v` and `rocq/proofs/gold_books.v` for Books 1 to 5, against a table
   checked on the books, for the gold that is held and the gold that is stored, as Rust clamps both to the same need. c14
   gives outcomes that are not the same when the held gold differs, so it is compared by value (`retrieve_top`). This needs
   the retrieval to be the first thing a chapter does, which is what c14 does; one found deeper in a decision would need all
@@ -214,7 +214,7 @@ are about the model: the link to the Rust is the comparison above, and for table
   rounds equal a whole fight. **Unverified.**
 - **O7. Scores only depend on what `get_boundary` lists.** A scorer that reads anything else gives wrong results, since the
   state may already be cleared. **Tested** by `what_scores_the_next_book_is_never_changed`.
-- **O8. Endurance can't overflow** on a doubled kill. **Proved** for the books in `rocq/no_overflow.v`, using the chapter
+- **O8. Endurance can't overflow** on a doubled kill. **Proved** for the books in `rocq/proofs/no_overflow.v`, using the chapter
   data.
 - **O9. Reduced retention keeps the score.** It only frees states it can compute again. **Tested** by unchanged scores.
 
