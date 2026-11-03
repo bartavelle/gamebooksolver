@@ -1,11 +1,11 @@
+(* The transcribed books are well formed. These are stated but not proved yet: validate_book is the tactic meant for them. *)
 Require Import chapters.
-Require Import character.
 Require Import rules.
 Require Import proba.
 Require Import Stdlib.QArith.Qcanon.
-
 Require Import Stdlib.Lists.List.
 Import ListNotations.
+Require book01 book02 book03 book04 book05.
 
 Ltac solve_always_true :=
   tryif (
@@ -41,3 +41,25 @@ Ltac validate_book :=
   | |- forall _, _ => intro
   | |- exists _, _ => solve_always_true
   end.
+
+Definition decisions_of (chapters: list (cid * decision)) : list decision := map snd chapters.
+
+Theorem book01_well_formed: Forall WellFormedDecision (decisions_of book01.chapters).
+Proof.
+Admitted.
+
+Theorem book02_well_formed: Forall WellFormedDecision (decisions_of book02.chapters).
+Proof.
+Admitted.
+
+Theorem book03_well_formed: Forall WellFormedDecision (decisions_of book03.chapters).
+Proof.
+Admitted.
+
+Theorem book04_well_formed: Forall WellFormedDecision (decisions_of book04.chapters).
+Proof.
+Admitted.
+
+Theorem book05_well_formed: Forall WellFormedDecision (decisions_of book05.chapters).
+Proof.
+Admitted.
