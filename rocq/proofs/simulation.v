@@ -374,7 +374,9 @@ Section Sim.
     ; (true, Potion6Hp, 6%nat)
     ; (true, Potion5Hp, 5%nat)
     ; (true, Potion4Hp, 4%nat)
-    ; (negb (Nat.eqb bk 1), Laumspur, 4%nat)
+    ; (negb (Nat.eqb bk 1 || Nat.eqb bk 2), Laumspur, 4%nat)
+    ; (Nat.eqb bk 2, Laumspur, 3%nat)
+    ; (Nat.eqb bk 2, GenBackpack S2, 3%nat)
     ; (true, Potion2Hp, 2%nat)
     ].
 
