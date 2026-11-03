@@ -209,6 +209,10 @@ places, so each of these could lower a score if the missing choice were better.
   c224 and c270 leave the choice open. Opening all of them gave the same exact fraction on 8 Book 4 cases (TR.MO, MS.HU, CA.6S
   and MS.CA, each with Sword and Dagger or Sommerswerd and Sword, and no optional item), with Book 5 values. **Tested** on that
   sample. The other books have not been looked at.
+- **R27. Evading before the first round still plays a round.** The book only describes evading "if you have already engaged in a
+  round", where that round is calculated and only Lone Wolf can lose Endurance. c14 and others allow evading "at any time", and
+  a free escape before any blow is another possible reading. The solver and the separate calculation both play the round, so
+  the check of O6 can't tell them apart. **Decided** as the cautious reading, until the user says otherwise.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
@@ -253,8 +257,13 @@ the memory.
   one changes something. The Rocq and Rust comparison only shows that both implement rounds the same way, not that the
   rounds equal a whole fight. In Book 4, on the 3 cases above, a fight in rounds where evading loses the book and the same fight
   without evasion gave the same exact fraction: 53.98%, 63.75% and 80.62%. **Tested** on that sample, for fights where no
-  evasion is taken. The value of an evasion itself is **Unverified**, and it matters: with evasion, the two Sword and Dagger
-  cases score 59.86% and 70.11%.
+  evasion is taken. With evasion, the two Sword and Dagger cases score 59.86% and 70.11%, so its value matters. It is
+  **Tested** on the 14 fights of Book 4 that can be evaded, from 9 sections, by `rocq/difftest/evasion.sh`: a separate calculation
+  that reads the combat table from the XML of the book gave the same exact fraction on 1,620 cases (6 kits, 5 Endurance values,
+  random values for what follows the fight), and evading was the best choice somewhere in 1,511. A mistake made on purpose in
+  the calculation gave 1,547 differences. This found a bug, since fixed: evading c202 or c407 to c410 left a strength potion
+  active for the next fight. It made 17 cases differ, and did not change the 80.619643% of the TR.HU case above. The other books
+  have no such fight, and their evasions are not checked this way.
 - **O7. Scores only depend on what `get_boundary` lists.** A scorer that reads anything else gives wrong results, since the
   state may already be cleared. **Tested** by `what_scores_the_next_book_is_never_changed`.
 - **O8. Endurance can't overflow** on a doubled kill. **Proved** for the books in `rocq/proofs/no_overflow.v`, using the chapter
