@@ -71,7 +71,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (74%nat,Decisions [none (Simple [HealPlayer 1%nat] (Goto 38%nat)); none (Simple [HealPlayer 1%nat] (Goto 175%nat)); none (Simple [HealPlayer 1%nat] (Goto 293%nat))]);
   (75%nat,none (Simple [DamagePlayer 2%nat] (Conditionally [(HasDiscipline (Camouflage) , Randomly [(Goto 192%nat , (Q2Qc (3 / 10)%Q)); (Goto 16%nat , (Q2Qc (7 / 10)%Q))]); (Always true , Randomly [(Goto 192%nat , (Q2Qc (3 / 5)%Q)); (Goto 16%nat , (Q2Qc (2 / 5)%Q))])])));
   (76%nat,Decisions [none (Goto 268%nat); none (Goto 64%nat)]);
-  (77%nat,evade_fight 2%nat 98%nat (Details ((22)%Z)%Z 28%nat [MindblastImmune; EnemyMindblast]) (Goto 10%nat));
+  (77%nat,evade_fight 2%nat 98%nat (Details ((22)%Z)%Z 28%nat [MindblastImmune; WeakMindblast]) (Goto 10%nat));
   (78%nat,can_take (GenBackpack S0) 1%nat (none (Simple [MustEat NoHunt] (Goto 233%nat))));
   (79%nat,can_take (GenBackpack S2) 1%nat (can_take (GenBackpack S1) 5%nat (none (Goto 117%nat))));
   (80%nat,none (Goto 175%nat));
