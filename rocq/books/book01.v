@@ -339,10 +339,10 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (351%nat,none (Fight (Details ((16)%Z)%Z 24%nat [CombatBonus (-1)%Z]) (Goto 352%nat)));
   (352%nat,after_combat (none (Simple [SetFlag HadCombat] (Randomly [(Goto 53%nat , (Q2Qc (1 / 10)%Q)); (Goto 274%nat , (Q2Qc (1 / 5)%Q)); (Goto 316%nat , (Q2Qc (7 / 10)%Q))]))));
   (29%nat,none (Simple [SetFlag HadCombat] (Goto 353%nat)));
-  (353%nat,none (Fight (Details ((17)%Z)%Z 25%nat [EnemyMindblast]) (Goto 354%nat)));
+  (353%nat,none (Conditionally [(HasDiscipline (MindShield) , Fight (Details ((17)%Z)%Z 25%nat []) (Goto 354%nat)); (Always true , Fight (Details ((19)%Z)%Z 25%nat []) (Goto 354%nat))]));
   (354%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 270%nat))));
   (34%nat,none (Simple [SetFlag HadCombat] (Goto 355%nat)));
-  (355%nat,none (Fight (Details ((17)%Z)%Z 25%nat [EnemyMindblast]) (Goto 356%nat)));
+  (355%nat,none (Conditionally [(HasDiscipline (MindShield) , Fight (Details ((17)%Z)%Z 25%nat []) (Goto 356%nat)); (Always true , Fight (Details ((19)%Z)%Z 25%nat []) (Goto 356%nat))]));
   (356%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 328%nat))));
   (55%nat,none (Simple [SetFlag HadCombat] (Goto 357%nat)));
   (357%nat,none (Fight (Details ((9)%Z)%Z 9%nat [CombatBonus (4)%Z]) (Goto 358%nat)));
@@ -395,7 +395,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (391%nat,none (Fight (Details ((14)%Z)%Z 24%nat []) (Goto 392%nat)));
   (392%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 193%nat))));
   (342%nat,none (Simple [SetFlag HadCombat] (Goto 393%nat)));
-  (393%nat,none (Fight (Details ((18)%Z)%Z 26%nat [EnemyMindblast; MindblastImmune]) (Goto 394%nat)));
+  (393%nat,none (Conditionally [(HasDiscipline (MindShield) , Fight (Details ((18)%Z)%Z 26%nat [MindblastImmune]) (Goto 394%nat)); (Always true , Fight (Details ((20)%Z)%Z 26%nat [MindblastImmune]) (Goto 394%nat))]));
   (394%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 123%nat))));
   (395%nat,Decisions [none (Goto 14%nat); none (Goto 252%nat); none (Goto 215%nat)]);
   (396%nat,Decisions [none (Randomly [(Goto 323%nat , (Q2Qc (1 / 2)%Q)); (Simple [DamagePlayer 2%nat] (Goto 397%nat) , (Q2Qc (1 / 2)%Q))]); none (Goto 395%nat)]);

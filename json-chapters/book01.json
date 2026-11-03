@@ -8588,18 +8588,43 @@
       "desc": "Dummy fight chapter 353",
       "pchoice": {
         "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 17,
-              "fendurance": 25,
-              "fightMod": [
-                "EnemyMindblast"
-              ],
-              "opponent": "Vordak"
-            },
-            {
-              "Goto": 354
-            }
+          "Conditionally": [
+            [
+              {
+                "HasDiscipline": "MindShield"
+              },
+              {
+                "Fight": [
+                  {
+                    "fcombatSkill": 17,
+                    "fendurance": 25,
+                    "fightMod": [],
+                    "opponent": "Vordak"
+                  },
+                  {
+                    "Goto": 354
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "Always": true
+              },
+              {
+                "Fight": [
+                  {
+                    "fcombatSkill": 19,
+                    "fendurance": 25,
+                    "fightMod": [],
+                    "opponent": "Vordak"
+                  },
+                  {
+                    "Goto": 354
+                  }
+                ]
+              }
+            ]
           ]
         }
       },
@@ -8656,18 +8681,43 @@
       "desc": "Dummy fight chapter 355",
       "pchoice": {
         "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 17,
-              "fendurance": 25,
-              "fightMod": [
-                "EnemyMindblast"
-              ],
-              "opponent": "Vordak"
-            },
-            {
-              "Goto": 356
-            }
+          "Conditionally": [
+            [
+              {
+                "HasDiscipline": "MindShield"
+              },
+              {
+                "Fight": [
+                  {
+                    "fcombatSkill": 17,
+                    "fendurance": 25,
+                    "fightMod": [],
+                    "opponent": "Vordak"
+                  },
+                  {
+                    "Goto": 356
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "Always": true
+              },
+              {
+                "Fight": [
+                  {
+                    "fcombatSkill": 19,
+                    "fendurance": 25,
+                    "fightMod": [],
+                    "opponent": "Vordak"
+                  },
+                  {
+                    "Goto": 356
+                  }
+                ]
+              }
+            ]
           ]
         }
       },
@@ -9875,19 +9925,47 @@
       "desc": "Dummy fight chapter 393",
       "pchoice": {
         "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 18,
-              "fendurance": 26,
-              "fightMod": [
-                "EnemyMindblast",
-                "MindblastImmune"
-              ],
-              "opponent": "Vordak"
-            },
-            {
-              "Goto": 394
-            }
+          "Conditionally": [
+            [
+              {
+                "HasDiscipline": "MindShield"
+              },
+              {
+                "Fight": [
+                  {
+                    "fcombatSkill": 18,
+                    "fendurance": 26,
+                    "fightMod": [
+                      "MindblastImmune"
+                    ],
+                    "opponent": "Vordak"
+                  },
+                  {
+                    "Goto": 394
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "Always": true
+              },
+              {
+                "Fight": [
+                  {
+                    "fcombatSkill": 20,
+                    "fendurance": 26,
+                    "fightMod": [
+                      "MindblastImmune"
+                    ],
+                    "opponent": "Vordak"
+                  },
+                  {
+                    "Goto": 394
+                  }
+                ]
+              }
+            ]
           ]
         }
       },
