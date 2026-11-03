@@ -261,7 +261,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (271%nat,none (GameLost));
   (272%nat,Decisions [conditional (HasDiscipline (Tracking)) (none (Goto 134%nat)); conditional (Not (HasDiscipline (Tracking))) (Decisions [none (Goto 305%nat)])]);
   (273%nat,Decisions [none (Goto 179%nat); none (Goto 51%nat)]);
-  (274%nat,none (Goto 331%nat));
+  (274%nat,none (Simple [LoseItemKind [SWeapon]] (Goto 331%nat)));
   (275%nat,none (Randomly [(Goto 345%nat , (Q2Qc (1 / 2)%Q)); (Goto 74%nat , (Q2Qc (1 / 2)%Q))]));
   (276%nat,none (Simple [DamagePlayer 1%nat] (Goto 213%nat)));
   (277%nat,none (Simple [LoseItemKind [SWeapon]] (Goto 113%nat)));

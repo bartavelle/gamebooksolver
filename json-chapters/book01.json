@@ -6919,7 +6919,18 @@
       "desc": "In your haste to avoid the enemy, you catch your foot in a tree root and you are pitched head over heels in a tumble of dust and leaves. You quickly get to your feet and, crashing through the undergrowth at the base of the hill, you run into the forest. You have been running for nearly ten minutes when you discover that you have lost your Weapon(s). Well, at least you still have your life and your Backpack. Wiping the grime from your face, you push on through the trees ahead.\n",
       "pchoice": {
         "NoDecision": {
-          "Goto": 331
+          "Simple": [
+            [
+              {
+                "LoseItemKind": [
+                  "WeaponSlot"
+                ]
+              }
+            ],
+            {
+              "Goto": 331
+            }
+          ]
         }
       },
       "title": "274"
