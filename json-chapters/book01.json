@@ -3580,13 +3580,63 @@
       "pchoice": {
         "Decisions": [
           [
-            "with backpack",
+            "with backpack items",
             {
               "Conditional": [
                 {
-                  "HasItem": [
-                    "Backpack",
-                    1
+                  "CAnd": [
+                    {
+                      "HasItem": [
+                        "Backpack",
+                        1
+                      ]
+                    },
+                    {
+                      "COr": [
+                        {
+                          "COr": [
+                            {
+                              "COr": [
+                                {
+                                  "COr": [
+                                    {
+                                      "HasItem": [
+                                        "Meal",
+                                        1
+                                      ]
+                                    },
+                                    {
+                                      "HasItem": [
+                                        "Laumspur",
+                                        1
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "HasItem": [
+                                    "StrengthPotion",
+                                    1
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "HasItem": [
+                                "Potion4Hp",
+                                1
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "HasItem": [
+                            "BGenCounter 0",
+                            1
+                          ]
+                        }
+                      ]
+                    }
                   ]
                 },
                 {
@@ -3625,12 +3675,6 @@
                               "Simple": [
                                 [
                                   {
-                                    "LoseItem": [
-                                      "Dagger",
-                                      1
-                                    ]
-                                  },
-                                  {
                                     "DamagePlayer": 2
                                   }
                                 ],
@@ -3649,14 +3693,64 @@
             }
           ],
           [
-            "without backpack",
+            "without backpack items",
             {
               "Conditional": [
                 {
                   "Not": {
-                    "HasItem": [
-                      "Backpack",
-                      1
+                    "CAnd": [
+                      {
+                        "HasItem": [
+                          "Backpack",
+                          1
+                        ]
+                      },
+                      {
+                        "COr": [
+                          {
+                            "COr": [
+                              {
+                                "COr": [
+                                  {
+                                    "COr": [
+                                      {
+                                        "HasItem": [
+                                          "Meal",
+                                          1
+                                        ]
+                                      },
+                                      {
+                                        "HasItem": [
+                                          "Laumspur",
+                                          1
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "HasItem": [
+                                      "StrengthPotion",
+                                      1
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "HasItem": [
+                                  "Potion4Hp",
+                                  1
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "HasItem": [
+                              "BGenCounter 0",
+                              1
+                            ]
+                          }
+                        ]
+                      }
                     ]
                   }
                 },
@@ -3695,12 +3789,6 @@
                             {
                               "Simple": [
                                 [
-                                  {
-                                    "LoseItem": [
-                                      "Dagger",
-                                      1
-                                    ]
-                                  },
                                   {
                                     "DamagePlayer": 2
                                   }
