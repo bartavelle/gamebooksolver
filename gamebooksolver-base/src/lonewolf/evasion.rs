@@ -207,6 +207,12 @@ mod test {
     }
 
     #[test]
+    fn a_doubled_kill_is_still_a_kill() {
+        assert_eq!(Endurance(50).damage(200), Endurance(0));
+        assert_eq!(Endurance(50).damage(2), Endurance(48));
+    }
+
+    #[test]
     fn evading_leaves_the_whole_combat() {
         let evade = Decision::EvadeFight(
             Rounds(0),

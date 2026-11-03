@@ -37,7 +37,8 @@ pub struct CombatSkill(pub i8);
 
 impl Endurance {
     pub fn damage(&self, v: u8) -> Self {
-        Endurance(std::cmp::max(self.0 - v as i8, 0))
+        // a killing blow is worth 100, and can be doubled
+        Endurance(std::cmp::max(self.0 as i16 - v as i16, 0) as i8)
     }
 
     pub const fn dead(&self) -> bool {

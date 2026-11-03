@@ -34,7 +34,7 @@ another by its short name, whatever its directory.
   - `valid_items.v`, `valid_fight.v`, `valid_state.v`: what keeps the items valid, that fights never give endurance, and
     the effects on a state.
   - `valid_play.v`: `play_keeps_valid`: playing the five books keeps a state valid.
-  - `no_overflow.v`: endurance can't overflow on a doubled kill.
+  - `no_overflow.v`: which fights double a kill while played round by round.
   - `cartwheel.v`: staking one crown is optimal at the Cartwheel.
 - `difftest/`: tests on the extracted model. `run.sh` runs it against the Rust solver on random characters, and `valid.sh`
   checks on the books that playing keeps `ValidState` true. `evasion.sh` checks the fights of Book 4 that can be evaded against

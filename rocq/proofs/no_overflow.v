@@ -1,10 +1,10 @@
-(* Endurance::damage, in the Rust solver, takes a damage that must fit in an i8. A killing blow is worth 100, and doubling
-   it would wrap around. Rounds computed with the shortcut of combat.rs halve the endurance of the opponent instead, so
-   that only the fights played round by round are at risk. This checks on the books that they are never doubled:
+(* A killing blow is worth 100 in the Rust solver, and doubling it does not fit in an i8. Rounds computed with the shortcut
+   of combat.rs halve the endurance of the opponent instead, so that only the fights played round by round double it.
+   Endurance::damage computes on a larger type, as the fight of chapter 395 of book 3 needs. This lists these fights:
 
    - DoubleDamage never applies to such a fight, in any book;
    - Undead only doubles the damage with the Sommerswerd. It can't be held before it is given in book 2, and these
-     fights can't be reached from there. Books 3 to 5 have no such fights. *)
+     fights can't be reached from there. In books 3 to 5, there is only chapter 395 of book 3. *)
 Require Import chapters.
 Require book01 book02 book03 book04 book05.
 Require Import Stdlib.Lists.List Stdlib.Arith.Arith Stdlib.Bool.Bool.
@@ -158,9 +158,11 @@ Proof. vm_compute. reflexivity. Qed.
 Theorem no_undead_by_rounds_after_sword: after_sword_safe book02.chapters = true.
 Proof. vm_compute. reflexivity. Qed.
 
+Theorem undead_by_rounds_in_book03: map fst (filter (fun cd => rounds_with is_undead (snd cd)) book03.chapters) = [395].
+Proof. vm_compute. reflexivity. Qed.
+
 Theorem no_undead_by_rounds_in_later_books:
-  no_rounds_with is_undead book03.chapters = true /\ no_rounds_with is_undead book04.chapters = true
-  /\ no_rounds_with is_undead book05.chapters = true.
+  no_rounds_with is_undead book04.chapters = true /\ no_rounds_with is_undead book05.chapters = true.
 Proof. vm_compute. repeat split. Qed.
 
 (* The check is not vacuous: without the sword, there is such a fight in book 2 *)
