@@ -22,7 +22,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (18%nat,Decisions [conditional (HasDiscipline (Camouflage)) (none (Goto 114%nat)); none (Goto 239%nat); none (Goto 29%nat)]);
   (19%nat,Decisions [conditional (HasDiscipline (Tracking)) (none (Goto 69%nat)); conditional (Not (HasDiscipline (Tracking))) (Decisions [none (Goto 272%nat); none (Goto 119%nat)])]);
   (20%nat,can_take Backpack 1%nat (can_take Meal 2%nat (can_take (Weapon Dagger) 1%nat (none (Goto 273%nat)))));
-  (21%nat,none (Randomly [(Goto 189%nat , (Q2Qc (13 / 20)%Q)); (GameLost , (Q2Qc (63 / 200)%Q)); (Goto 312%nat , (Q2Qc (7 / 200)%Q))]));
+  (21%nat,none (Randomly [(Goto 189%nat , (Q2Qc (3 / 5)%Q)); (GameLost , (Q2Qc (9 / 25)%Q)); (Goto 312%nat , (Q2Qc (1 / 25)%Q))]));
   (22%nat,none (Randomly [(Goto 181%nat , (Q2Qc (1 / 2)%Q)); (Goto 145%nat , (Q2Qc (1 / 2)%Q))]));
   (23%nat,Decisions [conditional (HasItem (GenSpecial S1) 1%nat) (none (Goto 326%nat)); conditional (HasDiscipline (MindOverMatter)) (none (Goto 151%nat)); none (Goto 337%nat)]);
   (24%nat,Decisions [none (Goto 234%nat); none (Goto 184%nat)]);
