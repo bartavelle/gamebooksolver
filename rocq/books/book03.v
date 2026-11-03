@@ -7,7 +7,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (2%nat,Decisions [none (Goto 290%nat); none (Goto 76%nat)]);
   (3%nat,Decisions [none (Goto 280%nat); none (Goto 344%nat)]);
   (4%nat,can_take (Weapon Sword) 1%nat (can_take (GenSpecial S1) 1%nat (none (Goto 332%nat))));
-  (5%nat,Decisions [none (Goto 295%nat); none (Goto 14%nat); none (Goto 132%nat)]);
+  (5%nat,Decisions [none (Goto 295%nat); none (Goto 14%nat); none (Simple [DamagePlayer 3%nat] (Goto 132%nat))]);
   (6%nat,Decisions [none (Goto 224%nat); none (Goto 166%nat)]);
   (7%nat,Decisions [none (Goto 145%nat); none (Goto 242%nat)]);
   (8%nat,none (Simple [SetFlag Special04] (Goto 325%nat)));
@@ -161,7 +161,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (173%nat,Decisions [conditional (HasItem (GenSpecial S6) 1%nat) (none (Goto 34%nat)); conditional (Not (HasItem (GenSpecial S6) 1%nat)) (Decisions [none (Goto 164%nat); none (Goto 200%nat)])]);
   (174%nat,none (Goto 322%nat));
   (175%nat,none (GameLost));
-  (176%nat,Decisions [none (Goto 5%nat); none (Goto 132%nat)]);
+  (176%nat,Decisions [none (Goto 5%nat); none (Simple [DamagePlayer 3%nat] (Goto 132%nat))]);
   (178%nat,none (Goto 105%nat));
   (179%nat,none (Randomly [(Goto 39%nat , (Q2Qc (1 / 2)%Q)); (Goto 296%nat , (Q2Qc (1 / 2)%Q))]));
   (181%nat,Decisions [none (Goto 208%nat); none (Goto 292%nat)]);

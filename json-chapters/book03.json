@@ -130,7 +130,16 @@
             "If you wish to ignore them and continue on your way, turn to 132.",
             {
               "NoDecision": {
-                "Goto": 132
+                "Simple": [
+                  [
+                    {
+                      "DamagePlayer": 3
+                    }
+                  ],
+                  {
+                    "Goto": 132
+                  }
+                ]
               }
             }
           ]
@@ -5728,7 +5737,16 @@
             "If you wish to ignore the chamber and continue, turn to 132.",
             {
               "NoDecision": {
-                "Goto": 132
+                "Simple": [
+                  [
+                    {
+                      "DamagePlayer": 3
+                    }
+                  ],
+                  {
+                    "Goto": 132
+                  }
+                ]
               }
             }
           ]
