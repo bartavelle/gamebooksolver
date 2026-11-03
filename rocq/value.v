@@ -887,11 +887,28 @@ Section Sim.
   Qed.
 End Sim.
 
+(* Two decisions that give different outcomes can still have the same value: a decision is fine if its outcomes in two
+   states have the same value, one by one, for everything that can't tell apart what comes next. *)
+Definition TopSim (T: Tracker) (ch: cid -> nat) (wn: nat) (d: decision) (n: nat) : Prop :=
+  forall f: next_step -> Qc,
+    (forall x y, R T (ch (chapter x)) x y -> f (New x) = f (New y)) ->
+    (forall x y, R T wn x y -> f (Won x) = f (Won y)) ->
+    forall fl fuel s t, R T n s t ->
+      Forall2 (fun o1 o2 =>
+        ev f (s_update_d fuel (update_flags (s_unset HadCombat) s) o1) = ev f (s_update_d fuel (update_flags (s_unset HadCombat) t) o2))
+        (flatten_d fl s d) (flatten_d fl t d).
+
+Lemma forall2_map {A B C: Type}: forall (g: A -> C) (h: B -> C) l1 l2,
+  Forall2 (fun a b => g a = h b) l1 l2 -> map g l1 = map h l2.
+Proof.
+  intros g h l1 l2 F. induction F; simpl; auto. f_equal; assumption.
+Qed.
+
 (* States that R can't tell apart at the need of their chapter have the same value, if each chapter needs no more than
-   what the table ch gives it, and if finishing the book can't tell them apart either. *)
-Theorem value_same: forall (T: Tracker) (ch: cid -> nat) (wn: nat) (chapters: list (cid * decision)) (score: Stt -> Qc),
+   what is written for it, or has outcomes that have the same value. *)
+Theorem value_same_top: forall (T: Tracker) (ch: cid -> nat) (wn: nat) (chapters: list (cid * decision)) (score: Stt -> Qc),
   (forall s t, R T wn s t -> score s = score t) ->
-  (forall c d, find_chapter c chapters = Some d -> dec_need T ch wn d <= ch c) ->
+  (forall c d, find_chapter c chapters = Some d -> dec_need T ch wn d <= ch c \/ TopSim T ch wn d (ch c)) ->
   forall fuel s t, R T (ch (chapter s)) s t -> value chapters score fuel s = value chapters score fuel t.
 Proof.
   intros T ch wn chapters score HS HB.
@@ -899,18 +916,33 @@ Proof.
   cbn [value]. unfold step.
   rewrite <- (R_chapter _ _ _ _ HR).
   destruct (find_chapter (chapter s) chapters) as [d|] eqn: F; [|reflexivity].
-  destruct (flatten_same T ch wn 1000 (ch (chapter s)) s t d (HB _ _ F) HR) as [E M].
-  unfold flatten_decision. rewrite <- E. rewrite !map_map. f_equal. apply map_ext_in. intros o I.
-  assert (R T (ch (chapter s)) (update_flags (s_unset HadCombat) s) (update_flags (s_unset HadCombat) t)) as RN
-    by (apply R_unset_had; assumption).
-  unfold s_update.
   set (g := fun ns => match ns with Lost => 0%Qc | Won x => score x | New x => value chapters score fuel x end).
-  assert (forall n, co_need T ch wn o <= n -> R T n (update_flags (s_unset HadCombat) s) (update_flags (s_unset HadCombat) t) ->
-    ev g (s_update_d 1000 (update_flags (s_unset HadCombat) s) o) = ev g (s_update_d 1000 (update_flags (s_unset HadCombat) t) o)) as G.
-  { intros n L R2.
-    apply (ev_update T ch wn g (fun x y H => IH x y H) (fun x y H => HS x y H) 1000 _ _ o n L R2). }
-  destruct (M o I) as [L|A].
-  - apply (G _ L RN).
-  - apply (G (Nat.max (ch (chapter s)) (co_need T ch wn o))); [lia|].
-    eapply R_top; [exact A| |exact RN]. lia.
+  destruct (HB _ _ F) as [HN|TS].
+  - destruct (flatten_same T ch wn 1000 (ch (chapter s)) s t d HN HR) as [E M].
+    unfold flatten_decision. rewrite <- E. rewrite !map_map. f_equal. apply map_ext_in. intros o I.
+    assert (R T (ch (chapter s)) (update_flags (s_unset HadCombat) s) (update_flags (s_unset HadCombat) t)) as RN
+      by (apply R_unset_had; assumption).
+    unfold s_update.
+    assert (forall n, co_need T ch wn o <= n -> R T n (update_flags (s_unset HadCombat) s) (update_flags (s_unset HadCombat) t) ->
+      ev g (s_update_d 1000 (update_flags (s_unset HadCombat) s) o) = ev g (s_update_d 1000 (update_flags (s_unset HadCombat) t) o)) as G.
+    { intros n L R2.
+      apply (ev_update T ch wn g (fun x y H => IH x y H) (fun x y H => HS x y H) 1000 _ _ o n L R2). }
+    destruct (M o I) as [L|A].
+    + apply (G _ L RN).
+    + apply (G (Nat.max (ch (chapter s)) (co_need T ch wn o))); [lia|].
+      eapply R_top; [exact A| |exact RN]. lia.
+  - unfold flatten_decision, s_update. rewrite !map_map. f_equal.
+    apply forall2_map. apply TS.
+    + intros x y H. apply IH. exact H.
+    + intros x y H. apply HS. exact H.
+    + exact HR.
+Qed.
+
+Theorem value_same: forall (T: Tracker) (ch: cid -> nat) (wn: nat) (chapters: list (cid * decision)) (score: Stt -> Qc),
+  (forall s t, R T wn s t -> score s = score t) ->
+  (forall c d, find_chapter c chapters = Some d -> dec_need T ch wn d <= ch c) ->
+  forall fuel s t, R T (ch (chapter s)) s t -> value chapters score fuel s = value chapters score fuel t.
+Proof.
+  intros T ch wn chapters score HS HB. apply (value_same_top T ch wn chapters score HS).
+  intros c d F. left. eapply HB. exact F.
 Qed.
