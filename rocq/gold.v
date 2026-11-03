@@ -754,7 +754,7 @@ Section Retrieve.
           (destruct (_ <? backpack_slots _ _)%nat;
             [ apply pend_wrap; [repeat constructor; assumption|]; apply IH;
               [apply pd_take; [discriminate|exact D]|apply pend_steps; auto; repeat constructor; assumption]
-            | destruct (mps.eqb l _);
+            | destruct (order.eqb l _);
               [ constructor
               | apply pend_wrap; [repeat constructor; first [assumption|discriminate]|]; apply IH; auto;
                 apply pend_steps; auto; repeat constructor; first [assumption|discriminate]]])

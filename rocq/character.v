@@ -111,15 +111,15 @@ End SH.
       
 Module Stt.
   Definition stt_beq (s1: Stt) (s2: Stt) : bool :=
-    mps.eqb (book s1) (book s2)
-    && mps.eqb (maxendurance s1) (maxendurance s2)
-    && mps.eqb (curendurance s1) (curendurance s2)
-    && mps.eqb (sk s1) (sk s2)
-    && mps.eqb (disciplines s1) (disciplines s2)
-    && mps.eqb (chapter s1) (chapter s2)
-    && mps.eqb (items s1) (items s2)
-    && mps.eqb (flags s1) (flags s2)
-    && mps.eqb (previtems s1) (previtems s2)
+    order.eqb (book s1) (book s2)
+    && order.eqb (maxendurance s1) (maxendurance s2)
+    && order.eqb (curendurance s1) (curendurance s2)
+    && order.eqb (sk s1) (sk s2)
+    && order.eqb (disciplines s1) (disciplines s2)
+    && order.eqb (chapter s1) (chapter s2)
+    && order.eqb (items s1) (items s2)
+    && order.eqb (flags s1) (flags s2)
+    && order.eqb (previtems s1) (previtems s2)
     .
 
   Lemma stt_beq_correct : forall (x y: Stt), x = y <-> stt_beq x y = true.
@@ -310,7 +310,7 @@ Definition all_held_items (s: Stt): list (item * nat) :=
 Definition all_character_items (s: Stt): list (item * nat) := items s.
 
 Definition all_character_items_slot (s: Stt) (sl: slot): list (item * nat) :=
-  filter (fun kv: item * nat => mps.eqb (item_slot (fst kv)) sl) (items s).
+  filter (fun kv: item * nat => order.eqb (item_slot (fst kv)) sl) (items s).
 
 Definition all_character_items_slot_count (s: Stt) (sl: slot): nat :=
   list_sum (map snd (all_character_items_slot s sl)).
@@ -341,38 +341,38 @@ Module Slot.
     destruct q; try (rewrite update_add0; Lia.lia).
     destruct stt. unfold all_character_items_slot_count, update_items, sitems.
     unfold all_character_items_slot.
-    Arguments mps.eqb : simpl never.
+    Arguments order.eqb : simpl never.
     simpl.
     rewrite add_item_nogold; auto.
     subst.
     simpl in H.
     clear book0 maxendurance0 curendurance0 sk0 disciplines0 chapter0 flags0 previtems0.
     induction items0; simpl.
-    * rewrite mps.eqb_refl.
+    * rewrite order.eqb_refl.
       simpl. Lia.lia.
     * destruct a.
       simpl.
-      replace (Helpers.compare_with_list all_items i i0) with (mps.cmp i i0) by auto.
-      destruct (mps.cmp i i0) eqn: II0; simpl.
-      + rewrite mps.eqb_refl.
-        destruct (mps.eq_dec (item_slot i0) (item_slot i)).
+      replace (Helpers.compare_with_list all_items i i0) with (order.cmp i i0) by auto.
+      destruct (order.cmp i i0) eqn: II0; simpl.
+      + rewrite order.eqb_refl.
+        destruct (order.eq_dec (item_slot i0) (item_slot i)).
         - rewrite e.
-          rewrite mps.eqb_refl; simpl. Lia.lia.
-        - apply mps.eqb_not in n0.
+          rewrite order.eqb_refl; simpl. Lia.lia.
+        - apply order.eqb_not in n0.
           rewrite n0; simpl.
           Lia.lia.
       + apply cmp_eq in II0.
         subst.
-        rewrite mps.eq_refl; simpl.
+        rewrite order.eq_refl; simpl.
         Lia.lia.
-      + destruct (mps.eq_dec (item_slot i0) (item_slot i)).
+      + destruct (order.eq_dec (item_slot i0) (item_slot i)).
         - rewrite e.
-          rewrite mps.eqb_refl; simpl.
+          rewrite order.eqb_refl; simpl.
           rewrite IHitems0.
           Lia.lia.
           apply Valid.head in H.
           tauto.
-        - apply mps.eqb_not in n0.
+        - apply order.eqb_not in n0.
           rewrite n0.
           rewrite IHitems0.
           Lia.lia.
@@ -388,24 +388,24 @@ Admitted.
 
   Lemma list_sum_add {A: Type} `{EqDec A}: forall lst (i: A) (f: A -> nat),
     In i lst -> NoDup lst ->
-    list_sum (map (fun x => if mps.eqb x i then f x + 1 else f x) lst) = list_sum (map f lst) + 1.
+    list_sum (map (fun x => if order.eqb x i then f x + 1 else f x) lst) = list_sum (map f lst) + 1.
   Proof.
     induction lst; intros; simpl.
     * contradiction.
     * inversion H0; subst; clear H0.
-      + rewrite mps.eqb_refl.
+      + rewrite order.eqb_refl.
         inversion H1; subst; clear H1.
-        replace (list_sum (map (fun x : A => if mps.eqb x i then f x + 1 else f x) lst)) with (list_sum (map f lst)).
+        replace (list_sum (map (fun x : A => if order.eqb x i then f x + 1 else f x) lst)) with (list_sum (map f lst)).
         Lia.lia.
         f_equal.
         apply map_ext_in.
         intros.
-        destruct (mps.eqb a i) eqn: EAI; auto.
+        destruct (order.eqb a i) eqn: EAI; auto.
         apply eqb_correct in EAI. subst. contradiction.
       + inversion H1; subst; clear H1.
         destruct (eq_dec a i).
         - subst. contradiction.
-        - replace (mps.eqb a i) with false. 2: {
+        - replace (order.eqb a i) with false. 2: {
             symmetry.
             apply eqb_not.
             assumption.
@@ -415,24 +415,24 @@ Admitted.
 
   Lemma list_sum_sub {A: Type} `{EqDec A}: forall lst (drp: A) (f: A -> nat),
     In drp lst -> NoDup lst -> f drp > 0 ->
-    list_sum (map (fun x => if mps.eqb x drp then f x - 1 else f x) lst) + 1 = list_sum (map f lst).
+    list_sum (map (fun x => if order.eqb x drp then f x - 1 else f x) lst) + 1 = list_sum (map f lst).
   Proof.
     induction lst; intros; simpl.
     * contradiction.
     * inversion H0; subst; clear H0.
-      + rewrite mps.eqb_refl.
+      + rewrite order.eqb_refl.
         inversion H1; subst; clear H1.
-        replace (list_sum (map (fun x : A => if mps.eqb x drp then f x - 1 else f x) lst)) with (list_sum (map f lst)).
+        replace (list_sum (map (fun x : A => if order.eqb x drp then f x - 1 else f x) lst)) with (list_sum (map f lst)).
         Lia.lia.
         f_equal.
         apply map_ext_in.
         intros.
-        destruct (mps.eqb a drp) eqn: EAI; auto.
+        destruct (order.eqb a drp) eqn: EAI; auto.
         apply eqb_correct in EAI. subst. contradiction.
       + inversion H1; subst; clear H1.
         destruct (eq_dec a drp).
         - subst. contradiction.
-        - replace (mps.eqb a drp) with false. 2: {
+        - replace (order.eqb a drp) with false. 2: {
             symmetry.
             apply eqb_not.
             assumption.
@@ -454,15 +454,15 @@ Admitted.
   Qed.
 
   Lemma sum_filter_insert_1: forall (m: Mp item nat) (i: item) (s: slot),
-  list_sum (map snd (filter (fun kv => mps.eqb (item_slot (fst kv)) s) (insert_with (fun pq => pq + 1) i 1 m))) =
-  list_sum (map snd (filter (fun kv => mps.eqb (item_slot (fst kv)) s) m)) + (if mps.eqb (item_slot i) s then 1 else 0).
+  list_sum (map snd (filter (fun kv => order.eqb (item_slot (fst kv)) s) (insert_with (fun pq => pq + 1) i 1 m))) =
+  list_sum (map snd (filter (fun kv => order.eqb (item_slot (fst kv)) s) m)) + (if order.eqb (item_slot i) s then 1 else 0).
 Proof.
 Admitted.
 
   Lemma sum_filter_rm_1: forall (m: Mp item nat) (drp: item) (s: slot),
     match lookup drp m with Some x => x | None => 0 end > 0 ->
-    list_sum (map snd (filter (fun kv => mps.eqb (item_slot (fst kv)) s) m)) =
-    list_sum (map snd (filter (fun kv => mps.eqb (item_slot (fst kv)) s) (rm_item drp 1 m))) + (if mps.eqb (item_slot drp) s then 1 else 0).
+    list_sum (map snd (filter (fun kv => order.eqb (item_slot (fst kv)) s) m)) =
+    list_sum (map snd (filter (fun kv => order.eqb (item_slot (fst kv)) s) (rm_item drp 1 m))) + (if order.eqb (item_slot drp) s then 1 else 0).
 Proof.
 Admitted.
 

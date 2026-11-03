@@ -45,11 +45,11 @@ Inductive TEscaped : Set :=
 Module TE.
   Definition te_eqb (a b: TEscaped): bool :=
   match (a, b) with
-  | (Escaped c1 a1, Escaped c2 a2) => mps.eqb c1 c2 && mps.eqb a1 a2
-  | (LateWin c1 a1, LateWin c2 a2) => mps.eqb c1 c2 && mps.eqb a1 a2
-  | (Stopped c1 a1, Stopped c2 a2) => mps.eqb c1 c2 && mps.eqb a1 a2
-  | (TLost a1, TLost a2) => mps.eqb a1 a2
-  | (Std a1, Std a2) => mps.eqb a1 a2
+  | (Escaped c1 a1, Escaped c2 a2) => order.eqb c1 c2 && order.eqb a1 a2
+  | (LateWin c1 a1, LateWin c2 a2) => order.eqb c1 c2 && order.eqb a1 a2
+  | (Stopped c1 a1, Stopped c2 a2) => order.eqb c1 c2 && order.eqb a1 a2
+  | (TLost a1, TLost a2) => order.eqb a1 a2
+  | (Std a1, Std a2) => order.eqb a1 a2
   | _ => false
   end.
 
@@ -58,7 +58,7 @@ Module TE.
   Proof.
     split; intros.
     { subst.
-      destruct y; unfold te_eqb; repeat (rewrite mps.eqb_refl; auto).
+      destruct y; unfold te_eqb; repeat (rewrite order.eqb_refl; auto).
     }
     { unfold te_eqb in H. destruct x, y; try (apply Bool.andb_true_iff in H); auto; try discriminate.
       destruct H; apply eqb_correct in H, H0; subst; auto.
@@ -161,7 +161,7 @@ Module TE.
 End TE.
 
 
-Instance te_EqDec: mps.EqDec TEscaped := {
+Instance te_EqDec: order.EqDec TEscaped := {
   eqb := TE.te_eqb;
   eqb_correct := TE.eqb_correct;
 }.
@@ -367,7 +367,7 @@ Definition get_ratio (stt: Stt) (osk: Z) (mds: list fight_modifier): Z :=
                   | _ => 8%Z
                   end
         else match mspec with
-              | Some w => if ((mps.eqb w Spear && has_item (Weapon MagicSpear) stt) || has_item (Weapon w) stt)%bool
+              | Some w => if ((order.eqb w Spear && has_item (Weapon MagicSpear) stt) || has_item (Weapon w) stt)%bool
                     then 2%Z
                     else 0%Z
               | None => 0%Z

@@ -377,7 +377,7 @@ Definition potions : list item :=
 Definition rule_effect (so: simple_outcome) : bool :=
   match so with
   | HealPlayer _ | DamagePlayer _ | ClearFlag Poisonned2 | SetFlag StrengthPotionActive | SetFlag PotentStrengthPotionActive => true
-  | LoseItem i 1 => existsb (mps.eqb i) potions
+  | LoseItem i 1 => existsb (order.eqb i) potions
   | _ => false
   end.
 
@@ -801,7 +801,7 @@ Section Sim.
         | destruct (NX nxt HA) as [E1 M1]; apply app_ok2; auto; apply flat_map_ok;
           intros l Il; (destruct (_ <? backpack_slots _ _)%nat;
             [ apply WE; simpl; rewrite (sn_drop T _ t lst l _ TC Il); exact HN
-            | destruct (mps.eqb l _);
+            | destruct (order.eqb l _);
               [ split; [reflexivity|intros x []]
               | apply WE; simpl; rewrite (sn_drop T _ t lst l _ TC Il); eapply Nat.le_trans; [apply tn_gain|exact HN]]])
         | apply NX; exact HA ]

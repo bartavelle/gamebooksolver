@@ -291,8 +291,8 @@ Definition tcan_take (i: item) (s: Stt): can_take_result :=
   | SPouch => SpaceAvailable
   | SSpecial =>
       if has_item i s then Nope
-      else if mps.eqb i SilverHelmet && has_item Helmet s then MustDrop [Helmet]
-      else if mps.eqb i Helmet && has_item SilverHelmet s then MustDrop [SilverHelmet]
+      else if order.eqb i SilverHelmet && has_item Helmet s then MustDrop [Helmet]
+      else if order.eqb i Helmet && has_item SilverHelmet s then MustDrop [SilverHelmet]
       else SpaceAvailable
   | SWeapon =>
       let weapons := held_items SWeapon s in
@@ -401,7 +401,7 @@ Fixpoint flatten_d (fuel: nat) (stt: Stt) (d: decision) : list chapter_outcome :
             flatten_d f stt nxt ++
             flat_map (fun l =>
               if Nat.ltb 1 (backpack_slots (book stt) i) then with_effect [LoseItem l 1] d
-              else if mps.eqb l i then []
+              else if order.eqb l i then []
               else with_effect [LoseItem l 1; GainItem i 1] nxt) lst
         end
     | can_take i (S q) nxt => flatten_d f stt (can_take i 1 (can_take i q nxt))
