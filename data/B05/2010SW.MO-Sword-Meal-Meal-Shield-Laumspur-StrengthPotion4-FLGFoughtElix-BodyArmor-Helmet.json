@@ -1,0 +1,43 @@
+{
+  "mbook": "Book05",
+  "msdisciplines": [
+    "Camouflage",
+    "Hunting",
+    "SixthSense",
+    "Tracking",
+    "Healing",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": {
+      "Sword": 1,
+      "StrengthPotion4": 1,
+      "Shield": 1,
+      "BodyArmor": 1,
+      "Meal": 2,
+      "Laumspur": 1,
+      "Helmet": 1
+    },
+    "gold": 50,
+    "flags": [
+      "FoughtElix"
+    ]
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.8354022142088714,
+      "mratio": {
+        "radix": 16,
+        "value": "5b74f4f0aac8984f80942808fab871bfad32457/6d79f82328ea3da61e066ebb2f88a0000000000"
+      },
+      "states": 35010
+    }
+  ]
+}

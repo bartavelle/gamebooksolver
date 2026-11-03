@@ -152,15 +152,11 @@ def step(d, names):
 
 
 def is_potion(d):
-    return any("Potion of Alether" in p and (p.startswith("Drink") or p.startswith("Save")) for p in d["picks"])
+    return any(re.fullmatch(r"Drink the .*otion.*|Save the potions", p) for p in d["picks"])
 
 
-def main():
-    path, number, title, char_path, out = sys.argv[1:6]
-    number = int(number)
-    char = json.load(open(char_path))
-    names = A.Names(json.load(open(os.path.join(ROOT, "report/items.json")))[str(number)])
-    book = Book(number)
+def kit_body(path, number, book, names):
+    """What a player needs for one character: its chance of finishing, and the sections of the page."""
     root, states = A.load(path)
     chances = A.reach(root, states)
     score = A.check(root, states, chances)
@@ -196,7 +192,7 @@ def main():
         cid = d["key"][1]
         pick = d["picks"].most_common(1)[0][0]
         potion_rows.append(
-            f'<tr><td class="s">{book.section(cid)}</td><td>{esc(book.opponent(cid) or "?")}</td><td>{esc(pick.split(" the ")[0])}</td>'
+            f'<tr><td class="s">{book.section(cid)}</td><td>{esc(book.opponent(cid) or "?")}</td><td>{esc(pick)}</td>'
             f'<td class="n">{pct(d["chance"], 0)}</td><td class="n">−{pts(d["worst"])}</td></tr>'
         )
 
@@ -222,6 +218,38 @@ def main():
         rule = f"{d['rule'][2]} when {d['rule'][1]}, otherwise {d['rule'][3].lower()}" if d["rule"] else f"{pick} as soon as you can" if pick == "Evade" else pick
         fights.append(f'<tr><td>{esc(key[1])}</td><td>{esc(rule)}</td><td class="n">{pct(entered, 0)}</td><td class="n">−{pts(d["worst"])}</td></tr>')
 
+    body = f"""<section>
+  <h2>The decisions that decide the book</h2>
+  <p class="quiet">Numbers are the book's section numbers, ordered by how much a wrong choice costs on average. A point is one percentage point of the chance of finishing. The red figure is the most you can lose by taking the next best option.</p>
+  <div class="entries">{"".join(entries)}</div>
+</section>
+<section>
+  <h2>When to drink a strength potion</h2>
+  <p class="quiet">The Potion of Alether adds 2 Combat Skill for one fight, and a potent one adds 4. These are the fights where the choice to drink matters, with the most a wrong call costs.</p>
+  <div class="scroll"><table><thead><tr><th>Section</th><th>Fight</th><th>Potion</th><th class="n">Reached</th><th class="n">Points</th></tr></thead><tbody>{"".join(potion_rows)}</tbody></table></div>
+</section>
+<section>
+  <h2>Where the remaining {pct(1 - score)} of games end</h2>
+  <p class="quiet">These are the risks left after every choice is made well.</p>
+  <div class="scroll"><table><thead><tr><th>Section</th><th>What happens</th><th class="n">Games</th><th></th></tr></thead><tbody>{"".join(death_rows)}</tbody></table></div>
+  {f'<p class="quiet">Other sections add up to {pct(small_deaths, 2)}.</p>' if small_deaths else ""}
+</section>
+<section>
+  <h2>Fights you can leave</h2>
+  <p class="quiet">Only fights where the choice to evade changes the score are listed, with the most a wrong call costs.</p>
+  <div class="scroll"><table><thead><tr><th>Opponent</th><th>What to do</th><th class="n">Reached</th><th class="n">Points</th></tr></thead><tbody>{"".join(fights)}</tbody></table></div>
+</section>
+"""
+    return dict(score=score, body=body, withchoice=res["withchoice"], ties=res["ties"])
+
+
+def main():
+    path, number, title, char_path, out = sys.argv[1:6]
+    number = int(number)
+    char = json.load(open(char_path))
+    names = A.Names(json.load(open(os.path.join(ROOT, "report/items.json")))[str(number)])
+    kit = kit_body(path, number, Book(number), names)
+    score = kit["score"]
     boxes = "".join(
         f'<div class="box{" wide" if len(v) > 40 else ""}"><b>{esc(k)}</b><span>{esc(v)}</span></div>' for k, v in char["chart"]
     )
@@ -239,32 +267,11 @@ def main():
     {boxes}
   </div>
 </header>
-<section>
-  <h2>The decisions that decide the book</h2>
-  <p class="quiet">Numbers are the book's section numbers, ordered by how much a wrong choice costs on average. A point is one percentage point of the chance of finishing. The red figure is the most you can lose by taking the next best option.</p>
-  <div class="entries">{"".join(entries)}</div>
-</section>
-<section>
-  <h2>When to drink the Potion of Alether</h2>
-  <p class="quiet">It adds 2 Combat Skill for one fight. These are the fights where the choice to drink it matters, with the most a wrong call costs.</p>
-  <div class="scroll"><table><thead><tr><th>Section</th><th>Fight</th><th>Potion</th><th class="n">Reached</th><th class="n">Points</th></tr></thead><tbody>{"".join(potion_rows)}</tbody></table></div>
-</section>
-<section>
-  <h2>Where the remaining {pct(1 - score)} of games end</h2>
-  <p class="quiet">These are the risks left after every choice is made well.</p>
-  <div class="scroll"><table><thead><tr><th>Section</th><th>What happens</th><th class="n">Games</th><th></th></tr></thead><tbody>{"".join(death_rows)}</tbody></table></div>
-  {f'<p class="quiet">Other sections add up to {pct(small_deaths, 2)}.</p>' if small_deaths else ""}
-</section>
-<section>
-  <h2>Fights you can leave</h2>
-  <p class="quiet">Only fights where the choice to evade changes the score are listed, with the most a wrong call costs.</p>
-  <div class="scroll"><table><thead><tr><th>Opponent</th><th>What to do</th><th class="n">Reached</th><th class="n">Points</th></tr></thead><tbody>{"".join(fights)}</tbody></table></div>
-</section>
-<section>
+{kit["body"]}<section>
   <h2>How to read this</h2>
   <ul>
     {"".join(f"<li>{esc(x)}</li>" for x in char["notes"])}
-    <li>The solver found {res["withchoice"]} situations with a choice on the best path, and {res["ties"]} of them are exact ties.</li>
+    <li>The solver found {kit["withchoice"]} situations with a choice on the best path, and {kit["ties"]} of them are exact ties.</li>
     <li>A test such as "when you have an item" is a pattern that fits at least 98% of the solved situations. It may only be a sign of an earlier choice, and not the reason for the advice.</li>
   </ul>
 </section>

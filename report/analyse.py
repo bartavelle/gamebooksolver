@@ -86,6 +86,7 @@ def effects(desc):
 def clean_label(desc):
     desc = re.sub(r"\s*\[[^\]]*\]", "", desc)
     desc = re.sub(r"\s+", " ", desc).strip()
+    desc = re.sub(r"^otherwise ", "", desc)
     m = re.search(r",? (?:and )?turn(?: immediately)? to (\d+)\.?$", desc)
     target = m[1] if m else None
     if m:
@@ -99,7 +100,9 @@ def describe(choice, other, names):
     """What this choice means for a player, next to the other one."""
     desc = choice["desc"]
     if "strength potion" in desc:
-        return "Drink the Potion of Alether" if desc.startswith("Use") else "Save the Potion of Alether"
+        if "potent" in desc:
+            return "Drink the potent potion"
+        return "Drink the Potion of Alether" if desc.startswith("Use") else "Save the potions"
     mine, theirs = effects(desc), effects(other["desc"])
     if mine is None:
         return clean_label(desc)
