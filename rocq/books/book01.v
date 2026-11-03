@@ -162,7 +162,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (166%nat,none (Simple [DamagePlayer 4%nat] (Goto 104%nat)));
   (167%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 178%nat)); none (Goto 88%nat); none (Goto 264%nat)]);
   (168%nat,none (Simple [MustEat Hunt] (Goto 64%nat)));
-  (169%nat,evade_fight 0%nat 23%nat (Details ((16)%Z)%Z 16%nat []) (Goto 137%nat));
+  (169%nat,evade_fight 1%nat 23%nat (Details ((16)%Z)%Z 16%nat []) (Goto 137%nat));
   (170%nat,none (Conditionally [(HasItem (GenBackpack S0) 1%nat , Fight (Details ((17)%Z)%Z 7%nat [MindblastImmune]) (Goto 319%nat)); (Always true , Fight (Details ((17)%Z)%Z 7%nat [CombatBonus (-3)%Z; MindblastImmune]) (Goto 319%nat))]));
   (171%nat,none (Goto 303%nat));
   (172%nat,Decisions [conditional (HasDiscipline (Camouflage)) (none (Goto 114%nat)); none (Goto 239%nat); none (Goto 29%nat)]);
