@@ -11701,10 +11701,80 @@
                 {
                   "COr": [
                     {
-                      "HasDiscipline": "Healing"
+                      "HasDiscipline": "SixthSense"
                     },
                     {
-                      "HasDiscipline": "SixthSense"
+                      "COr": [
+                        {
+                          "COr": [
+                            {
+                              "COr": [
+                                {
+                                  "COr": [
+                                    {
+                                      "COr": [
+                                        {
+                                          "COr": [
+                                            {
+                                              "COr": [
+                                                {
+                                                  "COr": [
+                                                    {
+                                                      "COr": [
+                                                        {
+                                                          "COr": [
+                                                            {
+                                                              "HasDiscipline": "Dagger"
+                                                            },
+                                                            {
+                                                              "HasDiscipline": "Spear"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "HasDiscipline": "Mace"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "HasDiscipline": "ShortSword"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "HasDiscipline": "Warhammer"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "HasDiscipline": "Sword"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "HasDiscipline": "Axe"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "HasDiscipline": "Quarterstaff"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "HasDiscipline": "BroadSword"
+                                }
+                              ]
+                            },
+                            {
+                              "HasDiscipline": "MagicSpear"
+                            }
+                          ]
+                        },
+                        {
+                          "HasDiscipline": "Sommerswerd"
+                        }
+                      ]
                     }
                   ]
                 },
@@ -11730,10 +11800,80 @@
                   "Not": {
                     "COr": [
                       {
-                        "HasDiscipline": "Healing"
+                        "HasDiscipline": "SixthSense"
                       },
                       {
-                        "HasDiscipline": "SixthSense"
+                        "COr": [
+                          {
+                            "COr": [
+                              {
+                                "COr": [
+                                  {
+                                    "COr": [
+                                      {
+                                        "COr": [
+                                          {
+                                            "COr": [
+                                              {
+                                                "COr": [
+                                                  {
+                                                    "COr": [
+                                                      {
+                                                        "COr": [
+                                                          {
+                                                            "COr": [
+                                                              {
+                                                                "HasDiscipline": "Dagger"
+                                                              },
+                                                              {
+                                                                "HasDiscipline": "Spear"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "HasDiscipline": "Mace"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "HasDiscipline": "ShortSword"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "HasDiscipline": "Warhammer"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "HasDiscipline": "Sword"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "HasDiscipline": "Axe"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "HasDiscipline": "Quarterstaff"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "HasDiscipline": "BroadSword"
+                                  }
+                                ]
+                              },
+                              {
+                                "HasDiscipline": "MagicSpear"
+                              }
+                            ]
+                          },
+                          {
+                            "HasDiscipline": "Sommerswerd"
+                          }
+                        ]
                       }
                     ]
                   }
