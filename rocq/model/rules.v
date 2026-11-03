@@ -472,7 +472,7 @@ Definition fight_chapters (first min_rounds last_round opponent: nat) (osk: skil
           let fight_on := none (Round (Details osk ep mds) after next_rounds) in
           (id round ep,
            if Nat.leb min_rounds round
-             then App fight_on (none (Fight (Details osk ep (mds ++ [Evaded evaded; NoPotion])) after))
+             then App fight_on (none (Fight (Details osk ep (filter (fun m => negb (FM.fm_eqb MultiFight m)) mds ++ [Evaded evaded; NoPotion])) after))
              else fight_on)) (seq 1 opponent)
         ++ rounds (S round) f (Modifiers.advance_time mds)
     end in

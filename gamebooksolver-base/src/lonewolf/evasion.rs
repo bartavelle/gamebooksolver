@@ -82,6 +82,8 @@ impl<P: Rational> NewChapters<P> {
                 ));
                 let pchoice = if round >= min_rounds as u16 {
                     let mut evading = details;
+                    // evading ends the combat, even if the fight is only a part of it, and with it the strength potions
+                    evading.fight_mod.retain(|m| *m != FightModifier::MultiFight);
                     evading.fight_mod.push(FightModifier::Evaded(evaded));
                     evading.fight_mod.push(FightModifier::NoPotion);
                     Decision::Decisions(vec![
@@ -202,6 +204,34 @@ mod test {
                 assert!(book.contains_key(&d), "{d:?}");
             }
         }
+    }
+
+    #[test]
+    fn evading_leaves_the_whole_combat() {
+        let evade = Decision::EvadeFight(
+            Rounds(0),
+            ChapterId(2),
+            details(3, vec![FightModifier::MultiFight]),
+            ChapterOutcome::Goto(ChapterId(2)),
+        );
+        let chapter = Chapter {
+            title: String::new(),
+            desc: String::new(),
+            pchoice: evade,
+        };
+        let mut book: HashMap<ChapterId, Chapter<BigRational>> = [(ChapterId(1), chapter)].into_iter().collect();
+        expand_evasions(Book::Book04, &mut book);
+        let mut evasions = 0;
+        for c in book.values() {
+            if let Decision::Decisions(lst) = &c.pchoice {
+                let Decision::None(ChapterOutcome::Fight(fd, _)) = &lst[1].1 else {
+                    panic!("not an evasion")
+                };
+                assert!(!fd.fight_mod.contains(&FightModifier::MultiFight));
+                evasions += 1;
+            }
+        }
+        assert!(evasions > 0);
     }
 
     fn by_rounds(cinfo: &CombatInfo<BigRational>) -> Outcome<BigRational, Escaped<Endurance>> {
