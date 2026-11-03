@@ -6756,9 +6756,15 @@
     {
       "desc": "Covering your nose with your cloak, you cautiously approach the dead beast. The sharp smell of its fetid black blood makes your stomach churn, but you are determined to press on. Then you notice a large saddlebag strapped to its chest. Opening the bag, you find a Message written on an animal skin.\nDeeper in the bag is a Dagger. You may keep both the Message and the Dagger if you wish.\nYou leave the body and continue eastwards along the path.\n",
       "pchoice": {
-        "NoDecision": {
-          "Goto": 125
-        }
+        "CanTake": [
+          "Dagger",
+          1,
+          {
+            "NoDecision": {
+              "Goto": 125
+            }
+          }
+        ]
       },
       "title": "267"
     }

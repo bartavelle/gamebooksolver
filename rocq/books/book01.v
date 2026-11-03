@@ -254,7 +254,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (264%nat,Decisions [none (Goto 97%nat); none (Goto 6%nat)]);
   (265%nat,none (Goto 142%nat));
   (266%nat,none (Goto 209%nat));
-  (267%nat,none (Goto 125%nat));
+  (267%nat,can_take (Weapon Dagger) 1%nat (none (Goto 125%nat)));
   (268%nat,none (Goto 288%nat));
   (269%nat,can_take Gold 10%nat (Decisions [none (Goto 314%nat); none (Goto 7%nat)]));
   (270%nat,none (Goto 21%nat));
