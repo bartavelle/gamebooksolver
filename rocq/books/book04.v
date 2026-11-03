@@ -14,7 +14,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (9%nat,Decisions [none (Goto 112%nat); none (Goto 342%nat)]);
   (10%nat,can_take (GenSpecial S11) 1%nat (none (Goto 59%nat)));
   (11%nat,none (Randomly [(Goto 97%nat , (Q2Qc (1 / 2)%Q)); (Goto 190%nat , (Q2Qc (1 / 2)%Q))]));
-  (12%nat,can_take Backpack 1%nat (can_take Laumspur 1%nat (can_take (Weapon Sword) 1%nat (can_take (Weapon Spear) 1%nat (none (Goto 140%nat))))));
+  (12%nat,can_take Meal 3%nat (can_take Laumspur 1%nat (can_take (Weapon Sword) 1%nat (can_take (Weapon Spear) 1%nat (none (Goto 140%nat))))));
   (13%nat,none (Randomly [(Goto 171%nat , (Q2Qc (1 / 2)%Q)); (Goto 25%nat , (Q2Qc (1 / 2)%Q))]));
   (14%nat,evade_fight 0%nat 31%nat (Details ((17)%Z)%Z 28%nat []) (Goto 146%nat));
   (15%nat,Decisions [conditional (HasDiscipline (Tracking)) (none (Goto 264%nat)); conditional (Not (HasDiscipline (Tracking))) (Decisions [none (Goto 134%nat)])]);
