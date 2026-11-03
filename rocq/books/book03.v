@@ -383,7 +383,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (405%nat,none (Fight (Details ((11)%Z)%Z 35%nat [OnDamage 129%nat]) (Goto 406%nat)));
   (406%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 151%nat))));
   (260%nat,none (Simple [SetFlag HadCombat] (Goto 407%nat)));
-  (407%nat,none (Fight (Details ((17)%Z)%Z 29%nat []) (Goto 408%nat)));
+  (407%nat,none (Fight (Details ((17)%Z)%Z 29%nat [MindblastImmune; Timed 2%nat (PlayerInvulnerable)]) (Goto 408%nat)));
   (408%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 210%nat))));
   (265%nat,none (Simple [SetFlag HadCombat] (Goto 409%nat)));
   (409%nat,none (Fight (Details ((15)%Z)%Z 30%nat [MindblastImmune]) (Goto 410%nat)));

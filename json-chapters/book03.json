@@ -13086,7 +13086,15 @@
             {
               "fcombatSkill": 17,
               "fendurance": 29,
-              "fightMod": [],
+              "fightMod": [
+                "MindblastImmune",
+                {
+                  "Timed": [
+                    2,
+                    "PlayerInvulnerable"
+                  ]
+                }
+              ],
               "opponent": "Ice Barbarian"
             },
             {
