@@ -313,7 +313,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (340%nat,none (Simple [DamagePlayer 2%nat] (Goto 32%nat)));
   (341%nat,none (Simple [DamagePlayer 4%nat] (Goto 116%nat)));
   (342%nat,none (Simple [LoseItem (GenSpecial S0) 1%nat] (Simple [LoseItem Backpack 1%nat] (Goto 219%nat))));
-  (343%nat,none (Conditionally [(HasEndurance 20%nat , Randomly [(Goto 194%nat , (Q2Qc (2 / 5)%Q)); (Goto 61%nat , (Q2Qc (3 / 5)%Q))]); (HasEndurance 12%nat , Randomly [(Goto 194%nat , (Q2Qc (7 / 10)%Q)); (Goto 61%nat , (Q2Qc (3 / 10)%Q))]); (Always true , Randomly [(Goto 194%nat , (Q2Qc (9 / 10)%Q)); (Goto 61%nat , (Q2Qc (1 / 10)%Q))])]));
+  (343%nat,none (Conditionally [(HasEndurance 20%nat , Randomly [(Goto 194%nat , (Q2Qc (2 / 5)%Q)); (Goto 61%nat , (Q2Qc (3 / 5)%Q))]); (HasEndurance 13%nat , Randomly [(Goto 194%nat , (Q2Qc (7 / 10)%Q)); (Goto 61%nat , (Q2Qc (3 / 10)%Q))]); (Always true , Randomly [(Goto 194%nat , (Q2Qc (9 / 10)%Q)); (Goto 61%nat , (Q2Qc (1 / 10)%Q))])]));
   (344%nat,none (Conditionally [(HasLevel Aspirant , Goto 111%nat); (Always true , Goto 43%nat)]));
   (345%nat,none (Randomly [(Goto 51%nat , (Q2Qc (7 / 10)%Q)); (Goto 120%nat , (Q2Qc (3 / 10)%Q))]));
   (346%nat,none (Goto 335%nat));
