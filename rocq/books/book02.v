@@ -274,7 +274,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (299%nat,Decisions [none (Simple [LoseItem (Weapon MagicSpear) 1%nat] (Goto 118%nat)); conditional (HasItem (Weapon MagicSpear) 1%nat) (none (Goto 102%nat))]);
   (300%nat,none (Randomly [(Goto 224%nat , (Q2Qc (1 / 5)%Q)); (Goto 316%nat , (Q2Qc (1 / 5)%Q)); (Goto 81%nat , (Q2Qc (1 / 5)%Q)); (Goto 22%nat , (Q2Qc (1 / 5)%Q)); (Goto 99%nat , (Q2Qc (1 / 5)%Q))]));
   (301%nat,can_take Gold 3%nat (can_take (Weapon Dagger) 2%nat (can_take (Weapon ShortSword) 1%nat (none (Goto 20%nat)))));
-  (302%nat,can_take Backpack 1%nat (can_take Gold 12%nat (can_take (Weapon Mace) 1%nat (can_take Potion4Hp 1%nat (can_take (Weapon BroadSword) 1%nat (can_take (Weapon Quarterstaff) 1%nat (can_take Meal 3%nat (none (Goto 15%nat)))))))));
+  (302%nat,can_take Backpack 1%nat (can_take Gold 12%nat (can_take (Weapon Mace) 1%nat (can_take Potion4Hp 1%nat (can_take (Weapon BroadSword) 1%nat (can_take (Weapon Quarterstaff) 1%nat (can_take Meal 3%nat (none (Goto 244%nat)))))))));
   (303%nat,Decisions [none (Goto 173%nat); none (Goto 18%nat)]);
   (304%nat,none (GameLost));
   (305%nat,can_take Gold 5%nat (none (Goto 32%nat)));
