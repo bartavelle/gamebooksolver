@@ -225,6 +225,12 @@ value to states that a `Tracker` can't tell apart, for any depth of search. They
 the `cartwheel` parameter of `model/rules.v`, and on no `Admitted`. They inherit what `model/rules.v` assumes, which is section 5. They
 are about the model: the link to the Rust is the comparison above, and for tables, a mirror of the Rust.
 
+Book 4 check, on 3 cases (20 Endurance, skill 10, no gold; TR.MO and MS.CA with Sword and Dagger, TR.HU with Sommerswerd and
+Sword), with Book 5 values: turning off O1, O2, O3, O4 or O5 alone gave the same exact fraction on all 3. Turning all five off
+gave the same on the 2 Sword and Dagger cases; TR.HU stopped at the 45 GB limit after 52 minutes and has no result. The switch
+for O3 only covers the weapon analysis. Without O1 to O5, the two finished cases took about 5.5 times as long and 14 to 18 times
+the memory.
+
 - **O1. Plain weapons are interchangeable.** A weapon with no skill, not magical, and not named in reachable chapters is
   treated as any other (`WeaponUse`, `useful_drops`, `canonical`). No mismatch on 42 + 42 pairs. **Tested.**
 - **O2. What can't be read again is cleared** (`Reads`): gold, generic items, and story flags. No mismatch on 15 pairs.
@@ -245,7 +251,10 @@ are about the model: the link to the Rust is the comparison above, and for table
   different, 4 not compared because they ran out of memory. **Tested.**
 - **O6. Round-by-round evasion matches a whole fight** when no evasion is taken. The rounds are assumed acyclic because each
   one changes something. The Rocq and Rust comparison only shows that both implement rounds the same way, not that the
-  rounds equal a whole fight. **Unverified.**
+  rounds equal a whole fight. In Book 4, on the 3 cases above, a fight in rounds where evading loses the book and the same fight
+  without evasion gave the same exact fraction: 53.98%, 63.75% and 80.62%. **Tested** on that sample, for fights where no
+  evasion is taken. The value of an evasion itself is **Unverified**, and it matters: with evasion, the two Sword and Dagger
+  cases score 59.86% and 70.11%.
 - **O7. Scores only depend on what `get_boundary` lists.** A scorer that reads anything else gives wrong results, since the
   state may already be cleared. **Tested** by `what_scores_the_next_book_is_never_changed`.
 - **O8. Endurance can't overflow** on a doubled kill. **Proved** for the books in `rocq/proofs/no_overflow.v`, using the chapter
