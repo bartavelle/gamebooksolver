@@ -119,7 +119,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (126%nat,Decisions [none (Goto 246%nat); none (Goto 323%nat)]);
   (127%nat,Decisions [none (Goto 308%nat); none (Goto 323%nat)]);
   (128%nat,Decisions [none (Goto 170%nat); none (Goto 11%nat); none (Goto 254%nat)]);
-  (129%nat,none (Goto 155%nat));
+  (129%nat,none (Conditionally [(HasFlag Special04 , Goto 155%nat); (Always true , Simple [DamagePlayer 3%nat] (Goto 155%nat))]));
   (130%nat,Decisions [none (Goto 198%nat); none (Goto 69%nat)]);
   (131%nat,Decisions [none (Goto 227%nat); none (Goto 306%nat)]);
   (132%nat,Decisions [conditional (COr (HasDiscipline (Tracking)) (HasDiscipline (AnimalKinship))) (none (Goto 229%nat)); none (Goto 88%nat)]);

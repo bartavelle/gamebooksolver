@@ -3818,7 +3818,33 @@
       "desc": "The barb of the Kalkoth's tongue holds a powerful venom with which it paralyses its victims before eating them. It takes less than five seconds to affect you and you are unconscious before your head hits the snow.\nWhen you awake, you feel something heavy pressing down on your chest. It is the corpse of Irian. As you struggle to your feet, a bleak sight greets you through the early morning mist. Your guides are all dead and the remains of your equipment is scattered across the ledge. The bodies of two Kalkoth lie in the bloodstained snow; both have died from sword wounds. Numbed by cold and shock, you stagger about for nearly an hour searching for your Backpack, before you realize you are still wearing it.\nAlthough still shocked you eventually discover a steep path that leads away from the ledge. The winds of these hostile mountains are bitterly cold. If you have not applied Baknar oil to your skin, you lose 3 ENDURANCE points.\n",
       "pchoice": {
         "NoDecision": {
-          "Goto": 155
+          "Conditionally": [
+            [
+              {
+                "HasFlag": "Special04"
+              },
+              {
+                "Goto": 155
+              }
+            ],
+            [
+              {
+                "Always": true
+              },
+              {
+                "Simple": [
+                  [
+                    {
+                      "DamagePlayer": 3
+                    }
+                  ],
+                  {
+                    "Goto": 155
+                  }
+                ]
+              }
+            ]
+          ]
         }
       },
       "title": "129"
