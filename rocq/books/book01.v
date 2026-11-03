@@ -384,8 +384,8 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (383%nat,none (Fight (Details ((20)%Z)%Z 30%nat [MindblastImmune]) (Goto 384%nat)));
   (384%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 82%nat))));
   (260%nat,none (Simple [SetFlag HadCombat] (Goto 385%nat)));
-  (385%nat,none (Fight (Details ((11)%Z)%Z 18%nat [MultiFight]) (Goto 386%nat)));
-  (386%nat,none (Fight (Details ((12)%Z)%Z 17%nat []) (Goto 387%nat)));
+  (385%nat,none (Fight (Details ((11)%Z)%Z 18%nat [MultiFight; BareHanded]) (Goto 386%nat)));
+  (386%nat,none (Fight (Details ((12)%Z)%Z 17%nat [BareHanded]) (Goto 387%nat)));
   (387%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 156%nat))));
   (336%nat,none (Simple [SetFlag HadCombat] (Goto 388%nat)));
   (388%nat,none (Fight (Details ((14)%Z)%Z 11%nat [MultiFight]) (Goto 389%nat)));

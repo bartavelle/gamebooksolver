@@ -9774,7 +9774,8 @@
               "fcombatSkill": 11,
               "fendurance": 18,
               "fightMod": [
-                "MultiFight"
+                "MultiFight",
+                "BareHanded"
               ],
               "opponent": "Giak 1"
             },
@@ -9797,7 +9798,9 @@
             {
               "fcombatSkill": 12,
               "fendurance": 17,
-              "fightMod": [],
+              "fightMod": [
+                "BareHanded"
+              ],
               "opponent": "Giak 2"
             },
             {
