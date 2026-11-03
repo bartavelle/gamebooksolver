@@ -278,7 +278,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (288%nat,none (Goto 129%nat));
   (289%nat,none (Goto 139%nat));
   (290%nat,can_take (Weapon Quarterstaff) 1%nat (none (Goto 395%nat)));
-  (291%nat,can_take Gold 6%nat (can_take (Weapon Dagger) 1%nat (can_take (Weapon Spear) 1%nat (none (Goto 272%nat)))));
+  (291%nat,can_take Gold 6%nat (Decisions [can_take (Weapon Dagger) 1%nat (none (Goto 272%nat)); can_take (Weapon Spear) 1%nat (none (Goto 272%nat))]));
   (292%nat,none (GameLost));
   (293%nat,none (Goto 281%nat));
   (294%nat,none (Simple [LoseItemKind [SWeapon; SBackpack]; LoseItem Backpack 1%nat] (Randomly [(Goto 230%nat , (Q2Qc (3 / 10)%Q)); (Goto 190%nat , (Q2Qc (2 / 5)%Q)); (Goto 321%nat , (Q2Qc (3 / 10)%Q))])));

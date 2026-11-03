@@ -7294,20 +7294,35 @@
           "Gold",
           6,
           {
-            "CanTake": [
-              "Dagger",
-              1,
-              {
-                "CanTake": [
-                  "Spear",
-                  1,
-                  {
-                    "NoDecision": {
-                      "Goto": 272
+            "Decisions": [
+              [
+                "take the Dagger",
+                {
+                  "CanTake": [
+                    "Dagger",
+                    1,
+                    {
+                      "NoDecision": {
+                        "Goto": 272
+                      }
                     }
-                  }
-                ]
-              }
+                  ]
+                }
+              ],
+              [
+                "take a Spear",
+                {
+                  "CanTake": [
+                    "Spear",
+                    1,
+                    {
+                      "NoDecision": {
+                        "Goto": 272
+                      }
+                    }
+                  ]
+                }
+              ]
             ]
           }
         ]
