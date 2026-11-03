@@ -167,8 +167,7 @@ places, so each of these could lower a score if the missing choice were better.
   would create a cycle: Book 1 c36, c70, c125, c290, c323; Book 2 c47, c136, c172; Book 3 c181; Book 5 c67, c373. Whether
   each preserves the game is **Unverified**.
 - **R16. Other JSON differences from the XML are assumed sound.** Book 2 c160, c186, c200, c238, c265, c302; Book 3 c10,
-  c146, c164, c180; Book 4 c234, c280. They create no cycle. Book 4 c280 and c234 were reviewed on 2026-11-03: they go to c231
-  and c194, which have the same loot and the same fight. The others have not been reviewed. Book 2 c302 gave the same score on
+  c146, c164, c180. They create no cycle, and have not been reviewed. Book 2 c302 gave the same score on
   five starts when set back to the book's 244, with 15% to 22% more states. **Open.**
 - **R23. Book 2 c40 and Book 3 c10 offer their item instead of forcing it.** **Decided** on 2026-11-03. The book gives the
   potion of c40 and the graveweed of c10 outright. They used to be added with no check, which could make 9 Backpack Items,
@@ -190,11 +189,24 @@ places, so each of these could lower a score if the missing choice were better.
   used to go straight to shop choices, skipping the steam damage, the death at c77 and the healing oil. Restoring this
   created no cycle, added about 0.002% of states, and kept the score of all 8 cases tested at 50 gold to 9 digits.
   **Decided.** Results solved before commit `e3cda37e` used the old route.
-- **R25. Book 4 c19, c194, c261, c269 and c339 follow the book since 2026-11-03.** They were found by a keyword scan of the
-  text against the JSON, which can't find everything: a comparison of all of Book 4 has not been done. c339 now has a Meal
-  to eat, and c19 allows Hunting. c102 sends a character to c19 with Healing and to c339 without, and all the Book 4 cases
-  have Healing, so c339 is not reached by them. c194 adds 2 rounds with Mind Over Matter. c269 offers the Shovel, read as
-  `BGenCounter 4` from the order of c213, and c261 gives 8 crowns and a Meal. **Decided.**
+- **R25. Book 4 was compared with `project-aon/en/xml/04tcod.xml` on 2026-11-03,** which is the authoritative text, and now
+  follows it. All 350 sections exist, and their destinations and fight statistics match. The sentences with a game term of
+  230 sections were read next to the JSON. The other 120 have no such term, and their prose was not read. **Decided.** Fixed:
+  c12 (3 Meals, no Backpack), c77 (1 Endurance per round, with the new `WeakMindblast`), c94, c158 and c342 (the Backpack is
+  lost too), c122 (tests Mindshield, not Mind Blast), c137 (restores 6), c167 (1 Meal and a Shovel), c194 and c234 (2 more
+  rounds with Mind Over Matter), c202 (the six guards are one combat that can be evaded at any time), c234 and c280 (hold
+  their fight and their loot, and an extra section gave a point of Healing), c260 (stops after 3 rounds), c261 (8 crowns and
+  a Meal), c269 (a Shovel, read as `BGenCounter 4` from the order of c213), c316 (2 less Combat Skill), c339 (a Meal to eat),
+  and c343 (12 Endurance counts as low). The Wildlands are entered at c25 and c171 and left at c120, and Hunting can't be
+  used there, as they say: c19, c78, c141, c188, c324 and c339.
+  Kept, as they can't change a score: the Whip, Hourglass and Rope are not offered and nothing uses them; the Iron Key is
+  not needed at c118, which is only reached from c268 that offers it; the Brass Key of c152 is not offered, and that route
+  never reaches the door; c322 allows both a Pick and a Shovel, where only one is ever useful; c22 keeps the
+  `BGenCounter 2`, and neither it nor `BGenCounter 1` is read after it; the Pick and Shovel removed at c54, c115, c173, c224
+  and c244 are not read later, and could be discarded anyway.
+- **R26. Having a discipline can force a branch.** In Book 4, c21, c29, c40, c51, c87, c92, c113, c200, c289, c315 and c335
+  send a character with the discipline to its section, where the book also lists options that anyone may take, and c24, c118,
+  c224 and c270 leave the choice open. **Open.**
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
