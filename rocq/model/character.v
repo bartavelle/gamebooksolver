@@ -462,7 +462,18 @@ Definition OneWeaponSpecMax (s: Stt) : Prop :=
    forall w1 w2,
       s_check (WeaponSkill w1) discs = true ->
       s_check (WeaponSkill w2) discs = true ->
-      w1 <> w2.
+      w1 = w2.
+
+(* It allows one Weapon Skill, and not two *)
+Example one_weapon_skill: OneWeaponSpecMax (build_test_stt 20 10 (WeaponSkill Sword :: nil) nil nil).
+Proof.
+  intros w1 w2 H1 H2. destruct w1; try (vm_compute in H1; discriminate); destruct w2; try (vm_compute in H2; discriminate); reflexivity.
+Qed.
+
+Example two_weapon_skills: ~ OneWeaponSpecMax (build_test_stt 20 10 (WeaponSkill Sword :: WeaponSkill Axe :: nil) nil nil).
+Proof.
+  intro H. discriminate (H Sword Axe ltac:(vm_compute; reflexivity) ltac:(vm_compute; reflexivity)).
+Qed.
 
 Definition ValidState (s: Stt) :=
            lt 0 (curendurance s)
