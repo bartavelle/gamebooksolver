@@ -6993,20 +6993,15 @@
     {
       "desc": "When you awake, you find yourself lying at the foot of a steep slope in a tangle of tall grasses. Your Backpack and Weapon are missing and your head aches. You cannot tell how long you have been unconscious, but you realize that you must not delay in pressing on with your mission.\nStanding up, you see your Backpack is intact but the Weapon is broken in two and is now useless. Remember to cross it off your Action Chart. (If you have more than one weapon, only one of them is broken-you may choose which one it is.) You quickly pick up your Backpack and move off into the trees ahead.\n",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
-              {
-                "LoseItemKind": [
-                  "WeaponSlot"
-                ]
-              }
-            ],
-            {
+        "RemoveItemFrom": [
+          "WeaponSlot",
+          1,
+          {
+            "NoDecision": {
               "Goto": 113
             }
-          ]
-        }
+          }
+        ]
       },
       "title": "277"
     }

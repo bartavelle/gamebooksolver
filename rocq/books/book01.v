@@ -264,7 +264,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (274%nat,none (Simple [LoseItemKind [SWeapon]] (Goto 331%nat)));
   (275%nat,none (Randomly [(Goto 345%nat , (Q2Qc (1 / 2)%Q)); (Goto 74%nat , (Q2Qc (1 / 2)%Q))]));
   (276%nat,none (Simple [DamagePlayer 1%nat] (Goto 213%nat)));
-  (277%nat,none (Simple [LoseItemKind [SWeapon]] (Goto 113%nat)));
+  (277%nat,remove_item_from SWeapon 1%nat (none (Goto 113%nat)));
   (278%nat,none (Goto 149%nat));
   (279%nat,none (Randomly [(Goto 112%nat , (Q2Qc (7 / 10)%Q)); (Goto 96%nat , (Q2Qc (3 / 10)%Q))]));
   (280%nat,Decisions [none (Goto 327%nat); none (Goto 170%nat)]);
