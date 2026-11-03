@@ -200,14 +200,13 @@ are about the model: the link to the Rust is the comparison above, and for table
 - **O3. Character specialisation** removes branches needing a discipline the character lacks. **Tested** on all 24
   characters of Books 1 to 4.
 - **O4. Gold above what can still be spent is cleared** (`gold_needs`). Must hold given G3: it only cuts gold that no
-  later test or payment can tell apart. **Proved** in `rocq/gold.v` and `rocq/gold_reads.v` for Books 1 to 4, against a table
-  checked on the books. A Python mirror of `GoldNeeds` gives the same table on all 391 chapters of Book 2 and all 400 of
-  Book 3, and 0 everywhere in Book 4; the mirror was compared and not the Rust itself. Book 1 keeps all the gold in Rust. **Book 5
-  is only partly proved:** the same on 281 of 452 chapters. On the other 171, the proof asks for all the gold, because storing
-  and getting back the equipment (c69, c14) are treated as reading it, and Rust has no such rule and clamps more. Rust is
-  never below the proof elsewhere. These 171 are **Tested** at best, and the 24 characters of the test did not include
-  Book 5. Closing this means comparing the outcomes of `flatten_d` instead of requiring the same list, as c14 offers the gold
-  that is held. 323 chapters can be reached from a store without going through c14, and gold is gained in them.
+  later test or payment can tell apart. **Proved** in `rocq/gold.v` and `rocq/gold_reads.v` for Books 1 to 5, against a table
+  checked on the books, for the gold that is held and the gold that is stored, as Rust clamps both to the same need. c14
+  gives outcomes that are not the same when the held gold differs, so it is compared by value (`retrieve_top`). This needs
+  the retrieval to be the first thing a chapter does, which is what c14 does; one found deeper in a decision would need all
+  the gold. A Python mirror of `GoldNeeds` gives the same table on all 391 chapters of Book 2, all 400 of Book 3 and all 452
+  of Book 5, and 0 everywhere in Book 4; the mirror was compared and not the Rust itself. The 326 chapters that the proof
+  adds for the evasions of Book 5 were not compared. Book 1 keeps all the gold in Rust.
 - **O5. Forced chapters can be elided** (`elide.rs`), replaying what they do. On and off: 44 of 48 cases identical, 0
   different, 4 not compared because they ran out of memory. **Tested.**
 - **O6. Round-by-round evasion matches a whole fight** when no evasion is taken. The rounds are assumed acyclic because each
