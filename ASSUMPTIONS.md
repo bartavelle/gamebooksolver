@@ -167,7 +167,8 @@ places, so each of these could lower a score if the missing choice were better.
   would create a cycle: Book 1 c36, c70, c125, c290, c323; Book 2 c47, c136, c172; Book 3 c181; Book 5 c67, c373. Whether
   each preserves the game is **Unverified**.
 - **R16. Other JSON differences from the XML are assumed sound.** Book 2 c160, c186, c200, c238, c265, c302; Book 3 c10,
-  c146, c164, c180; Book 4 c234, c280. They create no cycle, and have not been reviewed. Book 2 c302 gave the same score on
+  c146, c164, c180; Book 4 c234, c280. They create no cycle. Book 4 c280 and c234 were reviewed on 2026-11-03: they go to c231
+  and c194, which have the same loot and the same fight. The others have not been reviewed. Book 2 c302 gave the same score on
   five starts when set back to the book's 244, with 15% to 22% more states. **Open.**
 - **R23. Book 2 c40 and Book 3 c10 offer their item instead of forcing it.** **Decided** on 2026-11-03. The book gives the
   potion of c40 and the graveweed of c10 outright. They used to be added with no check, which could make 9 Backpack Items,
@@ -189,6 +190,11 @@ places, so each of these could lower a score if the missing choice were better.
   used to go straight to shop choices, skipping the steam damage, the death at c77 and the healing oil. Restoring this
   created no cycle, added about 0.002% of states, and kept the score of all 8 cases tested at 50 gold to 9 digits.
   **Decided.** Results solved before commit `e3cda37e` used the old route.
+- **R25. Book 4 c19, c194, c261, c269 and c339 follow the book since 2026-11-03.** They were found by a keyword scan of the
+  text against the JSON, which can't find everything: a comparison of all of Book 4 has not been done. c339 now has a Meal
+  to eat, and c19 allows Hunting. c102 sends a character to c19 with Healing and to c339 without, and all the Book 4 cases
+  have Healing, so c339 is not reached by them. c194 adds 2 rounds with Mind Over Matter. c269 offers the Shovel, read as
+  `BGenCounter 4` from the order of c213, and c261 gives 8 crowns and a Meal. **Decided.**
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
