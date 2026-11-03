@@ -7686,28 +7686,34 @@
       "desc": "The guard roughly pushes you aside and runs out of the watchtower towards Tomb Square. There is a small room off the staircase and you decide to enter and search it before he returns. In it you discover:\n * Sword\n * Mace\n * Quarterstaff\n * Enough Food for 1 Meal\n * 6 Gold Crowns\n * Potion of Orange Liquid\nIf you wish to take any of these items, mark them on your Action Chart.\nAs you are leaving, you collide with another guard and you both tumble down the stairs, but before he can gather his senses, you have sprinted off into the night.\n",
       "pchoice": {
         "CanTake": [
-          "Meal",
+          "StrengthPotion",
           1,
           {
             "CanTake": [
-              "Gold",
-              6,
+              "Meal",
+              1,
               {
                 "CanTake": [
-                  "Quarterstaff",
-                  1,
+                  "Gold",
+                  6,
                   {
                     "CanTake": [
-                      "Mace",
+                      "Quarterstaff",
                       1,
                       {
                         "CanTake": [
-                          "Sword",
+                          "Mace",
                           1,
                           {
-                            "NoDecision": {
-                              "Goto": 65
-                            }
+                            "CanTake": [
+                              "Sword",
+                              1,
+                              {
+                                "NoDecision": {
+                                  "Goto": 65
+                                }
+                              }
+                            ]
                           }
                         ]
                       }

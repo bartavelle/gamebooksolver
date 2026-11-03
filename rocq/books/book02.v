@@ -239,7 +239,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (259%nat,none (Goto 161%nat));
   (260%nat,can_take (Weapon Sword) 1%nat (none (Goto 240%nat)));
   (261%nat,Decisions [none (Goto 95%nat); none (Goto 198%nat)]);
-  (262%nat,can_take Meal 1%nat (can_take Gold 6%nat (can_take (Weapon Quarterstaff) 1%nat (can_take (Weapon Mace) 1%nat (can_take (Weapon Sword) 1%nat (none (Goto 65%nat)))))));
+  (262%nat,can_take StrengthPotion 1%nat (can_take Meal 1%nat (can_take Gold 6%nat (can_take (Weapon Quarterstaff) 1%nat (can_take (Weapon Mace) 1%nat (can_take (Weapon Sword) 1%nat (none (Goto 65%nat))))))));
   (264%nat,none (Goto 312%nat));
   (265%nat,none (Conditionally [(HasItem (GenSpecial S3) 1%nat , Goto 202%nat); (Always true , GameLost)]));
   (266%nat,can_sell (Weapon Quarterstaff) 2%nat (can_sell (Weapon Axe) 2%nat (can_sell (Weapon Mace) 3%nat (can_sell (Weapon Spear) 4%nat (can_sell (Weapon Warhammer) 5%nat (can_sell (Weapon ShortSword) 2%nat (can_sell (Weapon BroadSword) 6%nat (can_sell (Weapon Dagger) 1%nat (can_buy (Weapon Quarterstaff) 3%nat (can_buy (Weapon Axe) 3%nat (can_buy (Weapon Mace) 4%nat (can_buy (Weapon Spear) 5%nat (can_buy (Weapon Warhammer) 6%nat (can_buy (Weapon ShortSword) 3%nat (can_buy (Weapon BroadSword) 7%nat (can_buy (Weapon Dagger) 2%nat (can_buy (Weapon Sword) 4%nat (can_sell (Weapon Sword) 3%nat (none (Goto 32%nat))))))))))))))))))));
