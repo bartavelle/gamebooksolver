@@ -175,8 +175,8 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (189%nat,Decisions [none (Goto 292%nat); none (Goto 97%nat)]);
   (190%nat,Decisions [conditional (COr (HasDiscipline (Tracking)) (HasDiscipline (SixthSense))) (none (Goto 348%nat)); none (Goto 27%nat); none (Goto 314%nat)]);
   (191%nat,none (Goto 40%nat));
-  (192%nat,Decisions [conditional (HasItem (GenSpecial S4) 1%nat) (none (Simple [DamagePlayer 2%nat] (Goto 267%nat))); conditional (Not (HasItem (GenSpecial S4) 1%nat)) (Decisions [none (Simple [DamagePlayer 2%nat] (Goto 44%nat))])]);
-  (193%nat,none (Goto 235%nat));
+  (192%nat,Decisions [conditional (HasItem (GenSpecial S4) 1%nat) (none (Goto 267%nat)); conditional (Not (HasItem (GenSpecial S4) 1%nat)) (Decisions [none (Goto 44%nat)])]);
+  (193%nat,none (Simple [DamagePlayer 2%nat] (Goto 235%nat)));
   (194%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 127%nat)); conditional (Not (HasDiscipline (SixthSense))) (Decisions [none (Goto 308%nat); none (Goto 323%nat)])]);
   (195%nat,none (Goto 21%nat));
   (196%nat,none (Simple [DamagePlayer 2%nat; LoseItemKind [SWeapon]] (Goto 306%nat)));

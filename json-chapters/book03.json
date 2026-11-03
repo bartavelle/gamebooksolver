@@ -6203,16 +6203,7 @@
                 },
                 {
                   "NoDecision": {
-                    "Simple": [
-                      [
-                        {
-                          "DamagePlayer": 2
-                        }
-                      ],
-                      {
-                        "Goto": 267
-                      }
-                    ]
+                    "Goto": 267
                   }
                 }
               ]
@@ -6236,16 +6227,7 @@
                       "If you do not, turn to 44.",
                       {
                         "NoDecision": {
-                          "Simple": [
-                            [
-                              {
-                                "DamagePlayer": 2
-                              }
-                            ],
-                            {
-                              "Goto": 44
-                            }
-                          ]
+                          "Goto": 44
                         }
                       }
                     ]
@@ -6265,7 +6247,16 @@
       "desc": "You have cuts and bruises on both legs and your nose bleeds from striking it against a stalactite. You lose 2 ENDURANCE points, but you can count yourself very lucky: you narrowly escaped stepping into a deep fissure hidden in the darkness. Make the necessary adjustments to your Action Chart.\n",
       "pchoice": {
         "NoDecision": {
-          "Goto": 235
+          "Simple": [
+            [
+              {
+                "DamagePlayer": 2
+              }
+            ],
+            {
+              "Goto": 235
+            }
+          ]
         }
       },
       "title": "193"
