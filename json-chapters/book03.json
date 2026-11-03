@@ -281,19 +281,7 @@
                                     "value": "4/5"
                                   },
                                   {
-                                    "Simple": [
-                                      [
-                                        {
-                                          "GainItem": [
-                                            "BGenCounter 2",
-                                            1
-                                          ]
-                                        }
-                                      ],
-                                      {
-                                        "Goto": 368
-                                      }
-                                    ]
+                                    "Goto": 422
                                   }
                                 ]
                               ]
@@ -329,19 +317,7 @@
                                     "value": "1/2"
                                   },
                                   {
-                                    "Simple": [
-                                      [
-                                        {
-                                          "GainItem": [
-                                            "BGenCounter 2",
-                                            1
-                                          ]
-                                        }
-                                      ],
-                                      {
-                                        "Goto": 368
-                                      }
-                                    ]
+                                    "Goto": 422
                                   }
                                 ]
                               ]
@@ -13487,6 +13463,24 @@
         }
       },
       "title": "421"
+    }
+  ],
+  [
+    422,
+    {
+      "desc": "keep the graveweed",
+      "pchoice": {
+        "CanTake": [
+          "BGenCounter 2",
+          1,
+          {
+            "NoDecision": {
+              "Goto": 368
+            }
+          }
+        ]
+      },
+      "title": "422"
     }
   ]
 ]

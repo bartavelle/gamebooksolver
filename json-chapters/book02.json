@@ -1409,39 +1409,39 @@
     {
       "desc": "The muster of the army and the preparation of the Durenese fleet takes fourteen days to complete, during which time you remain as a guest of the king in Hammerdal. As each day passes, you despair for your besieged countrymen of Holmgard and pray that they have enough strength to resist the Darklords until you return.\nEvery day of your reluctant exile you devote long periods to exercise and meditation. You are also visited by a Durenese herbwarden called Madin Rendalim, who is famous throughout the Lastlands for his knowledge and skill in the healing arts. He restores all the ENDURANCE points you may have lost so far on your adventure, and he gives you a potent Laumspur potion that will restore 5 ENDURANCE points if swallowed after combat. (Mark this under Backpack Items on your Action Chart.)\nHe is also the bearer of some sad news. The body of Lord-lieutenant Rhygar was found in the forest near to the entrance to Tarnalin. He was killed by Helghast.\n",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
-              "FullHeal",
-              {
-                "GainItem": [
-                  "Potion5Hp",
-                  1
-                ]
-              }
-            ],
-            {
-              "Conditionally": [
+        "CanTake": [
+          "Potion5Hp",
+          1,
+          {
+            "NoDecision": {
+              "Simple": [
                 [
-                  {
-                    "HasDiscipline": "SixthSense"
-                  },
-                  {
-                    "Goto": 97
-                  }
+                  "FullHeal"
                 ],
-                [
-                  {
-                    "Always": true
-                  },
-                  {
-                    "Goto": 242
-                  }
-                ]
+                {
+                  "Conditionally": [
+                    [
+                      {
+                        "HasDiscipline": "SixthSense"
+                      },
+                      {
+                        "Goto": 97
+                      }
+                    ],
+                    [
+                      {
+                        "Always": true
+                      },
+                      {
+                        "Goto": 242
+                      }
+                    ]
+                  ]
+                }
               ]
             }
-          ]
-        }
+          }
+        ]
       },
       "title": "40"
     }

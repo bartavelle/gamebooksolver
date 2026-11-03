@@ -169,6 +169,12 @@ places, so each of these could lower a score if the missing choice were better.
 - **R16. Other JSON differences from the XML are assumed sound.** Book 2 c160, c186, c200, c238, c265, c302; Book 3 c10,
   c146, c164, c180; Book 4 c234, c280. They create no cycle, and have not been reviewed. Book 2 c302 gave the same score on
   five starts when set back to the book's 244, with 15% to 22% more states. **Open.**
+- **R23. Book 2 c40 and Book 3 c10 offer their item instead of forcing it.** **Decided** on 2026-11-03. The book gives the
+  potion of c40 and the graveweed of c10 outright. They used to be added with no check, which could make 9 Backpack Items,
+  or a potion without a Backpack at c40, against the limit of 8. They are now `CanTake`, so a full Backpack means dropping
+  something or refusing, and no Backpack means no potion at c40. The graveweed goes through the added chapter c422, which
+  has no effect of its own. Refusing an item is a choice the book doesn't list, and is assumed never to help. Solutions of
+  Book 2 and Book 3 made before this may differ when a Backpack was full at these chapters. **Unverified.**
 - **R21. Book 5 c226 is sound.** Its attack option goes to c401, which is c334 with the first 2 rounds without damage, as
   the text of c226 says. c334 itself is also reached from c297 and c360, without that rule. **Decided** after review.
 - **R22. Book 5 c55 follows the book since 2026-11-02.** It goes to c162 or c23, then c114, c90, the baths, c71 and c54. It

@@ -38,7 +38,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (37%nat,Decisions [none (Simple [MustEat Hunt] (Goto 122%nat)); none (Simple [MustEat Hunt] (Goto 323%nat)); none (Simple [MustEat Hunt] (Goto 257%nat))]);
   (38%nat,Decisions [none (Goto 269%nat); none (Goto 313%nat)]);
   (39%nat,none (Conditionally [(HasItem (GenSpecial S0) 1%nat , Goto 346%nat); (Always true , Goto 156%nat)]));
-  (40%nat,none (Simple [FullHeal; GainItem Potion5Hp 1%nat] (Conditionally [(HasDiscipline (SixthSense) , Goto 97%nat); (Always true , Goto 242%nat)])));
+  (40%nat,can_take Potion5Hp 1%nat (none (Simple [FullHeal] (Conditionally [(HasDiscipline (SixthSense) , Goto 97%nat); (Always true , Goto 242%nat)]))));
   (41%nat,Decisions [none (Simple [HealPlayer 1%nat] (Goto 194%nat)); none (Goto 251%nat)]);
   (42%nat,none (Goto 168%nat));
   (43%nat,none (Goto 286%nat));

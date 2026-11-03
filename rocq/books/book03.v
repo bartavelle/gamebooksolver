@@ -12,7 +12,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (7%nat,Decisions [none (Goto 145%nat); none (Goto 242%nat)]);
   (8%nat,none (Simple [SetFlag Special04] (Goto 325%nat)));
   (9%nat,none (GameLost));
-  (10%nat,can_take Backpack 1%nat (Decisions [conditional (HasFlag Knowledge01) (none (Conditionally [(COr (HasDiscipline (MindOverMatter)) (HasDiscipline (MindBlast)) , Randomly [(Simple [DamagePlayer 1%nat] (Goto 368%nat) , (Q2Qc (1 / 5)%Q)); (Simple [GainItem (GenBackpack S2) 1%nat] (Goto 368%nat) , (Q2Qc (4 / 5)%Q))]); (Always true , Randomly [(Simple [DamagePlayer 1%nat] (Goto 368%nat) , (Q2Qc (1 / 2)%Q)); (Simple [GainItem (GenBackpack S2) 1%nat] (Goto 368%nat) , (Q2Qc (1 / 2)%Q))])])); none (Goto 368%nat)]));
+  (10%nat,can_take Backpack 1%nat (Decisions [conditional (HasFlag Knowledge01) (none (Conditionally [(COr (HasDiscipline (MindOverMatter)) (HasDiscipline (MindBlast)) , Randomly [(Simple [DamagePlayer 1%nat] (Goto 368%nat) , (Q2Qc (1 / 5)%Q)); (Goto 422%nat , (Q2Qc (4 / 5)%Q))]); (Always true , Randomly [(Simple [DamagePlayer 1%nat] (Goto 368%nat) , (Q2Qc (1 / 2)%Q)); (Goto 422%nat , (Q2Qc (1 / 2)%Q))])])); none (Goto 368%nat)]));
   (11%nat,Decisions [none (Goto 141%nat); none (Goto 159%nat); none (Goto 234%nat)]);
   (12%nat,can_take Meal 3%nat (can_take (GenBackpack S0) 1%nat (Decisions [none (Simple [MustEat NoHunt] (Goto 180%nat)); none (Simple [MustEat NoHunt] (Goto 259%nat))])));
   (13%nat,Decisions [none (Goto 128%nat); none (Goto 254%nat)]);
@@ -402,4 +402,5 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (418%nat,none (Fight (Details ((14)%Z)%Z 23%nat [MultiFight]) (Goto 419%nat)));
   (419%nat,none (Fight (Details ((14)%Z)%Z 20%nat [MultiFight]) (Goto 420%nat)));
   (420%nat,none (Fight (Details ((17)%Z)%Z 29%nat [MindblastImmune]) (Goto 421%nat)));
-  (421%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 28%nat))))].
+  (421%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 28%nat))));
+  (422%nat,can_take (GenBackpack S2) 1%nat (none (Goto 368%nat)))].
