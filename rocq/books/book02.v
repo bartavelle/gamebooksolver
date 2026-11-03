@@ -15,7 +15,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (12%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Randomly [(Goto 58%nat , (Q2Qc (1 / 5)%Q)); (Goto 167%nat , (Q2Qc (3 / 10)%Q)); (Goto 329%nat , (Q2Qc (1 / 2)%Q))])); conditional (Not (HasDiscipline (SixthSense))) (none (Randomly [(Goto 58%nat , (Q2Qc (2 / 5)%Q)); (Goto 167%nat , (Q2Qc (3 / 10)%Q)); (Goto 329%nat , (Q2Qc (3 / 10)%Q))]))]);
   (13%nat,none (Goto 155%nat));
   (14%nat,none (Goto 305%nat));
-  (15%nat,can_take Backpack 1%nat (can_take (Weapon BroadSword) 1%nat (can_take (Weapon Mace) 1%nat (can_take (Weapon Quarterstaff) 1%nat (can_take Potion4Hp 1%nat (can_take Meal 3%nat (can_take Gold 12%nat (none (Simple [SetFlag Knowledge01] (Goto 244%nat))))))))));
+  (15%nat,can_take Backpack 1%nat (can_take (Weapon BroadSword) 1%nat (can_take (Weapon Mace) 1%nat (can_take (Weapon Quarterstaff) 1%nat (can_take (GenBackpack S2) 1%nat (can_take Meal 3%nat (can_take Gold 12%nat (none (Simple [SetFlag Knowledge01] (Goto 244%nat))))))))));
   (16%nat,none (Goto 268%nat));
   (17%nat,none (Simple [DamagePlayer 5%nat] (Fight (Details ((22)%Z)%Z 30%nat [Undead; MindblastImmune]) (Goto 166%nat))));
   (18%nat,Decisions [none (Goto 173%nat); none (Goto 266%nat); none (Goto 310%nat)]);
@@ -274,7 +274,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (299%nat,Decisions [none (Simple [LoseItem (Weapon MagicSpear) 1%nat] (Goto 118%nat)); conditional (HasItem (Weapon MagicSpear) 1%nat) (none (Goto 102%nat))]);
   (300%nat,none (Randomly [(Goto 224%nat , (Q2Qc (1 / 5)%Q)); (Goto 316%nat , (Q2Qc (1 / 5)%Q)); (Goto 81%nat , (Q2Qc (1 / 5)%Q)); (Goto 22%nat , (Q2Qc (1 / 5)%Q)); (Goto 99%nat , (Q2Qc (1 / 5)%Q))]));
   (301%nat,can_take Gold 3%nat (can_take (Weapon Dagger) 2%nat (can_take (Weapon ShortSword) 1%nat (none (Goto 20%nat)))));
-  (302%nat,can_take Backpack 1%nat (can_take Gold 12%nat (can_take (Weapon Mace) 1%nat (can_take Potion4Hp 1%nat (can_take (Weapon BroadSword) 1%nat (can_take (Weapon Quarterstaff) 1%nat (can_take Meal 3%nat (none (Goto 244%nat)))))))));
+  (302%nat,can_take Backpack 1%nat (can_take Gold 12%nat (can_take (Weapon Mace) 1%nat (can_take (GenBackpack S2) 1%nat (can_take (Weapon BroadSword) 1%nat (can_take (Weapon Quarterstaff) 1%nat (can_take Meal 3%nat (none (Goto 244%nat)))))))));
   (303%nat,Decisions [none (Goto 173%nat); none (Goto 18%nat)]);
   (304%nat,none (GameLost));
   (305%nat,can_take Gold 5%nat (none (Goto 32%nat)));
