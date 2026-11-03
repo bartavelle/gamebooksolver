@@ -389,12 +389,12 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (198%nat,none (Simple [SetFlag HadCombat] (Goto 405%nat)));
   (405%nat,none (Fight (Details ((18)%Z)%Z 30%nat []) (Goto 406%nat)));
   (406%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 229%nat))));
-  (202%nat,evade_fight 0%nat 342%nat (Details ((18)%Z)%Z 23%nat []) (Simple [SetFlag HadCombat] (Goto 407%nat)));
-  (407%nat,none (Fight (Details ((15)%Z)%Z 24%nat [MultiFight]) (Goto 408%nat)));
-  (408%nat,none (Fight (Details ((15)%Z)%Z 21%nat [MultiFight]) (Goto 409%nat)));
-  (409%nat,none (Fight (Details ((16)%Z)%Z 25%nat [MultiFight]) (Goto 410%nat)));
-  (410%nat,none (Fight (Details ((14)%Z)%Z 24%nat [MultiFight]) (Goto 411%nat)));
-  (411%nat,none (Fight (Details ((14)%Z)%Z 22%nat []) (Goto 412%nat)));
+  (202%nat,evade_fight 0%nat 342%nat (Details ((18)%Z)%Z 23%nat [MultiFight]) (Simple [SetFlag HadCombat] (Goto 407%nat)));
+  (407%nat,evade_fight 0%nat 342%nat (Details ((15)%Z)%Z 24%nat [MultiFight]) (Goto 408%nat));
+  (408%nat,evade_fight 0%nat 342%nat (Details ((15)%Z)%Z 21%nat [MultiFight]) (Goto 409%nat));
+  (409%nat,evade_fight 0%nat 342%nat (Details ((16)%Z)%Z 25%nat [MultiFight]) (Goto 410%nat));
+  (410%nat,evade_fight 0%nat 342%nat (Details ((14)%Z)%Z 24%nat [MultiFight]) (Goto 411%nat));
+  (411%nat,evade_fight 0%nat 342%nat (Details ((14)%Z)%Z 22%nat []) (Goto 412%nat));
   (412%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 237%nat))));
   (208%nat,none (Simple [SetFlag HadCombat] (Goto 413%nat)));
   (413%nat,none (Fight (Details ((15)%Z)%Z 25%nat [MultiFight]) (Goto 414%nat)));

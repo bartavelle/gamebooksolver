@@ -12525,7 +12525,9 @@
           {
             "fcombatSkill": 18,
             "fendurance": 23,
-            "fightMod": [],
+            "fightMod": [
+              "MultiFight"
+            ],
             "opponent": "Guard 1"
           },
           {
@@ -12550,21 +12552,21 @@
     {
       "desc": "Dummy fight chapter 407",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 15,
-              "fendurance": 24,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Guard 2"
-            },
-            {
-              "Goto": 408
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          342,
+          {
+            "fcombatSkill": 15,
+            "fendurance": 24,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Guard 2"
+          },
+          {
+            "Goto": 408
+          }
+        ]
       },
       "title": "407"
     }
@@ -12574,21 +12576,21 @@
     {
       "desc": "Dummy fight chapter 408",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 15,
-              "fendurance": 21,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Guard 3"
-            },
-            {
-              "Goto": 409
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          342,
+          {
+            "fcombatSkill": 15,
+            "fendurance": 21,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Guard 3"
+          },
+          {
+            "Goto": 409
+          }
+        ]
       },
       "title": "408"
     }
@@ -12598,21 +12600,21 @@
     {
       "desc": "Dummy fight chapter 409",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 16,
-              "fendurance": 25,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Guard 4"
-            },
-            {
-              "Goto": 410
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          342,
+          {
+            "fcombatSkill": 16,
+            "fendurance": 25,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Guard 4"
+          },
+          {
+            "Goto": 410
+          }
+        ]
       },
       "title": "409"
     }
@@ -12622,21 +12624,21 @@
     {
       "desc": "Dummy fight chapter 410",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 14,
-              "fendurance": 24,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Guard 5"
-            },
-            {
-              "Goto": 411
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          342,
+          {
+            "fcombatSkill": 14,
+            "fendurance": 24,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Guard 5"
+          },
+          {
+            "Goto": 411
+          }
+        ]
       },
       "title": "410"
     }
@@ -12646,19 +12648,19 @@
     {
       "desc": "Dummy fight chapter 411",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 14,
-              "fendurance": 22,
-              "fightMod": [],
-              "opponent": "Guard 6"
-            },
-            {
-              "Goto": 412
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          342,
+          {
+            "fcombatSkill": 14,
+            "fendurance": 22,
+            "fightMod": [],
+            "opponent": "Guard 6"
+          },
+          {
+            "Goto": 412
+          }
+        ]
       },
       "title": "411"
     }
