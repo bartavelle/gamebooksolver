@@ -182,6 +182,12 @@ Definition apply_effects (stt: Stt) (effects: list simple_outcome) : Stt :=
 Definition held_items (s: slot) (stt: Stt): list (item * nat) :=
   filter (fun iq : item * nat => Nat.ltb 0 (snd iq)) (map (fun i => (i, sitems i stt)) (slot_items s)).
 
+Lemma held_in_slot: forall sl s iq, In iq (held_items sl s) -> In (fst iq) (slot_items sl).
+Proof.
+  unfold held_items. intros. apply filter_In in H. destruct H as [H _].
+  apply in_map_iff in H. destruct H as [i [E I]]. subst. assumption.
+Qed.
+
 Definition has_raw_mod (m: fight_modifier) (mds: list fight_modifier) := existsb (FM.fm_eqb m) mds.
 
 Definition unset_potions (stt: Stt) : Stt :=
@@ -536,6 +542,14 @@ Fixpoint find_chapter (c: cid) (chapters: list (cid * decision)) : option decisi
   end.
 
 (* The choices at a chapter of an expanded book, each with its results *)
+Lemma find_chapter_in: forall chapters c d, find_chapter c chapters = Some d -> In (c, d) chapters.
+Proof.
+  induction chapters as [|[k x] q IH]; intros c d F; simpl in F; [discriminate|].
+  destruct (k =? c) eqn: E.
+  - apply Nat.eqb_eq in E. inversion F; subst. left. reflexivity.
+  - right. apply IH. assumption.
+Qed.
+
 Definition step (chapters: list (cid * decision)) (stt: Stt) : list (Proba next_step) :=
   match find_chapter (chapter stt) chapters with
   | None => []

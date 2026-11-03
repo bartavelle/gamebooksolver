@@ -3,6 +3,7 @@ Require Import Stdlib.Structures.OrderedType.
 From Equations Require Import Equations.
 Require Import Stdlib.QArith.Qcanon.
 Require Import Field.
+From Stdlib Require Import Ring.
 
 Require Import Stdlib.Logic.FunctionalExtensionality.
 Require Import Stdlib.Lists.List.
@@ -609,3 +610,75 @@ Proof.
   rewrite H.
   rewrite <- IHl; auto.
 Qed.
+
+Section Expected.
+  Open Scope Qc_scope.
+
+  (* the expected value of f *)
+  Definition ev {K: Set} (f: K -> Qc) (p: Proba K) : Qc :=
+    fold_right (fun (kv: K * Qc) acc => snd kv * f (fst kv) + acc) 0 p.
+
+  Lemma ev_single {K: Set}: forall (f: K -> Qc) k, ev f (certain k) = f k.
+  Proof. intros. unfold ev, certain. simpl. field. Qed.
+
+  Lemma ev_merge_with {K: Set} `{OrdDec K}: forall (f: K -> Qc) (g: Qc -> Qc -> Qc) (m1 m2 out: Proba K),
+    (forall a b, g a b = a + b) -> Merge.MergeWithL g m1 m2 out -> ev f out = ev f m1 + ev f m2.
+  Proof.
+    intros f g m1 m2 out G M.
+    induction M; unfold ev in *; simpl in *.
+    - ring.
+    - ring.
+    - match goal with C: cmp _ _ = EQ |- _ => apply cmp_eq in C; subst end.
+      rewrite IHM, G; auto. ring.
+    - rewrite IHM; auto. ring.
+    - rewrite IHM; auto. ring.
+  Qed.
+
+  Lemma ev_add_proba {K: Set} `{OrdDec K}: forall (f: K -> Qc) (m1 m2: Proba K),
+    ev f (add_proba m1 m2) = ev f m1 + ev f m2.
+  Proof.
+    intros. eapply ev_merge_with; [|apply Merge.inductive_correct; reflexivity]. reflexivity.
+  Qed.
+
+  Lemma ev_mul {K: Set}: forall (f: K -> Qc) (d: Proba K) p, ev f (mul_proba d p) = p * ev f d.
+  Proof.
+    intros. induction d as [|[k q] d IH]; unfold mul_proba, map_proba in *; simpl; unfold ev in *; simpl.
+    - field.
+    - rewrite IH. field.
+  Qed.
+
+  Lemma ev_merge {K: Set} `{OrdDec K}: forall (f: K -> Qc) (l: list (Qc * Proba K)),
+    ev f (merge_probas l) = fold_right (fun (x: Qc * Proba K) acc => fst x * ev f (snd x) + acc) 0 l.
+  Proof.
+    intros. induction l as [|[p d] l IH]; simpl.
+    - reflexivity.
+    - rewrite merge_probas_cons, ev_add_proba, ev_mul, IH. reflexivity.
+  Qed.
+
+  (* two lists of probabilities built from the same list give the same result when each pair does *)
+  Lemma ev_merge_map {A K: Set} `{OrdDec K}: forall (f: K -> Qc) (l: list A) (p: A -> Qc) (g h: A -> Proba K),
+    (forall a, In a l -> ev f (g a) = ev f (h a)) ->
+    ev f (merge_probas (map (fun a => (p a, g a)) l)) = ev f (merge_probas (map (fun a => (p a, h a)) l)).
+  Proof.
+    intros. rewrite !ev_merge. induction l as [|a l IH]; simpl; auto.
+    rewrite H1 by (left; reflexivity). rewrite IH; auto. intros. apply H1. right. assumption.
+  Qed.
+
+  Lemma ev_merge_map2 {A K: Set} `{OrdDec K}: forall (f: K -> Qc) (l: list A) (G H: A -> Qc * Proba K),
+    (forall a, In a l -> fst (G a) = fst (H a) /\ ev f (snd (G a)) = ev f (snd (H a))) ->
+    ev f (merge_probas (map G l)) = ev f (merge_probas (map H l)).
+  Proof.
+    intros f l G1 G2 P. rewrite !ev_merge. induction l as [|a l IH]; simpl; auto.
+    destruct (P a) as [A1 A2]; [left; reflexivity|]. rewrite A1, A2, IH; auto.
+    intros. apply P. right. assumption.
+  Qed.
+
+  Lemma ev_map_same {A K: Set}: forall (f: K -> Qc) (l: list A) (G H: A -> K * Qc),
+    (forall a, In a l -> snd (G a) = snd (H a) /\ f (fst (G a)) = f (fst (H a))) ->
+    ev f (map G l) = ev f (map H l).
+  Proof.
+    intros. unfold ev. induction l as [|a l IH]; simpl; auto.
+    destruct (H0 a) as [A1 A2]; [left; reflexivity|]. rewrite A1, A2, IH; auto.
+    intros. apply H0. right. assumption.
+  Qed.
+End Expected.

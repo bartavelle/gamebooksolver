@@ -858,14 +858,6 @@ Fixpoint needs_from (chapters: list (cid * decision)) (wn: nat) (fuel: nat) (t: 
       needs_from chapters wn f nt
   end.
 
-Lemma find_chapter_in: forall chapters c d, find_chapter c chapters = Some d -> In (c, d) chapters.
-Proof.
-  induction chapters as [|[k x] q IH]; intros c d F; simpl in F; [discriminate|].
-  destruct (k =? c) eqn: E.
-  - apply Nat.eqb_eq in E. inversion F; subst. left. reflexivity.
-  - right. apply IH. assumption.
-Qed.
-
 (* The gold of a state can be replaced by anything that is at least what its chapter needs *)
 Theorem gold_needs_sound: forall chapters wn score t,
   needs_ok chapters wn t = true ->
