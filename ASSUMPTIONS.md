@@ -235,8 +235,9 @@ places, so each of these could lower a score if the missing choice were better.
   and the character state can't hold it, so that the JSON starts them with full Endurance. The user's assumption is that evading
   there is a bad path, so that it can't change a result. With a win worth 1, replacing the fights of c32 by a free pass to c25, which
   is better than any carried damage, changed no exact score on 21 cases (6 kits of 20 Endurance and skill 10, 15 weaker characters).
-  This says little: 20 of them score 100% either way, as Book 3 has a path with no risk of death at these statistics. The test that
-  matters uses the values of Book 4, and is still to be run once they are computed. **Open.**
+  This says little: 20 of them score 100% either way, as Book 3 has a path with no risk of death at these statistics. With the values
+  of Book 4, the same change gave the same exact fraction on 6 kits of 20 Endurance and skill 10, from 80.26% to 80.62%. **Tested** on
+  that sample, not on all 210 kits.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
