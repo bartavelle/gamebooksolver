@@ -209,7 +209,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (225%nat,none (Goto 350%nat));
   (226%nat,Decisions [conditional (HasItem Gold 2%nat) (none (Simple [LoseItem Gold 2%nat] (Goto 56%nat))); none (Goto 276%nat)]);
   (227%nat,none (Goto 4%nat));
-  (228%nat,Decisions [none (Goto 27%nat); none (Goto 114%nat)]);
+  (228%nat,can_take Meal 2%nat (Decisions [none (Goto 27%nat); none (Goto 114%nat)]));
   (229%nat,Decisions [none (Goto 134%nat); none (Goto 208%nat); none (Goto 164%nat)]);
   (230%nat,Decisions [none (Goto 93%nat); none (Goto 137%nat)]);
   (231%nat,can_take (Weapon Dagger) 1%nat (can_take Gold 5%nat (can_take (GenSpecial S3) 1%nat (Decisions [conditional (HasDiscipline (Tracking)) (none (Goto 182%nat)); conditional (Not (HasDiscipline (Tracking))) (none (Goto 177%nat)); conditional (Not (HasDiscipline (Tracking))) (none (Goto 24%nat)); conditional (Not (HasDiscipline (Tracking))) (none (Goto 253%nat)); conditional (Not (HasDiscipline (Tracking))) (none (Goto 319%nat))]))));

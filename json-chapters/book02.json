@@ -6624,23 +6624,29 @@
     {
       "desc": "They are larnuma trees and their fruit is very nutritious as well as being sweet and juicy. After your Meal you feel much stronger. You pick enough fruit for 2 Meals and store it in your Backpack.\nLooking behind the trees, you see a wide coast road that stretches into the distance to the east and west. There are no signposts.\n",
       "pchoice": {
-        "Decisions": [
-          [
-            "If you wish to head east, turn to 27.",
-            {
-              "NoDecision": {
-                "Goto": 27
-              }
-            }
-          ],
-          [
-            "If you wish to head west, turn to 114.",
-            {
-              "NoDecision": {
-                "Goto": 114
-              }
-            }
-          ]
+        "CanTake": [
+          "Meal",
+          2,
+          {
+            "Decisions": [
+              [
+                "If you wish to head east, turn to 27.",
+                {
+                  "NoDecision": {
+                    "Goto": 27
+                  }
+                }
+              ],
+              [
+                "If you wish to head west, turn to 114.",
+                {
+                  "NoDecision": {
+                    "Goto": 114
+                  }
+                }
+              ]
+            ]
+          }
         ]
       },
       "title": "228"
