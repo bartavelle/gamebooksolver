@@ -152,7 +152,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (164%nat,Decisions [none (Goto 299%nat); none (Goto 52%nat)]);
   (165%nat,Decisions [none (Goto 319%nat); none (Simple [MustEat NoHunt] (Goto 13%nat))]);
   (166%nat,none (Goto 232%nat));
-  (167%nat,can_take Backpack 1%nat (can_take Meal 2%nat (none (Goto 185%nat))));
+  (167%nat,can_take Backpack 1%nat (can_take Meal 1%nat (can_take (GenBackpack S4) 1%nat (none (Goto 185%nat)))));
   (168%nat,Decisions [conditional (HasItem (Weapon Sommerswerd) 1%nat) (none (Goto 34%nat)); conditional (Not (HasItem (Weapon Sommerswerd) 1%nat)) (Decisions [none (Goto 85%nat)])]);
   (170%nat,Decisions [none (Goto 228%nat); none (Goto 221%nat)]);
   (171%nat,Decisions [none (Goto 63%nat); none (Goto 141%nat)]);

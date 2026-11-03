@@ -5193,11 +5193,17 @@
           {
             "CanTake": [
               "Meal",
-              2,
+              1,
               {
-                "NoDecision": {
-                  "Goto": 185
-                }
+                "CanTake": [
+                  "BGenCounter 4",
+                  1,
+                  {
+                    "NoDecision": {
+                      "Goto": 185
+                    }
+                  }
+                ]
               }
             ]
           }
