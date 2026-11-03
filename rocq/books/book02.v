@@ -235,7 +235,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (255%nat,none (Goto 268%nat));
   (256%nat,none (Goto 134%nat));
   (257%nat,Decisions [none (Goto 335%nat); none (Goto 181%nat)]);
-  (258%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 272%nat)); conditional (Not (HasDiscipline (SixthSense))) (none (Goto 17%nat)); conditional (Not (HasDiscipline (SixthSense))) (none (Goto 5%nat))]);
+  (258%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Simple [DamagePlayer 1%nat] (Goto 272%nat))); conditional (Not (HasDiscipline (SixthSense))) (none (Simple [DamagePlayer 1%nat] (Goto 17%nat))); conditional (Not (HasDiscipline (SixthSense))) (none (Simple [DamagePlayer 1%nat] (Goto 5%nat)))]);
   (259%nat,none (Goto 161%nat));
   (260%nat,can_take (Weapon Sword) 1%nat (none (Goto 240%nat)));
   (261%nat,Decisions [none (Goto 95%nat); none (Goto 198%nat)]);

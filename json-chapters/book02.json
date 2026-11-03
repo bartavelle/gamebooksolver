@@ -7543,7 +7543,16 @@
                 },
                 {
                   "NoDecision": {
-                    "Goto": 272
+                    "Simple": [
+                      [
+                        {
+                          "DamagePlayer": 1
+                        }
+                      ],
+                      {
+                        "Goto": 272
+                      }
+                    ]
                   }
                 }
               ]
@@ -7560,7 +7569,16 @@
                 },
                 {
                   "NoDecision": {
-                    "Goto": 17
+                    "Simple": [
+                      [
+                        {
+                          "DamagePlayer": 1
+                        }
+                      ],
+                      {
+                        "Goto": 17
+                      }
+                    ]
                   }
                 }
               ]
@@ -7577,7 +7595,16 @@
                 },
                 {
                   "NoDecision": {
-                    "Goto": 5
+                    "Simple": [
+                      [
+                        {
+                          "DamagePlayer": 1
+                        }
+                      ],
+                      {
+                        "Goto": 5
+                      }
+                    ]
                   }
                 }
               ]
