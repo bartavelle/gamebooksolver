@@ -9407,12 +9407,12 @@
           "Conditionally": [
             [
               {
-                "COr": [
+                "CAnd": [
                   {
                     "HasDiscipline": "SixthSense"
                   },
                   {
-                    "HasLevel": "Aspirant"
+                    "HasLevel": "Guardian"
                   }
                 ]
               },

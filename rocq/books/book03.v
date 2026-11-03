@@ -261,7 +261,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (286%nat,none (Goto 68%nat));
   (287%nat,none (Goto 161%nat));
   (288%nat,none (Goto 167%nat));
-  (290%nat,none (Conditionally [(COr (HasDiscipline (SixthSense)) (HasLevel Aspirant) , Goto 341%nat); (HasDiscipline (SixthSense) , Goto 124%nat); (Always true , Goto 264%nat)]));
+  (290%nat,none (Conditionally [(CAnd (HasDiscipline (SixthSense)) (HasLevel Guardian) , Goto 341%nat); (HasDiscipline (SixthSense) , Goto 124%nat); (Always true , Goto 264%nat)]));
   (291%nat,none (Randomly [(Goto 103%nat , (Q2Qc (1 / 2)%Q)); (Goto 220%nat , (Q2Qc (1 / 2)%Q))]));
   (292%nat,Decisions [none (Goto 83%nat); none (Goto 130%nat)]);
   (293%nat,Decisions [none (Goto 125%nat); none (Goto 235%nat); none (Goto 109%nat)]);
