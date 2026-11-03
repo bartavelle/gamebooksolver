@@ -12645,7 +12645,15 @@
               "fcombatSkill": 23,
               "fendurance": 50,
               "fightMod": [
-                "Undead"
+                "Undead",
+                {
+                  "Timed": [
+                    5,
+                    {
+                      "OnNotYetWon": 324
+                    }
+                  ]
+                }
               ],
               "opponent": "Akraa'Neonor"
             },
