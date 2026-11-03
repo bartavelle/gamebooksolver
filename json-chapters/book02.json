@@ -3340,20 +3340,183 @@
                   }
                 ],
                 {
-                  "Fight": [
-                    {
-                      "fcombatSkill": 22,
-                      "fendurance": 30,
-                      "fightMod": [
-                        "EnemyMindblast",
-                        "Undead",
-                        "MindblastImmune"
-                      ],
-                      "opponent": "Helghast"
-                    },
-                    {
-                      "Goto": 320
-                    }
+                  "Conditionally": [
+                    [
+                      {
+                        "COr": [
+                          {
+                            "COr": [
+                              {
+                                "COr": [
+                                  {
+                                    "COr": [
+                                      {
+                                        "COr": [
+                                          {
+                                            "COr": [
+                                              {
+                                                "COr": [
+                                                  {
+                                                    "CAnd": [
+                                                      {
+                                                        "HasDiscipline": "Dagger"
+                                                      },
+                                                      {
+                                                        "HasItem": [
+                                                          "Dagger",
+                                                          1
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "CAnd": [
+                                                      {
+                                                        "HasDiscipline": "Mace"
+                                                      },
+                                                      {
+                                                        "HasItem": [
+                                                          "Mace",
+                                                          1
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "CAnd": [
+                                                  {
+                                                    "HasDiscipline": "ShortSword"
+                                                  },
+                                                  {
+                                                    "HasItem": [
+                                                      "ShortSword",
+                                                      1
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "CAnd": [
+                                              {
+                                                "HasDiscipline": "Warhammer"
+                                              },
+                                              {
+                                                "HasItem": [
+                                                  "Warhammer",
+                                                  1
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "CAnd": [
+                                          {
+                                            "HasDiscipline": "Sword"
+                                          },
+                                          {
+                                            "HasItem": [
+                                              "Sword",
+                                              1
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "CAnd": [
+                                      {
+                                        "HasDiscipline": "Axe"
+                                      },
+                                      {
+                                        "HasItem": [
+                                          "Axe",
+                                          1
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "CAnd": [
+                                  {
+                                    "HasDiscipline": "Quarterstaff"
+                                  },
+                                  {
+                                    "HasItem": [
+                                      "Quarterstaff",
+                                      1
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "CAnd": [
+                              {
+                                "HasDiscipline": "BroadSword"
+                              },
+                              {
+                                "HasItem": [
+                                  "BroadSword",
+                                  1
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "Fight": [
+                          {
+                            "fcombatSkill": 22,
+                            "fendurance": 30,
+                            "fightMod": [
+                              "EnemyMindblast",
+                              "Undead",
+                              "MindblastImmune",
+                              {
+                                "CombatBonus": -2
+                              }
+                            ],
+                            "opponent": "Helghast"
+                          },
+                          {
+                            "Goto": 320
+                          }
+                        ]
+                      }
+                    ],
+                    [
+                      {
+                        "Always": true
+                      },
+                      {
+                        "Fight": [
+                          {
+                            "fcombatSkill": 22,
+                            "fendurance": 30,
+                            "fightMod": [
+                              "EnemyMindblast",
+                              "Undead",
+                              "MindblastImmune"
+                            ],
+                            "opponent": "Helghast"
+                          },
+                          {
+                            "Goto": 320
+                          }
+                        ]
+                      }
+                    ]
                   ]
                 }
               ]
