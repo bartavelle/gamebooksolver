@@ -166,7 +166,7 @@ places, so each of these could lower a score if the missing choice were better.
 - **R15. The JSON differs from the XML on purpose, to avoid cycles.** Keep this when sound. **Decided.** Restoring these
   would create a cycle: Book 1 c36, c70, c125, c290, c323; Book 2 c47, c136, c172; Book 3 c181; Book 5 c67, c373. Whether
   each preserves the game is **Unverified**.
-- **R16. Other JSON differences from the XML are assumed sound.** Book 2 c160, c186, c200, c238, c265, c302. They create no cycle, and have not been reviewed. Book 3 c10 and c146 were reviewed in
+- **R16. Other JSON differences from the XML are assumed sound.** Book 2 c160, c186, c200, c238, c265 and c302 were reviewed in R33: only c302 is wrong. Book 3 c10 and c146 were reviewed in
   R28 and follow the book, and c164 and c180 were wrong and are fixed. Book 2 c302 gave the same score on
   five starts when set back to the book's 244, with 15% to 22% more states. **Open.**
 - **R23. Book 2 c40 and Book 3 c10 offer their item instead of forcing it.** **Decided** on 2026-11-03. The book gives the
@@ -238,6 +238,38 @@ places, so each of these could lower a score if the missing choice were better.
   This says little: 20 of them score 100% either way, as Book 3 has a path with no risk of death at these statistics. With the values
   of Book 4, the same change gave the same exact fraction on 6 kits of 20 Endurance and skill 10, from 80.26% to 80.62%. **Tested** on
   that sample, not on all 210 kits.
+- **R32. Book 1 was compared with `project-aon/en/xml/01fftd.xml` on 2026-11-03, and does not follow it yet.** All sections exist and
+  fight statistics match. The sentences with a game term of 228 sections were read next to the JSON, and the other 122 have none.
+  **Open**, nothing is fixed. Differences from the book: c21 (odds: 60%, 36% and 4% in the book, 65%, 31.5% and 3.5% here), c29, c34 and c342 (the
+  mind attack of the Vordak is 2 less Combat Skill, not 2 Endurance per round, as c283 does), c62 (3 Meals, not 2), c112 (no
+  `MultiFight`), c144 (no weapon lost with an empty Backpack, and a Dagger lost when evading that the book does not take), c169 (evades
+  after one round, not at once), c180 (evades any of the three fights, not only the first), c260 (unarmed, 4 less Combat Skill),
+  c267 (the Dagger is not offered), c274 (the weapons are not lost), c277 (one weapon of your choice is lost, not all), c291 (the Dagger or
+  a Spear, not both), c300 (no Meal is eaten). c112, c208 and c229 choose what follows before the fight, not after.
+  Reviewed and sound: c36, c290 and c323 unroll the climbs of the tower, and c125 skips sections that all go to c27. These lose the
+  Healing of the skipped sections, which can only lower a score. The Tomb Guardian Gems, Scroll, Message and Soap are read by nothing. c70 adds
+  a Sword and a Meal to all its exits, where the book can go to c30 or c167 without either: adding this choice to c70, and playing the
+  choice of c208 after its fight, changed no exact score on 4 kits, with a win worth 1, which is a weak test. **Tested** on that sample.
+- **R33. Book 2 was compared with `project-aon/en/xml/02fotw.xml` on 2026-11-03, and does not follow it yet.** Fight statistics match. The sentences
+  with a game term of 258 sections were read next to the JSON, and the other 92 have none. **Open**, nothing is fixed. Differences
+  from the book: c106 (only the Magic Spear can hurt this enemy, so a Weaponskill with the Sword gives no bonus), c116 (1 Gold Crown is
+  paid for the room), c145 (the Laumspur is used), c228 (2 Meals of fruit to take), c258 (1 Endurance lost), c290 (no Meal is eaten
+  here), c302 (goes to c15, which gives its loot a second time and the password, where the book goes to c244), c332 (the targets of
+  a win and of an evasion are swapped, both end at c183), c15 and c302 (the potion restores 3, not 4), Laumspur (restores 3, not 4, and
+  can stand for a Meal, as in Book 1, which `rules.rs` only does for Book 1), c90, c131, c185, c296 and c298 (can be evaded at any time, not
+  only during the first fight), c313 and c338 (the Magic Spear is erased, which nothing reads afterwards), c172 (the way back to the
+  wagon of c64 is removed for a cycle, while a copy of c229 without its way back has none). c262 does not offer the Potion of Orange Liquid, whose
+  effect the book does not state. Reviewed and sound: c265 and the 13 sections of Port Bax it replaces, since only the Seal of Hammerdal leads
+  to c202, and without it the other ways end in death or go round forever; c160, whose sections all lead to the same fight; c200,
+  as Dorier and Ganon are a harder fight than Halvorc for the same section and no loot; c186 and c238, see `rocq/proofs/cartwheel.v`;
+  c33 and c314, which cap gold at 12, as the only useful purchase left is a Broadsword of 12 crowns, and a bribe at c57 gains nothing;
+  c95, as c239 only adds c77, whose choices c28 offers too. c1 gives the Seal, and c31 the Backpack the book allows. With Book 3 values, on 5 kits, the exact
+  score did not change when restoring c302, adding the way back to c172, fully healing Healing characters at c265 (the upper bound of the sections
+  that are skipped), or allowing all the gold to be given at c93. **Tested** on that sample.
+- **R34. Without Animal Kinship and at low statistics, Book 2 is close to impossible, and this follows the book.** All the ways through
+  the Tarnalin meet a Helghast that kills without the Magic Spear (c134, c52), apart from the Noodnics of c23, which need Animal
+  Kinship. The Spear is won by beating another Helghast at c106. Three kits without Animal Kinship scored 0.13% to 0.46% with 20 Endurance
+  and skill 10, against 69% for two kits with it. **Tested** on that sample.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
