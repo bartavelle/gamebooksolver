@@ -7,6 +7,8 @@ Require Import proba.
 Require Import combat.
 Require Import rules.
 Require Import value.
+Require Import fight_facts.
+Require Import simulation.
 Require Import gold.
 Require Import Stdlib.Lists.List.
 Import ListNotations.

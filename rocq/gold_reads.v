@@ -1,5 +1,5 @@
 (* The tables of gold_tables.v are checked on the five books: no chapter needs more gold than what they say. *)
-Require Import character chapters mps rules value gold reads gold_tables.
+Require Import character chapters mps rules value simulation gold reads gold_tables.
 Require Import Stdlib.Lists.List.
 Import ListNotations.
 Require Import Stdlib.QArith.Qcanon.
