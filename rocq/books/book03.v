@@ -37,7 +37,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (33%nat,Decisions [conditional (COr (HasDiscipline (Tracking)) (HasDiscipline (SixthSense))) (none (Simple [DamagePlayer 1%nat] (Goto 348%nat))); conditional (Not (COr (HasDiscipline (Tracking)) (HasDiscipline (SixthSense)))) (Decisions [none (Simple [DamagePlayer 1%nat] (Goto 27%nat)); none (Simple [DamagePlayer 1%nat] (Goto 314%nat))])]);
   (34%nat,none (Goto 350%nat));
   (35%nat,none (Goto 291%nat));
-  (36%nat,none (Conditionally [(CAnd (HasDiscipline (SixthSense)) (HasLevel Guardian) , Goto 341%nat); (HasDiscipline (SixthSense) , Goto 264%nat); (Always true , Goto 124%nat)]));
+  (36%nat,none (Conditionally [(CAnd (HasDiscipline (SixthSense)) (HasLevel Guardian) , Goto 341%nat); (HasDiscipline (SixthSense) , Goto 124%nat); (Always true , Goto 264%nat)]));
   (37%nat,none (GameLost));
   (38%nat,can_take Backpack 1%nat (can_take (GenBackpack S0) 1%nat (none (Goto 237%nat))));
   (39%nat,none (Goto 173%nat));
