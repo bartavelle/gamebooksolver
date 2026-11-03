@@ -3128,8 +3128,9 @@
           "Simple": [
             [
               {
-                "LoseItemKind": [
-                  "BackpackSlot"
+                "LoseItem": [
+                  "Backpack",
+                  1
                 ]
               }
             ],
@@ -4961,8 +4962,9 @@
                 "DamagePlayer": 3
               },
               {
-                "LoseItemKind": [
-                  "BackpackSlot"
+                "LoseItem": [
+                  "Backpack",
+                  1
                 ]
               }
             ],
@@ -10694,8 +10696,9 @@
               "Simple": [
                 [
                   {
-                    "LoseItemKind": [
-                      "BackpackSlot"
+                    "LoseItem": [
+                      "Backpack",
+                      1
                     ]
                   }
                 ],

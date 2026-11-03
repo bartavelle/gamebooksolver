@@ -84,7 +84,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (87%nat,Decisions [conditional (COr (HasDiscipline (SixthSense)) (HasDiscipline (Tracking))) (none (Goto 60%nat)); conditional (Not (COr (HasDiscipline (SixthSense)) (HasDiscipline (Tracking)))) (Decisions [none (Goto 199%nat); none (Goto 208%nat)])]);
   (91%nat,Decisions [none (Goto 254%nat); none (Goto 191%nat)]);
   (92%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 210%nat)); conditional (Not (HasDiscipline (SixthSense))) (Decisions [none (Goto 132%nat); none (Goto 301%nat)])]);
-  (94%nat,none (Simple [LoseItemKind [SBackpack]] (Goto 219%nat)));
+  (94%nat,none (Simple [LoseItem Backpack 1%nat] (Goto 219%nat)));
   (95%nat,Decisions [none (Goto 259%nat); none (Goto 195%nat)]);
   (96%nat,none (Randomly [(Goto 47%nat , (Q2Qc (1 / 2)%Q)); (Goto 234%nat , (Q2Qc (2 / 5)%Q)); (Goto 334%nat , (Q2Qc (1 / 10)%Q))]));
   (97%nat,none (Goto 199%nat));
@@ -143,7 +143,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (155%nat,none (Goto 225%nat));
   (156%nat,Decisions [none (Goto 212%nat); none (Goto 101%nat)]);
   (157%nat,none (Simple [HealPlayer 1%nat] (Goto 309%nat)));
-  (158%nat,none (Simple [DamagePlayer 3%nat; LoseItemKind [SBackpack]] (Goto 219%nat)));
+  (158%nat,none (Simple [DamagePlayer 3%nat; LoseItem Backpack 1%nat] (Goto 219%nat)));
   (159%nat,none (Simple [DamagePlayer 2%nat] (Goto 204%nat)));
   (160%nat,Decisions [none (Goto 84%nat); none (Goto 205%nat); none (Goto 306%nat)]);
   (161%nat,Decisions [none (Goto 27%nat); none (Goto 144%nat); none (Goto 294%nat)]);
@@ -312,7 +312,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (339%nat,none (Simple [MustEat Hunt] (Goto 233%nat)));
   (340%nat,none (Simple [DamagePlayer 2%nat] (Goto 32%nat)));
   (341%nat,none (Simple [DamagePlayer 4%nat] (Goto 116%nat)));
-  (342%nat,none (Simple [LoseItem (GenSpecial S0) 1%nat] (Simple [LoseItemKind [SBackpack]] (Goto 219%nat))));
+  (342%nat,none (Simple [LoseItem (GenSpecial S0) 1%nat] (Simple [LoseItem Backpack 1%nat] (Goto 219%nat))));
   (343%nat,none (Conditionally [(HasEndurance 20%nat , Randomly [(Goto 194%nat , (Q2Qc (2 / 5)%Q)); (Goto 61%nat , (Q2Qc (3 / 5)%Q))]); (HasEndurance 12%nat , Randomly [(Goto 194%nat , (Q2Qc (7 / 10)%Q)); (Goto 61%nat , (Q2Qc (3 / 10)%Q))]); (Always true , Randomly [(Goto 194%nat , (Q2Qc (9 / 10)%Q)); (Goto 61%nat , (Q2Qc (1 / 10)%Q))])]));
   (344%nat,none (Conditionally [(HasLevel Aspirant , Goto 111%nat); (Always true , Goto 43%nat)]));
   (345%nat,none (Randomly [(Goto 51%nat , (Q2Qc (7 / 10)%Q)); (Goto 120%nat , (Q2Qc (3 / 10)%Q))]));
