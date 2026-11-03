@@ -246,7 +246,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (266%nat,none (Goto 324%nat));
   (267%nat,none (GameLost));
   (268%nat,can_take Gold 4%nat (can_take Meal 2%nat (can_take (Weapon Spear) 1%nat (can_take (Weapon BroadSword) 1%nat (can_take (GenSpecial S0) 1%nat (can_take Laumspur 1%nat (Decisions [none (Goto 118%nat); none (Goto 170%nat); none (Goto 228%nat)])))))));
-  (269%nat,none (Simple [MustEat NoHunt] (Goto 145%nat)));
+  (269%nat,can_take (GenBackpack S4) 1%nat (none (Simple [MustEat NoHunt] (Goto 145%nat))));
   (270%nat,none (Conditionally [(CAnd (HasItem (GenBackpack S2) 1%nat) (HasItem (GenBackpack S1) 1%nat) , Goto 29%nat); (HasItem (GenSpecial S1) 1%nat , Goto 168%nat); (Always true , Goto 361%nat)]));
   (271%nat,none (Conditionally [(HasDiscipline (Hunting) , Randomly [(Goto 9%nat , (Q2Qc (1 / 2)%Q)); (Goto 104%nat , (Q2Qc (1 / 2)%Q))]); (Always true , Randomly [(Goto 9%nat , (Q2Qc (7 / 10)%Q)); (Goto 104%nat , (Q2Qc (3 / 10)%Q))])]));
   (272%nat,none (LoseItemFrom SWeapon 1%nat (Simple [DamagePlayer 5%nat] (Goto 79%nat))));

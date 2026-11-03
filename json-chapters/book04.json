@@ -8751,18 +8751,24 @@
     {
       "desc": "You follow the passage for nearly an hour before finding yourself in front of a solid rock-face. Shovels and barrows lie discarded upon the floor as if the excavation was abandoned in a great hurry. You may take one of the Shovels if you wish, but it will occupy the same space in your Backpack as two normal items.\nYou are now hungry and you must eat a Meal or lose 3 ENDURANCE points. (If you possess the Kai Discipline of Hunting, you are unable to use it within the Maaken Mines to hunt for food.) Cursing your bad luck, you are forced to retrace your steps all the way back to the junction.\n",
       "pchoice": {
-        "NoDecision": {
-          "Simple": [
-            [
-              {
-                "MustEat": "NoHunt"
-              }
-            ],
-            {
-              "Goto": 145
+        "CanTake": [
+          "BGenCounter 4",
+          1,
+          {
+            "NoDecision": {
+              "Simple": [
+                [
+                  {
+                    "MustEat": "NoHunt"
+                  }
+                ],
+                {
+                  "Goto": 145
+                }
+              ]
             }
-          ]
-        }
+          }
+        ]
       },
       "title": "269"
     }
