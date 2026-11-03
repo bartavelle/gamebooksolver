@@ -3510,7 +3510,25 @@
       "desc": "You pour the healing Potion onto your sore and broken skin. Immediately, you feel the soothing effects of the fluid. The pain fades and the swelling begins to subside. The Glowing Gem is a cursed Doomstone, and the power it contains is deadly to all living creatures. Had you not possessed a Laumspur Potion, the effects of the Doomstone would certainly have killed you. You discard the deadly Gem and the now empty vial of Laumspur.\n",
       "pchoice": {
         "NoDecision": {
-          "Goto": 97
+          "Simple": [
+            [
+              {
+                "LoseItem": [
+                  "SGenCounter 4",
+                  1
+                ]
+              },
+              {
+                "LoseItem": [
+                  "Potion5Hp",
+                  1
+                ]
+              }
+            ],
+            {
+              "Goto": 97
+            }
+          ]
         }
       },
       "title": "116"

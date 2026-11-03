@@ -107,7 +107,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (113%nat,none (Goto 63%nat));
   (114%nat,Decisions [conditional (HasDiscipline (Hunting)) (none (Goto 279%nat)); conditional (Not (HasDiscipline (Hunting))) (Decisions [none (Goto 23%nat); none (Goto 101%nat)])]);
   (115%nat,Decisions [none (Goto 218%nat); none (Goto 52%nat)]);
-  (116%nat,none (Goto 97%nat));
+  (116%nat,none (Simple [LoseItem (GenSpecial S4) 1%nat; LoseItem Potion5Hp 1%nat] (Goto 97%nat)));
   (117%nat,Decisions [none (Goto 73%nat); none (Goto 162%nat); none (Goto 223%nat)]);
   (118%nat,none (Goto 56%nat));
   (119%nat,can_take Meal 5%nat (can_take (GenBackpack S0) 1%nat (Decisions [none (Goto 19%nat); none (Goto 257%nat)])));
