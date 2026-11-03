@@ -125,7 +125,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (134%nat,Decisions [none (Goto 91%nat); none (Goto 191%nat)]);
   (135%nat,Decisions [none (Goto 284%nat); none (Goto 211%nat); none (Goto 30%nat)]);
   (136%nat,Decisions [conditional (HasDiscipline (Healing)) (none (Goto 313%nat)); conditional (Not (HasDiscipline (Healing))) (Decisions [none (Goto 216%nat)])]);
-  (137%nat,none (Goto 12%nat));
+  (137%nat,none (Simple [HealPlayer 6%nat] (Goto 12%nat)));
   (138%nat,evade_fight 0%nat 81%nat (Details ((13)%Z)%Z 29%nat []) (Goto 152%nat));
   (139%nat,Decisions [none (Simple [MustEat Hunt] (Goto 206%nat)); none (Simple [MustEat Hunt] (Goto 330%nat)); none (Simple [MustEat Hunt] (Goto 92%nat))]);
   (140%nat,Decisions [none (Goto 70%nat); none (Goto 314%nat)]);
