@@ -2781,64 +2781,31 @@
     {
       "desc": "Suddenly, the large rock you are hiding behind is rolled aside and you are faced by two snarling Giaks intent on your death. The cave mouth is a narrow entrance and you can only fight the Giaks one at a time.\n",
       "pchoice": {
-        "Decisions": [
-          [
-            "If you win, you may explore the cave further by turning to 33.",
+        "NoDecision": {
+          "Fight": [
             {
-              "NoDecision": {
-                "Fight": [
-                  {
-                    "fcombatSkill": 13,
-                    "fendurance": 10,
-                    "fightMod": [],
-                    "opponent": "Giak 1"
-                  },
-                  {
-                    "Fight": [
-                      {
-                        "fcombatSkill": 12,
-                        "fendurance": 10,
-                        "fightMod": [],
-                        "opponent": "Giak 2"
-                      },
-                      {
-                        "Goto": 33
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ],
-          [
-            "Or you may leave and descend the hill. Turn to 248.",
+              "fcombatSkill": 13,
+              "fendurance": 10,
+              "fightMod": [
+                "MultiFight"
+              ],
+              "opponent": "Giak 1"
+            },
             {
-              "NoDecision": {
-                "Fight": [
-                  {
-                    "fcombatSkill": 13,
-                    "fendurance": 10,
-                    "fightMod": [],
-                    "opponent": "Giak 1"
-                  },
-                  {
-                    "Fight": [
-                      {
-                        "fcombatSkill": 12,
-                        "fendurance": 10,
-                        "fightMod": [],
-                        "opponent": "Giak 2"
-                      },
-                      {
-                        "Goto": 248
-                      }
-                    ]
-                  }
-                ]
-              }
+              "Fight": [
+                {
+                  "fcombatSkill": 12,
+                  "fendurance": 10,
+                  "fightMod": [],
+                  "opponent": "Giak 2"
+                },
+                {
+                  "Goto": 407
+                }
+              ]
             }
           ]
-        ]
+        }
       },
       "title": "112"
     }
@@ -5443,44 +5410,19 @@
     {
       "desc": "The ghoulish creatures thrust their spears at you and attack. Fight these creatures as a single enemy.\n",
       "pchoice": {
-        "Decisions": [
-          [
-            "If you win, you can run to the safety of the farmhouse by turning to 148.",
+        "NoDecision": {
+          "Fight": [
             {
-              "NoDecision": {
-                "Fight": [
-                  {
-                    "fcombatSkill": 15,
-                    "fendurance": 13,
-                    "fightMod": [],
-                    "opponent": "Giaks"
-                  },
-                  {
-                    "Goto": 148
-                  }
-                ]
-              }
-            }
-          ],
-          [
-            "Or you can return to the woods by turning to 320.",
+              "fcombatSkill": 15,
+              "fendurance": 13,
+              "fightMod": [],
+              "opponent": "Giaks"
+            },
             {
-              "NoDecision": {
-                "Fight": [
-                  {
-                    "fcombatSkill": 15,
-                    "fendurance": 13,
-                    "fightMod": [],
-                    "opponent": "Giaks"
-                  },
-                  {
-                    "Goto": 320
-                  }
-                ]
-              }
+              "Goto": 408
             }
           ]
-        ]
+        }
       },
       "title": "208"
     }
@@ -5918,52 +5860,23 @@
     {
       "desc": "The Kraan hovers above you, raising dust with the beat of its huge black wings. The dust gets into your eyes and nose, and you start to cough. Now the beast attacks.\nYou must fight it to the death. Because of the dust, you must reduce your COMBAT SKILL by 1 point.\nIf you win you have a choice.\n",
       "pchoice": {
-        "Decisions": [
-          [
-            "Will you search the body by turning to 267.",
+        "NoDecision": {
+          "Fight": [
             {
-              "NoDecision": {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 25,
-                    "fightMod": [
-                      {
-                        "CombatBonus": -1
-                      }
-                    ],
-                    "opponent": "Kraan"
-                  },
-                  {
-                    "Goto": 267
-                  }
-                ]
-              }
-            }
-          ],
-          [
-            "Or will you continue along the east path by turning to 125.",
+              "fcombatSkill": 16,
+              "fendurance": 25,
+              "fightMod": [
+                {
+                  "CombatBonus": -1
+                }
+              ],
+              "opponent": "Kraan"
+            },
             {
-              "NoDecision": {
-                "Fight": [
-                  {
-                    "fcombatSkill": 16,
-                    "fendurance": 25,
-                    "fightMod": [
-                      {
-                        "CombatBonus": -1
-                      }
-                    ],
-                    "opponent": "Kraan"
-                  },
-                  {
-                    "Goto": 125
-                  }
-                ]
-              }
+              "Goto": 409
             }
           ]
-        ]
+        }
       },
       "title": "229"
     }
@@ -10762,6 +10675,93 @@
         ]
       },
       "title": "h10"
+    }
+  ],
+  [
+    407,
+    {
+      "title": "",
+      "desc": "",
+      "pchoice": {
+        "AfterCombat": {
+          "Decisions": [
+            [
+              "If you win, you may explore the cave further by turning to 33.",
+              {
+                "NoDecision": {
+                  "Goto": 33
+                }
+              }
+            ],
+            [
+              "Or you may leave and descend the hill. Turn to 248.",
+              {
+                "NoDecision": {
+                  "Goto": 248
+                }
+              }
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  [
+    408,
+    {
+      "title": "",
+      "desc": "",
+      "pchoice": {
+        "AfterCombat": {
+          "Decisions": [
+            [
+              "If you win, you can run to the safety of the farmhouse by turning to 148.",
+              {
+                "NoDecision": {
+                  "Goto": 148
+                }
+              }
+            ],
+            [
+              "Or you can return to the woods by turning to 320.",
+              {
+                "NoDecision": {
+                  "Goto": 320
+                }
+              }
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  [
+    409,
+    {
+      "title": "",
+      "desc": "",
+      "pchoice": {
+        "AfterCombat": {
+          "Decisions": [
+            [
+              "Will you search the body by turning to 267.",
+              {
+                "NoDecision": {
+                  "Goto": 267
+                }
+              }
+            ],
+            [
+              "Or will you continue along the east path by turning to 125.",
+              {
+                "NoDecision": {
+                  "Goto": 125
+                }
+              }
+            ]
+          ]
+        }
+      }
     }
   ]
 ]

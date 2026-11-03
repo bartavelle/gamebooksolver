@@ -108,7 +108,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (109%nat,Decisions [none (Goto 164%nat); none (Goto 308%nat)]);
   (110%nat,none (Goto 55%nat));
   (111%nat,Decisions [none (Goto 57%nat); none (Goto 308%nat)]);
-  (112%nat,Decisions [none (Fight (Details ((13)%Z)%Z 10%nat []) (Fight (Details ((12)%Z)%Z 10%nat []) (Goto 33%nat))); none (Fight (Details ((13)%Z)%Z 10%nat []) (Fight (Details ((12)%Z)%Z 10%nat []) (Goto 248%nat)))]);
+  (112%nat,none (Fight (Details ((13)%Z)%Z 10%nat [MultiFight]) (Fight (Details ((12)%Z)%Z 10%nat []) (Goto 407%nat))));
   (113%nat,can_take Laumspur 2%nat (Decisions [none (Goto 347%nat); none (Goto 295%nat)]));
   (114%nat,none (Goto 239%nat));
   (115%nat,Decisions [none (Goto 150%nat); none (Goto 177%nat); none (Goto 83%nat)]);
@@ -200,7 +200,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (205%nat,none (Simple [LoseItemKind [SBackpack; SWeapon]; LoseItem Backpack 1%nat] (Randomly [(Goto 181%nat , (Q2Qc (1 / 2)%Q)); (Goto 145%nat , (Q2Qc (1 / 2)%Q))])));
   (206%nat,none (Goto 224%nat));
   (207%nat,none (Goto 30%nat));
-  (208%nat,Decisions [none (Fight (Details ((15)%Z)%Z 13%nat []) (Goto 148%nat)); none (Fight (Details ((15)%Z)%Z 13%nat []) (Goto 320%nat))]);
+  (208%nat,none (Fight (Details ((15)%Z)%Z 13%nat []) (Goto 408%nat)));
   (209%nat,none (Goto 23%nat));
   (210%nat,Decisions [none (Goto 332%nat); none (Goto 37%nat)]);
   (211%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 244%nat)); conditional (Not (HasDiscipline (SixthSense))) (Decisions [none (Goto 173%nat); none (Goto 106%nat)])]);
@@ -220,7 +220,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (225%nat,Decisions [none (Goto 187%nat); none (Goto 39%nat)]);
   (226%nat,none (Randomly [(Goto 277%nat , (Q2Qc (1 / 2)%Q)); (Goto 338%nat , (Q2Qc (1 / 2)%Q))]));
   (228%nat,Decisions [none (Goto 140%nat); none (Goto 215%nat)]);
-  (229%nat,Decisions [none (Fight (Details ((16)%Z)%Z 25%nat [CombatBonus (-1)%Z]) (Goto 267%nat)); none (Fight (Details ((16)%Z)%Z 25%nat [CombatBonus (-1)%Z]) (Goto 125%nat))]);
+  (229%nat,none (Fight (Details ((16)%Z)%Z 25%nat [CombatBonus (-1)%Z]) (Goto 409%nat)));
   (230%nat,none (Goto 179%nat));
   (231%nat,evade_fight 2%nat 7%nat (Details ((13)%Z)%Z 20%nat [Timed 4%nat (OnNotYetWon 203%nat)]) (Goto 94%nat));
   (232%nat,Decisions [none (Goto 180%nat); none (Goto 22%nat)]);
@@ -408,4 +408,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (403%nat,Decisions [none (Randomly [(Goto 323%nat , (Q2Qc (1 / 2)%Q)); (Simple [DamagePlayer 2%nat] (Goto 404%nat) , (Q2Qc (1 / 2)%Q))]); none (Goto 395%nat)]);
   (404%nat,Decisions [none (Randomly [(Goto 323%nat , (Q2Qc (1 / 2)%Q)); (Simple [DamagePlayer 2%nat] (Goto 405%nat) , (Q2Qc (1 / 2)%Q))]); none (Goto 395%nat)]);
   (405%nat,Decisions [none (Randomly [(Goto 323%nat , (Q2Qc (1 / 2)%Q)); (Simple [DamagePlayer 2%nat] (Goto 406%nat) , (Q2Qc (1 / 2)%Q))]); none (Goto 395%nat)]);
-  (406%nat,Decisions [none (Randomly [(Goto 323%nat , (Q2Qc (1 / 2)%Q)); (Simple [DamagePlayer 2%nat] (Goto 395%nat) , (Q2Qc (1 / 2)%Q))]); none (Goto 395%nat)])].
+  (406%nat,Decisions [none (Randomly [(Goto 323%nat , (Q2Qc (1 / 2)%Q)); (Simple [DamagePlayer 2%nat] (Goto 395%nat) , (Q2Qc (1 / 2)%Q))]); none (Goto 395%nat)]);
+  (407%nat,after_combat (Decisions [none (Goto 33%nat); none (Goto 248%nat)]));
+  (408%nat,after_combat (Decisions [none (Goto 148%nat); none (Goto 320%nat)]));
+  (409%nat,after_combat (Decisions [none (Goto 267%nat); none (Goto 125%nat)]))].
