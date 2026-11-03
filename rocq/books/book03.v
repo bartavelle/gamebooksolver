@@ -299,7 +299,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (328%nat,Decisions [conditional (HasItem (Weapon Sommerswerd) 1%nat) (none (Simple [DamagePlayer 6%nat] (Goto 99%nat))); conditional (Not (HasItem (Weapon Sommerswerd) 1%nat)) (Decisions [none (Simple [DamagePlayer 6%nat] (Goto 175%nat))])]);
   (329%nat,Decisions [conditional (HasFlag Special04) (none (Goto 202%nat)); none (Goto 284%nat); none (Goto 138%nat)]);
   (330%nat,Decisions [conditional (HasItem (GenBackpack S0) 1%nat) (none (Goto 100%nat)); conditional (Not (HasItem (GenBackpack S0) 1%nat)) (none (Goto 148%nat)); none (Goto 61%nat)]);
-  (331%nat,none (Conditionally [(HasDiscipline (Healing) , Randomly [(Goto 62%nat , (Q2Qc (1 / 2)%Q)); (Goto 288%nat , (Q2Qc (1 / 2)%Q))]); (Always true , Simple [DamagePlayer 6%nat] (Randomly [(Goto 62%nat , (Q2Qc (1 / 2)%Q)); (Goto 288%nat , (Q2Qc (1 / 2)%Q))]))]));
+  (331%nat,none (Conditionally [(HasDiscipline (Healing) , Randomly [(Goto 62%nat , (Q2Qc (1 / 2)%Q)); (Goto 288%nat , (Q2Qc (1 / 2)%Q))]); (Always true , Simple [DamagePlayer 4%nat] (Randomly [(Goto 62%nat , (Q2Qc (1 / 2)%Q)); (Goto 288%nat , (Q2Qc (1 / 2)%Q))]))]));
   (332%nat,Decisions [conditional (COr (HasDiscipline (SixthSense)) (HasDiscipline (Hunting))) (none (Goto 249%nat)); conditional (Not (COr (HasDiscipline (SixthSense)) (HasDiscipline (Hunting)))) (Decisions [none (Goto 104%nat); none (Goto 69%nat)])]);
   (333%nat,none (Goto 68%nat));
   (334%nat,can_take (GenSpecial S4) 1%nat (Decisions [none (Goto 65%nat); none (Goto 306%nat)]));
