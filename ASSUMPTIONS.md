@@ -213,6 +213,20 @@ places, so each of these could lower a score if the missing choice were better.
   round", where that round is calculated and only Lone Wolf can lose Endurance. c14 and others allow evading "at any time", and
   a free escape before any blow is another possible reading. The solver and the separate calculation both play the round, so
   the check of O6 can't tell them apart. **Decided** by the user: keep the cautious reading.
+- **R28. Book 3 was compared with `project-aon/en/xml/03tcok.xml` on 2026-11-03, and does not follow it yet.** All sections are
+  accounted for, as c54, c77, c90, c156, c171, c177, c225, c233, c250, c268, c289 and c311 are merged into c10 and added chapters.
+  Fight statistics match. The sentences with a game term of 246 sections were read next to the JSON, and the other 104 have none.
+  **Open**, nothing is fixed. Differences from the book: c17 has the effects of c18 (3 Endurance and all weapons), and c18 has
+  none; c192 has the 2 Endurance loss of c193; c29 swaps the odds of c226 and c266; c36 swaps c124 and c264; c88 lacks the immunity
+  to Mind Blast; c116 keeps the Gem and the Laumspur; c129 lacks 3 Endurance without Baknar oil; c132 lacks 3 Endurance when
+  coming from c5 or c176 without eating; c164 lacks the limit of five rounds; c180 lacks the jump to c129 on damage; c210 does not
+  offer the Bone Sword; c260 lacks the two rounds without loss and the immunity to Mind Blast; c275 only tests Hunting, not Tracking
+  or Animal Kinship; c290 tests Sixth Sense or Aspirant, not Sixth Sense and Guardian; c296 does not stop after 3 rounds; c302 tests
+  Hunting, not Sixth Sense; c304 allows a potion; c331 costs 6 Endurance, not 4; c369 (the orange potion of c171) tests Healing or
+  Sixth Sense, not Sixth Sense or Weaponskill; the Rope takes 1 Backpack place, not 2. To decide: c83 (2 Endurance per round, where
+  the book may mean once), c32 (damage done to a Kalkoth before evading is not carried over), c15 (any Sword opens the lock, not
+  only a Bone Sword), c86 (any Weaponskill counts, not only with the weapon in use), and c173 (the Effigy is tested, the Sommerswerd is not).
+  c10, c146 and c152 were read and follow the book, apart from c369. This updates R16 for c10, c146, c164 and c180.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
