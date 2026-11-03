@@ -30,7 +30,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (26%nat,can_take (Weapon Dagger) 1%nat (can_take (Weapon Sword) 1%nat (can_take (Weapon Mace) 1%nat (Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 231%nat)); conditional (Not (HasDiscipline (SixthSense))) (Decisions [none (Goto 187%nat); none (Goto 63%nat)])]))));
   (27%nat,Decisions [none (Conditionally [(HasFlag Special04 , Goto 314%nat); (Always true , Simple [DamagePlayer 2%nat] (Goto 314%nat))]); none (Conditionally [(HasFlag Special04 , Goto 205%nat); (Always true , Simple [DamagePlayer 2%nat] (Goto 205%nat))])]);
   (28%nat,Decisions [none (Goto 210%nat); none (Goto 215%nat)]);
-  (29%nat,none (Conditionally [(HasItem (Weapon Sommerswerd) 1%nat , Goto 43%nat); (HasDiscipline (MindOverMatter) , Goto 121%nat); (Always true , Randomly [(Goto 226%nat , (Q2Qc (1 / 2)%Q)); (Goto 266%nat , (Q2Qc (2 / 5)%Q)); (Goto 312%nat , (Q2Qc (1 / 10)%Q))])]));
+  (29%nat,none (Conditionally [(HasItem (Weapon Sommerswerd) 1%nat , Goto 43%nat); (HasDiscipline (MindOverMatter) , Goto 121%nat); (Always true , Randomly [(Goto 226%nat , (Q2Qc (2 / 5)%Q)); (Goto 266%nat , (Q2Qc (1 / 2)%Q)); (Goto 312%nat , (Q2Qc (1 / 10)%Q))])]));
   (30%nat,Decisions [none (Goto 203%nat); none (Goto 276%nat)]);
   (31%nat,Decisions [none (Goto 150%nat); none (Goto 306%nat)]);
   (32%nat,none (Conditionally [(HasFlag Special01 , Goto 364%nat); (Always true , Fight (Details ((11)%Z)%Z 35%nat [OnDamage 66%nat]) (Goto 364%nat))]));
