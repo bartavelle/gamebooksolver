@@ -789,8 +789,10 @@ Definition lose_all_slot (s: slot) (items: Items): Items :=
 Definition SilverHelmet: item := GenSpecial S10.
 
 (* In book 4, the Pickaxe and the Shovel "each occupy the same amount of space in your Backpack as two normal items" *)
+(* In book 3, "The Rope counts as two Backpack Items, as it takes up extra space" *)
 Definition backpack_slots (bk: nat) (i: item): nat :=
   match i with
   | GenBackpack S3 | GenBackpack S4 => if Nat.eqb bk 4 then 2 else 1
+  | GenBackpack S0 => if Nat.eqb bk 3 then 2 else 1
   | _ => 1
   end.

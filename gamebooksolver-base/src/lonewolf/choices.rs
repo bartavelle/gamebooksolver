@@ -59,6 +59,8 @@ enum CanTake {
 fn backpack_slots(bookid: Book, item: &Item) -> usize {
     match item {
         Item::GenBackpack(3 | 4) if bookid == Book::Book04 => 2,
+        // the Rope
+        Item::GenBackpack(0) if bookid == Book::Book03 => 2,
         _ => 1,
     }
 }
