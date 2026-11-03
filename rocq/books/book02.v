@@ -264,7 +264,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (287%nat,none (Goto 175%nat));
   (288%nat,none (Goto 244%nat));
   (289%nat,Decisions [none (Simple [LoseItem (GenSpecial S3) 1%nat; GainItem Gold 40%nat] (Goto 165%nat)); none (Goto 186%nat)]);
-  (290%nat,none (Simple [MustEat NoHunt] (Goto 200%nat)));
+  (290%nat,none (Goto 200%nat));
   (291%nat,none (Goto 244%nat));
   (292%nat,none (GameLost));
   (293%nat,none (Goto 155%nat));

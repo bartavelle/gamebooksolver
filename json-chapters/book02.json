@@ -8426,16 +8426,7 @@
       "desc": "The food smells delicious, but you notice that there are two or three drops of clear liquid on the side of the plate and another on the tray. At first you suspect that it is only water, until you touch the fluid and notice that it is sticky. You recognize it as sap from the gnadurn tree, a deadly poison used by assassins because of its lack of flavour or scent. The shock of your discovery soon turns to anger and you race out of the room, intent on discovering the identity of your enemy.\n",
       "pchoice": {
         "NoDecision": {
-          "Simple": [
-            [
-              {
-                "MustEat": "NoHunt"
-              }
-            ],
-            {
-              "Goto": 200
-            }
-          ]
+          "Goto": 200
         }
       },
       "title": "290"
