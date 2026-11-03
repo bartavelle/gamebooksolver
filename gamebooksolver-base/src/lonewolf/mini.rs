@@ -286,7 +286,7 @@ impl FromStr for Equipment {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut base = Equipment::empty();
 
-        for p in s.split("/") {
+        for p in s.split("/").filter(|p| !p.is_empty()) {
             let (iname, quantity) = p.split_once(':').unwrap_or((p, "1"));
             let itm = iname.parse()?;
             let q = quantity.parse().map_err(|rr: ParseIntError| rr.to_string())?;
@@ -1204,6 +1204,12 @@ mod test {
             let decoded = serde_json::from_str::<Equipment>(&encoded).unwrap();
             assert_eq!(base, decoded);
         }
+    }
+
+    #[test]
+    fn empty_equipment_rb() {
+        let encoded = serde_json::to_string(&Equipment::empty()).unwrap();
+        assert_eq!(serde_json::from_str::<Equipment>(&encoded).unwrap(), Equipment::empty());
     }
 
     #[test]
