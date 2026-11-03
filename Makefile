@@ -1181,28 +1181,22 @@ low01d: data/B01 json-chapters/display01.json $(patsubst %.bin, %.dot, $(TARGETS
 low01: data/B01 $(patsubst %.bin, %.svg, $(TARGETSLOWB01))
 low01co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB01))
 
-json-chapters/book0%.json: ./dist/gamebooksolver-solvebook
-	./dist/gamebooksolver-solvebook dumpbook --book $* | jq > $@
-
 data/%.bin:
 	time python3 buildsol-rust.py $@
 
 data/%.compact.zstd data/%.desc data/%.jot data/%.json data/%.bin.zstd data/%.decisions.jsonl.zst &:
 	time python3 buildsol-rust.py $@
 
-data/B05/%.dot: data/B05/%.jot json-chapters/display05.json
-	./dist/gamebooksolver-solvebook dot $< json-chapters/display05.json > $@
-data/B04/%.dot: data/B04/%.jot json-chapters/display04.json
-	./dist/gamebooksolver-solvebook dot $< json-chapters/display04.json > $@
-data/B03/%.dot: data/B03/%.jot json-chapters/display03.json
-	./dist/gamebooksolver-solvebook dot $< json-chapters/display03.json > $@
-data/B02/%.dot: data/B02/%.jot json-chapters/display02.json
-	./dist/gamebooksolver-solvebook dot $< json-chapters/display02.json > $@
-data/B01/%.dot: data/B01/%.jot json-chapters/display01.json
-	./dist/gamebooksolver-solvebook dot $< json-chapters/display01.json > $@
+data/B05/%.dot: data/B05/%.jot json-chapters/book05.json json-chapters/display05.json
+	target/release/gamebooksolver-explorer --solpath $< dot --bookpath json-chapters/book05.json --display json-chapters/display05.json > $@
+data/B04/%.dot: data/B04/%.jot json-chapters/book04.json json-chapters/display04.json
+	target/release/gamebooksolver-explorer --solpath $< dot --bookpath json-chapters/book04.json --display json-chapters/display04.json > $@
+data/B03/%.dot: data/B03/%.jot json-chapters/book03.json json-chapters/display03.json
+	target/release/gamebooksolver-explorer --solpath $< dot --bookpath json-chapters/book03.json --display json-chapters/display03.json > $@
+data/B02/%.dot: data/B02/%.jot json-chapters/book02.json json-chapters/display02.json
+	target/release/gamebooksolver-explorer --solpath $< dot --bookpath json-chapters/book02.json --display json-chapters/display02.json > $@
+data/B01/%.dot: data/B01/%.jot json-chapters/book01.json json-chapters/display01.json
+	target/release/gamebooksolver-explorer --solpath $< dot --bookpath json-chapters/book01.json --display json-chapters/display01.json > $@
 
 data/%.svg: data/%.dot
 	dot -Tsvg -o$@ $<
-
-gamebooksolver-webapp/public/books.json:
-	./dist/gamebooksolver-solvebook dumpbooks | jq > $@
