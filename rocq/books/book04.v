@@ -405,7 +405,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (417%nat,none (Fight (Details ((17)%Z)%Z 26%nat []) (Goto 418%nat)));
   (418%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 312%nat))));
   (260%nat,none (Simple [SetFlag HadCombat] (Goto 419%nat)));
-  (419%nat,none (Fight (Details ((18)%Z)%Z 30%nat []) (Goto 420%nat)));
+  (419%nat,none (Fight (Details ((18)%Z)%Z 30%nat [Timed 3%nat (StopFight 311%nat)]) (Goto 420%nat)));
   (420%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 311%nat))));
   (277%nat,none (Simple [SetFlag HadCombat] (Goto 421%nat)));
   (421%nat,none (Fight (Details ((22)%Z)%Z 35%nat []) (Goto 422%nat)));

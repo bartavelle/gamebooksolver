@@ -12875,7 +12875,16 @@
             {
               "fcombatSkill": 18,
               "fendurance": 30,
-              "fightMod": [],
+              "fightMod": [
+                {
+                  "Timed": [
+                    3,
+                    {
+                      "StopFight": 311
+                    }
+                  ]
+                }
+              ],
               "opponent": "Vassagonian Warhounds"
             },
             {
