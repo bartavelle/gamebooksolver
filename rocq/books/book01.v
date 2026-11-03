@@ -364,9 +364,9 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (368%nat,none (Fight (Details ((13)%Z)%Z 10%nat [MultiFight]) (Goto 369%nat)));
   (369%nat,none (Fight (Details ((12)%Z)%Z 10%nat []) (Goto 370%nat)));
   (370%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 291%nat))));
-  (180%nat,evade_fight 0%nat 22%nat (Details ((15)%Z)%Z 22%nat []) (Simple [SetFlag HadCombat] (Goto 371%nat)));
-  (371%nat,none (Fight (Details ((13)%Z)%Z 20%nat [MultiFight]) (Goto 372%nat)));
-  (372%nat,none (Fight (Details ((12)%Z)%Z 20%nat []) (Goto 373%nat)));
+  (180%nat,evade_fight 0%nat 22%nat (Details ((15)%Z)%Z 22%nat [MultiFight]) (Simple [SetFlag HadCombat] (Goto 371%nat)));
+  (371%nat,evade_fight 0%nat 22%nat (Details ((13)%Z)%Z 20%nat [MultiFight]) (Goto 372%nat));
+  (372%nat,evade_fight 0%nat 22%nat (Details ((12)%Z)%Z 20%nat []) (Goto 373%nat));
   (373%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 62%nat))));
   (227%nat,none (Simple [SetFlag HadCombat] (Goto 374%nat)));
   (374%nat,none (Fight (Details ((16)%Z)%Z 6%nat [OnDamage 271%nat]) (Goto 375%nat)));

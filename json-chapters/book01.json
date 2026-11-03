@@ -9303,7 +9303,9 @@
           {
             "fcombatSkill": 15,
             "fendurance": 22,
-            "fightMod": [],
+            "fightMod": [
+              "MultiFight"
+            ],
             "opponent": "Leader"
           },
           {
@@ -9328,21 +9330,21 @@
     {
       "desc": "Dummy fight chapter 371",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 13,
-              "fendurance": 20,
-              "fightMod": [
-                "MultiFight"
-              ],
-              "opponent": "Soldier 1"
-            },
-            {
-              "Goto": 372
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          22,
+          {
+            "fcombatSkill": 13,
+            "fendurance": 20,
+            "fightMod": [
+              "MultiFight"
+            ],
+            "opponent": "Soldier 1"
+          },
+          {
+            "Goto": 372
+          }
+        ]
       },
       "title": "371"
     }
@@ -9352,19 +9354,19 @@
     {
       "desc": "Dummy fight chapter 372",
       "pchoice": {
-        "NoDecision": {
-          "Fight": [
-            {
-              "fcombatSkill": 12,
-              "fendurance": 20,
-              "fightMod": [],
-              "opponent": "Soldier 2"
-            },
-            {
-              "Goto": 373
-            }
-          ]
-        }
+        "EvadeFight": [
+          0,
+          22,
+          {
+            "fcombatSkill": 12,
+            "fendurance": 20,
+            "fightMod": [],
+            "opponent": "Soldier 2"
+          },
+          {
+            "Goto": 373
+          }
+        ]
       },
       "title": "372"
     }
