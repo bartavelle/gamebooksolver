@@ -206,7 +206,9 @@ places, so each of these could lower a score if the missing choice were better.
   and c244 are not read later, and could be discarded anyway.
 - **R26. Having a discipline can force a branch.** In Book 4, c21, c29, c40, c51, c87, c92, c113, c200, c289, c315 and c335
   send a character with the discipline to its section, where the book also lists options that anyone may take, and c24, c118,
-  c224 and c270 leave the choice open. **Open.**
+  c224 and c270 leave the choice open. Opening all of them gave the same exact fraction on 8 Book 4 cases (TR.MO, MS.HU, CA.6S
+  and MS.CA, each with Sword and Dagger or Sommerswerd and Sword, and no optional item), with Book 5 values. **Tested** on that
+  sample. The other books have not been looked at.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
