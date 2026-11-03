@@ -541,21 +541,7 @@
             "If you wish to cover your eyes with a blindfold and keep them covered at least until you make camp later today, turn to 62.",
             {
               "NoDecision": {
-                "Simple": [
-                  [
-                    {
-                      "DamagePlayer": 3
-                    },
-                    {
-                      "LoseItemKind": [
-                        "WeaponSlot"
-                      ]
-                    }
-                  ],
-                  {
-                    "Goto": 62
-                  }
-                ]
+                "Goto": 62
               }
             }
           ],
@@ -563,21 +549,7 @@
             "If you do not like the idea of being blindfolded and prefer to risk snow-blindness, turn to 251.",
             {
               "NoDecision": {
-                "Simple": [
-                  [
-                    {
-                      "DamagePlayer": 3
-                    },
-                    {
-                      "LoseItemKind": [
-                        "WeaponSlot"
-                      ]
-                    }
-                  ],
-                  {
-                    "Goto": 251
-                  }
-                ]
+                "Goto": 251
               }
             }
           ]
@@ -591,23 +563,47 @@
     {
       "desc": "As your weapon sinks into the swirling wind, an agonizing blast of intense cold runs through the full length of your arm. You lose 3 ENDURANCE points and stagger back, clutching your frostbitten arm to your chest. You have lost your weapon and the cyclone is growing stronger and stronger, forcing you to retreat towards a corner of the temple. (Remember to erase this Weapon or weapon-like Special Item from your Action Chart.)\n",
       "pchoice": {
-        "Decisions": [
-          [
-            "If you wish to try to escape towards the darkened archway beyond, turn to 211.",
-            {
-              "NoDecision": {
-                "Goto": 211
-              }
-            }
-          ],
-          [
-            "If you wish to continue retreating into the corner of the temple, turn to 95.",
-            {
-              "NoDecision": {
-                "Goto": 95
-              }
-            }
-          ]
+        "RemoveItemFrom": [
+          "WeaponSlot",
+          1,
+          {
+            "Decisions": [
+              [
+                "If you wish to try to escape towards the darkened archway beyond, turn to 211.",
+                {
+                  "NoDecision": {
+                    "Simple": [
+                      [
+                        {
+                          "DamagePlayer": 3
+                        }
+                      ],
+                      {
+                        "Goto": 211
+                      }
+                    ]
+                  }
+                }
+              ],
+              [
+                "If you wish to continue retreating into the corner of the temple, turn to 95.",
+                {
+                  "NoDecision": {
+                    "Simple": [
+                      [
+                        {
+                          "DamagePlayer": 3
+                        }
+                      ],
+                      {
+                        "Goto": 95
+                      }
+                    ]
+                  }
+                }
+              ]
+            ]
+          }
         ]
       },
       "title": "18"

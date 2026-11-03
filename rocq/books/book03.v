@@ -18,8 +18,8 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (13%nat,Decisions [none (Goto 128%nat); none (Goto 254%nat)]);
   (15%nat,none (Conditionally [(HasDiscipline (MindOverMatter) , Goto 185%nat); (COr (HasItem (Weapon Dagger) 1%nat) (HasItem (Weapon Sword) 1%nat) , Goto 86%nat); (Always true , Goto 323%nat)]));
   (16%nat,none (LoseItemFrom SBackpack 2%nat (Goto 63%nat)));
-  (17%nat,Decisions [none (Simple [DamagePlayer 3%nat; LoseItemKind [SWeapon]] (Goto 62%nat)); none (Simple [DamagePlayer 3%nat; LoseItemKind [SWeapon]] (Goto 251%nat))]);
-  (18%nat,Decisions [none (Goto 211%nat); none (Goto 95%nat)]);
+  (17%nat,Decisions [none (Goto 62%nat); none (Goto 251%nat)]);
+  (18%nat,remove_item_from SWeapon 1%nat (Decisions [none (Simple [DamagePlayer 3%nat] (Goto 211%nat)); none (Simple [DamagePlayer 3%nat] (Goto 95%nat))]));
   (19%nat,Decisions [none (Goto 327%nat); none (Goto 307%nat)]);
   (20%nat,none (Goto 254%nat));
   (21%nat,none (Simple [DamagePlayer 3%nat] (Goto 325%nat)));
