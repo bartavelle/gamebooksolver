@@ -12025,7 +12025,33 @@
               }
             ],
             {
-              "Goto": 377
+              "Conditionally": [
+                [
+                  {
+                    "HasDiscipline": "MindShield"
+                  },
+                  {
+                    "Goto": 377
+                  }
+                ],
+                [
+                  {
+                    "Always": true
+                  },
+                  {
+                    "Simple": [
+                      [
+                        {
+                          "DamagePlayer": 2
+                        }
+                      ],
+                      {
+                        "Goto": 377
+                      }
+                    ]
+                  }
+                ]
+              ]
             }
           ]
         }
@@ -12044,8 +12070,7 @@
               "fcombatSkill": 18,
               "fendurance": 24,
               "fightMod": [
-                "MindblastImmune",
-                "EnemyMindblast"
+                "MindblastImmune"
               ],
               "opponent": "Ice Barbarian Mutants"
             },

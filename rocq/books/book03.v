@@ -338,8 +338,8 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (78%nat,none (Simple [SetFlag HadCombat] (Goto 375%nat)));
   (375%nat,none (Fight (Details ((19)%Z)%Z 30%nat []) (Goto 376%nat)));
   (376%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 245%nat))));
-  (83%nat,none (Simple [SetFlag HadCombat] (Goto 377%nat)));
-  (377%nat,none (Fight (Details ((18)%Z)%Z 24%nat [MindblastImmune; EnemyMindblast]) (Goto 378%nat)));
+  (83%nat,none (Simple [SetFlag HadCombat] (Conditionally [(HasDiscipline (MindShield) , Goto 377%nat); (Always true , Simple [DamagePlayer 2%nat] (Goto 377%nat))])));
+  (377%nat,none (Fight (Details ((18)%Z)%Z 24%nat [MindblastImmune]) (Goto 378%nat)));
   (378%nat,after_combat (none (Simple [SetFlag HadCombat] (Goto 313%nat))));
   (88%nat,none (Simple [SetFlag HadCombat] (Goto 379%nat)));
   (379%nat,none (Fight (Details ((15)%Z)%Z 15%nat [MindblastImmune; Poisonous (Q2Qc (1 / 10)%Q)]) (Goto 380%nat)));
