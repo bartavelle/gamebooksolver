@@ -132,7 +132,7 @@ Definition chapters := [(1%nat,Decisions [can_take (GenSpecial S3) 1%nat (none (
   (141%nat,Decisions [none (Simple [DamagePlayer 2%nat; LoseItem BodyArmor 99%nat] (Goto 278%nat)); none (Simple [DamagePlayer 2%nat; LoseItem BodyArmor 99%nat] (Goto 337%nat))]);
   (143%nat,Decisions [none (Goto 289%nat); none (Goto 186%nat)]);
   (144%nat,can_take Meal 2%nat (none (Simple [LoseItemKind [SPouch]] (Goto 349%nat))));
-  (145%nat,none (Simple [DamagePlayer 5%nat] (Goto 200%nat)));
+  (145%nat,none (Simple [DamagePlayer 5%nat; LoseItem Laumspur 1%nat] (Goto 200%nat)));
   (147%nat,none (Goto 47%nat));
   (148%nat,Decisions [none (Simple [MustEat Hunt] (Goto 122%nat)); none (Simple [MustEat Hunt] (Goto 323%nat)); none (Simple [MustEat Hunt] (Goto 257%nat))]);
   (149%nat,Decisions [conditional (HasItem (GenSpecial S3) 1%nat) (none (Goto 223%nat)); none (Goto 250%nat)]);
