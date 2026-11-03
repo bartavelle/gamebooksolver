@@ -60,7 +60,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (59%nat,Decisions [none (Goto 124%nat); none (Goto 106%nat); none (Goto 211%nat)]);
   (60%nat,none (GameLost));
   (61%nat,none (Goto 268%nat));
-  (62%nat,can_take Backpack 1%nat (can_take Meal 2%nat (can_take Gold 28%nat (can_take (Weapon Sword) 1%nat (none (Goto 288%nat))))));
+  (62%nat,can_take Backpack 1%nat (can_take Meal 3%nat (can_take Gold 28%nat (can_take (Weapon Sword) 1%nat (none (Goto 288%nat))))));
   (64%nat,Decisions [none (Goto 188%nat); none (Goto 16%nat)]);
   (65%nat,none (Goto 104%nat));
   (66%nat,none (Goto 350%nat));
