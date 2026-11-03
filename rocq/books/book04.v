@@ -21,7 +21,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (16%nat,Decisions [none (Goto 123%nat); none (Goto 169%nat)]);
   (17%nat,none (GameLost));
   (18%nat,none (Goto 150%nat));
-  (19%nat,none (Simple [MustEat Hunt] (Goto 233%nat)));
+  (19%nat,none (Simple [MustEat NoHunt] (Goto 233%nat)));
   (20%nat,none (Goto 341%nat));
   (21%nat,Decisions [conditional (HasDiscipline (Tracking)) (none (Goto 264%nat)); conditional (Not (HasDiscipline (Tracking))) (Decisions [none (Goto 134%nat); none (Goto 191%nat)])]);
   (22%nat,none (Conditionally [(CAnd (HasItem (GenBackpack S2) 1%nat) (HasItem (GenBackpack S1) 1%nat) , Simple [LoseItem (GenBackpack S2) 1%nat] (LoseItemFrom SBackpack 1%nat (Simple [GainItem (GenBackpack S2) 1%nat] (Goto 157%nat)))); (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (COr (HasItem Meal 1%nat) (HasItem Laumspur 1%nat)) (HasItem StrengthPotion 1%nat)) (HasItem StrengthPotion4 1%nat)) (HasItem Potion2Hp 1%nat)) (HasItem Potion4Hp 1%nat)) (HasItem Potion5Hp 1%nat)) (HasItem Potion6Hp 1%nat)) (HasItem (GenBackpack S0) 1%nat)) (HasItem (GenBackpack S1) 1%nat)) (HasItem (GenBackpack S2) 1%nat)) (HasItem (GenBackpack S3) 1%nat)) (HasItem (GenBackpack S4) 1%nat)) (HasItem (GenBackpack S5) 1%nat)) (HasItem (GenBackpack S6) 1%nat)) (HasItem (GenBackpack S7) 1%nat)) (HasItem (GenBackpack S8) 1%nat)) (HasItem (GenBackpack S9) 1%nat)) (HasItem (GenBackpack S10) 1%nat)) (HasItem (GenBackpack S11) 1%nat) , LoseItemFrom SBackpack 1%nat (Goto 157%nat)); (Always true , LoseItemFrom SWeapon 1%nat (Goto 157%nat))]));
@@ -72,7 +72,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (75%nat,none (Simple [DamagePlayer 2%nat] (Conditionally [(HasDiscipline (Camouflage) , Randomly [(Goto 192%nat , (Q2Qc (3 / 10)%Q)); (Goto 16%nat , (Q2Qc (7 / 10)%Q))]); (Always true , Randomly [(Goto 192%nat , (Q2Qc (3 / 5)%Q)); (Goto 16%nat , (Q2Qc (2 / 5)%Q))])])));
   (76%nat,Decisions [none (Goto 268%nat); none (Goto 64%nat)]);
   (77%nat,evade_fight 2%nat 98%nat (Details ((22)%Z)%Z 28%nat [MindblastImmune; EnemyMindblast]) (Goto 10%nat));
-  (78%nat,can_take (GenBackpack S0) 1%nat (none (Simple [MustEat Hunt] (Goto 233%nat))));
+  (78%nat,can_take (GenBackpack S0) 1%nat (none (Simple [MustEat NoHunt] (Goto 233%nat))));
   (79%nat,can_take (GenBackpack S2) 1%nat (can_take (GenBackpack S1) 5%nat (none (Goto 117%nat))));
   (80%nat,none (Goto 175%nat));
   (81%nat,Decisions [none (Goto 173%nat); none (Goto 224%nat)]);
@@ -129,7 +129,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (138%nat,evade_fight 0%nat 81%nat (Details ((13)%Z)%Z 29%nat []) (Goto 152%nat));
   (139%nat,Decisions [none (Simple [MustEat Hunt] (Goto 206%nat)); none (Simple [MustEat Hunt] (Goto 330%nat)); none (Simple [MustEat Hunt] (Goto 92%nat))]);
   (140%nat,Decisions [none (Goto 70%nat); none (Goto 314%nat)]);
-  (141%nat,none (Simple [MustEat Hunt] (Goto 253%nat)));
+  (141%nat,none (Simple [MustEat NoHunt] (Goto 253%nat)));
   (142%nat,Decisions [none (Goto 183%nat); none (Goto 270%nat)]);
   (144%nat,none (GameLost));
   (145%nat,Decisions [none (Goto 322%nat); none (Goto 162%nat)]);
@@ -172,7 +172,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (185%nat,none (Simple [MustEat NoHunt] (Goto 40%nat)));
   (186%nat,evade_fight 0%nat 66%nat (Details ((18)%Z)%Z 25%nat []) (Goto 243%nat));
   (187%nat,none (Goto 164%nat));
-  (188%nat,none (Simple [MustEat Hunt] (Goto 233%nat)));
+  (188%nat,none (Simple [MustEat NoHunt] (Goto 233%nat)));
   (189%nat,none (Randomly [(Goto 234%nat , (Q2Qc (1 / 2)%Q)); (Goto 47%nat , (Q2Qc (1 / 2)%Q))]));
   (190%nat,none (Goto 335%nat));
   (191%nat,Decisions [none (Goto 337%nat); none (Goto 297%nat)]);
@@ -295,7 +295,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (321%nat,none (Goto 309%nat));
   (322%nat,can_take (GenBackpack S3) 1%nat (can_take (GenBackpack S4) 1%nat (Decisions [none (Simple [HealPlayer 2%nat] (Goto 54%nat)); none (Simple [HealPlayer 2%nat] (Goto 129%nat))])));
   (323%nat,none (Goto 148%nat));
-  (324%nat,Decisions [none (Simple [MustEat Hunt] (Goto 114%nat)); none (Simple [MustEat Hunt] (Goto 196%nat))]);
+  (324%nat,Decisions [none (Simple [MustEat NoHunt] (Goto 114%nat)); none (Simple [MustEat NoHunt] (Goto 196%nat))]);
   (326%nat,none (Goto 101%nat));
   (327%nat,none (Simple [LoseItem (Weapon Sword) 1%nat; ClearFlag Special01] (Goto 289%nat)));
   (328%nat,none (Goto 120%nat));
@@ -309,7 +309,7 @@ Definition chapters := [(1%nat,Decisions [none (Goto 160%nat); none (Goto 273%na
   (336%nat,none (Goto 223%nat));
   (337%nat,none (Goto 297%nat));
   (338%nat,none (Goto 235%nat));
-  (339%nat,none (Simple [MustEat Hunt] (Goto 233%nat)));
+  (339%nat,none (Simple [MustEat NoHunt] (Goto 233%nat)));
   (340%nat,none (Simple [DamagePlayer 2%nat] (Goto 32%nat)));
   (341%nat,none (Simple [DamagePlayer 4%nat] (Goto 116%nat)));
   (342%nat,none (Simple [LoseItem (GenSpecial S0) 1%nat] (Simple [LoseItem Backpack 1%nat] (Goto 219%nat))));
