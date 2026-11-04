@@ -9,7 +9,7 @@ use crate::lonewolf::mini::{CharacterVariableG, Flags, max_hp};
 use crate::lonewolf::rules::update;
 use crate::solver::base::{Choice, FastMap, Outcome, Proba, SolNode, Solution, optimize_outcome};
 use crate::solver::rational::Rational;
-use crate::solver::{CompactSolved, Retention, solve, solve_compact};
+use crate::solver::{CompactSolved, Retention, solve, solve_compact_starts};
 use std::collections::HashMap;
 use std::hash::BuildHasher;
 
@@ -156,6 +156,24 @@ pub fn solve_lws_compact<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEqui
 where
     F: Fn(Equipment, Flags) -> P,
 {
+    solve_lws_compact_starts(scorer, tgt, book, ccst, std::slice::from_ref(cvar), startat, verbose)
+}
+
+/// Same as `solve_lws_compact`, for several starting states, for example with different amounts of gold. They share what
+/// they have in common, and `get` gives the score of each of them.
+pub fn solve_lws_compact_starts<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
+    scorer: F,
+    tgt: &[ChapterId],
+    book: &[(ChapterId, Chapter<P>)],
+    ccst: &CharacterConstant,
+    cvars: &[CharacterVariableG<PREV>],
+    startat: u16,
+    verbose: bool,
+) -> CompactSolved<P, NextStep<PREV>>
+where
+    F: Fn(Equipment, Flags) -> P,
+{
+    let starts: Vec<NextStep<PREV>> = cvars.iter().map(|c| NextStep::NewChapter(startat, c.clone())).collect();
     let mut mbook: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut mbook);
     elide_forced_chapters(&mut mbook, tgt);
@@ -163,10 +181,10 @@ where
     let wuse = WeaponUse::for_character(ccst, &mbook);
     let mbook: FastMap<ChapterId, Chapter<P>> = mbook.into_iter().collect();
     let mut memo = Memoz::default();
-    let o = solve_compact::<NextStep<PREV>, _, _, _, _, _>(
+    let o = solve_compact_starts::<NextStep<PREV>, _, _, _, _, _>(
         &mut |ns| step(&mut memo, &order, &wuse, &mbook, ccst, ns),
         &|ns| get_score(&scorer, tgt, ns),
-        &NextStep::NewChapter(startat, cvar.clone()),
+        &starts,
         &|c| {
             if verbose {
                 eprintln!("State cache efficiency {:.2}%", c.efficiency() * 100.0)

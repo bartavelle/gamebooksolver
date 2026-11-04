@@ -62,18 +62,18 @@ struct Search<'t, P, STT: PackedState> {
     transient_count: usize,
     common: STT::Common,
     retention: Retention<'t, STT>,
-    root: &'t STT,
+    roots: &'t [STT],
 }
 
 impl<P, STT: PackedState + PartialEq> Search<'_, P, STT> {
     fn discardable(&self, state: &STT) -> bool {
-        !matches!(self.retention, Retention::All) && state != self.root
+        !matches!(self.retention, Retention::All) && !self.roots.contains(state)
     }
 
     fn is_transient(&self, state: &STT) -> bool {
         match self.retention {
             Retention::All => false,
-            Retention::Reduced { transient, .. } => state != self.root && transient(state),
+            Retention::Reduced { transient, .. } => transient(state) && !self.roots.contains(state),
         }
     }
 
@@ -107,16 +107,41 @@ where
     FS: Fn(&STT) -> Option<P>,
     INSPECT: Fn(&Cache<STT::Key, CompactNode<P>>),
 {
+    solve_compact_starts(get_choices, get_score, std::slice::from_ref(inistate), inspect, retention)
+}
+
+/// Same as `solve_compact`, for several initial states that share what they have in common. All of them are kept.
+pub fn solve_compact_starts<
+    STT: Eq + Hash + Clone + std::fmt::Debug + PartialOrd + std::fmt::Display + PackedState,
+    FC,
+    FS,
+    INSPECT,
+    DESC: std::fmt::Debug,
+    P: Rational,
+>(
+    get_choices: &mut FC,
+    get_score: &FS,
+    inistates: &[STT],
+    inspect: &INSPECT,
+    retention: Retention<'_, STT>,
+) -> CompactSolved<P, STT>
+where
+    FC: FnMut(&STT) -> Vec<Choice<P, DESC, STT>>,
+    FS: Fn(&STT) -> Option<P>,
+    INSPECT: Fn(&Cache<STT::Key, CompactNode<P>>),
+{
     let mut search = Search {
         cache: Cache::default(),
         transient: Shards::default(),
         transient_count: 0,
         common: STT::Common::default(),
         retention,
-        root: inistate,
+        roots: inistates,
     };
 
-    go(get_choices, get_score, &mut search, inistate);
+    for inistate in inistates {
+        go(get_choices, get_score, &mut search, inistate);
+    }
     inspect(&search.cache);
 
     CompactSolved {
@@ -331,6 +356,17 @@ mod test {
         let all = solve_compact(&mut choices, &score, &0, &|_| (), reduced(&|_| true));
         assert_eq!(all.get(&0).unwrap().score, BigRational::from_i64(3, 4));
         assert_eq!(all.get(&0).unwrap().choice, 1);
+    }
+
+    #[test]
+    fn several_starts_have_the_scores_of_separate_solves() {
+        let separate = |s: u8| solve_compact(&mut choices, &score, &s, &|_| (), reduced(&|_| true)).get(&s).unwrap().score.clone();
+        // everything is transient, but the starts must still be kept
+        let starts = [0, 2];
+        let both = solve_compact_starts(&mut choices, &score, &starts, &|_| (), reduced(&|_| true));
+        for s in starts {
+            assert_eq!(both.get(&s).unwrap().score, separate(s));
+        }
     }
 
     #[test]
