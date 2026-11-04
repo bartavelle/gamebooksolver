@@ -112,6 +112,9 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   against 75 s and 0.56 GB for one, with a win worth 1. Book 5 is not practical: gold 10 and gold 20 alone did not finish in 50 minutes, against 6 for
   gold 50, and G4 does not need it. The ranges only compare scores: two amounts with the same score can have different best paths. **Tested** on
   that sample.
+- **G9. A solution file holds all the starting gold of a character (`.solutions.zstd`, see `solfile.rs`),** and one of them can be read back as if it was solved
+  alone. On one Book 2 kit, the `.jot`, `.desc` and exact score at 10 and at 34 gold were the same as from a separate solve. **Tested** on that
+  sample. Files converted from the previous format do not tell which version of a book they come from, and are marked as `Converted`.
 - **G7. Starting gold rolls are uniform and independent.** Only Book 1 to 2 averages the 10 to 19 pouch. **Decided.**
 
 ## 5. Rules as interpreted
