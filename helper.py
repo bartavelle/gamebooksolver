@@ -1,6 +1,7 @@
 from fractions import Fraction
 from typing import Dict, Iterable, Iterator, List, Tuple
 import json
+import re
 import os
 
 
@@ -249,8 +250,25 @@ def chunked_makefile(n: int, l: List[str], cs: int):
     print("")
 
 
+def gold_targets(n: int, tgts: Iterable[str]):
+    """one target for each character, instead of one for each of its starting gold"""
+    golds: dict[tuple[str, str], list[int]] = {}
+    for t in tgts:
+        m = re.fullmatch(r"(data/B\d\d/[^-g]*?)(?:g(\d+))?(-.*)?\.bin", t)
+        assert m is not None, t
+        golds.setdefault((m[1], m[3] or ""), []).append(int(m[2]) if m[2] else 15)
+    out = []
+    for (prefix, items), g in sorted(golds.items()):
+        assert sorted(g) == list(range(min(g), max(g) + 1)), g
+        out.append("%sg%d_%d%s.goldranges" % (prefix, min(g), max(g), items))
+    print("GOLD%02d = %s" % (n, " ".join(out)))
+    print("")
+
+
 chunked_makefile(1, list(TGTS1), 60)
 chunked_makefile(2, list(TGTS2), 60)
 chunked_makefile(3, TGTS3, 60)
 chunked_makefile(4, TGTS4, 30)
 chunked_makefile(5, TGTS5, 30)
+gold_targets(1, TGTS1)
+gold_targets(2, TGTS2)
