@@ -13,7 +13,8 @@ use gamebooksolver_base::lonewolf::mini::SoldumpContent;
 use gamebooksolver_base::lonewolf::mini::StoredEquipment;
 use gamebooksolver_base::lonewolf::evasion::expand_evasions;
 use gamebooksolver_base::lonewolf::solve::{
-    BestPathState, PathStates, solve_lws, solve_lws_best_path, solve_lws_best_path_and_visit, visit_best_path,
+    BestPathState, PathStates, solve_lws, solve_lws_best_path, solve_lws_best_path_and_visit, solve_lws_compact_starts,
+    visit_best_path,
 };
 use gamebooksolver_base::solver::rational::MF64;
 use std::io::Write;
@@ -96,6 +97,14 @@ enum PSub {
     },
     /// soldump and optimize
     SoldumpOptimize(OSolDesc),
+    /// solve once for a range of starting gold, from --gold to --gold-to: writes the score of each to --json, where {gold}
+    /// stands for the gold, and the ranges of consecutive amounts with the same score to --solpath
+    GoldScores {
+        #[command(flatten)]
+        desc: OSolDesc,
+        #[arg(long)]
+        gold_to: u8,
+    },
     /// write what can happen on the best path, with the value of all the choices, one state per line
     Decisions(OSolDesc),
     /// write a dot graph of a .jot file (the solution path), over the chapters of the book
@@ -710,17 +719,13 @@ fn compare_states<PREV: StoredEquipment>(
     Ok(())
 }
 
-fn soldump<PREV: StoredEquipment>(
+type ScoreMap = HashMap<(Equipment, Flags), Rational>;
+
+/// What is needed to solve a book for this character, and what the next book says about how it ends.
+fn prepare_soldesc(
     cnt: &OSolDesc,
-    book: Vec<(ChapterId, Chapter<Rational>)>,
-    json_path: &str,
-    decisions_path: Option<&str>,
     verbose: bool,
-) -> anyhow::Result<SolutionDump<Rational, PREV>> {
-    anyhow::ensure!(
-        !(cnt.allstates && decisions_path.is_some()),
-        "--decisions only works with the best path, and not with --allstates"
-    );
+) -> anyhow::Result<(SolDesc, Vec<ChapterId>, Option<ScoreMap>, HashSet<Item>, HashSet<Flag>)> {
     let (iitems, iflags) = get_boundary(cnt.bookid);
     let mscoremap = cnt
         .resultspath
@@ -772,6 +777,77 @@ fn soldump<PREV: StoredEquipment>(
             .as_ref()
             .map(|mp| mp.iter().map(|((k1, k2), v)| (*k1, *k2, v.clone())).collect()),
     };
+    Ok((soldesc, fchapters, mscoremap, iitems, iflags))
+}
+
+#[derive(serde::Serialize)]
+struct GoldRange {
+    from: u8,
+    to: u8,
+    score: f64,
+    ratio: Rational,
+}
+
+/// Solves once for all the starting gold from `--gold` to `gold_to`. Writes the score of each to `json_pattern`, where
+/// `{gold}` stands for the gold, and to `ranges_path` the ranges of consecutive amounts that have the same score.
+fn gold_scores<PREV: StoredEquipment>(
+    cnt: &OSolDesc,
+    gold_to: u8,
+    book: &[(ChapterId, Chapter<Rational>)],
+    json_pattern: &str,
+    ranges_path: &str,
+    verbose: bool,
+) -> anyhow::Result<()> {
+    anyhow::ensure!(cnt.gold <= gold_to, "--gold must not be more than --gold-to");
+    anyhow::ensure!(json_pattern.contains("{gold}"), "--json must contain {{gold}}");
+    let (soldesc, fchapters, mscoremap, iitems, iflags) = prepare_soldesc(cnt, verbose)?;
+    let descs: Vec<SolDesc> = (cnt.gold..=gold_to)
+        .map(|gold| {
+            let mut desc = soldesc.clone();
+            desc.cvar.gold = gold;
+            desc
+        })
+        .collect();
+    let cvars: Vec<CharacterVariableG<PREV>> = descs.iter().map(|d| d.cvariable()).collect();
+    let scorer = |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f);
+    let solved = solve_lws_compact_starts(scorer, &fchapters, book, &soldesc.ccst, &cvars, cnt.startat, verbose);
+    let mut ranges: Vec<GoldRange> = Vec::new();
+    for (desc, cvar) in descs.iter().zip(cvars) {
+        let start = NextStep::NewChapter(cnt.startat, cvar);
+        let score = solved.get(&start).context("a start was not solved")?.score.clone();
+        let path = json_pattern.replace("{gold}", &desc.cvar.gold.to_string());
+        let file = File::create(&path).with_context(|| anyhow::anyhow!("creating {path}"))?;
+        serde_json::to_writer_pretty(file, &Multistat::new(desc, score.clone(), solved.len()))?;
+        match ranges.last_mut() {
+            Some(last) if last.ratio == score => last.to = desc.cvar.gold,
+            _ => ranges.push(GoldRange {
+                from: desc.cvar.gold,
+                to: desc.cvar.gold,
+                score: score.to_f64(),
+                ratio: score,
+            }),
+        }
+    }
+    for r in &ranges {
+        println!("{:>2} to {:>2}: {:.4}%", r.from, r.to, r.score * 100.0);
+    }
+    // written last, as it says that everything is there
+    serde_json::to_writer_pretty(File::create(ranges_path)?, &ranges)?;
+    Ok(())
+}
+
+fn soldump<PREV: StoredEquipment>(
+    cnt: &OSolDesc,
+    book: Vec<(ChapterId, Chapter<Rational>)>,
+    json_path: &str,
+    decisions_path: Option<&str>,
+    verbose: bool,
+) -> anyhow::Result<SolutionDump<Rational, PREV>> {
+    anyhow::ensure!(
+        !(cnt.allstates && decisions_path.is_some()),
+        "--decisions only works with the best path, and not with --allstates"
+    );
+    let (soldesc, fchapters, mscoremap, iitems, iflags) = prepare_soldesc(cnt, verbose)?;
     let cvar = soldesc.cvariable::<PREV>();
     let scorer = |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f);
     let sol = if cnt.allstates {
@@ -1082,6 +1158,20 @@ fn main() -> anyhow::Result<()> {
             let stats: Output = serde_json::from_reader(BufReader::new(File::open(&opt.solpath)?))
                 .with_context(|| anyhow::anyhow!("loading {}", opt.solpath))?;
             println!("{}", dot::mkdot(&book, &display, &stats));
+        }
+        Some(PSub::GoldScores { desc, gold_to }) => {
+            let json = opt.json.context("--json is required")?;
+            let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(File::open(&desc.bookpath)?)?;
+            let cos = book.iter().flat_map(|x| x.1.pchoice.iter_outcomes()).collect::<Vec<_>>();
+            let has_prev_eq = cos
+                .iter()
+                .flat_map(|co| co.simple_outcomes())
+                .any(|so| matches!(so, SimpleOutcome::StoreEquipment));
+            if has_prev_eq {
+                gold_scores::<Equipment>(desc, *gold_to, &book, &json, &opt.solpath, opt.verbose)?;
+            } else {
+                gold_scores::<NoPrevEq>(desc, *gold_to, &book, &json, &opt.solpath, opt.verbose)?;
+            }
         }
         Some(PSub::SoldumpOptimize(cnt)) => {
             let cur = std::time::Instant::now();

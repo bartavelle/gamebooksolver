@@ -4,7 +4,7 @@ use crate::lonewolf::chapter::{
 };
 use crate::lonewolf::mini::{
     Book, CVarState, CharacterConstant, CharacterVariableG, Discipline, Equipment, Flag, Flags, Item, NextStep, Slot,
-    SolutionDump, StoredEquipment, Weapon,
+    SolDesc, SolutionDump, StoredEquipment, Weapon,
 };
 use crate::solver::base::FastMap;
 use crate::solver::rational::Rational;
@@ -46,18 +46,22 @@ impl<P: Rational> Multistat<P> {
             })
             .next()?;
 
-        Some(Multistat {
-            mbook: dump.soldesc.ccst.bookid,
-            msdisciplines: dump.soldesc.ccst.discipline.iter().cloned().collect(),
-            variable: dump.soldesc.cvar.clone(),
+        Some(Self::new(&dump.soldesc, score, dump.content.len()))
+    }
+
+    pub fn new(soldesc: &SolDesc, score: P, states: usize) -> Self {
+        Multistat {
+            mbook: soldesc.ccst.bookid,
+            msdisciplines: soldesc.ccst.discipline.iter().cloned().collect(),
+            variable: soldesc.cvar.clone(),
             msentries: vec![MultistatEntry {
-                meendurance: Endurance(dump.soldesc.ccst.maxendurance),
+                meendurance: Endurance(soldesc.ccst.maxendurance),
                 mscore: score.t_f64(),
                 mratio: score,
-                mskill: CombatSkill(dump.soldesc.ccst.combat_skill as i8),
-                states: dump.content.len(),
+                mskill: CombatSkill(soldesc.ccst.combat_skill as i8),
+                states,
             }],
-        })
+        }
     }
 }
 
