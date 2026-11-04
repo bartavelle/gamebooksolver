@@ -1,0 +1,34 @@
+{
+  "mbook": "Book02",
+  "msdisciplines": [
+    "Camouflage",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "AnimalKinship",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Sword": 1,
+      "Shield": 1,
+      "BodyArmor": 1
+    },
+    "gold": 24,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.6907365445088487,
+      "mratio": {
+        "radix": 16,
+        "value": "75e4fca2909392a6106ff2f5f9b554d8011f71ac32275/aaadeb595a24ae5198bc70fa2d251d288402000000000"
+      },
+      "states": 60751
+    }
+  ]
+}

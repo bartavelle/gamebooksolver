@@ -1,0 +1,35 @@
+{
+  "mbook": "Book02",
+  "msdisciplines": [
+    "Camouflage",
+    "SixthSense",
+    "Tracking",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindBlast",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Sword": 1,
+      "Shield": 1,
+      "BodyArmor": 1,
+      "Helmet": 1
+    },
+    "gold": 18,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.000345379328218876,
+      "mratio": {
+        "radix": 16,
+        "value": "374c2d52ccd3fe9eda050d41c035310b03de9a3bd2773a54a2eee665f22fb26edf/2716ac39311585c2d49173903c81a263e0fc527b430a2c9bd78c34fecc00000000000"
+      },
+      "states": 83072
+    }
+  ]
+}

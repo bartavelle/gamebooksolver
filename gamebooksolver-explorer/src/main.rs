@@ -169,98 +169,71 @@ impl Default for ChapterStats {
     }
 }
 
+/// What happens in each chapter, for a character at the start. Goes through the states once, from the start, with the
+/// probability of reaching each of them, so that nothing has to be kept for each state.
 fn mksol<PREV: StoredEquipment>(
     ini: NextStep<PREV>,
-    sttmap: HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>>,
+    content: &SoldumpContent<Rational, PREV>,
 ) -> BTreeMap<u16, ChapterStats> {
-    type Imap<PREV> = HashMap<NextStep<PREV>, BTreeMap<u16, ChapterStats>>;
-    let mut memo: Imap<PREV> = HashMap::new();
-
-    fn go<PREV: StoredEquipment>(
-        curmap: &mut Imap<PREV>,
-        searchmap: &HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>>,
-        curns: &NextStep<PREV>,
-    ) -> BTreeMap<u16, ChapterStats> {
-        if let Some(e) = curmap.get(curns) {
-            return e.clone();
-        }
-        let src = match curns.chapter() {
-            Some(cid) => cid,
-            None => return BTreeMap::new(),
-        };
-        let cvar = match curns.cvar() {
-            None => return BTreeMap::from([(src, ChapterStats::default())]),
-            Some(s) => s,
-        };
-
-        // basic state
-        let mut stats = ChapterStats::default();
-        stats.items.insert(cvar.cequipment, Rational::from(1));
-        stats.flags.insert(cvar.flags.0, Rational::from(1));
-        stats.endurance.insert(cvar.curendurance, Rational::from(1));
-        let mut out = BTreeMap::from([(src, stats)]);
-
-        let cs = match searchmap.get(curns) {
-            None => panic!("Missing state!?! {:?}", curns),
-            Some(x) => x,
-        };
-
-        let mut update_choice = |p: Rational, cstt: &NextStep<PREV>, memo: &mut BTreeMap<u16, ChapterStats>| {
-            let curmemo = go(curmap, searchmap, cstt);
-            for (cid, curstats) in curmemo.into_iter() {
-                let e = memo.entry(cid).or_default();
-                for (i, ip) in curstats.items.into_iter() {
-                    let ei = e.items.entry(i).or_default();
-                    *ei += ip * &p;
-                }
-                for (f, ip) in curstats.flags.into_iter() {
-                    let ei = e.flags.entry(f).or_default();
-                    *ei += ip * &p;
-                }
-                for (en, ip) in curstats.endurance.into_iter() {
-                    let ei = e.endurance.entry(en).or_default();
-                    *ei += ip * &p;
-                }
-                for (dst, ip) in curstats.transitions.into_iter() {
-                    let ei = e.transitions.entry(dst).or_default();
-                    *ei += ip * &p;
-                }
-                e.score += curstats.score * &p;
-            }
-
-            if let Some(dst) = cstt.chapter() {
-                let e = memo.get_mut(&src).expect("there should be an entry here");
-                let e2 = e.transitions.entry(dst).or_default();
-                *e2 += p;
-            }
-        };
-
+    fn nexts<PREV: StoredEquipment>(
+        cs: &ChoppedSolution<Rational, NextStep<PREV>>,
+    ) -> Vec<(&NextStep<PREV>, Option<&Rational>)> {
         match cs {
-            ChoppedSolution::CLeafLost => {}
-            ChoppedSolution::CLeaf(sc) => {
-                let e = out.get_mut(&src).expect("there should be an entry here");
-                e.score = sc.clone();
-            }
-            ChoppedSolution::CJump(_, stt) => {
-                let e = out.get_mut(&src).expect("there should be an entry here");
-                e.score = Rational::from(1);
-                update_choice(Rational::from(1), stt, &mut out);
-            }
-            ChoppedSolution::CNode(_, pms) => {
-                let e = out.get_mut(&src).expect("there should be an entry here");
-                e.score = Rational::from(1);
-                for (mstt, p) in pms.iter() {
-                    if let Some(stt) = mstt {
-                        update_choice(p.clone(), stt, &mut out);
-                    }
-                }
-            }
+            ChoppedSolution::CLeafLost | ChoppedSolution::CLeaf(_) => Vec::new(),
+            ChoppedSolution::CJump(_, stt) => vec![(stt, None)],
+            ChoppedSolution::CNode(_, pms) => pms.iter().filter_map(|(s, p)| s.as_ref().map(|s| (s, Some(p)))).collect(),
         }
-        curmap.insert(curns.clone(), out.clone());
-        out
+    }
+    let solution = |ns: &NextStep<PREV>| match content.get(ns) {
+        None => panic!("Missing state!?! {:?}", ns),
+        Some(x) => x,
+    };
+    // each state comes after all those that lead to it
+    let mut order: Vec<&NextStep<PREV>> = Vec::new();
+    let mut seen: HashSet<&NextStep<PREV>> = HashSet::new();
+    let mut todo: Vec<(&NextStep<PREV>, bool)> = vec![(&ini, false)];
+    while let Some((ns, children_done)) = todo.pop() {
+        if children_done {
+            order.push(ns);
+            continue;
+        }
+        if !seen.insert(ns) {
+            continue;
+        }
+        todo.push((ns, true));
+        if ns.cvar().is_some() && ns.chapter().is_some() {
+            todo.extend(nexts(solution(ns)).into_iter().map(|(n, _)| (n, false)));
+        }
     }
 
-    go(&mut memo, &sttmap, &ini)
+    let mut out: BTreeMap<u16, ChapterStats> = BTreeMap::new();
+    let mut reached: HashMap<&NextStep<PREV>, Rational> = HashMap::from([(&ini, Rational::from(1))]);
+    for ns in order.into_iter().rev() {
+        let weight = reached.remove(ns).unwrap_or_default();
+        let Some(src) = ns.chapter() else { continue };
+        let e = out.entry(src).or_default();
+        let Some(cvar) = ns.cvar() else { continue };
+        *e.items.entry(cvar.cequipment).or_default() += weight.clone();
+        *e.flags.entry(cvar.flags.0).or_default() += weight.clone();
+        *e.endurance.entry(cvar.curendurance).or_default() += weight.clone();
+        let cs = solution(ns);
+        match cs {
+            ChoppedSolution::CLeafLost => (),
+            ChoppedSolution::CLeaf(sc) => e.score += weight.clone() * sc,
+            ChoppedSolution::CJump(_, _) | ChoppedSolution::CNode(_, _) => e.score += weight.clone(),
+        }
+        for (next, p) in nexts(cs) {
+            let flow = match p {
+                Some(p) => weight.clone() * p,
+                None => weight.clone(),
+            };
+            if let Some(dst) = next.chapter() {
+                *e.transitions.entry(dst).or_default() += flow.clone();
+            }
+            *reached.entry(next).or_default() += flow;
+        }
+    }
+    out
 }
 
 fn count_states<A, PREV: StoredEquipment>(cnt: &BTreeMap<NextStep<PREV>, A>) -> BTreeMap<u16, u64> {
@@ -602,9 +575,7 @@ fn mkjot<PREV: StoredEquipment>(soldump: &SolutionDump<Rational, PREV>, out: Opt
     let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
     let sttmap = count_states(&soldump.content);
     let bookid = soldump.soldesc.ccst.bookid;
-    let searchmap: HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>> =
-        soldump.content.iter().map(|(a, b)| (a.clone(), b)).collect();
-    let res = mksol(ini, searchmap);
+    let res = mksol(ini, &soldump.content);
     let output = Output {
         bookid,
         res,
@@ -1269,5 +1240,136 @@ fn has_no_choice(d: &Decision<Rational>) -> bool {
         | Decision::Cansell(_, _, _) => false,
         Decision::AfterCombat(d) | Decision::Conditional(_, d) => has_no_choice(d),
         Decision::None(_) => true,
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    // computes the same thing from the end, and needs a table for each state
+    fn mksol_backward<PREV: StoredEquipment>(
+        ini: NextStep<PREV>,
+        sttmap: HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>>,
+    ) -> BTreeMap<u16, ChapterStats> {
+        type Imap<PREV> = HashMap<NextStep<PREV>, BTreeMap<u16, ChapterStats>>;
+        let mut memo: Imap<PREV> = HashMap::new();
+
+        fn go<PREV: StoredEquipment>(
+            curmap: &mut Imap<PREV>,
+            searchmap: &HashMap<NextStep<PREV>, &ChoppedSolution<Rational, NextStep<PREV>>>,
+            curns: &NextStep<PREV>,
+        ) -> BTreeMap<u16, ChapterStats> {
+            if let Some(e) = curmap.get(curns) {
+                return e.clone();
+            }
+            let src = match curns.chapter() {
+                Some(cid) => cid,
+                None => return BTreeMap::new(),
+            };
+            let cvar = match curns.cvar() {
+                None => return BTreeMap::from([(src, ChapterStats::default())]),
+                Some(s) => s,
+            };
+
+            // basic state
+            let mut stats = ChapterStats::default();
+            stats.items.insert(cvar.cequipment, Rational::from(1));
+            stats.flags.insert(cvar.flags.0, Rational::from(1));
+            stats.endurance.insert(cvar.curendurance, Rational::from(1));
+            let mut out = BTreeMap::from([(src, stats)]);
+
+            let cs = match searchmap.get(curns) {
+                None => panic!("Missing state!?! {:?}", curns),
+                Some(x) => x,
+            };
+
+            let mut update_choice = |p: Rational, cstt: &NextStep<PREV>, memo: &mut BTreeMap<u16, ChapterStats>| {
+                let curmemo = go(curmap, searchmap, cstt);
+                for (cid, curstats) in curmemo.into_iter() {
+                    let e = memo.entry(cid).or_default();
+                    for (i, ip) in curstats.items.into_iter() {
+                        let ei = e.items.entry(i).or_default();
+                        *ei += ip * &p;
+                    }
+                    for (f, ip) in curstats.flags.into_iter() {
+                        let ei = e.flags.entry(f).or_default();
+                        *ei += ip * &p;
+                    }
+                    for (en, ip) in curstats.endurance.into_iter() {
+                        let ei = e.endurance.entry(en).or_default();
+                        *ei += ip * &p;
+                    }
+                    for (dst, ip) in curstats.transitions.into_iter() {
+                        let ei = e.transitions.entry(dst).or_default();
+                        *ei += ip * &p;
+                    }
+                    e.score += curstats.score * &p;
+                }
+
+                if let Some(dst) = cstt.chapter() {
+                    let e = memo.get_mut(&src).expect("there should be an entry here");
+                    let e2 = e.transitions.entry(dst).or_default();
+                    *e2 += p;
+                }
+            };
+
+            match cs {
+                ChoppedSolution::CLeafLost => {}
+                ChoppedSolution::CLeaf(sc) => {
+                    let e = out.get_mut(&src).expect("there should be an entry here");
+                    e.score = sc.clone();
+                }
+                ChoppedSolution::CJump(_, stt) => {
+                    let e = out.get_mut(&src).expect("there should be an entry here");
+                    e.score = Rational::from(1);
+                    update_choice(Rational::from(1), stt, &mut out);
+                }
+                ChoppedSolution::CNode(_, pms) => {
+                    let e = out.get_mut(&src).expect("there should be an entry here");
+                    e.score = Rational::from(1);
+                    for (mstt, p) in pms.iter() {
+                        if let Some(stt) = mstt {
+                            update_choice(p.clone(), stt, &mut out);
+                        }
+                    }
+                }
+            }
+            curmap.insert(curns.clone(), out.clone());
+            out
+        }
+
+        go(&mut memo, &sttmap, &ini)
+    }
+
+    #[test]
+    fn stats_from_the_start_are_the_same_as_from_the_end() {
+        type State = NextStep<NoPrevEq>;
+        let chapter = |c: u16, e: i8| -> State { NextStep::NewChapter(c, CharacterVariableG::new(e)) };
+        let r = |n, d| Rational::from_i64(n, d);
+        let won: State = NextStep::HasWon(CharacterVariableG::new(3));
+        let content: SoldumpContent<Rational, NoPrevEq> = BTreeMap::from([
+            (
+                chapter(1, 10),
+                ChoppedSolution::CNode(
+                    r(1, 2),
+                    vec![
+                        (Some(chapter(2, 8)), r(1, 3)),
+                        (Some(chapter(2, 9)), r(1, 3)),
+                        (Some(NextStep::HasLost(1)), r(1, 3)),
+                        (None, r(0, 1)),
+                    ],
+                ),
+            ),
+            (chapter(2, 8), ChoppedSolution::CJump(r(1, 2), chapter(3, 8))),
+            (chapter(2, 9), ChoppedSolution::CNode(r(1, 2), vec![(Some(chapter(3, 8)), r(1, 4)), (Some(won.clone()), r(3, 4))])),
+            (chapter(3, 8), ChoppedSolution::CLeaf(r(2, 3))),
+            (won, ChoppedSolution::CLeaf(r(1, 1))),
+            (NextStep::HasLost(1), ChoppedSolution::CLeafLost),
+        ]);
+        let searchmap = content.iter().map(|(a, b)| (a.clone(), b)).collect();
+        let backward = mksol_backward(chapter(1, 10), searchmap);
+        let forward = mksol(chapter(1, 10), &content);
+        assert_eq!(serde_json::to_value(&forward).unwrap(), serde_json::to_value(&backward).unwrap());
     }
 }

@@ -1,0 +1,34 @@
+{
+  "mbook": "Book02",
+  "msdisciplines": [
+    "Hunting",
+    "SixthSense",
+    "Tracking",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindBlast",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Sword": 1,
+      "Shield": 1,
+      "BodyArmor": 1
+    },
+    "gold": 13,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.0001996230559010386,
+      "mratio": {
+        "radix": 16,
+        "value": "10716d555cce1dca9be764dad8f8796b7362d7b288fdcb7d72df0b4712f97dd57/141c29e4a6365e12d0a56a2cbef72d530f8512ff3cc7149460bc850b700000000000"
+      },
+      "states": 69719
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "mbook": "Book02",
+  "msdisciplines": [
+    "Hunting",
+    "SixthSense",
+    "Healing",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast"
+  ],
+  "variable": {
+    "items": {
+      "Sword": 1,
+      "Shield": 1,
+      "BodyArmor": 1,
+      "Helmet": 1
+    },
+    "gold": 13,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.009544645879340577,
+      "mratio": {
+        "radix": 16,
+        "value": "710a2b9febfd4faf8117a05577876515ea22f2bd056deb3b7901d66d1/2e4342b47571bee2023141893cf12a71470d3b3cb8b259e800000000000"
+      },
+      "states": 65672
+    }
+  ]
+}

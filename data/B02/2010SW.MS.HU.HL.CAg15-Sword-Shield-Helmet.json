@@ -1,0 +1,34 @@
+{
+  "mbook": "Book02",
+  "msdisciplines": [
+    "SixthSense",
+    "Tracking",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindBlast",
+    "AnimalKinship",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Sword": 1,
+      "Shield": 1,
+      "Helmet": 1
+    },
+    "gold": 15,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.6348338726480861,
+      "mratio": {
+        "radix": 16,
+        "value": "1aa50677ddcf20525a30d4ec1ca008641e5d6515effe261c60721c89cb9d9/29f89542a69e9e942f2ba6aac2c9b89f66bcbef75801dfcf999b800000000"
+      },
+      "states": 57081
+    }
+  ]
+}
