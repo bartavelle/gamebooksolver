@@ -243,30 +243,31 @@ fn load_payload<PREV: StoredEquipment + Decode<()>>(reader: impl Read) -> anyhow
 
 impl<PREV: StoredEquipment> SolFile<PREV> {
     /// The solution of one starting gold, as if it had been solved on its own. It is optional when there is only one.
-    pub fn dump(mut self, gold: Option<u8>) -> anyhow::Result<SolutionDump<MRational, PREV>> {
+    pub fn dump(&self, gold: Option<u8>) -> anyhow::Result<SolutionDump<MRational, PREV>> {
         let gold = match (gold, self.golds.as_slice()) {
             (Some(g), golds) if golds.contains(&g) => g,
             (Some(g), golds) => anyhow::bail!("no start with {g} gold, there are {golds:?}"),
             (None, [g]) => *g,
             (None, golds) => anyhow::bail!("this file has many starting gold, choose with --start-gold: {golds:?}"),
         };
-        self.desc.cvar.gold = gold;
+        let mut soldesc = self.desc.clone();
+        soldesc.cvar.gold = gold;
         let mut content = BTreeMap::new();
-        let mut todo = vec![start_state::<PREV>(&self.desc, self.startat, gold)];
+        let mut todo = vec![start_state::<PREV>(&soldesc, self.startat, gold)];
         while let Some(s) = todo.pop() {
-            if let Some(node) = self.content.remove(&s) {
-                match &node {
+            if content.contains_key(&s) {
+                continue;
+            }
+            if let Some(node) = self.content.get(&s) {
+                match node {
                     ChoppedSolution::CNode(_, l) => todo.extend(l.iter().filter_map(|(n, _)| n.clone())),
                     ChoppedSolution::CJump(_, n) => todo.push(n.clone()),
                     ChoppedSolution::CLeafLost | ChoppedSolution::CLeaf(_) => (),
                 }
-                content.insert(s, node);
+                content.insert(s, node.clone());
             }
         }
-        Ok(SolutionDump {
-            soldesc: self.desc,
-            content,
-        })
+        Ok(SolutionDump { soldesc, content })
     }
 }
 
@@ -374,9 +375,7 @@ mod test {
         // the second start, and what only it reaches, are gone
         assert_eq!(d.content.len(), 2);
         assert_eq!(d.soldesc.cvar.gold, 3);
-        let Loaded::Noprev(f) = load(&p).unwrap() else { panic!("wrong kind") };
         assert!(f.dump(None).is_err());
-        let Loaded::Noprev(f) = load(&p).unwrap() else { panic!("wrong kind") };
         assert!(f.dump(Some(5)).is_err());
         std::fs::remove_file(p).unwrap();
     }

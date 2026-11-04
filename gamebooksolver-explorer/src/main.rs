@@ -95,8 +95,20 @@ enum PSub {
     },
     /// solve a character for one starting gold, and write the solution to --solpath and the reports
     Solve(OSolDesc),
-    /// write the .jot and .desc of one starting gold of a solution file, chosen with --start-gold
-    Extract,
+    /// write the reports of some of the starting gold of a solution file, in one go. In --jot, --desc and --dot, {gold} stands
+    /// for the gold. Only the reports with a path are written.
+    Extract {
+        /// A list such as 10,20,50, or all
+        #[arg(long)]
+        golds: String,
+        /// Path of the .dot files, which also needs --bookpath and --display
+        #[arg(long)]
+        dot: Option<String>,
+        #[arg(long)]
+        bookpath: Option<String>,
+        #[arg(long)]
+        display: Option<String>,
+    },
     /// show what a solution file holds
     SolutionInfo,
     /// solve once for a range of starting gold, from --gold to --gold-to: writes the solution to --solpath, the score of
@@ -571,16 +583,17 @@ fn diff_cvar<PREV: From<Equipment> + Into<Equipment>>(
     o.join(" ")
 }
 
-fn mkjot<PREV: StoredEquipment>(soldump: &SolutionDump<Rational, PREV>, out: Option<&str>) -> anyhow::Result<()> {
+fn jot_output<PREV: StoredEquipment>(soldump: &SolutionDump<Rational, PREV>) -> Output {
     let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
-    let sttmap = count_states(&soldump.content);
-    let bookid = soldump.soldesc.ccst.bookid;
-    let res = mksol(ini, &soldump.content);
-    let output = Output {
-        bookid,
-        res,
-        sttmap,
-    };
+    Output {
+        bookid: soldump.soldesc.ccst.bookid,
+        res: mksol(ini, &soldump.content),
+        sttmap: count_states(&soldump.content),
+    }
+}
+
+fn mkjot<PREV: StoredEquipment>(soldump: &SolutionDump<Rational, PREV>, out: Option<&str>) -> anyhow::Result<()> {
+    let output = jot_output(soldump);
     match out {
         Some(path) => {
             let mut fs = std::fs::File::create(path)?;
@@ -589,6 +602,53 @@ fn mkjot<PREV: StoredEquipment>(soldump: &SolutionDump<Rational, PREV>, out: Opt
         None => {
             let x = serde_json::to_string(&output)?;
             println!("{}", x);
+        }
+    }
+    Ok(())
+}
+
+struct DotReport<'t> {
+    path: &'t str,
+    chapters: Vec<(ChapterId, Chapter<Rational>)>,
+    display: Vec<dot::DotInfo>,
+}
+
+struct Reports<'t> {
+    jot: Option<&'t str>,
+    desc: Option<&'t str>,
+    dot: Option<DotReport<'t>>,
+}
+
+/// The reports of some of the starting gold of a solution file.
+fn extract<PREV: StoredEquipment>(f: &solfile::SolFile<PREV>, golds: &str, reports: &Reports) -> anyhow::Result<()> {
+    let golds: Vec<u8> = if golds == "all" {
+        f.golds.clone()
+    } else {
+        golds.split(',').map(str::parse).collect::<Result<_, _>>().context("--golds is a list of amounts, or all")?
+    };
+    let dot_path = reports.dot.as_ref().map(|d| d.path);
+    let paths = [reports.jot, reports.desc, dot_path];
+    anyhow::ensure!(paths.iter().any(|p| p.is_some()), "nothing to write: use --jot, --desc or --dot");
+    anyhow::ensure!(
+        golds.len() == 1 || paths.iter().flatten().all(|p| p.contains("{gold}")),
+        "with several amounts of gold, the paths must contain {{gold}}"
+    );
+    for gold in golds {
+        let at = |pattern: &str| pattern.replace("{gold}", &gold.to_string());
+        let d = f.dump(Some(gold))?;
+        if reports.jot.is_some() || reports.dot.is_some() {
+            let output = jot_output(&d);
+            if let Some(path) = reports.jot {
+                serde_json::to_writer_pretty(File::create(at(path))?, &output)?;
+            }
+            if let Some(r) = &reports.dot {
+                let mut text = dot::mkdot(&r.chapters, &r.display, &output);
+                text.push('\n');
+                std::fs::write(at(r.path), text)?;
+            }
+        }
+        if let Some(path) = reports.desc {
+            write_desc(&d.soldesc, &at(path))?;
         }
     }
     Ok(())
@@ -1193,17 +1253,20 @@ fn main() -> anyhow::Result<()> {
                 cur.elapsed()
             )
         }
-        Some(PSub::Extract) => {
-            let jname = opt.desc.unwrap_or_else(|| opt.solpath.to_owned() + ".desc");
-            match solfile::load_dump(&opt.solpath, opt.start_gold)? {
-                GSolDump::Prev(d) => {
-                    mkjot(&d, opt.jot.as_deref())?;
-                    write_desc(&d.soldesc, &jname)?;
+        Some(PSub::Extract { golds, dot, bookpath, display }) => {
+            let dot = match (dot, bookpath, display) {
+                (None, _, _) => None,
+                (Some(path), Some(book), Some(display)) => {
+                    let chapters: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(BufReader::new(File::open(book)?))?;
+                    let display: Vec<dot::DotInfo> = serde_json::from_reader(BufReader::new(File::open(display)?))?;
+                    Some(DotReport { path, chapters, display })
                 }
-                GSolDump::Noprev(d) => {
-                    mkjot(&d, opt.jot.as_deref())?;
-                    write_desc(&d.soldesc, &jname)?;
-                }
+                _ => anyhow::bail!("--dot needs --bookpath and --display"),
+            };
+            let reports = Reports { jot: opt.jot.as_deref(), desc: opt.desc.as_deref(), dot };
+            match solfile::load(&opt.solpath)? {
+                solfile::Loaded::Prev(f) => extract(&f, golds, &reports)?,
+                solfile::Loaded::Noprev(f) => extract(&f, golds, &reports)?,
             }
         }
         Some(PSub::SolutionInfo) => match solfile::load(&opt.solpath)? {

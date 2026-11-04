@@ -4,8 +4,8 @@ goldscores-rust.py data/B02/2010SW.TR.MS.CA.6Sg10_50-Sword-Shield.goldranges
     writes the solution of all the gold to data/B02/2010SW.TR.MS.CA.6Sg10_50-Sword-Shield.solutions.zstd, the score of each
     gold to data/B02/2010SW.TR.MS.CA.6Sg<gold>-Sword-Shield.json, and to the given file the ranges of consecutive gold that
     have the same score.
-goldscores-rust.py --extract data/B02/2010SW.TR.MS.CA.6Sg20-Sword-Shield.jot
-    writes this .jot and the .desc that goes with it, from the solution of the character.
+goldscores-rust.py --reports data/B02/2010SW.TR.MS.CA.6Sg10_50-Sword-Shield.reports 10,20,50
+    writes the .jot, .desc and .dot of these gold (or all), from the solution of the character, then the given file.
 goldscores-rust.py --summary data/B02
     shows these ranges for all the characters that were solved.
 """
@@ -28,31 +28,34 @@ def summary(directory):
         print("%s: %d scores: %s" % (name, len(ranges), ", ".join(parts)))
 
 
-def extract(path):
-    m = re.fullmatch(r"(data/B\d\d/.*?)g(\d+)((?:-.+)?)\.jot", path)
+def reports(path, golds):
+    m = re.fullmatch(r"(data/B(\d\d)/.*?)g\d+_\d+((?:-.+)?)\.reports", path)
     assert m is not None, path
-    prefix, gold, items = m.groups()
-    found = [
-        f
-        for f in glob.glob(glob.escape(prefix) + "g*_*" + glob.escape(items) + ".solutions.zstd")
-        if re.fullmatch(re.escape(prefix) + r"g\d+_\d+" + re.escape(items) + r"\.solutions\.zstd", f)
-    ]
-    assert len(found) == 1, (path, found)
+    prefix, b, items = m.groups()
+    stem = path.removesuffix(".reports")
+    per_gold = prefix + "g{gold}" + items
     subprocess.run(
         [
             "target/release/gamebooksolver-explorer",
             "--solpath",
-            found[0],
-            "--start-gold",
-            gold,
+            stem + ".solutions.zstd",
             "--jot",
-            path,
+            per_gold + ".jot",
             "--desc",
-            path.removesuffix(".jot") + ".desc",
+            per_gold + ".desc",
             "extract",
+            "--golds",
+            golds,
+            "--dot",
+            per_gold + ".dot",
+            "--bookpath",
+            "json-chapters/book%s.json" % b,
+            "--display",
+            "json-chapters/display%s.json" % b,
         ],
         check=True,
     )
+    open(path, "w").write(golds + "\n")
 
 
 def solve(path):
@@ -95,7 +98,7 @@ def solve(path):
 
 if sys.argv[1] == "--summary":
     summary(sys.argv[2])
-elif sys.argv[1] == "--extract":
-    extract(sys.argv[2])
+elif sys.argv[1] == "--reports":
+    reports(sys.argv[2], sys.argv[3])
 else:
     solve(sys.argv[1])
