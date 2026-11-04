@@ -29,11 +29,10 @@ def summary(directory):
 
 
 def reports(path, golds):
-    m = re.fullmatch(r"(data/B(\d\d)/.*?)g\d+_\d+((?:-.+)?)\.reports", path)
-    assert m is not None, path
-    prefix, b, items = m.groups()
     stem = path.removesuffix(".reports")
-    per_gold = prefix + "g{gold}" + items
+    b = re.match(r"data/B(\d\d)/", path)[1]
+    # a character with a range of gold has a report for each, and the others only have one
+    per_gold = re.sub(r"g\d+_\d+", "g{gold}", stem, count=1)
     subprocess.run(
         [
             "target/release/gamebooksolver-explorer",

@@ -33,6 +33,7 @@ fn item_name(book: Book, item: &Item) -> Option<&'static str> {
     use Item::{GenBackpack as B, GenSpecial as S};
     Some(match (book, item) {
         (Book::Book01, S(0)) => "Vordak Gem",
+        (Book::Book01, B(0)) => "Torch and Tinderbox",
         (Book::Book01, S(1)) => "Golden Key",
         (Book::Book01, S(2)) => "Silver Key",
         (Book::Book01, S(3)) => "crystal Star Pendant",
@@ -42,6 +43,7 @@ fn item_name(book: Book, item: &Item) -> Option<&'static str> {
         (Book::Book02, S(3)) => "Seal of Hammerdal",
         (Book::Book02, S(4)) => "White pass",
         (Book::Book02, S(5)) => "Red pass",
+        (Book::Book02, B(2)) => "Healing Potion (3)",
         (Book::Book03, S(0)) => "Ornate Silver Key",
         (Book::Book03, S(1)) => "Blue Stone Disc",
         (Book::Book03, S(2)) => "Blue Stone Triangle",
@@ -109,7 +111,7 @@ fn show_flag(book: Book, flag: Flag) -> String {
 }
 
 fn show_slot(slot: &Slot) -> String {
-    format!("{slot:?}Slot")
+    format!("{slot:?}").to_lowercase()
 }
 
 fn item_desc(book: Book, item: &Item, count: u8) -> String {
@@ -129,7 +131,7 @@ fn cond_desc(book: Book, cond: &BoolCond) -> String {
         BoolCond::Not(c) => format!("!{}", cond_desc(book, c)),
         BoolCond::COr(a, b) => format!("{}||{}", cond_desc(book, a), cond_desc(book, b)),
         BoolCond::CAnd(a, b) => format!("{}&&{}", cond_desc(book, a), cond_desc(book, b)),
-        BoolCond::HasEndurance(e) => format!("endurance > Endurance {{getEndurance = {}}}", e.0),
+        BoolCond::HasEndurance(e) => format!("endurance>={}", e.0),
         BoolCond::HasLevel(l) => format!("lvl {l:?}"),
         BoolCond::HasDiscipline(d) => match d {
             Discipline::SixthSense => "?6th".to_string(),
@@ -151,13 +153,10 @@ fn simple_desc(book: Book, so: &SimpleOutcome) -> String {
     match so {
         SimpleOutcome::LoseItemKind(k) if k.len() == 4 => "LOSEALL".to_string(),
         SimpleOutcome::LoseItemKind(k) => {
-            format!("LoseItemKind [{}]", k.iter().map(show_slot).collect::<Vec<_>>().join(","))
+            format!("lose all [{}]", k.iter().map(show_slot).collect::<Vec<_>>().join(","))
         }
         SimpleOutcome::LoseItem(i, c) => format!("-{}", item_desc(book, i, *c)),
-        SimpleOutcome::GainItem(i, c) => match i {
-            Item::Weapon(_) | Item::GenSpecial(_) | Item::GenBackpack(_) => format!("GainItem ({}) {c}", raw_item(i)),
-            _ => format!("GainItem {} {c}", raw_item(i)),
-        },
+        SimpleOutcome::GainItem(i, c) => format!("+{}", item_desc(book, i, *c as u8)),
         SimpleOutcome::MustEat(_) => "eat".to_string(),
         SimpleOutcome::HealPlayer(h) => format!("+{}HP", h.0),
         SimpleOutcome::DamagePlayer(h) => format!("-{}HP", h.0),
@@ -165,8 +164,8 @@ fn simple_desc(book: Book, so: &SimpleOutcome) -> String {
         SimpleOutcome::HalfHeal => "+50%HP".to_string(),
         SimpleOutcome::SetFlag(f) => format!("+{}", show_flag(book, *f)),
         SimpleOutcome::ClearFlag(f) => format!("-{}", show_flag(book, *f)),
-        SimpleOutcome::StoreEquipment => "StoreEquipment".to_string(),
-        SimpleOutcome::RetrieveEquipment => "RetrieveEquipment".to_string(),
+        SimpleOutcome::StoreEquipment => "store equipment".to_string(),
+        SimpleOutcome::RetrieveEquipment => "retrieve equipment".to_string(),
     }
 }
 
@@ -191,7 +190,7 @@ fn fight_destinations(fd: &FightDetails<Rational>) -> Destinations {
         FightModifier::FakeFight(c) => Some(*c),
         _ => None,
     });
-    o.extend(by_kind("fake fight loss", &|m| match m {
+    o.extend(by_kind("on damage", &|m| match m {
         FightModifier::OnDamage(c) => Some(*c),
         _ => None,
     }));
@@ -232,7 +231,7 @@ fn outcome_destinations(book: Book, co: &ChapterOutcome<Rational>) -> Destinatio
             prepend(&descs, outcome_destinations(book, nxt))
         }
         ChapterOutcome::LoseItemFrom(sl, n, nxt) => prepend(
-            &[format!("loseitem {} {n}", show_slot(sl))],
+            &[format!("lose {n} from {}", show_slot(sl))],
             outcome_destinations(book, nxt),
         ),
         ChapterOutcome::Fight(fd, nxt) => {
@@ -269,7 +268,7 @@ fn destinations(book: Book, d: &Decision<Rational>) -> Destinations {
         Decision::Conditional(c, nxt) => prepend(&[cond_desc(book, c)], destinations(book, nxt)),
         Decision::EvadeFight(_, cid, _, co) => {
             let mut o = vec![(cid.0, vec!["evade".to_string()])];
-            o.extend(prepend(&["fight".to_string()], outcome_destinations(book, co)));
+            o.extend(prepend(&["win".to_string()], outcome_destinations(book, co)));
             o
         }
         Decision::AfterCombat(nxt) | Decision::RetrieveEquipment(nxt) | Decision::RemoveItemFrom(_, _, nxt) => {
@@ -396,61 +395,137 @@ fn backpack_size(e: &Equipment, p: &Rational) -> Rational {
         .sum()
 }
 
-fn node_style(chapter: &Chapter<Rational>, visited: bool) -> &'static [(&'static str, &'static str)] {
-    const FILLED: (&str, &str) = ("style", "filled");
-    let d = &chapter.pchoice;
-    let eating = d
-        .iter_outcomes()
-        .find_map(|co| {
-            co.simple_outcomes().find_map(|so| match so {
-                SimpleOutcome::MustEat(h) => Some(*h),
-                _ => None,
-            })
-        });
-    let combat = matches!(d, Decision::EvadeFight(_, _, _, _))
-        || d.iter_outcomes().any(|co| matches!(co.as_ref(), ChapterOutcome::Fight(_, _)));
-    let lost = d.iter_outcomes().any(|co| matches!(co.as_ref(), ChapterOutcome::GameLost));
-    match eating {
-        Some(CanHunt::NoHunt) => &[FILLED, ("color", "\"/svg/yellow\"")],
-        Some(CanHunt::Hunt) => &[("color", "\"/svg/yellow\"")],
-        None if combat => &[("color", "\"/svg/red\"")],
-        None if lost => &[FILLED, ("fontcolor", "\"/svg/white\"")],
-        None if matches!(d, Decision::Special(_)) => &[("color", "\"/svg/blue\"")],
-        None if visited => &[("color", "\"/svg/gray\"")],
-        None => &[FILLED],
+/// The names and statistics of the opponents of a chapter
+fn outcome_fights(co: &ChapterOutcome<Rational>, out: &mut Vec<String>) {
+    let push = |fd: &FightDetails<Rational>, out: &mut Vec<String>| {
+        let name = format!("{} {}/{}", fd.opponent, fd.combat_skill.0, fd.endurance.0);
+        if !out.contains(&name) {
+            out.push(name);
+        }
+    };
+    match co {
+        ChapterOutcome::Fight(fd, n) => {
+            push(fd, out);
+            outcome_fights(n, out);
+        }
+        ChapterOutcome::OneRound(fd, a, b, c) => {
+            push(fd, out);
+            [a, b, c].into_iter().for_each(|o| outcome_fights(o, out));
+        }
+        ChapterOutcome::Simple(_, n) | ChapterOutcome::LoseItemFrom(_, _, n) => outcome_fights(n, out),
+        ChapterOutcome::Randomly(l) => l.iter().for_each(|(_, o)| outcome_fights(o, out)),
+        ChapterOutcome::Conditionally(l) => l.iter().for_each(|(_, o)| outcome_fights(o, out)),
+        _ => (),
     }
+}
+
+fn decision_fights(d: &Decision<Rational>, out: &mut Vec<String>) {
+    match d {
+        Decision::Decisions(l) => l.iter().for_each(|(_, n)| decision_fights(n, out)),
+        Decision::CanTake(_, _, n)
+        | Decision::Canbuy(_, _, n)
+        | Decision::Cansell(_, _, n)
+        | Decision::RemoveItemFrom(_, _, n)
+        | Decision::Conditional(_, n)
+        | Decision::AfterCombat(n)
+        | Decision::RetrieveEquipment(n) => decision_fights(n, out),
+        Decision::EvadeFight(_, _, fd, co) => {
+            let name = format!("{} {}/{}", fd.opponent, fd.combat_skill.0, fd.endurance.0);
+            if !out.contains(&name) {
+                out.push(name);
+            }
+            outcome_fights(co, out);
+        }
+        Decision::None(co) => outcome_fights(co, out),
+        Decision::Special(_) => (),
+    }
+}
+
+/// Where a chapter can be evaded to
+fn evasions(d: &Decision<Rational>, out: &mut BTreeSet<u16>) {
+    match d {
+        Decision::Decisions(l) => l.iter().for_each(|(_, n)| evasions(n, out)),
+        Decision::CanTake(_, _, n)
+        | Decision::Canbuy(_, _, n)
+        | Decision::Cansell(_, _, n)
+        | Decision::RemoveItemFrom(_, _, n)
+        | Decision::Conditional(_, n)
+        | Decision::AfterCombat(n)
+        | Decision::RetrieveEquipment(n) => evasions(n, out),
+        Decision::EvadeFight(_, cid, _, _) => {
+            out.insert(cid.0);
+        }
+        Decision::None(_) | Decision::Special(_) => (),
+    }
+}
+
+/// Whether the player has something to decide here, whatever the character
+fn has_choice(d: &Decision<Rational>) -> bool {
+    match d {
+        Decision::None(_) | Decision::EvadeFight(_, _, _, _) => false,
+        Decision::Conditional(_, n) | Decision::AfterCombat(n) => has_choice(n),
+        _ => true,
+    }
+}
+
+fn section_count(book: Book) -> u16 {
+    if book == Book::Book05 { 400 } else { 350 }
+}
+
+/// A color between white and this one
+fn tint(red: u8, green: u8, blue: u8, amount: f64) -> String {
+    let mix = |c: u8| (255.0 - (255.0 - c as f64) * amount.clamp(0.0, 1.0)).round() as u8;
+    format!("\"#{:02x}{:02x}{:02x}\"", mix(red), mix(green), mix(blue))
+}
+
+/// The statistics of a node, once the chapters that belong to it are merged
+#[derive(Default)]
+struct NodeStats {
+    reached: Rational,
+    value: Rational,
+    deaths: Rational,
+    evaded: Rational,
+}
+
+fn rational_percent(amount: &Rational, total: &Rational) -> String {
+    percent(&ratio_of(amount.clone(), total))
 }
 
 fn node_label(
     book: Book,
-    chapter: &Chapter<Rational>,
+    title: &str,
+    fights: &[String],
+    node: &NodeStats,
     stats: Option<&ChapterStats>,
     nstates: u64,
     display: &[DotInfo],
 ) -> Field {
-    let score = match stats {
-        Some(stats) => {
-            let total: Rational = stats.endurance.values().cloned().sum();
-            let hp = if total.is_z() {
-                String::new()
-            } else {
-                let sum: Rational = stats
-                    .endurance
-                    .iter()
-                    .map(|(e, p)| p.clone().mul(&Rational::from(*e as i64)))
-                    .sum();
-                format!("{} hp", sum.div(&total).to_fixed(2))
-            };
-            Field::Flip(vec![
-                Field::Label(format!("{nstates}stts")),
-                Field::Label(percent(&stats.score)),
-                Field::Label(hp),
-            ])
+    let mut fields = vec![Field::Label(title.to_string())];
+    if !fights.is_empty() {
+        fields.push(Field::Label(fights.join(", ")));
+    }
+    let reached = !node.reached.is_z();
+    if let (true, Some(stats)) = (reached, stats) {
+        let sum: Rational = stats
+            .endurance
+            .iter()
+            .map(|(e, p)| p.clone().mul(&Rational::from(*e as i64)))
+            .sum();
+        fields.push(Field::Flip(vec![
+            Field::pair("reached".to_string(), percent(&node.reached)),
+            Field::pair("from here".to_string(), rational_percent(&node.value, &node.reached)),
+            Field::pair("hp".to_string(), sum.div(&node.reached).to_fixed(2)),
+            Field::pair("states".to_string(), nstates.to_string()),
+        ]));
+    }
+    if !node.deaths.is_z() || !node.evaded.is_z() {
+        let mut outcome = vec![Field::pair("die".to_string(), rational_percent(&node.deaths, &node.reached))];
+        if !node.evaded.is_z() {
+            outcome.push(Field::pair("evade".to_string(), rational_percent(&node.evaded, &node.reached)));
         }
-        None => Field::Label(format!("{nstates} states")),
-    };
-    let mut fields = vec![Field::Label(chapter.title.clone()), score];
-    if let Some(stats) = stats {
+        fields.push(Field::Flip(outcome));
+    }
+    if let (true, Some(stats)) = (reached, stats) {
         fields.extend(display.iter().filter_map(|i| info_field(book, i, stats)));
     }
     Field::Flip(fields)
@@ -468,64 +543,322 @@ fn write_statement(out: &mut String, head: &str, attrs: &[(&str, &str)]) {
     out.push_str("];\n");
 }
 
-/// Renders the statistics of a solution over the graph of the chapters, in the dot format.
-pub fn mkdot(chapters: &[(ChapterId, Chapter<Rational>)], display: &[DotInfo], stats: &Output) -> String {
-    let book = stats.bookid;
-    let mut out = String::from("digraph G {\n");
+/// The node that shows each chapter. A chapter that was added to a book, without a choice, belongs to the only chapter that
+/// leads to it. The chapters of the rounds of a fight belong to the chapter of the fight.
+fn chapter_owners(
+    book: Book,
+    chapters: &[(ChapterId, Chapter<Rational>)],
+    transitions: &BTreeMap<u16, BTreeMap<u16, Vec<String>>>,
+    stats: &Output,
+) -> BTreeMap<u16, u16> {
+    let mut preds: BTreeMap<u16, BTreeSet<u16>> = BTreeMap::new();
+    for (src, dsts) in transitions {
+        for dst in dsts.keys() {
+            preds.entry(*dst).or_default().insert(*src);
+        }
+    }
+    let added: BTreeSet<u16> = chapters
+        .iter()
+        .filter(|(cid, c)| cid.0 > section_count(book) && !has_choice(&c.pchoice))
+        .filter(|(cid, _)| preds.get(&cid.0).is_some_and(|p| p.len() == 1))
+        .map(|(cid, _)| cid.0)
+        .collect();
+    let mut owners: BTreeMap<u16, u16> = BTreeMap::new();
+    for (cid, _) in chapters {
+        let mut cur = cid.0;
+        while added.contains(&cur) {
+            cur = *preds[&cur].first().expect("added chapters have a predecessor");
+        }
+        owners.insert(cid.0, cur);
+    }
+    let mut todo: Vec<u16> = owners.keys().copied().collect();
+    while let Some(src) = todo.pop() {
+        let owner = owners[&src];
+        for dst in stats.res.get(&src).into_iter().flat_map(|s| s.transitions.keys()) {
+            if !owners.contains_key(dst) {
+                owners.insert(*dst, owner);
+                todo.push(*dst);
+            }
+        }
+    }
+    owners
+}
 
+/// Renders the statistics of a solution over the graph of the chapters, in the dot format.
+pub fn mkdot(
+    chapters: &[(ChapterId, Chapter<Rational>)],
+    display: &[DotInfo],
+    stats: &Output,
+    raw_rounds: bool,
+) -> String {
+    let book = stats.bookid;
+    let by_id: BTreeMap<u16, &Chapter<Rational>> = chapters.iter().map(|(c, ch)| (c.0, ch)).collect();
+    let mut transitions: BTreeMap<u16, BTreeMap<u16, Vec<String>>> = BTreeMap::new();
     for (cid, chapter) in chapters {
+        // when several choices lead to the same chapter, the last one is described
+        transitions.insert(cid.0, destinations(book, &chapter.pchoice).into_iter().collect());
+    }
+    let owners = if raw_rounds {
+        BTreeMap::new()
+    } else {
+        chapter_owners(book, chapters, &transitions, stats)
+    };
+    let owner = |c: u16| owners.get(&c).copied().unwrap_or(c);
+
+    // what happens at each node
+    let mut nodes: BTreeMap<u16, NodeStats> = BTreeMap::new();
+    let mut exits: BTreeMap<(u16, u16), Rational> = BTreeMap::new();
+    let mut fights: BTreeMap<u16, Vec<String>> = BTreeMap::new();
+    let mut evades: BTreeMap<u16, BTreeSet<u16>> = BTreeMap::new();
+    for (cid, chapter) in chapters {
+        let o = owner(cid.0);
+        decision_fights(&chapter.pchoice, fights.entry(o).or_default());
+        let mut targets = BTreeSet::new();
+        evasions(&chapter.pchoice, &mut targets);
+        evades.entry(o).or_default().extend(targets.into_iter().map(owner));
+    }
+    for (src, s) in &stats.res {
+        let root = owner(*src);
+        if root == *src {
+            let node = nodes.entry(root).or_default();
+            node.reached = s.endurance.values().cloned().sum();
+            node.value = stats.values.get(src).cloned().unwrap_or_default();
+        }
+        for (dst, flow) in &s.transitions {
+            let target = owner(*dst);
+            if target != root {
+                *exits.entry((root, target)).or_default() += flow.clone();
+            }
+        }
+    }
+    for (cid, dead) in &stats.deaths {
+        nodes.entry(owner(*cid)).or_default().deaths += dead.clone();
+    }
+    for ((src, dst), flow) in &exits {
+        if evades.get(src).is_some_and(|e| e.contains(dst)) {
+            nodes.entry(*src).or_default().evaded += flow.clone();
+        }
+    }
+
+    let mut out = String::from("digraph G {\n");
+    let start = nodes.get(&1);
+    let score = start.map(|n| percent(&n.value)).unwrap_or_default();
+    let mut killers: Vec<(u16, Rational)> = nodes
+        .iter()
+        .filter(|(_, n)| !n.deaths.is_z())
+        .map(|(c, n)| (*c, n.deaths.clone()))
+        .collect();
+    killers.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+    let killers: Vec<String> = killers
+        .iter()
+        .take(5)
+        .map(|(c, d)| {
+            let who = fights.get(c).and_then(|f| f.first()).map(|f| format!(" {f}")).unwrap_or_default();
+            format!("{c}{who} {}", percent(d))
+        })
+        .collect();
+    write!(
+        out,
+        "    labelloc=t;\n    fontsize=24;\n    label={};\n",
+        quote(&format!("Score {score}\\nDeaths, of all characters: {}", killers.join(", ")))
+    )
+    .unwrap();
+
+    let default = NodeStats::default();
+    for (cid, chapter) in chapters {
+        if owner(cid.0) != cid.0 {
+            continue;
+        }
+        let node = nodes.get(&cid.0).unwrap_or(&default);
+        let nstates: u64 = owners
+            .iter()
+            .filter(|(_, o)| **o == cid.0)
+            .filter_map(|(c, _)| stats.sttmap.get(c))
+            .sum::<u64>()
+            .max(stats.sttmap.get(&cid.0).copied().unwrap_or(0));
         let cstats = stats.res.get(&cid.0);
-        let nstates = stats.sttmap.get(&cid.0).copied().unwrap_or(0);
+        let title = if cid.0 > section_count(book) {
+            match transitions.iter().find(|(_, d)| d.contains_key(&cid.0)) {
+                Some((p, _)) => format!("after {}", owner(*p)),
+                None => cid.0.to_string(),
+            }
+        } else {
+            chapter.title.clone()
+        };
+        let empty = Vec::new();
+        let names = fights.get(&cid.0).unwrap_or(&empty);
         let mut label = String::new();
-        node_label(book, chapter, cstats, nstates, display).render(&mut label);
+        node_label(book, &title, names, node, cstats, nstates, display).render(&mut label);
         let label = quote(&label);
+        let section = if cid.0 > section_count(book) { title.trim_start_matches("after ").to_string() } else { chapter.title.clone() };
         let url = quote(&format!(
-            "https://www.projectaon.org/en/xhtml/lw/{}/sect{}.htm",
+            "https://www.projectaon.org/en/xhtml/lw/{}/sect{section}.htm",
             url_part(book),
-            chapter.title
         ));
-        let mut attrs = vec![("shape", "record"), ("label", label.as_str()), ("URL", url.as_str())];
-        attrs.extend_from_slice(node_style(chapter, cstats.is_some()));
+        let eating = chapter.pchoice.iter_outcomes().any(|co| {
+            co.simple_outcomes().any(|so| matches!(so, SimpleOutcome::MustEat(_)))
+        });
+        let reached = !node.reached.is_z();
+        let mut attrs: Vec<(&str, String)> = vec![
+            ("shape", "record".to_string()),
+            ("label", label),
+            ("URL", url),
+            ("style", "filled".to_string()),
+        ];
+        // the more characters die here, the more red, and otherwise the more reach it, the more blue
+        let fill = if !node.deaths.is_z() {
+            tint(0xe0, 0x30, 0x30, 0.15 + 0.85 * node.deaths.to_f64().sqrt())
+        } else if reached {
+            tint(0x60, 0xa0, 0xe0, 0.05 + 0.5 * node.reached.to_f64())
+        } else {
+            "white".to_string()
+        };
+        attrs.push(("fillcolor", fill));
+        if !reached {
+            attrs.push(("color", "\"#c0c0c0\"".to_string()));
+            attrs.push(("fontcolor", "\"#a0a0a0\"".to_string()));
+        } else if eating {
+            attrs.push(("color", "\"#c09000\"".to_string()));
+            attrs.push(("penwidth", "2".to_string()));
+        } else if !names.is_empty() {
+            attrs.push(("color", "\"#c02020\"".to_string()));
+            attrs.push(("penwidth", "2".to_string()));
+        } else if matches!(chapter.pchoice, Decision::Special(_)) {
+            attrs.push(("color", "\"#2040c0\"".to_string()));
+            attrs.push(("penwidth", "2".to_string()));
+        }
+        let attrs: Vec<(&str, &str)> = attrs.iter().map(|(n, v)| (*n, v.as_str())).collect();
         write_statement(&mut out, &cid.0.to_string(), &attrs);
     }
 
-    let mut all_transitions: BTreeMap<u16, BTreeMap<u16, Vec<String>>> = BTreeMap::new();
-    for (cid, chapter) in chapters {
-        // when several choices lead to the same chapter, the last one is described
-        all_transitions.insert(cid.0, destinations(book, &chapter.pchoice).into_iter().collect());
+    // what the book says about the edges of a node
+    let mut descs: BTreeMap<(u16, u16), String> = BTreeMap::new();
+    for (src, dsts) in &transitions {
+        for (dst, d) in dsts {
+            if owner(*src) != owner(*dst) {
+                descs.insert((owner(*src), owner(*dst)), d.join(" "));
+            }
+        }
     }
-    let edge_desc = |src: u16, dst: u16| -> String {
-        all_transitions
-            .get(&src)
-            .and_then(|m| m.get(&dst))
-            .into_iter()
-            .flatten()
-            .map(|d| format!(" {}", serde_json::Value::from(d.as_str())))
-            .collect()
-    };
-    let write_edge = |out: &mut String, src: u16, dst: u16, color: &str, weight: String| {
-        let label = quote(&format!("{weight}{}", edge_desc(src, dst)));
+    let edge = |out: &mut String, src: u16, dst: u16, attrs: &[(&str, &str)], weight: &str| {
+        let desc = descs.get(&(src, dst)).map(String::as_str).unwrap_or_default();
+        let label = quote(format!("{weight} {desc}").trim());
         let head = format!("{src} -> {dst}");
-        write_statement(out, &head, &[("color", color), ("label", &label)]);
+        let mut all = attrs.to_vec();
+        all.push(("label", &label));
+        write_statement(out, &head, &all);
     };
 
-    let solution_edges: BTreeSet<(u16, u16)> = stats
-        .res
-        .iter()
-        .flat_map(|(src, s)| s.transitions.keys().map(|dst| (*src, *dst)))
-        .collect();
-    for (src, dsts) in &all_transitions {
-        for dst in dsts.keys().filter(|dst| !solution_edges.contains(&(*src, **dst))) {
-            write_edge(&mut out, *src, *dst, "\"/svg/darkgray\"", String::new());
+    // the options that are never taken
+    for &(src, dst) in descs.keys() {
+        if !exits.contains_key(&(src, dst)) && by_id.contains_key(&src) && by_id.contains_key(&dst) {
+            edge(
+                &mut out,
+                src,
+                dst,
+                &[("color", "\"#d0d0d0\""), ("fontcolor", "\"#b0b0b0\""), ("style", "dashed")],
+                "",
+            );
         }
     }
-    for (src, s) in &stats.res {
-        let total: Rational = s.transitions.values().cloned().sum();
-        for (dst, weight) in &s.transitions {
-            let weight = ratio_of(weight.clone(), &total);
-            write_edge(&mut out, *src, *dst, "\"/svg/black\"", percent(&weight));
-        }
+    for ((src, dst), flow) in &exits {
+        let total = &nodes.get(src).unwrap_or(&default).reached;
+        // how thick depends on how many characters go this way, and the label is out of those that are here
+        let width = format!("{:.2}", 0.6 + 6.0 * flow.to_f64());
+        edge(
+            &mut out,
+            *src,
+            *dst,
+            &[("color", "\"#303030\""), ("penwidth", &width)],
+            &rational_percent(flow, total),
+        );
     }
     out.push('}');
     out
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn chapter(pchoice: Decision<Rational>) -> Chapter<Rational> {
+        Chapter { title: String::new(), desc: String::new(), pchoice }
+    }
+
+    fn goto(c: u16) -> ChapterOutcome<Rational> {
+        ChapterOutcome::Goto(ChapterId(c))
+    }
+
+    fn flows(l: &[(u16, i64, i64)]) -> ChapterStats {
+        ChapterStats {
+            transitions: l.iter().map(|(d, a, b)| (*d, Rational::from_i64(*a, *b))).collect(),
+            ..ChapterStats::default()
+        }
+    }
+
+    /// Chapter 1 is a fight of two rounds, that is won to 2, evaded to 3, or lost.
+    fn example() -> (Vec<(ChapterId, Chapter<Rational>)>, Output) {
+        let fd = FightDetails {
+            opponent: "Thug".to_string(),
+            combat_skill: CombatSkill(16),
+            endurance: Endurance(25),
+            fight_mod: vec![],
+        };
+        let mut chapters: Vec<(ChapterId, Chapter<Rational>)> = vec![
+            (ChapterId(1), chapter(Decision::EvadeFight(Rounds(0), ChapterId(3), fd, goto(2)))),
+            (ChapterId(2), chapter(Decision::None(ChapterOutcome::GameWon))),
+            (ChapterId(3), chapter(Decision::None(ChapterOutcome::GameLost))),
+            (ChapterId(4), chapter(Decision::None(goto(3)))),
+        ];
+        chapters[0].1.title = "1".to_string();
+        let mut one = flows(&[(2000, 1, 1)]);
+        one.endurance.insert(20, Rational::from(1));
+        let mut res = BTreeMap::from([
+            (1, one),
+            (2000, flows(&[(2, 1, 2), (3, 1, 4), (2000, 1, 4)])),
+        ]);
+        res.get_mut(&2000).unwrap().endurance.insert(20, Rational::from(1));
+        let mut two = flows(&[]);
+        two.endurance.insert(20, Rational::from_i64(1, 2));
+        res.insert(2, two);
+        let mut three = flows(&[]);
+        three.endurance.insert(20, Rational::from_i64(1, 4));
+        res.insert(3, three);
+        let output = Output {
+            bookid: Book::Book02,
+            res,
+            sttmap: BTreeMap::new(),
+            deaths: BTreeMap::from([(2000, Rational::from_i64(1, 4))]),
+            values: BTreeMap::from([(1, Rational::from_i64(1, 2))]),
+        };
+        (chapters, output)
+    }
+
+    #[test]
+    fn a_fight_is_a_single_node() {
+        let (chapters, output) = example();
+        let dot = mkdot(&chapters, &[], &output, false);
+        assert!(!dot.contains("2000"), "{dot}");
+        assert!(dot.contains("Thug\\ 16/25"), "{dot}");
+        assert!(dot.contains("1 -> 2 ["), "{dot}");
+        assert!(dot.contains("label=\"50.000% win\""), "{dot}");
+        assert!(dot.contains("label=\"25.000% evade\""), "{dot}");
+        // the chance to die and to evade, and the top of the graph
+        assert!(dot.contains("{die|25.000%}|{evade|25.000%}"), "{dot}");
+        assert!(dot.contains("Deaths, of all characters: 1 Thug 16/25 25.000%"), "{dot}");
+    }
+
+    #[test]
+    fn never_taken_edges_are_faded() {
+        let (chapters, output) = example();
+        let dot = mkdot(&chapters, &[], &output, false);
+        let edge = dot.split("4 -> 3 [").nth(1).expect("the edge is there");
+        assert!(edge.starts_with("color=\"#d0d0d0\""), "{dot}");
+    }
+
+    #[test]
+    fn rounds_can_be_shown() {
+        let (chapters, output) = example();
+        assert!(mkdot(&chapters, &[], &output, true).contains("1 -> 2000 ["));
+    }
 }

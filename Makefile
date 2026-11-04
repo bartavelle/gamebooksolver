@@ -1178,15 +1178,36 @@ low02d: data/B02 json-chapters/display02.json $(patsubst %.bin, %.dot, $(TARGETS
 low02: data/B02 $(patsubst %.bin, %.svg, $(TARGETSLOWB02))
 low02sol: $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB02))
 
+comma = ,
+
 # one solve for each character, for all its starting gold: only the scores, see goldscores-rust.py
 gold02: data/B02 $(GOLD02)
 gold01: gold02 data/B01 $(GOLD01)
 
-# the reports of some of the starting gold of Book 2, from the solutions of gold02
+# the reports, from the solutions: only some of the starting gold of Book 2, as it has many
 REPORTGOLD02 = 10,20,50
 reports02: $(GOLD02:.goldranges=.reports)
 data/B02/%.reports:
 	time python3 goldscores-rust.py --reports $@ $(REPORTGOLD02)
+SVG02 = $(foreach g,$(subst $(comma), ,$(REPORTGOLD02)),$(subst g10_50,g$(g),$(GOLD02:.goldranges=.svg)))
+svg02: reports02
+	$(MAKE) svgfiles02
+svgfiles02: $(SVG02)
+
+reports03: $(patsubst %.bin, %.reports, $(TARGETSLOWB03))
+reports04: $(patsubst %.bin, %.reports, $(TARGETSLOWB04))
+reports05: $(patsubst %.bin, %.reports, $(TARGETSLOWB05))
+data/B03/%.reports data/B04/%.reports data/B05/%.reports:
+	time python3 goldscores-rust.py --reports $@ all
+svg03: reports03
+	$(MAKE) svgfiles03
+svg04: reports04
+	$(MAKE) svgfiles04
+svg05: reports05
+	$(MAKE) svgfiles05
+svgfiles03: $(patsubst %.bin, %.svg, $(TARGETSLOWB03))
+svgfiles04: $(patsubst %.bin, %.svg, $(TARGETSLOWB04))
+svgfiles05: $(patsubst %.bin, %.svg, $(TARGETSLOWB05))
 
 low01c: low02j data/B01 $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB01))
 low01j: data/B01 $(patsubst %.bin, %.jot, $(TARGETSLOWB01))

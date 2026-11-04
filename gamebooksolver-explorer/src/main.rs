@@ -108,6 +108,9 @@ enum PSub {
         bookpath: Option<String>,
         #[arg(long)]
         display: Option<String>,
+        /// Show the round by round chapters of the fights, instead of a node for each fight
+        #[arg(long)]
+        raw_rounds: bool,
     },
     /// show what a solution file holds
     SolutionInfo,
@@ -130,6 +133,9 @@ enum PSub {
         /// Path to the description of what is displayed in the nodes
         #[arg(long)]
         display: String,
+        /// Show the round by round chapters of the fights, instead of a node for each fight
+        #[arg(long)]
+        raw_rounds: bool,
     },
 }
 
@@ -186,7 +192,7 @@ impl Default for ChapterStats {
 fn mksol<PREV: StoredEquipment>(
     ini: NextStep<PREV>,
     content: &SoldumpContent<Rational, PREV>,
-) -> BTreeMap<u16, ChapterStats> {
+) -> Flows {
     fn nexts<PREV: StoredEquipment>(
         cs: &ChoppedSolution<Rational, NextStep<PREV>>,
     ) -> Vec<(&NextStep<PREV>, Option<&Rational>)> {
@@ -219,16 +225,22 @@ fn mksol<PREV: StoredEquipment>(
     }
 
     let mut out: BTreeMap<u16, ChapterStats> = BTreeMap::new();
+    let mut deaths: BTreeMap<u16, Rational> = BTreeMap::new();
+    let mut values: BTreeMap<u16, Rational> = BTreeMap::new();
     let mut reached: HashMap<&NextStep<PREV>, Rational> = HashMap::from([(&ini, Rational::from(1))]);
     for ns in order.into_iter().rev() {
         let weight = reached.remove(ns).unwrap_or_default();
         let Some(src) = ns.chapter() else { continue };
         let e = out.entry(src).or_default();
-        let Some(cvar) = ns.cvar() else { continue };
+        let Some(cvar) = ns.cvar() else {
+            *deaths.entry(src).or_default() += weight;
+            continue;
+        };
         *e.items.entry(cvar.cequipment).or_default() += weight.clone();
         *e.flags.entry(cvar.flags.0).or_default() += weight.clone();
         *e.endurance.entry(cvar.curendurance).or_default() += weight.clone();
         let cs = solution(ns);
+        *values.entry(src).or_default() += weight.clone() * &cs.score();
         match cs {
             ChoppedSolution::CLeafLost => (),
             ChoppedSolution::CLeaf(sc) => e.score += weight.clone() * sc,
@@ -245,7 +257,7 @@ fn mksol<PREV: StoredEquipment>(
             *reached.entry(next).or_default() += flow;
         }
     }
-    out
+    Flows { res: out, deaths, values }
 }
 
 fn count_states<A, PREV: StoredEquipment>(cnt: &BTreeMap<NextStep<PREV>, A>) -> BTreeMap<u16, u64> {
@@ -264,6 +276,19 @@ struct Output {
     bookid: Book,
     res: BTreeMap<u16, ChapterStats>,
     sttmap: BTreeMap<u16, u64>,
+    /// How many characters die in each chapter
+    #[serde(default)]
+    deaths: BTreeMap<u16, Rational>,
+    /// The score of the characters that reach each chapter, multiplied by how many they are
+    #[serde(default)]
+    values: BTreeMap<u16, Rational>,
+}
+
+/// What `mksol` finds
+struct Flows {
+    res: BTreeMap<u16, ChapterStats>,
+    deaths: BTreeMap<u16, Rational>,
+    values: BTreeMap<u16, Rational>,
 }
 
 fn chop_solution<PREV: StoredEquipment>(
@@ -585,10 +610,13 @@ fn diff_cvar<PREV: From<Equipment> + Into<Equipment>>(
 
 fn jot_output<PREV: StoredEquipment>(soldump: &SolutionDump<Rational, PREV>) -> Output {
     let ini = NextStep::NewChapter(1, mkchar(&soldump.soldesc.ccst, &soldump.soldesc.cvar));
+    let flows = mksol(ini, &soldump.content);
     Output {
         bookid: soldump.soldesc.ccst.bookid,
-        res: mksol(ini, &soldump.content),
+        res: flows.res,
         sttmap: count_states(&soldump.content),
+        deaths: flows.deaths,
+        values: flows.values,
     }
 }
 
@@ -611,6 +639,7 @@ struct DotReport<'t> {
     path: &'t str,
     chapters: Vec<(ChapterId, Chapter<Rational>)>,
     display: Vec<dot::DotInfo>,
+    raw_rounds: bool,
 }
 
 struct Reports<'t> {
@@ -642,7 +671,7 @@ fn extract<PREV: StoredEquipment>(f: &solfile::SolFile<PREV>, golds: &str, repor
                 serde_json::to_writer_pretty(File::create(at(path))?, &output)?;
             }
             if let Some(r) = &reports.dot {
-                let mut text = dot::mkdot(&r.chapters, &r.display, &output);
+                let mut text = dot::mkdot(&r.chapters, &r.display, &output, r.raw_rounds);
                 text.push('\n');
                 std::fs::write(at(r.path), text)?;
             }
@@ -1193,12 +1222,12 @@ fn main() -> anyhow::Result<()> {
                 write_decisions::<NoPrevEq>(cnt, book, &opt.solpath, opt.verbose)?;
             }
         }
-        Some(PSub::Dot { bookpath, display }) => {
+        Some(PSub::Dot { bookpath, display, raw_rounds }) => {
             let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(BufReader::new(File::open(bookpath)?))?;
             let display: Vec<dot::DotInfo> = serde_json::from_reader(BufReader::new(File::open(display)?))?;
             let stats: Output = serde_json::from_reader(BufReader::new(File::open(&opt.solpath)?))
                 .with_context(|| anyhow::anyhow!("loading {}", opt.solpath))?;
-            println!("{}", dot::mkdot(&book, &display, &stats));
+            println!("{}", dot::mkdot(&book, &display, &stats, *raw_rounds));
         }
         Some(PSub::GoldScores { desc, gold_to, ranges }) => {
             let json = opt.json.context("--json is required")?;
@@ -1253,13 +1282,13 @@ fn main() -> anyhow::Result<()> {
                 cur.elapsed()
             )
         }
-        Some(PSub::Extract { golds, dot, bookpath, display }) => {
+        Some(PSub::Extract { golds, dot, bookpath, display, raw_rounds }) => {
             let dot = match (dot, bookpath, display) {
                 (None, _, _) => None,
                 (Some(path), Some(book), Some(display)) => {
                     let chapters: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(BufReader::new(File::open(book)?))?;
                     let display: Vec<dot::DotInfo> = serde_json::from_reader(BufReader::new(File::open(display)?))?;
-                    Some(DotReport { path, chapters, display })
+                    Some(DotReport { path, chapters, display, raw_rounds: *raw_rounds })
                 }
                 _ => anyhow::bail!("--dot needs --bookpath and --display"),
             };
@@ -1432,7 +1461,7 @@ mod test {
         ]);
         let searchmap = content.iter().map(|(a, b)| (a.clone(), b)).collect();
         let backward = mksol_backward(chapter(1, 10), searchmap);
-        let forward = mksol(chapter(1, 10), &content);
+        let forward = mksol(chapter(1, 10), &content).res;
         assert_eq!(serde_json::to_value(&forward).unwrap(), serde_json::to_value(&backward).unwrap());
     }
 }
