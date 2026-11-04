@@ -4,6 +4,8 @@ goldscores-rust.py data/B02/2010SW.TR.MS.CA.6Sg10_50-Sword-Shield.goldranges
     writes the solution of all the gold to data/B02/2010SW.TR.MS.CA.6Sg10_50-Sword-Shield.solutions.zstd, the score of each
     gold to data/B02/2010SW.TR.MS.CA.6Sg<gold>-Sword-Shield.json, and to the given file the ranges of consecutive gold that
     have the same score.
+goldscores-rust.py --extract data/B02/2010SW.TR.MS.CA.6Sg20-Sword-Shield.jot
+    writes this .jot and the .desc that goes with it, from the solution of the character.
 goldscores-rust.py --summary data/B02
     shows these ranges for all the characters that were solved.
 """
@@ -24,6 +26,33 @@ def summary(directory):
         name = path.split("/")[-1].removesuffix(".goldranges")
         parts = ["%d-%d %.3f%%" % (r["from"], r["to"], r["score"] * 100) for r in ranges]
         print("%s: %d scores: %s" % (name, len(ranges), ", ".join(parts)))
+
+
+def extract(path):
+    m = re.fullmatch(r"(data/B\d\d/.*?)g(\d+)((?:-.+)?)\.jot", path)
+    assert m is not None, path
+    prefix, gold, items = m.groups()
+    found = [
+        f
+        for f in glob.glob(glob.escape(prefix) + "g*_*" + glob.escape(items) + ".solutions.zstd")
+        if re.fullmatch(re.escape(prefix) + r"g\d+_\d+" + re.escape(items) + r"\.solutions\.zstd", f)
+    ]
+    assert len(found) == 1, (path, found)
+    subprocess.run(
+        [
+            "target/release/gamebooksolver-explorer",
+            "--solpath",
+            found[0],
+            "--start-gold",
+            gold,
+            "--jot",
+            path,
+            "--desc",
+            path.removesuffix(".jot") + ".desc",
+            "extract",
+        ],
+        check=True,
+    )
 
 
 def solve(path):
@@ -66,5 +95,7 @@ def solve(path):
 
 if sys.argv[1] == "--summary":
     summary(sys.argv[2])
+elif sys.argv[1] == "--extract":
+    extract(sys.argv[2])
 else:
     solve(sys.argv[1])

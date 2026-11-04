@@ -1182,6 +1182,13 @@ low02sol: $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB02))
 gold02: data/B02 $(GOLD02)
 gold01: gold02 data/B01 $(GOLD01)
 
+# the reports of some of the starting gold of Book 2, from the solutions of gold02
+REPORTGOLD02 = 10 20 50
+REPORTS02 = $(foreach g,$(REPORTGOLD02),$(subst g10_50,g$(g),$(GOLD02:.goldranges=)))
+report02: $(addsuffix .dot,$(REPORTS02)) $(addsuffix .svg,$(REPORTS02))
+$(addsuffix .jot,$(REPORTS02)): data/B02/%.jot:
+	time python3 goldscores-rust.py --extract $@
+
 low01c: low02j data/B01 $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB01))
 low01j: data/B01 $(patsubst %.bin, %.jot, $(TARGETSLOWB01))
 low01d: data/B01 json-chapters/display01.json $(patsubst %.bin, %.dot, $(TARGETSLOWB01))
