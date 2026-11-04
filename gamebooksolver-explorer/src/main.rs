@@ -1,5 +1,6 @@
 mod dot;
 mod lwexplore;
+mod solfile;
 
 use anyhow::Context;
 use clap::{Parser, Subcommand};
@@ -13,7 +14,7 @@ use gamebooksolver_base::lonewolf::mini::SoldumpContent;
 use gamebooksolver_base::lonewolf::mini::StoredEquipment;
 use gamebooksolver_base::lonewolf::evasion::expand_evasions;
 use gamebooksolver_base::lonewolf::solve::{
-    BestPathState, PathStates, solve_lws, solve_lws_best_path, solve_lws_best_path_and_visit, solve_lws_compact_starts,
+    BestPathState, PathStates, solve_lws, solve_lws_best_path, solve_lws_best_path_and_visit, solve_lws_best_path_starts,
     visit_best_path,
 };
 use gamebooksolver_base::solver::rational::MF64;
@@ -29,8 +30,6 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
-use std::sync::Arc;
-use std::time::Duration;
 
 use gamebooksolver_base::lonewolf::mini::{
     Book, CVarState, CharacterConstant, CompactSolution, CompactState, Discipline, Equipment, Flag, Flags, Item,
@@ -81,7 +80,6 @@ enum PSub {
         otherpath: String,
         cid: u16,
     },
-    Soldump(OSolDesc),
     Explore {
         bookpath: String,
     },
@@ -95,15 +93,25 @@ enum PSub {
     ExploreCompact {
         bookpath: String,
     },
-    /// soldump and optimize
-    SoldumpOptimize(OSolDesc),
-    /// solve once for a range of starting gold, from --gold to --gold-to: writes the score of each to --json, where {gold}
-    /// stands for the gold, and the ranges of consecutive amounts with the same score to --solpath
+    /// solve a character for one starting gold, and write the solution to --solpath and the reports
+    Solve(OSolDesc),
+    /// write the .jot and .desc of one starting gold of a solution file, chosen with --start-gold
+    Extract,
+    /// show what a solution file holds
+    SolutionInfo,
+    /// convert a file of the previous format, in --solpath, to this file, checking that it reads back the same
+    ConvertSolution {
+        target: String,
+    },
+    /// solve once for a range of starting gold, from --gold to --gold-to: writes the solution to --solpath, the score of
+    /// each to --json, where {gold} stands for the gold, and the ranges of consecutive amounts with the same score to --ranges
     GoldScores {
         #[command(flatten)]
         desc: OSolDesc,
         #[arg(long)]
         gold_to: u8,
+        #[arg(long)]
+        ranges: String,
     },
     /// write what can happen on the best path, with the value of all the choices, one state per line
     Decisions(OSolDesc),
@@ -131,9 +139,9 @@ struct Opt {
     /// Optional path to the .json file
     #[structopt(long)]
     json: Option<String>,
-    /// Optional path to the full .bin solution
+    /// The starting gold to read from a solution file that has several
     #[structopt(long)]
-    fullsol: Option<String>,
+    start_gold: Option<u8>,
     /// Optional path where soldump writes the value of all the choices on the best path. It is compressed if it ends in .zst
     #[structopt(long)]
     decisions: Option<String>,
@@ -275,13 +283,6 @@ struct Output {
     bookid: Book,
     res: BTreeMap<u16, ChapterStats>,
     sttmap: BTreeMap<u16, u64>,
-}
-
-fn load_soldump(pth: &str) -> anyhow::Result<gamebooksolver_base::lonewolf::mini::GSolDump<Rational>> {
-    let file = File::open(pth)?;
-    let mut dec = zstd::Decoder::new(file)?;
-    let o = bincode::decode_from_std_read(&mut dec, bincode::config::standard())?;
-    Ok(o)
 }
 
 fn chop_solution<PREV: StoredEquipment>(
@@ -650,18 +651,27 @@ fn optimize<PREV: StoredEquipment>(
             .filter_map(|(k, v)| CompactState::from_choppedsolution(k, v, &useless_chapters))
             .collect::<Vec<_>>()
     };
-    let mut soldesc = soldump.soldesc.clone();
+    let soldesc = soldump.soldesc.clone();
+    content.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    write_desc(&soldesc, jname)?;
+    let mut soldesc = soldesc;
+    sort_soldesc(&mut soldesc);
+    Ok(CompactSolution { soldesc, content })
+}
+
+fn sort_soldesc(soldesc: &mut SolDesc) {
     soldesc.ccst.discipline.sort();
     if let Some(l) = soldesc.mscoremap.as_mut() {
         l.sort()
     }
-    content.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-    let compact = CompactSolution { soldesc, content };
-    // save json recap
-    let mut json_file = File::create(jname)?;
-    serde_json::to_writer(&mut json_file, &compact.soldesc)?;
+}
 
-    Ok(compact)
+/// The json recap of a solution
+fn write_desc(soldesc: &SolDesc, path: &str) -> anyhow::Result<()> {
+    let mut soldesc = soldesc.clone();
+    sort_soldesc(&mut soldesc);
+    serde_json::to_writer(File::create(path)?, &soldesc)?;
+    Ok(())
 }
 
 fn dump_states<PREV: StoredEquipment>(soldump: SolutionDump<Rational, PREV>, cids: &[u16]) -> anyhow::Result<()> {
@@ -788,12 +798,14 @@ struct GoldRange {
     ratio: Rational,
 }
 
-/// Solves once for all the starting gold from `--gold` to `gold_to`. Writes the score of each to `json_pattern`, where
-/// `{gold}` stands for the gold, and to `ranges_path` the ranges of consecutive amounts that have the same score.
-fn gold_scores<PREV: StoredEquipment>(
+/// Solves once for all the starting gold from `--gold` to `gold_to`. Writes the solution to `solpath`, the score of each to
+/// `json_pattern`, where `{gold}` stands for the gold, and to `ranges_path` the ranges of consecutive amounts that have the
+/// same score.
+fn gold_scores<PREV: StoredEquipment + solfile::Kind + bincode::Encode>(
     cnt: &OSolDesc,
     gold_to: u8,
     book: &[(ChapterId, Chapter<Rational>)],
+    solpath: &str,
     json_pattern: &str,
     ranges_path: &str,
     verbose: bool,
@@ -801,23 +813,28 @@ fn gold_scores<PREV: StoredEquipment>(
     anyhow::ensure!(cnt.gold <= gold_to, "--gold must not be more than --gold-to");
     anyhow::ensure!(json_pattern.contains("{gold}"), "--json must contain {{gold}}");
     let (soldesc, fchapters, mscoremap, iitems, iflags) = prepare_soldesc(cnt, verbose)?;
-    let descs: Vec<SolDesc> = (cnt.gold..=gold_to)
+    let golds: Vec<u8> = (cnt.gold..=gold_to).collect();
+    let descs: Vec<SolDesc> = golds
+        .iter()
         .map(|gold| {
             let mut desc = soldesc.clone();
-            desc.cvar.gold = gold;
+            desc.cvar.gold = *gold;
             desc
         })
         .collect();
     let cvars: Vec<CharacterVariableG<PREV>> = descs.iter().map(|d| d.cvariable()).collect();
     let scorer = |e, f| score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f);
-    let solved = solve_lws_compact_starts(scorer, &fchapters, book, &soldesc.ccst, &cvars, cnt.startat, verbose);
+    let sol = solve_lws_best_path_starts(scorer, &fchapters, book, &soldesc.ccst, &cvars, cnt.startat, verbose);
+    let content: SoldumpContent<Rational, PREV> = sol.into_iter().map(|(ns, x)| (ns, chop_solution(x))).collect();
+    let hash = solfile::book_hash(&std::fs::read(&cnt.bookpath)?);
+    solfile::save(solpath, &soldesc, &content, &golds, cnt.startat, Some(hash), solved_origin())?;
     let mut ranges: Vec<GoldRange> = Vec::new();
     for (desc, cvar) in descs.iter().zip(cvars) {
         let start = NextStep::NewChapter(cnt.startat, cvar);
-        let score = solved.get(&start).context("a start was not solved")?.score.clone();
+        let score = content.get(&start).context("a start was not solved")?.score();
         let path = json_pattern.replace("{gold}", &desc.cvar.gold.to_string());
         let file = File::create(&path).with_context(|| anyhow::anyhow!("creating {path}"))?;
-        serde_json::to_writer_pretty(file, &Multistat::new(desc, score.clone(), solved.len()))?;
+        serde_json::to_writer_pretty(file, &Multistat::new(desc, score.clone(), content.len()))?;
         match ranges.last_mut() {
             Some(last) if last.ratio == score => last.to = desc.cvar.gold,
             _ => ranges.push(GoldRange {
@@ -834,6 +851,12 @@ fn gold_scores<PREV: StoredEquipment>(
     // written last, as it says that everything is there
     serde_json::to_writer_pretty(File::create(ranges_path)?, &ranges)?;
     Ok(())
+}
+
+fn solved_origin() -> solfile::Origin {
+    solfile::Origin::Solved {
+        commit: std::env::var("GBS_COMMIT").ok(),
+    }
 }
 
 fn soldump<PREV: StoredEquipment>(
@@ -1064,7 +1087,7 @@ fn main() -> anyhow::Result<()> {
 
     match &opt.cmd {
         None => {
-            let soldump = load_soldump(&opt.solpath)?;
+            let soldump = solfile::load_dump(&opt.solpath, opt.start_gold)?;
             match soldump {
                 GSolDump::Prev(sd) => mkjot(&sd, opt.jot.as_deref())?,
                 GSolDump::Noprev(sd) => mkjot(&sd, opt.jot.as_deref())?,
@@ -1075,14 +1098,14 @@ fn main() -> anyhow::Result<()> {
             dummy,
             bookpath,
         }) => {
-            let soldump = load_soldump(&opt.solpath)?;
+            let soldump = solfile::load_dump(&opt.solpath, opt.start_gold)?;
             let jname = opt.desc.unwrap_or_else(|| target.to_owned() + ".desc");
             cmd_optimize(&soldump, target, &jname, *dummy, bookpath.as_deref())?;
         }
         Some(PSub::Explore { bookpath }) => {
             let fl = File::open(bookpath)?;
             let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(fl)?;
-            let soldump = load_soldump(&opt.solpath)?;
+            let soldump = solfile::load_dump(&opt.solpath, opt.start_gold)?;
             match soldump {
                 GSolDump::Prev(sd) => {
                     eprintln!("Starting condition: {:?}", sd.soldesc);
@@ -1112,29 +1135,20 @@ fn main() -> anyhow::Result<()> {
             println!("{:?}", u);
         }
         Some(PSub::DumpStates { cid }) => {
-            let soldump = load_soldump(&opt.solpath)?;
+            let soldump = solfile::load_dump(&opt.solpath, opt.start_gold)?;
             match soldump {
                 GSolDump::Prev(sd) => dump_states(sd, cid)?,
                 GSolDump::Noprev(sd) => dump_states(sd, cid)?,
             }
         }
         Some(PSub::CompareStates { cid, otherpath }) => {
-            let dump1 = load_soldump(&opt.solpath)?;
-            let dump2 = load_soldump(otherpath)?;
+            let dump1 = solfile::load_dump(&opt.solpath, opt.start_gold)?;
+            let dump2 = solfile::load_dump(otherpath, opt.start_gold)?;
             match (dump1, dump2) {
                 (GSolDump::Prev(dump1), GSolDump::Prev(dump2)) => compare_states(dump1, dump2, *cid)?,
                 (GSolDump::Noprev(dump1), GSolDump::Noprev(dump2)) => compare_states(dump1, dump2, *cid)?,
                 _ => panic!("can't handle mixed solution dumps"),
             }
-        }
-        Some(PSub::Soldump(cnt)) => {
-            let json_path = opt.json.unwrap_or_else(|| opt.solpath.to_owned() + ".json");
-            let sd = cmd_soldump(cnt, &json_path, opt.decisions.as_deref(), opt.verbose)?;
-            // save whole stuff
-            let file = File::create(&opt.solpath)?;
-            let mut zwriter = zstd::Encoder::new(file, 3)?;
-            bincode::encode_into_std_write(&sd, &mut zwriter, bincode::config::standard())?;
-            zwriter.finish()?;
         }
         Some(PSub::Decisions(cnt)) => {
             let fl = File::open(&cnt.bookpath)?;
@@ -1159,7 +1173,7 @@ fn main() -> anyhow::Result<()> {
                 .with_context(|| anyhow::anyhow!("loading {}", opt.solpath))?;
             println!("{}", dot::mkdot(&book, &display, &stats));
         }
-        Some(PSub::GoldScores { desc, gold_to }) => {
+        Some(PSub::GoldScores { desc, gold_to, ranges }) => {
             let json = opt.json.context("--json is required")?;
             let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(File::open(&desc.bookpath)?)?;
             let cos = book.iter().flat_map(|x| x.1.pchoice.iter_outcomes()).collect::<Vec<_>>();
@@ -1168,115 +1182,84 @@ fn main() -> anyhow::Result<()> {
                 .flat_map(|co| co.simple_outcomes())
                 .any(|so| matches!(so, SimpleOutcome::StoreEquipment));
             if has_prev_eq {
-                gold_scores::<Equipment>(desc, *gold_to, &book, &json, &opt.solpath, opt.verbose)?;
+                gold_scores::<Equipment>(desc, *gold_to, &book, &opt.solpath, &json, ranges, opt.verbose)?;
             } else {
-                gold_scores::<NoPrevEq>(desc, *gold_to, &book, &json, &opt.solpath, opt.verbose)?;
+                gold_scores::<NoPrevEq>(desc, *gold_to, &book, &opt.solpath, &json, ranges, opt.verbose)?;
             }
         }
-        Some(PSub::SoldumpOptimize(cnt)) => {
+        Some(PSub::Solve(cnt)) => {
             let cur = std::time::Instant::now();
             let json_path = opt.json.unwrap_or_else(|| opt.solpath.to_owned() + ".json");
             let jname = opt.desc.unwrap_or_else(|| opt.solpath.to_owned() + ".desc");
-            let sd = Arc::new(cmd_soldump(cnt, &json_path, opt.decisions.as_deref(), opt.verbose)?);
+            let sd = cmd_soldump(cnt, &json_path, opt.decisions.as_deref(), opt.verbose)?;
             let soldump_duration = cur.elapsed();
-            fn statsfor<PREV: StoredEquipment>(content: &SoldumpContent<Rational, PREV>) -> (usize, f64) {
-                let win = content
-                    .iter()
-                    .filter_map(|(ns, cs)| {
-                        if ns.chapter() == Some(1) {
-                            Some(cs.score())
-                        } else {
-                            None
-                        }
-                    })
-                    .next();
-                (content.len(), win.map(|r| r.to_f64()).unwrap_or(-1.0))
-            }
-
-            fn write_fullsol(fullsol: String, sd: &GSolDump<Rational>) -> anyhow::Result<Duration> {
-                let cur = std::time::Instant::now();
-                let file = File::create(fullsol)?;
-                let mut zwriter = zstd::Encoder::new(file, 6)?;
-                bincode::encode_into_std_write(sd, &mut zwriter, bincode::config::standard())?;
-                zwriter.finish()?;
-                Ok(cur.elapsed())
-            }
-            let sd = sd.clone();
-            fn statsf(sd: &GSolDump<Rational>) -> (Duration, usize, f64) {
-                let cur = std::time::Instant::now();
-                let (nstates, winrate) = match sd {
-                    GSolDump::Prev(solution_dump) => statsfor(&solution_dump.content),
-                    GSolDump::Noprev(solution_dump) => statsfor(&solution_dump.content),
-                };
-                (cur.elapsed(), nstates, winrate)
-            }
-            fn jotf(sd: &GSolDump<Rational>, jotpath: Option<&str>) -> anyhow::Result<Duration> {
-                let cur = std::time::Instant::now();
-                match &sd {
-                    GSolDump::Prev(sd) => mkjot(sd, jotpath)?,
-                    GSolDump::Noprev(sd) => mkjot(sd, jotpath)?,
+            let hash = Some(solfile::book_hash(&std::fs::read(&cnt.bookpath)?));
+            let cur = std::time::Instant::now();
+            let soldesc = match &sd {
+                GSolDump::Prev(d) => {
+                    let golds = [d.soldesc.cvar.gold];
+                    solfile::save(&opt.solpath, &d.soldesc, &d.content, &golds, cnt.startat, hash, solved_origin())?;
+                    &d.soldesc
                 }
-                let jot_duration = cur.elapsed();
-                Ok(jot_duration)
-            }
-            fn optimizef(
-                sd: &GSolDump<Rational>,
-                solpath: &str,
-                jname: &str,
-                bookpath: &str,
-            ) -> anyhow::Result<Duration> {
-                let cur = std::time::Instant::now();
-                cmd_optimize(sd, solpath, jname, false, Some(bookpath))?;
-                Ok(cur.elapsed())
-            }
-            let fst = if let Some(fullsol) = &opt.fullsol {
-                let sd = sd.clone();
-                let fullsol = fullsol.to_owned();
-                Some(std::thread::spawn(move || write_fullsol(fullsol, &sd)))
-            } else {
-                None
-            };
-            let statst = {
-                let sd = sd.clone();
-                std::thread::spawn(move || statsf(&sd))
-            };
-            let jott = {
-                let sd = sd.clone();
-                std::thread::spawn(move || jotf(&sd, opt.jot.as_deref()))
-            };
-            let optimizet = {
-                let sd = sd.clone();
-                let solpath = opt.solpath.clone();
-                let bookpath = cnt.bookpath.clone();
-                std::thread::spawn(move || optimizef(&sd, &solpath, &jname, &bookpath))
-            };
-            let fullsol_write_duration = if let Some(jh) = fst {
-                match jh.join() {
-                    Ok(x) => x?,
-                    Err(rr) => panic!("{rr:?}"),
+                GSolDump::Noprev(d) => {
+                    let golds = [d.soldesc.cvar.gold];
+                    solfile::save(&opt.solpath, &d.soldesc, &d.content, &golds, cnt.startat, hash, solved_origin())?;
+                    &d.soldesc
                 }
-            } else {
-                Duration::default()
             };
-            let (stats_duration, nstates, winrate) = match statst.join() {
-                Ok(x) => x,
-                Err(rr) => panic!("{rr:?}"),
-            };
-            let jot_duration = match jott.join() {
-                Ok(x) => x?,
-                Err(rr) => panic!("{rr:?}"),
-            };
-            let optimize_duration = match optimizet.join() {
-                Ok(x) => x?,
-                Err(rr) => panic!("{rr:?}"),
+            let save_duration = cur.elapsed();
+            write_desc(soldesc, &jname)?;
+            let cur = std::time::Instant::now();
+            let (nstates, winrate) = match &sd {
+                GSolDump::Prev(d) => {
+                    mkjot(d, opt.jot.as_deref())?;
+                    start_stats(&d.content)
+                }
+                GSolDump::Noprev(d) => {
+                    mkjot(d, opt.jot.as_deref())?;
+                    start_stats(&d.content)
+                }
             };
             println!(
-                "states:{nstates} win:{:.2}% sd[{soldump_duration:?}] fsol[{fullsol_write_duration:?}] stt[{stats_duration:?}] jot[{jot_duration:?}] opt[{optimize_duration:?}]",
-                winrate * 100.0
+                "states:{nstates} win:{:.2}% sd[{soldump_duration:?}] save[{save_duration:?}] jot[{:?}]",
+                winrate * 100.0,
+                cur.elapsed()
             )
         }
+        Some(PSub::Extract) => {
+            let jname = opt.desc.unwrap_or_else(|| opt.solpath.to_owned() + ".desc");
+            match solfile::load_dump(&opt.solpath, opt.start_gold)? {
+                GSolDump::Prev(d) => {
+                    mkjot(&d, opt.jot.as_deref())?;
+                    write_desc(&d.soldesc, &jname)?;
+                }
+                GSolDump::Noprev(d) => {
+                    mkjot(&d, opt.jot.as_deref())?;
+                    write_desc(&d.soldesc, &jname)?;
+                }
+            }
+        }
+        Some(PSub::SolutionInfo) => match solfile::load(&opt.solpath)? {
+            solfile::Loaded::Prev(f) => print_solution_info(&f),
+            solfile::Loaded::Noprev(f) => print_solution_info(&f),
+        },
+        Some(PSub::ConvertSolution { target }) => solfile::convert(&opt.solpath, target)?,
     }
     Ok(())
+}
+
+fn print_solution_info<PREV: StoredEquipment>(f: &solfile::SolFile<PREV>) {
+    println!("book: {:?}, starting gold: {:?}", f.desc.ccst.bookid, f.golds);
+    println!("states: {}, origin: {:?}, book hash: {:?}", f.content.len(), f.origin, f.book_hash);
+}
+
+fn start_stats<PREV: StoredEquipment>(content: &SoldumpContent<Rational, PREV>) -> (usize, f64) {
+    let win = content
+        .iter()
+        .find(|(ns, _)| ns.chapter() == Some(1))
+        .map(|(_, cs)| cs.score().to_f64())
+        .unwrap_or(-1.0);
+    (content.len(), win)
 }
 
 fn has_no_choice(d: &Decision<Rational>) -> bool {
