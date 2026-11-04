@@ -86,6 +86,8 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
 - **G1. The Belt Pouch holds 50 crowns.** From the books. Excess is lost. **Decided.**
 - **G2. Book 2 is solved for every starting gold from 10 to 50, for every discipline set.** This replaced a cap of 27,
   which understated 20 characters by up to 0.0006 points and overstated one by 0.0004. **Decided.**
+- **G2b. Book 2 starting gold above 26 changes nothing.** On all 280 characters from 10 to 50 gold, with Book 3 values, the score rises strictly up to a value between
+  23 and 26 gold, and is then the same: 4,140 distinct scores for 11,480 cases. This is a measurement on the 41 amounts and these characters. **Tested.**
 - **G3. More gold is not always better.** This is a fact, not an assumption, and it limits what can be assumed elsewhere.
   Book 2 s168 reads "If you can pay for the room, turn to 314. If you cannot, turn to 25", and near death, having no
   crowns is the better position (0.008 against 0 at 3 Endurance). No proof may assume gold is monotone in Book 2.
@@ -275,8 +277,8 @@ places, so each of these could lower a score if the missing choice were better.
   on that sample. Results for Book 2 solved before these commits are out of date.
 - **R34. Without Animal Kinship and at low statistics, Book 2 is close to impossible, and this follows the book.** All the ways through
   the Tarnalin meet a Helghast that kills without the Magic Spear (c134, c52), apart from the Noodnics of c23, which need Animal
-  Kinship. The Spear is won by beating another Helghast at c106. Three kits without Animal Kinship scored 0.04% to 0.18% with 20 Endurance
-  and skill 10, against 69% to 70% for two kits with it, with the values of Book 3. **Tested** on that sample.
+  Kinship. The Spear is won by beating another Helghast at c106. On all 280 characters with 20 Endurance and skill 10, with the values of Book 3 and from 10 to 50 gold, the 140 without Animal Kinship score 0.005% to 1.02%, and
+  the 140 with it 60.6% to 71.4%. **Tested** on that sample.
 - **R17. Book 3's Padded Leather Waistcoat (+2 Endurance) is not modelled,** although it is a starting pick. **Open.**
 - **R18. The best weapon is used automatically in a fight.** The book lets the player choose. Book 5 c253 encodes it by
   hand, with +3 for using the Jewelled Mace instead of a Weapon Skill weapon. **Unverified.**
