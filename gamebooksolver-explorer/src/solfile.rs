@@ -37,7 +37,7 @@ impl Kind for Equipment {
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode)]
 pub enum Origin {
     Solved { commit: Option<String> },
-    /// From the previous format, that did not tell what it was computed from.
+    /// Converted from a format that did not tell what it was computed from, as for Books 3 to 5.
     Converted,
 }
 
@@ -301,41 +301,6 @@ pub fn load_dump(path: &str, gold: Option<u8>) -> anyhow::Result<GSolDump<MRatio
     })
 }
 
-/// Reads a file of the previous format.
-pub fn load_previous(path: &str) -> anyhow::Result<GSolDump<MRational>> {
-    let file = File::open(path).with_context(|| format!("opening {path}"))?;
-    let mut dec = zstd::Decoder::new(file)?;
-    Ok(bincode::decode_from_std_read(&mut dec, bincode::config::standard())?)
-}
-
-fn convert_one<PREV: StoredEquipment + Kind + Encode + Decode<()>>(
-    dump: &SolutionDump<MRational, PREV>,
-    target: &str,
-) -> anyhow::Result<()> {
-    let gold = dump.soldesc.cvar.gold;
-    save(target, &dump.soldesc, &dump.content, &[gold], 1, None, Origin::Converted)?;
-    // a file is only good if it reads back as the same thing
-    let mut file = File::open(target)?;
-    read_kind(target, &mut file)?;
-    let back = load_payload::<PREV>(file)?;
-    anyhow::ensure!(back.desc == dump.soldesc, "{target}: the description is not the same");
-    anyhow::ensure!(back.content == dump.content, "{target}: the states are not the same");
-    Ok(())
-}
-
-/// Converts a file of the previous format, and checks that the new file has the same content.
-pub fn convert(source: &str, target: &str) -> anyhow::Result<()> {
-    let result = match load_previous(source).with_context(|| format!("decoding {source}"))? {
-        GSolDump::Prev(d) => convert_one(&d, target),
-        GSolDump::Noprev(d) => convert_one(&d, target),
-    };
-    if result.is_err() {
-        // never leave something that could be taken for a good file
-        let _ = std::fs::remove_file(target);
-    }
-    result
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -427,25 +392,5 @@ mod test {
         std::fs::write(&p, other).unwrap();
         assert!(load(&p).err().unwrap().to_string().contains("version"));
         std::fs::remove_file(p).unwrap();
-    }
-
-    #[test]
-    fn previous_format_converts() {
-        let (old, new) = (path("old"), path("new"));
-        let dump = GSolDump::Noprev(SolutionDump { soldesc: desc(), content: content() });
-        let mut z = zstd::Encoder::new(File::create(&old).unwrap(), 3).unwrap();
-        bincode::encode_into_std_write(&dump, &mut z, bincode::config::standard()).unwrap();
-        z.finish().unwrap();
-        convert(&old, &new).unwrap();
-        assert_eq!(load_dump(&new, None).unwrap(), {
-            let GSolDump::Noprev(d) = dump else { panic!("wrong kind") };
-            // only what can be reached from the start
-            let mut content = d.content;
-            content.remove(&start(4));
-            content.remove(&NextStep::NewChapter(8, CharacterVariableG::new(5)));
-            GSolDump::Noprev(SolutionDump { soldesc: d.soldesc, content })
-        });
-        std::fs::remove_file(old).unwrap();
-        std::fs::remove_file(new).unwrap();
     }
 }

@@ -99,10 +99,6 @@ enum PSub {
     Extract,
     /// show what a solution file holds
     SolutionInfo,
-    /// convert a file of the previous format, in --solpath, to this file, checking that it reads back the same
-    ConvertSolution {
-        target: String,
-    },
     /// solve once for a range of starting gold, from --gold to --gold-to: writes the solution to --solpath, the score of
     /// each to --json, where {gold} stands for the gold, and the ranges of consecutive amounts with the same score to --ranges
     GoldScores {
@@ -1243,7 +1239,6 @@ fn main() -> anyhow::Result<()> {
             solfile::Loaded::Prev(f) => print_solution_info(&f),
             solfile::Loaded::Noprev(f) => print_solution_info(&f),
         },
-        Some(PSub::ConvertSolution { target }) => solfile::convert(&opt.solpath, target)?,
     }
     Ok(())
 }
