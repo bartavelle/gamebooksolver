@@ -88,6 +88,9 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   which understated 20 characters by up to 0.0006 points and overstated one by 0.0004. **Decided.**
 - **G2b. Book 2 starting gold above 26 changes nothing.** On all 280 characters from 10 to 50 gold, with Book 3 values, the score rises strictly up to a value between
   23 and 26 gold, and is then the same: 4,140 distinct scores for 11,480 cases. This is a measurement on the 41 amounts and these characters. **Tested.**
+- **G2c. In Book 1, more starting gold never lowered a score.** On all 336 characters with Book 2 values, from 0 to 9 gold (280 characters) or 12 to 21 (56), the
+  score rises strictly from one range to the next: 151 characters have one score, 10 have two and 175 have ten, 1,921 in all. This is a measurement on these amounts, and does not
+  contradict G3, which is about Book 2. **Tested.**
 - **G3. More gold is not always better.** This is a fact, not an assumption, and it limits what can be assumed elsewhere.
   Book 2 s168 reads "If you can pay for the room, turn to 314. If you cannot, turn to 25", and near death, having no
   crowns is the better position (0.008 against 0 at 3 Endurance). No proof may assume gold is monotone in Book 2.
@@ -257,9 +260,10 @@ places, so each of these could lower a score if the missing choice were better.
   three fights), c260 (unarmed), c267 (the Dagger), c274 (the weapons are lost), c277 (one weapon of your choice), c291 (the Dagger or
   a Spear), c300 (a Meal). Reviewed and sound: c36, c290 and c323 unroll the climbs of the tower, and c125 skips sections that all go to
   c27. These lose the Healing of the skipped sections, which can only lower a score. The Tomb Guardian Gems, Scroll, Message and Soap are
-  read by nothing. Kept: c70 adds a Sword and a Meal to all its exits, where the book can go to c30 or c167 without either. Adding this
-  choice changed no exact score on 4 kits, with a win worth 1, which is a weak test, to repeat with the values of Book 2. **Tested** on
-  that sample. Results for Book 1 solved before these commits are out of date.
+  read by nothing. Kept: c70 adds a Sword and a Meal to all its exits, where the book can go to c30 or c167 through c157 without either. Adding that
+  choice, with neither, changed no exact score on 4 kits with a win worth 1, nor on 10 characters over all their gold with the values of Book 2
+  (2026-11-04). The margin is not general: a variant that wrongly kept the Sword on that route raised 2 of 4 characters by about 7 points. **Tested** on
+  that sample, not on the 336 characters. Results for Book 1 solved before these commits are out of date.
 - **R33. Book 2 was compared with `project-aon/en/xml/02fotw.xml` on 2026-11-03,** which is the authoritative text, and now follows it
   apart from what is listed here. Fight statistics match. The sentences with a game term of 258 sections were read next to the JSON, and
   the other 92 have none. **Decided.** Fixed: c106 (no Weaponskill bonus for a normal weapon), c116 (1 Gold Crown for the room), c145 (uses the
