@@ -295,7 +295,24 @@ pub fn visit_best_path<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipm
 ) where
     F: Fn(Equipment, Flags) -> P,
 {
-    let solved = solve_lws_compact(&scorer, tgt, book, ccst, cvar, startat, verbose);
+    visit_best_path_starts(scorer, tgt, book, ccst, std::slice::from_ref(cvar), startat, verbose, walks)
+}
+
+/// Same as `visit_best_path`, for several starting states.
+#[allow(clippy::too_many_arguments)]
+pub fn visit_best_path_starts<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
+    scorer: F,
+    tgt: &[ChapterId],
+    book: &[(ChapterId, Chapter<P>)],
+    ccst: &CharacterConstant,
+    cvars: &[CharacterVariableG<PREV>],
+    startat: u16,
+    verbose: bool,
+    walks: &mut [(PathStates, &mut dyn FnMut(BestPathState<P, PREV>, Option<&P>))],
+) where
+    F: Fn(Equipment, Flags) -> P,
+{
+    let solved = solve_lws_compact_starts(&scorer, tgt, book, ccst, cvars, startat, verbose);
 
     let mut full: HashMap<ChapterId, Chapter<P>> = book.iter().cloned().collect();
     expand_evasions(ccst.bookid, &mut full);
@@ -327,7 +344,7 @@ pub fn visit_best_path<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipm
             PathStates::Actual => &no_analysis,
         };
         let mut seen: std::collections::HashSet<NextStep<PREV>> = std::collections::HashSet::new();
-        let mut todo = vec![NextStep::NewChapter(startat, cvar.clone())];
+        let mut todo: Vec<NextStep<PREV>> = cvars.iter().map(|c| NextStep::NewChapter(startat, c.clone())).collect();
         while let Some(ns) = todo.pop() {
             if !seen.insert(ns.clone()) {
                 continue;
@@ -378,6 +395,34 @@ where
     F: Fn(Equipment, Flags) -> P,
 {
     solve_lws_best_path_and_visit(scorer, tgt, book, ccst, cvar, startat, verbose, &mut |_, _| ())
+}
+
+/// Same as `solve_lws_best_path`, for several starting states that share what they have in common.
+pub fn solve_lws_best_path_starts<P: Rational + Eq + std::hash::Hash, F, PREV: StoredEquipment>(
+    scorer: F,
+    tgt: &[ChapterId],
+    book: &[(ChapterId, Chapter<P>)],
+    ccst: &CharacterConstant,
+    cvars: &[CharacterVariableG<PREV>],
+    startat: u16,
+    verbose: bool,
+) -> Solution<P, NextStep<PREV>>
+where
+    F: Fn(Equipment, Flags) -> P,
+{
+    let mut out: Solution<P, NextStep<PREV>> = HashMap::new();
+    let mut keep = |mut st: BestPathState<P, PREV>, leaf: Option<&P>| {
+        let node = match leaf {
+            Some(score) => SolNode::Win(score.clone()),
+            None => {
+                let (_, score, res) = st.choices.swap_remove(st.best);
+                SolNode::from_choices(score, res)
+            }
+        };
+        out.insert(st.state, node);
+    };
+    visit_best_path_starts(scorer, tgt, book, ccst, cvars, startat, verbose, &mut [(PathStates::Solved, &mut keep)]);
+    out
 }
 
 /// Same as `solve_lws_best_path`, also calling `actual` for the states on the best path as a player would have them, without

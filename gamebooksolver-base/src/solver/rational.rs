@@ -148,6 +148,20 @@ pub mod r {
     }
 
     impl MRational {
+        /// Whether it is negative, and its numerator and denominator in binary.
+        pub fn to_parts(&self) -> (bool, Vec<u8>, Vec<u8>) {
+            let digits = |i: &rug::Integer| i.to_digits::<u8>(rug::integer::Order::Lsf);
+            (self.inner < 0, digits(self.inner.numer()), digits(self.inner.denom()))
+        }
+
+        pub fn from_parts(negative: bool, numerator: &[u8], denominator: &[u8]) -> Self {
+            let int = |d: &[u8]| rug::Integer::from_digits(d, rug::integer::Order::Lsf);
+            let inner = rug::Rational::from((int(numerator), int(denominator)));
+            MRational {
+                inner: if negative { -inner } else { inner },
+            }
+        }
+
         pub fn to_f64(&self) -> f64 {
             self.inner.to_f64()
         }
