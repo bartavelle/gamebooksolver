@@ -106,6 +106,12 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
 - **G6. Reaching 50 gold at the start of Book 5 is realistic.** A route can pick up 30 crowns in Book 4 (42 for the
   character lacking Camouflage and Tracking), on top of a 10 to 19 pouch. That is an upper bound: disciplines were
   checked, item and flag requirements were not, and survival was ignored. **Tested** by a scratch script only.
+- **G8. One solve can give the score of all the starting gold of a character.** `gold-scores` keeps a start state for each amount, in the
+  same table, so each score is the value of its start state. In Book 2, on one kit with Book 3 values, the 41 exact scores from 10 to 50
+  were the same as with separate solves, for 118 s and 0.68 GB instead of 118 s and 0.67 GB for one amount. Book 1 took 239 s and 1.5 GB for 10 amounts,
+  against 75 s and 0.56 GB for one, with a win worth 1. Book 5 is not practical: gold 10 and gold 20 alone did not finish in 50 minutes, against 6 for
+  gold 50, and G4 does not need it. The ranges only compare scores: two amounts with the same score can have different best paths. **Tested** on
+  that sample.
 - **G7. Starting gold rolls are uniform and independent.** Only Book 1 to 2 averages the 10 to 19 pouch. **Decided.**
 
 ## 5. Rules as interpreted
