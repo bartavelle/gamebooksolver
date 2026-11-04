@@ -1,13 +1,15 @@
 """Solves a character once for a range of starting gold.
 
 goldscores-rust.py data/B02/2010SW.TR.MS.CA.6Sg10_50-Sword-Shield.goldranges
-    writes the score of each gold to data/B02/2010SW.TR.MS.CA.6Sg<gold>-Sword-Shield.json, and to the given file the ranges
-    of consecutive gold that have the same score.
+    writes the solution of all the gold to data/B02/2010SW.TR.MS.CA.6Sg10_50-Sword-Shield.solutions.zstd, the score of each
+    gold to data/B02/2010SW.TR.MS.CA.6Sg<gold>-Sword-Shield.json, and to the given file the ranges of consecutive gold that
+    have the same score.
 goldscores-rust.py --summary data/B02
     shows these ranges for all the characters that were solved.
 """
 import glob
 import json
+import os
 import re
 import subprocess
 import sys
@@ -31,10 +33,12 @@ def solve(path):
     cmdline = [
         "target/release/gamebooksolver-explorer",
         "--solpath",
-        path,
+        path.removesuffix(".goldranges") + ".solutions.zstd",
         "--json",
         re.sub(r"g\d+_\d+", "g{gold}", path.removesuffix(".goldranges"), count=1) + ".json",
         "gold-scores",
+        "--ranges",
+        path,
         "--gold",
         gfrom,
         "--gold-to",
@@ -56,7 +60,8 @@ def solve(path):
             cmdline += ["--flag", i[3:]]
         elif i:
             cmdline += ["-i", i]
-    subprocess.run(cmdline, check=True, stdout=subprocess.DEVNULL)
+    commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+    subprocess.run(cmdline, check=True, stdout=subprocess.DEVNULL, env={**os.environ, "GBS_COMMIT": commit})
 
 
 if sys.argv[1] == "--summary":

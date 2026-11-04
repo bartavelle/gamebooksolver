@@ -1148,54 +1148,51 @@ data/B04:
 data/B05:
 	mkdir data/B05
 
-book05: low05co low05d
-book04: low04co low04d
-book03: low03co low03d
-book02: low02co low02d
-book01: low01co low01d
+book05: low05sol low05d
+book04: low04sol low04d
+book03: low03sol low03d
+book02: low02sol low02d
+book01: low01sol low01d
 
-low05c: data/B05 $(TARGETSLOWB05)
+low05c: data/B05 $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB05))
 low05j: data/B05 $(patsubst %.bin, %.jot, $(TARGETSLOWB05))
 low05d: data/B05 json-chapters/display05.json $(patsubst %.bin, %.dot, $(TARGETSLOWB05))
 low05: data/B05 $(patsubst %.bin, %.svg, $(TARGETSLOWB05))
-low05co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB05))
+low05sol: $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB05))
 
-low04c: low05j data/B04 $(TARGETSLOWB04)
+low04c: low05j data/B04 $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB04))
 low04j: data/B04 $(patsubst %.bin, %.jot, $(TARGETSLOWB04))
 low04d: data/B04 json-chapters/display04.json $(patsubst %.bin, %.dot, $(TARGETSLOWB04))
 low04: data/B04 $(patsubst %.bin, %.svg, $(TARGETSLOWB04))
-low04co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB04))
+low04sol: $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB04))
 
-low03c: low04j data/B03 $(TARGETSLOWB03)
+low03c: low04j data/B03 $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB03))
 low03j: data/B03 $(patsubst %.bin, %.jot, $(TARGETSLOWB03))
 low03d: data/B03 json-chapters/display03.json $(patsubst %.bin, %.dot, $(TARGETSLOWB03))
 low03: data/B03 $(patsubst %.bin, %.svg, $(TARGETSLOWB03))
-low03co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB03))
+low03sol: $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB03))
 
-low02c: low03j data/B02 $(TARGETSLOWB02)
+low02c: low03j data/B02 $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB02))
 low02j: data/B02 $(patsubst %.bin, %.jot, $(TARGETSLOWB02))
 low02d: data/B02 json-chapters/display02.json $(patsubst %.bin, %.dot, $(TARGETSLOWB02))
 low02: data/B02 $(patsubst %.bin, %.svg, $(TARGETSLOWB02))
-low02co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB02))
+low02sol: $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB02))
 
 # one solve for each character, for all its starting gold: only the scores, see goldscores-rust.py
 gold02: data/B02 $(GOLD02)
 gold01: gold02 data/B01 $(GOLD01)
 
-low01c: low02j data/B01 $(TARGETSLOWB01)
+low01c: low02j data/B01 $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB01))
 low01j: data/B01 $(patsubst %.bin, %.jot, $(TARGETSLOWB01))
 low01d: data/B01 json-chapters/display01.json $(patsubst %.bin, %.dot, $(TARGETSLOWB01))
 low01: data/B01 $(patsubst %.bin, %.svg, $(TARGETSLOWB01))
-low01co: $(patsubst %.bin, %.compact.zstd, $(TARGETSLOWB01))
+low01sol: $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB01))
 
 data/%.goldranges:
 	time python3 goldscores-rust.py $@
 
-data/%.bin:
-	time python3 buildsol-rust.py $@
-
-data/%.compact.zstd data/%.desc data/%.jot data/%.json data/%.bin.zstd data/%.decisions.jsonl.zst &:
-	time python3 buildsol-rust.py data/$*.compact.zstd
+data/%.solutions.zstd data/%.desc data/%.jot data/%.json data/%.decisions.jsonl.zst &:
+	time python3 buildsol-rust.py data/$*.solutions.zstd
 
 data/B05/%.dot: data/B05/%.jot json-chapters/book05.json json-chapters/display05.json
 	target/release/gamebooksolver-explorer --solpath $< dot --bookpath json-chapters/book05.json --display json-chapters/display05.json > $@

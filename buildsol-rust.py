@@ -1,3 +1,4 @@
+import os
 import sys
 import re
 import subprocess
@@ -13,44 +14,30 @@ import subprocess
 
 alldisciplines = set({"CA", "HU", "6S", "TR", "HL", "MS", "MB", "AK", "MO"})
 allweapons = set({"DA", "SP", "MA", "WH", "SW", "AX", "QS", "SO", "SS"})
-PTRN = re.compile(r"data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.bin")
-PTRN_CO = re.compile(
-    r"data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.compact\.zstd"
-)
+PTRN = re.compile(r"data/B(\d\d)/(\d\d)(\d\d)(..(?:\...)*)(g\d+)?(?:-(.+))?\.solutions\.zstd")
 
 path = sys.argv[1]
 
-is_bin = False
-
 m = PTRN.match(path)
-if m:
-    is_bin = True
-else:
-    m = PTRN_CO.match(path)
 assert m is not None, path
 (b, e, s, sdiscs, mgold, items) = m.groups()
 discs = sdiscs.split(".")
 
-if is_bin:
-    cmdline = ["target/release/gamebooksolver-explorer", "--solpath", path, "soldump"]
-else:
-    stem = path[:-13]
-    cmdline = [
-        "target/release/gamebooksolver-explorer",
-        "--solpath",
-        path,
-        "--desc",
-        stem + ".desc",
-        "--jot",
-        stem + ".jot",
-        "--json",
-        stem + ".json",
-        "--fullsol",
-        stem + ".bin.zstd",
-        "--decisions",
-        stem + ".decisions.jsonl.zst",
-        "soldump-optimize",
-    ]
+stem = path.removesuffix(".solutions.zstd")
+cmdline = [
+    "target/release/gamebooksolver-explorer",
+    "--solpath",
+    path,
+    "--desc",
+    stem + ".desc",
+    "--jot",
+    stem + ".jot",
+    "--json",
+    stem + ".json",
+    "--decisions",
+    stem + ".decisions.jsonl.zst",
+    "solve",
+]
 
 if int(b) < 5:
     cmdline += ["--results", "data/B%02d" % (int(b) + 1,)]
@@ -91,7 +78,8 @@ else:
 # cmdline += [sys.argv[1], "+RTS", "-N1", "-t", "-M110G"]
 print(" ".join(cmdline))
 try:
-    r = subprocess.run(cmdline, check=True, capture_output=True)
+    commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+    r = subprocess.run(cmdline, check=True, capture_output=True, env={**os.environ, "GBS_COMMIT": commit})
     if r.stdout:
         print("e:%s s:%s ds:%s r:%s" % (e, s, discs, r.stdout.decode("utf-8").strip()))
     if r.stderr:
