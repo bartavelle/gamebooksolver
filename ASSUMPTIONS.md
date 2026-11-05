@@ -94,7 +94,8 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
 - **G3. More gold is not always better.** This is a fact, not an assumption, and it limits what can be assumed elsewhere.
   Book 2 s168 reads "If you can pay for the room, turn to 314. If you cannot, turn to 25", and near death, having no
   crowns is the better position (0.008 against 0 at 3 Endurance). No proof may assume gold is monotone in Book 2.
-  Whether it is monotone in Book 5 is **Unverified**.
+  In Book 5 more gold should never be worse: gold is only tested as "at least", at c248, c265, c276, c362 and the shops, c127 ignores
+  it, and R8 always takes it. A richer player can copy a poorer one and stay richer. This is read from the chapters, **Unverified** in Rocq.
 - **G4. Book 5 starts with 50 gold**, the default of `buildsol-rust.py` for that book, and gold is not carried from Book 4.
   It is the cheapest solve, and it gives the true score of a player who played the series, whatever their route and rolls.
   Each book gives a pouch of at least 10 crowns to add to what is carried, and `book4_keeps_gold` in
@@ -104,8 +105,19 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   joins a full playthrough of Book 4 to them. `book4_keeps_gold` also relies on `functional_extensionality_dep` and
   `rules.cartwheel`. The score at 50 standing for 20 to 49 rests on G5, which is **Tested**. A player starting at Book 5 alone
   can have 10 or 11 crowns and would be overstated, by up to 0.149 points, see G5. **Decided** on 2026-11-02.
-- **G5. In Book 5, gold from 12 to 50 scores the same, and 20 is the amount that matters.** Solved from 10 to 50 on the
-  unedited book, each character has two values, 10 to 11 and 12 to 50, and the second is the exact fraction stored for 50 in `data/B05`:
+- **G5. In Book 5, 20 gold scores the same as 50, on all 576 characters.** The stored best strategy of each character was
+  replayed by `report/book5_gold_used.py`, counting what it pays and what it picks up. All 576 need at most 20 crowns, and
+  one crown less fails each time, for that strategy:
+
+  | Crowns needed | 0 | 1 | 4 | 5 | 8 | 9 | 12 | 13 | 15 | 20 |
+  |---|---|---|---|---|---|---|---|---|---|---|
+  | Characters | 37 | 6 | 70 | 164 | 16 | 14 | 219 | 4 | 18 | 28 |
+
+  So a player with those crowns reaches the score of 50, and by G3 can't beat it. The worst case is 15 at c27 and 5 at c388.
+  This holds with one purchase per offer (R9), and the chapter-level steps of the script and of G3 are not in Rocq. Paying at
+  c276 ties with not paying, and the stored strategies do pay, so taken literally they need up to 25. The amounts
+  are upper bounds, since another best strategy could need less. Solved from 10 to 50 on the unedited book, four
+  characters agree, with two values each, 10 to 11 and 12 to 50, the second being the exact fraction stored for 50 in `data/B05`:
 
   | 20 Endurance, Skill 10, Meal, Meal, Shield, Laumspur | 10 to 11 | 12 to 50 | Difference |
   |---|---|---|---|
@@ -114,15 +126,12 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   | HU, Sommerswerd | 0.803274100 | 0.803274100 | 0.00000007 points |
   | MS, Sommerswerd | 0.431579888 | 0.431579888 | 0.00000004 points |
 
-  Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12 crowns, which fits the step at 12. **Tested** on those
-  four only: they share one kit and two discipline sets, while N3 has six sets and 576 cases. Earlier samples agree, with
-  HU and TR matching their 40-gold scores to 9 digits at 15, and MO having the same exact fraction at 15 and 50.
-  On the edited book of E1, MS still moved after 15, scoring 0.583265136440 at 15 and 16 gold, 0.583265136985 at 17 to 19,
-  and 0.583265137192 at 20 and 50, a total of about 0.00000008 points, so 12 can't be assumed for every character, and
-  an effect above 20 is not excluded on the cases not run. Proving
-  this is an obligation, since G4 relies on it. A static proof can't reach this: the need table of `rocq/proofs/gold_needs.v` and Rust
-  both give 50 at the start of Book 5, adding up what a path can spend. What is left between 20 and 50 depends on whether
-  the spending is worth it, so a proof has to use solved values, or a finite run of every case at every amount.
+  Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12 crowns, which fits the step at 12. Three of those
+  four need 12 by the replay, and MS with the Sommerswerd 13. **Tested** on all 576 by the replay. Solving every case
+  at every amount is not practical, see G8. On the edited book of E1, MS still moved after 15, scoring 0.583265136440 at 15
+  and 16 gold, 0.583265136985 at 17 to 19, and 0.583265137192 at 20 and 50, a total of about 0.00000008 points, so 12 can't be
+  assumed for every character. The need table of `rocq/proofs/gold_needs.v` and Rust give 50 at the start of Book 5, adding up all that
+  a path can spend, and 39 without the payments of c248, c265, c276 and c362, so chapters alone can't reach 20: the replay also relies on the solved strategies.
 - **G6. A series player does not need to reach 50 gold at the start of Book 5.** With G4 and G5, 20 crowns are enough, and
   those are guaranteed. This entry used to rest on a route collecting 30 crowns in Book 4 (42 for the character lacking
   Camouflage and Tracking), on top of a 10 to 19 pouch. That route is an upper bound: disciplines were checked, item and flag
@@ -130,8 +139,8 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
 - **G8. One solve can give the score of all the starting gold of a character.** `gold-scores` keeps a start state for each amount, in the
   same table, so each score is the value of its start state. In Book 2, on one kit with Book 3 values, the 41 exact scores from 10 to 50
   were the same as with separate solves, for 118 s and 0.68 GB instead of 118 s and 0.67 GB for one amount. Book 1 took 239 s and 1.5 GB for 10 amounts,
-  against 75 s and 0.56 GB for one, with a win worth 1. Book 5 is expensive: 10 to 50 gold took 3h00 to 3h33 and 49 to 56 GB for each of the four characters of G5, under `nice`,
-  against 6 minutes for gold 50, and G4 does not need it. At most two such solves fit in 125 GB: four at once ran out of memory. The ranges only compare scores: two amounts with the same score can have different best paths. **Tested** on
+  against 75 s and 0.56 GB for one, with a win worth 1. Book 5 is expensive: 10 to 50 gold took 2h59 to 3h33 and 49 to 56 GB for each of the four characters of G5, under `nice`,
+  against 6 minutes for gold 50, and G4 does not need it. At most two such solves fit in 125 GB: four at once ran out of memory. A richer kit is much worse: CA with the Sommerswerd, potions, armour and helmet did not finish 20 to 50 in 6 hours, at 92.6 GB. The ranges only compare scores: two amounts with the same score can have different best paths. **Tested** on
   that sample.
 - **G9. A solution file holds all the starting gold of a character (`.solutions.zstd`, see `solfile.rs`),** and one of them can be read back as if it was solved
   alone. On one Book 2 kit, the `.jot`, `.desc` and exact score at 10 and at 34 gold were the same as from a separate solve. **Tested** on that
@@ -363,8 +372,8 @@ the memory.
   taken as rounding unless exact fractions are compared. Final solves use exact fractions. **Decided.**
 - **N2. Results for Books 1 to 4 and the discipline comparisons are older than the latest fixes,** and many used win = 1.
   `data/` was cleaned on 2026-11-02, and final values need a new run. **Decided.**
-- **N3. Six Book 5 characters stand in for 576 cases** in the gold and edit tests: 6S, HU, MO, CA, MS and TR. **Tested**
-  on those only.
+- **N3. Six Book 5 characters stand in for 576 cases** in the edit tests: 6S, HU, MO, CA, MS and TR. **Tested**
+  on those only. The gold result of G5 covers all 576.
 - **N4. Report rules are accepted at 98% agreement,** as patterns read from decisions in `report/analyse.py`. They describe
   a character's solution, and are not proved. **Decided.**
 
