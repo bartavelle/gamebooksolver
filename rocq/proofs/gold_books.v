@@ -1,6 +1,6 @@
 (* What the five books do with their gold. The tables of gold_tables.v are checked on the books: no chapter needs more
    gold than what they say. *)
-Require Import character chapters mps order lists proba combat rules value simulation gold_items gold_relation gold_needs books gold_tables.
+Require Import character chapters mps order lists proba combat rules value simulation gold_items gold_relation gold_needs books gold_tables gold_more gold_phases.
 Require Import Stdlib.Lists.List.
 Import ListNotations.
 Require Import Stdlib.QArith.Qcanon.
@@ -344,4 +344,25 @@ Theorem book5_start_gold: forall m_start m_end r4 r5,
 Proof.
   intros ms me r4 r5 VS VE G. pose proof (pouch_at_least 0 r4 ms ltac:(lia) VS ltac:(lia)) as P4.
   apply (pouch_at_least 10 r5 me); [lia|exact VE|lia].
+Qed.
+
+Definition book5_phases : chapter_set := set_of before5 after5.
+
+Theorem book5_phases_ok: chapters_ok (in_set book5_phases) book5 = true.
+Proof. vm_compute. reflexivity. Qed.
+
+(* c14 gives the equipment back, and c69 stores it: no way leads to c14 without going through c69 *)
+Example c14_after_c69: in_set book5_phases Before 14 = false /\ in_set book5_phases After 14 = true.
+Proof. vm_compute. auto. Qed.
+
+(* From the start of Book 5, more gold is never worse, as long as finishing the book does not prefer less gold. *)
+Theorem book5_more_gold: forall score,
+  (forall p x y, GoldLe p x y -> (score x <= score y)%Qc) ->
+  forall fuel s t, chapter s = 1 -> GoldR 0 s t -> gold_of (items s) <= gold_of (items t) ->
+    (value book5 score fuel s <= value book5 score fuel t)%Qc.
+Proof.
+  intros score HS fuel s t C R L.
+  apply (value_more_gold (in_set book5_phases) book5 score book5_phases_ok HS fuel Before).
+  - rewrite C. vm_compute. reflexivity.
+  - constructor; [exact R|exact L|exact I].
 Qed.

@@ -94,8 +94,9 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
 - **G3. More gold is not always better.** This is a fact, not an assumption, and it limits what can be assumed elsewhere.
   Book 2 s168 reads "If you can pay for the room, turn to 314. If you cannot, turn to 25", and near death, having no
   crowns is the better position (0.008 against 0 at 3 Endurance). No proof may assume gold is monotone in Book 2.
-  In Book 5 more gold should never be worse: gold is only tested as "at least", at c248, c265, c276, c362 and the shops, c127 ignores
-  it, and R8 always takes it. A richer player can copy a poorer one and stay richer. This is read from the chapters, **Unverified** in Rocq.
+  In Book 5 more gold is never worse: `book5_more_gold` in `rocq/proofs/gold_books.v`, from chapter 1, as long as finishing the
+  book doesn't prefer less gold. Gold is only tested as "at least", and c14, where stored gold comes back, can only be reached
+  after c69 stored it, with equal gold held. **Proved** on the Rocq model of Book 5, whose chapters are checked by computation.
 - **G4. Book 5 starts with 50 gold**, the default of `buildsol-rust.py` for that book, and gold is not carried from Book 4.
   It is the cheapest solve, and it gives the true score of a player who played the series, whatever their route and rolls.
   Each book gives a pouch of at least 10 crowns to add to what is carried, and `book4_keeps_gold` in
@@ -114,7 +115,7 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   | Characters | 37 | 6 | 70 | 164 | 16 | 14 | 219 | 4 | 18 | 28 |
 
   So a player with those crowns reaches the score of 50, and by G3 can't beat it. The worst case is 15 at c27 and 5 at c388.
-  This holds with one purchase per offer (R9), and the chapter-level steps of the script and of G3 are not in Rocq. Paying at
+  This holds with one purchase per offer (R9). G3 is proved in Rocq, but the replay is a script and is not. Paying at
   c276 ties with not paying, and the stored strategies do pay, so taken literally they need up to 25. The amounts
   are upper bounds, since another best strategy could need less. Solved from 10 to 50 on the unedited book, four
   characters agree, with two values each, 10 to 11 and 12 to 50, the second being the exact fraction stored for 50 in `data/B05`:
