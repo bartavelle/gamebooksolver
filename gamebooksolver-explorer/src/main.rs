@@ -15,6 +15,7 @@ use gamebooksolver_base::lonewolf::mini::StoredEquipment;
 use gamebooksolver_base::lonewolf::evasion::expand_evasions;
 use gamebooksolver_base::lonewolf::solve::{
     BestPathState, PathStates, solve_lws, solve_lws_best_path, solve_lws_best_path_and_visit, solve_lws_best_path_starts,
+    solve_lws_compact_starts,
     visit_best_path,
 };
 use gamebooksolver_base::solver::rational::MF64;
@@ -123,6 +124,14 @@ enum PSub {
         gold_to: u8,
         #[arg(long)]
         ranges: String,
+    },
+    /// solve with floating point instead of exact fractions, for a quick test: prints the score of each starting gold from
+    /// --gold to --gold-to, which is only close to the exact one, and writes no file
+    GoldScoresF64 {
+        #[command(flatten)]
+        desc: OSolDesc,
+        #[arg(long)]
+        gold_to: u8,
     },
     /// write what can happen on the best path, with the value of all the choices, one state per line
     Decisions(OSolDesc),
@@ -909,6 +918,39 @@ fn gold_scores<PREV: StoredEquipment + solfile::Kind + bincode::Encode>(
     Ok(())
 }
 
+/// The same as `gold_scores`, in floating point: a test that is faster and smaller, and only an indication of the exact scores
+fn gold_scores_f64<PREV: StoredEquipment>(
+    cnt: &OSolDesc,
+    gold_to: u8,
+    book: &[(ChapterId, Chapter<Rational>)],
+    verbose: bool,
+) -> anyhow::Result<()> {
+    anyhow::ensure!(cnt.gold <= gold_to, "--gold must not be more than --gold-to");
+    let (soldesc, fchapters, mscoremap, iitems, iflags) = prepare_soldesc(cnt, verbose)?;
+    let fbook: Vec<(ChapterId, Chapter<MF64>)> = book
+        .iter()
+        .cloned()
+        .map(|(c, ch)| (c, ch.map_proba(&|p: &Rational| MF64::f_f64(p.to_f64()))))
+        .collect();
+    let golds: Vec<u8> = (cnt.gold..=gold_to).collect();
+    let cvars: Vec<CharacterVariableG<PREV>> = golds
+        .iter()
+        .map(|gold| {
+            let mut desc = soldesc.clone();
+            desc.cvar.gold = *gold;
+            desc.cvariable()
+        })
+        .collect();
+    let scorer = |e, f| MF64::f_f64(score_with(soldesc.ccst.bookid, &mscoremap, &iitems, &iflags, e, f).to_f64());
+    let sol = solve_lws_compact_starts(scorer, &fchapters, &fbook, &soldesc.ccst, &cvars, cnt.startat, verbose);
+    for (gold, cvar) in golds.iter().zip(cvars) {
+        let node = sol.get(&NextStep::NewChapter(cnt.startat, cvar)).context("a start was not solved")?;
+        let score = node.score;
+        println!("{gold:>2}: {:.15}", score.t_f64());
+    }
+    Ok(())
+}
+
 fn solved_origin() -> solfile::Origin {
     solfile::Origin::Solved {
         commit: std::env::var("GBS_COMMIT").ok(),
@@ -1233,6 +1275,19 @@ fn main() -> anyhow::Result<()> {
             let stats: Output = serde_json::from_reader(BufReader::new(File::open(&opt.solpath)?))
                 .with_context(|| anyhow::anyhow!("loading {}", opt.solpath))?;
             println!("{}", dot::mkdot(&book, &display, &stats, *raw_rounds));
+        }
+        Some(PSub::GoldScoresF64 { desc, gold_to }) => {
+            let book: Vec<(ChapterId, Chapter<Rational>)> = serde_json::from_reader(File::open(&desc.bookpath)?)?;
+            let cos = book.iter().flat_map(|x| x.1.pchoice.iter_outcomes()).collect::<Vec<_>>();
+            let has_prev_eq = cos
+                .iter()
+                .flat_map(|co| co.simple_outcomes())
+                .any(|so| matches!(so, SimpleOutcome::StoreEquipment));
+            if has_prev_eq {
+                gold_scores_f64::<Equipment>(desc, *gold_to, &book, opt.verbose)?;
+            } else {
+                gold_scores_f64::<NoPrevEq>(desc, *gold_to, &book, opt.verbose)?;
+            }
         }
         Some(PSub::GoldScores { desc, gold_to, ranges }) => {
             let json = opt.json.context("--json is required")?;
