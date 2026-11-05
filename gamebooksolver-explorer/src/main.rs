@@ -1138,6 +1138,11 @@ fn cmd_optimize(
     Ok(())
 }
 
+
+// the exact fractions allocate a lot: jemalloc made a Book 5 solve 15% faster
+#[global_allocator]
+static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+
 fn main() -> anyhow::Result<()> {
     let opt = Opt::parse();
 
