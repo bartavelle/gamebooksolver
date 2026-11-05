@@ -130,7 +130,9 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   | MS, Sommerswerd | 0.431579888 | 0.431579888 | 0.00000004 points |
 
   Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12 crowns, which fits the step at 12. The replay gives 12 for HU Sword, 17 for MS Sword, 12 for HU Sommerswerd, 13 for MS Sommerswerd,
-  upper bounds that fit. **Tested** on all 576 by the replay. Solving every case
+  upper bounds that fit. **Tested** on all 576 by the replay. Solved directly at the amount the replay gives, MO with a Sword, Silver Helmet and Body
+  Armor scores at 13 crowns the exact fraction stored for 50 (1h31, 27 GB); 6S with the Sommerswerd at 20 did not finish in 6
+  hours (57 GB). Solving every case
   at every amount is not practical, see G8. On the edited book of E1, MS still moved after 15, scoring 0.583265136440 at 15
   and 16 gold, 0.583265136985 at 17 to 19, and 0.583265137192 at 20 and 50, a total of about 0.00000008 points, so 12 can't be
   assumed for every character. The need table of `rocq/proofs/gold_needs.v` and Rust give 50 at the start of Book 5, adding up all that
