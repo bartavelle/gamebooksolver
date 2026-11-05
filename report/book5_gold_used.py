@@ -4,15 +4,18 @@ Run from the root of the repository. It reads the `.decisions.jsonl.zst` files o
 then how many characters need each amount.
 
 Going back from the end, a purchase adds its price to what must be held, a pickup takes off its amount, and losing all the
-gold resets the need. Pickups come from the book, as a full pouch hides them in the solution. Paying at c248, c265 and c276
-leads to the same place as not paying, so a replay does not pay. Gold that overflows when c14 gives it back is not a
-purchase. The result is checked by replaying forward: that amount has to be enough, and one crown less must not be.
+gold resets the need. Pickups come from the book, as a full pouch hides them in the solution. Paying at c248 and c265 leads
+to the same place as not paying, in as many steps, so a replay does not pay. Paying at c276 goes through c326, which is one
+more step for Healing and poison, so a replay only skips it when the endurance reaching c202 is the same. Gold that overflows
+when c14 gives it back is not a purchase. The result is checked by replaying forward: that amount has to be enough, and one
+crown less must not be.
 """
 import collections, glob, json, multiprocessing, os, re, subprocess, sys
 
 sys.setrecursionlimit(1000000)
 SHOPS = {27, 154, 169, 211, 248, 265, 276, 362, 388}
-PAY_FOR_NOTHING = {248, 265, 276}
+PAY_FOR_NOTHING = {248, 265}
+ONE_MORE_STEP = 276
 RETRIEVE = 14
 
 
@@ -42,6 +45,9 @@ def one(path):
             return None
         return sum(int(x) for x in re.findall(r"Gold:(\d+)", v["cvar"]["items"] + " " + str(v["cvar"].get("stored", ""))))
 
+    def endurance(k):
+        return int(re.search(r" e:(\d+)", k)[1])
+
     def nexts(k):
         v = states.get(k)
         if not v or not v.get("choices"):
@@ -54,6 +60,10 @@ def one(path):
         ch = states[k]["chapter"]
         if b is None or b >= a or ch in PAY_FOR_NOTHING or ch == RETRIEVE:
             return 0
+        if ch == ONE_MORE_STEP:
+            arrive = nexts(n)
+            moved = endurance(arrive[0]) - endurance(k) if arrive else 0
+            return 0 if moved in (0, 1) else a - b
         if b == 0 and ch not in SHOPS:
             return None
         assert ch in SHOPS, (path, ch)

@@ -110,13 +110,15 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   replayed by `report/book5_gold_used.py`, counting what it pays and what it picks up. All 576 need at most 20 crowns, and
   one crown less fails each time, for that strategy:
 
-  | Crowns needed | 0 | 1 | 4 | 5 | 8 | 9 | 12 | 13 | 15 | 20 |
-  |---|---|---|---|---|---|---|---|---|---|---|
-  | Characters | 37 | 6 | 70 | 164 | 16 | 14 | 219 | 4 | 18 | 28 |
+  | Crowns needed | 0 | 4 | 5 | 6 | 8 | 9 | 10 | 12 | 13 | 14 | 17 | 20 |
+  |---|---|---|---|---|---|---|---|---|---|---|---|---|
+  | Characters | 33 | 64 | 68 | 6 | 6 | 10 | 100 | 137 | 20 | 8 | 78 | 46 |
 
   So a player with those crowns reaches the score of 50, and by G3 can't beat it. The worst case is 15 at c27 and 5 at c388.
-  This holds with one purchase per offer (R9). G3 is proved in Rocq, but the replay is a script and is not. Paying at
-  c276 ties with not paying, and the stored strategies do pay, so taken literally they need up to 25. The amounts
+  This holds with one purchase per offer (R9). G3 is proved in Rocq, but the replay is a script and is not. The stored
+  strategies pay at c276, which ties with not paying in all 43155 states reached, and a replay skips it only where that leaves
+  the same endurance at c202: c326 is one more step for Healing and poison, which changes it for 492 characters. Literally
+  paying everywhere would need up to 25. The amounts
   are upper bounds, since another best strategy could need less. Solved from 10 to 50 on the unedited book, four
   characters agree, with two values each, 10 to 11 and 12 to 50, the second being the exact fraction stored for 50 in `data/B05`:
 
@@ -127,8 +129,8 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   | HU, Sommerswerd | 0.803274100 | 0.803274100 | 0.00000007 points |
   | MS, Sommerswerd | 0.431579888 | 0.431579888 | 0.00000004 points |
 
-  Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12 crowns, which fits the step at 12. Three of those
-  four need 12 by the replay, and MS with the Sommerswerd 13. **Tested** on all 576 by the replay. Solving every case
+  Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12 crowns, which fits the step at 12. The replay gives 12 for HU Sword, 17 for MS Sword, 12 for HU Sommerswerd, 13 for MS Sommerswerd,
+  upper bounds that fit. **Tested** on all 576 by the replay. Solving every case
   at every amount is not practical, see G8. On the edited book of E1, MS still moved after 15, scoring 0.583265136440 at 15
   and 16 gold, 0.583265136985 at 17 to 19, and 0.583265137192 at 20 and 50, a total of about 0.00000008 points, so 12 can't be
   assumed for every character. The need table of `rocq/proofs/gold_needs.v` and Rust give 50 at the start of Book 5, adding up all that
