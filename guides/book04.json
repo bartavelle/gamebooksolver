@@ -1,0 +1,5321 @@
+{
+ "book": 4,
+ "title": "The Chasm of Doom",
+ "generated": "2026-11-06",
+ "commit": "852cffa5",
+ "summary": "In Book 4, every character dies in about 10% of games, whatever it does: when you run for the sun-flag at section 225, one\nroll in ten sends you to section 181, where a sniper's arrow kills you. The solver still takes that road, as the other way\npast the bandits at section 307 is worse. Apart from that, the book is won by finding the right way at a handful of sections.\n\n- At section 101, take the boat south, and at section 115 land at the steps to investigate the tunnel.\n- At section 235, look over the low balcony, which is reached in nine games out of ten and lost without it.\n- Keep going south at section 120, enter the hall at section 228, and examine the chest at section 257.\n- Quicken your pace at section 307 and try to outrun the bandits.\n\nWhat you bring matters more than in Book 3, because it is carried into Book 5: the Sommerswerd is worth about 5 points of the\nseries, the Potent Strength Potion 3 and the Silver Helmet 3. Characters without the Sommerswerd carry a Dagger instead, which\nis why the Dagger shows as a loss of the same size.\n",
+ "characters": 180,
+ "score": {
+  "mean": 0.7640686243524819,
+  "median": 0.7630207208532291,
+  "min": 0.5986182030212293,
+  "max": 0.8061964301027637
+ },
+ "finish": {
+  "mean": 0.8967889893005767,
+  "median": 0.8993900319078969,
+  "min": 0.8819445403946956,
+  "max": 0.9
+ },
+ "disciplines": [
+  {
+   "name": "Camouflage",
+   "with_": 0.7658871907636458,
+   "without": 0.7604314915301543,
+   "gain": 0.005455699233491429,
+   "characters_with": 120,
+   "characters_without": 60
+  },
+  {
+   "name": "Mindshield",
+   "with_": 0.7653086525299054,
+   "without": 0.7615885679976349,
+   "gain": 0.0037200845322705733,
+   "characters_with": 120,
+   "characters_without": 60
+  },
+  {
+   "name": "Mind Over Matter",
+   "with_": 0.7640739785711887,
+   "without": 0.7640579159150681,
+   "gain": 1.6062656120641172e-05,
+   "characters_with": 120,
+   "characters_without": 60
+  },
+  {
+   "name": "Sixth Sense",
+   "with_": 0.7630724516508142,
+   "without": 0.7660609697558173,
+   "gain": -0.002988518105003113,
+   "characters_with": 120,
+   "characters_without": 60
+  },
+  {
+   "name": "Tracking",
+   "with_": 0.7630536664397244,
+   "without": 0.7660985401779971,
+   "gain": -0.0030448737382726687,
+   "characters_with": 120,
+   "characters_without": 60
+  },
+  {
+   "name": "Hunting",
+   "with_": 0.7630158061596131,
+   "without": 0.7661742607382197,
+   "gain": -0.00315845457860664,
+   "characters_with": 120,
+   "characters_without": 60
+  }
+ ],
+ "items": [
+  {
+   "name": "Sommerswerd",
+   "with_": 0.787964528015481,
+   "without": 0.7401727206894828,
+   "gain": 0.04779180732599819,
+   "characters_with": 90,
+   "characters_without": 90
+  },
+  {
+   "name": "Potent Strength Potion",
+   "with_": 0.78071649469988,
+   "without": 0.7474207540050838,
+   "gain": 0.03329574069479624,
+   "characters_with": 90,
+   "characters_without": 90
+  },
+  {
+   "name": "Silver Helmet",
+   "with_": 0.7837510169448356,
+   "without": 0.754227428056305,
+   "gain": 0.029523588888530572,
+   "characters_with": 60,
+   "characters_without": 120
+  },
+  {
+   "name": "Helmet",
+   "with_": 0.7625868861329178,
+   "without": 0.764809493462264,
+   "gain": -0.0022226073293462045,
+   "characters_with": 60,
+   "characters_without": 120
+  },
+  {
+   "name": "Dagger",
+   "with_": 0.7401727206894828,
+   "without": 0.787964528015481,
+   "gain": -0.04779180732599819,
+   "characters_with": 90,
+   "characters_without": 90
+  }
+ ],
+ "gold": [],
+ "decisions": [
+  {
+   "kind": "section",
+   "sections": [
+    235
+   ],
+   "opponent": null,
+   "text": "The corridor ends at a flight of steps that descends a hundred feet into the earth.",
+   "cost": 0.7640686243524818,
+   "reached": 0.896788989300576,
+   "worst": 0.895773811225293,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Take a look over the low balcony (turn to 100)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Investigate the torchlit cavern (turn to 177)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    115,
+    8
+   ],
+   "opponent": null,
+   "text": "As you drift beneath the arch of the southern tunnel, you pull your Kai cloak around your body and raise the hood.",
+   "cost": 0.44338952511563656,
+   "reached": 0.9999999999999974,
+   "worst": 0.7559472371718706,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Land at the steps and investigate the tunnel (turn to 8)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Continue south by the river (turn to 240)"
+   ],
+   "rules": [],
+   "steps": [
+    {
+     "section": 8,
+     "text": "Your men secure the boat to a rusty iron ring before following you up the stone steps towards the archway.",
+     "best": [
+      {
+       "choice": "Enter the tunnel (turn to 151)",
+       "share": 1.0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "section",
+   "sections": [
+    361
+   ],
+   "opponent": null,
+   "text": "Choice",
+   "cost": 0.37008636034474685,
+   "reached": 0.8990936515499999,
+   "worst": 0.8661524492120998,
+   "characters": 152,
+   "best": [
+    {
+     "choice": "Crypt door",
+     "share": 0.5921052631578947
+    },
+    {
+     "choice": "Way forward",
+     "share": 0.40789473684210525
+    }
+   ],
+   "instead_of": [
+    "Way forward",
+    "Crypt door"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    101
+   ],
+   "opponent": null,
+   "text": "You follow the tunnel for over two hours before arriving in a huge cavern.",
+   "cost": 0.368784628825837,
+   "reached": 0.9999999999999974,
+   "worst": 0.7313785500266471,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Take the boat and continue south via the river (turn to 115)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Row across to the other bank and take the west tunnel (turn to 343)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    120
+   ],
+   "opponent": null,
+   "text": "After many hours of riding you reach a highway junction.",
+   "cost": 0.36611829292428055,
+   "reached": 0.9999999999999974,
+   "worst": 0.7303804645443275,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Continue south (turn to 33)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Go east (turn to 92)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    228
+   ],
+   "opponent": null,
+   "text": "The stairs lead directly to a lower level of the mines where a tunnel leads off to the south.",
+   "cost": 0.36596988350114856,
+   "reached": 0.9999999999999974,
+   "worst": 0.730368871740289,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Enter the hall and advance towards the door (turn to 23)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Make for the stairs (turn to 105)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    257
+   ],
+   "opponent": null,
+   "text": "The door is unlocked and opens into a small room with a straw-covered floor.",
+   "cost": 0.365783410636776,
+   "reached": 0.9999999999999974,
+   "worst": 0.7303198443712681,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Examine the chest (turn to 302)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Ignore it and investigate the door (turn to 131)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    200
+   ],
+   "opponent": null,
+   "text": "The trees are alive with bandit patrols, but your quick wits and Kai skills prevent you from being seen by them.",
+   "cost": 0.16634189453690842,
+   "reached": 0.33333333333333315,
+   "worst": 0.5447039810461134,
+   "characters": 60,
+   "best": [
+    {
+     "choice": "Evade them, you must run across the open plain towards Ruanon-eight hundred yards away. Turn to 307",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Fight the bandits (turn to 133)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    156
+   ],
+   "opponent": null,
+   "text": "The tunnel soon arrives at the base of a mine shaft where a ladder is fixed to the wall.",
+   "cost": 0.12312742383833879,
+   "reached": 0.33333333333333315,
+   "worst": 0.7306939838452632,
+   "characters": 60,
+   "best": [
+    {
+     "choice": "Retrace your steps back to the previous chamber and take the south tunnel (turn to 101)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Climb the ladder to the level above (turn to 212)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    307
+   ],
+   "opponent": null,
+   "text": "From all along the forest edge, groups of bandits emerge from the trees, whipped and scolded by their bullying sergeants for allowing you to escape.",
+   "cost": 0.08855052526111619,
+   "reached": 0.9999999999999974,
+   "worst": 0.29158530161927343,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Quicken your pace and try to outrun them (turn to 225)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Stop and fight them (turn to 36)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    215
+   ],
+   "opponent": null,
+   "text": "Barraka carries the stench of death and decay about him.",
+   "cost": 0.06749610973971185,
+   "reached": 0.896788989300576,
+   "worst": 0.7279993296785265,
+   "characters": 90,
+   "best": [
+    {
+     "choice": "Distract his attention from the altar without attacking him (turn to 119)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Draw your weapon and attack Barraka (turn to 296)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    119
+   ],
+   "opponent": null,
+   "text": "\"Hold your blade, Barraka.",
+   "cost": 0.06071602278860701,
+   "reached": 0.45000000000000023,
+   "worst": 0.7101701628245768,
+   "characters": 90,
+   "best": [
+    {
+     "choice": "Try to free Madelon (turn to 73)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Enter into combat with this warrior lord (turn to 296)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    186
+   ],
+   "opponent": null,
+   "text": "The Vassagonian bandits break cover and charge, and you give the order to fire.",
+   "cost": 0.015141864490198451,
+   "reached": 0.9000000000000007,
+   "worst": 0.11857015896617895,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Save the potions",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Drink the Potion of Alether"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    333
+   ],
+   "opponent": null,
+   "text": "The horseman is charging at you very quickly.",
+   "cost": 0.015096942947887841,
+   "reached": 0.9000000000000007,
+   "worst": 0.11857015896617895,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Save the potions",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Drink the Potion of Alether"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    124
+   ],
+   "opponent": null,
+   "text": "A mantlet, a large shield on wheels, is being pushed slowly across the body-strewn battleground towards the barricade.",
+   "cost": 0.011036787691170983,
+   "reached": 0.9000000000000007,
+   "worst": 0.06482561265230191,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Stand and fight the horseman (turn to 333)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Run back to the watchtower (turn to 107)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    198
+   ],
+   "opponent": null,
+   "text": "The guards are not fooled by your bravado-they draw their weapons and attack.",
+   "cost": 0.004416106678113556,
+   "reached": 0.1753317826429999,
+   "worst": 0.09127466815951923,
+   "characters": 90,
+   "best": [
+    {
+     "choice": "Drink the Potion of Alether",
+     "share": 0.7726933850391222
+    },
+    {
+     "choice": "Save the potions",
+     "share": 0.17907347908112806
+    },
+    {
+     "choice": "Drink the potent potion",
+     "share": 0.04823313587974975
+    }
+   ],
+   "instead_of": [
+    "Save the potions",
+    "Drink the potent potion"
+   ],
+   "rules": [
+    {
+     "rule": "Drink the Potion of Alether when you have the Potion of Alether, otherwise Drink the potent potion",
+     "characters": 24,
+     "internal": false
+    },
+    {
+     "rule": "Drink the Potion of Alether when you have the Potion of Alether, otherwise Save the potions",
+     "characters": 6,
+     "internal": false
+    }
+   ],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    220
+   ],
+   "opponent": null,
+   "text": "Your blow has unhorsed the bandit.",
+   "cost": 0.004139770601262438,
+   "reached": 0.735,
+   "worst": 0.05370352574261017,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Evade combat (turn to 163)",
+     "share": 0.7796981298229346
+    },
+    {
+     "choice": "Fight the warrior (turn to 90)",
+     "share": 0.22030187017706535
+    }
+   ],
+   "instead_of": [
+    "Fight the warrior (turn to 90)",
+    "Evade combat (turn to 163)"
+   ],
+   "rules": [
+    {
+     "rule": "Fight the warrior (turn to 90) when Endurance is 17 or less, otherwise Evade combat (turn to 163)",
+     "characters": 30,
+     "internal": false
+    },
+    {
+     "rule": "Fight the warrior (turn to 90) when Endurance is 11 or less, otherwise Evade combat (turn to 163)",
+     "characters": 2,
+     "internal": false
+    }
+   ],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    397
+   ],
+   "opponent": null,
+   "text": null,
+   "cost": 0.004070582667792351,
+   "reached": 0.18000000000000013,
+   "worst": 0.16942110167452162,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Save the potions",
+     "share": 0.5
+    },
+    {
+     "choice": "Drink the Potion of Alether",
+     "share": 0.4867222222222222
+    },
+    {
+     "choice": "Drink the potent potion",
+     "share": 0.013277777777777779
+    }
+   ],
+   "instead_of": [
+    "Drink the Potion of Alether",
+    "Save the potions"
+   ],
+   "rules": [
+    {
+     "rule": "Drink the potent potion when Endurance is 21 or less, otherwise Drink the Potion of Alether",
+     "characters": 11,
+     "internal": false
+    },
+    {
+     "rule": "Drink the potent potion when Endurance is 19 or less, otherwise Drink the Potion of Alether",
+     "characters": 10,
+     "internal": false
+    },
+    {
+     "rule": "Drink the potent potion when Endurance is 22 or less, otherwise Drink the Potion of Alether",
+     "characters": 4,
+     "internal": false
+    }
+   ],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    233
+   ],
+   "opponent": null,
+   "text": "Your rest is disturbed by the anxious shout of the night guard: \"Awake!",
+   "cost": 0.003688251922674524,
+   "reached": 0.12500000000000006,
+   "worst": 0.04886710254166171,
+   "characters": 45,
+   "best": [
+    {
+     "choice": "Save the potions",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Drink the potent potion"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    25
+   ],
+   "opponent": null,
+   "text": "After journeying through the rich wheat fields of southern Sommerlund, the view that lies before you now looks especially bleak and colourless.",
+   "cost": 0.003559516246913348,
+   "reached": 0.4999999999999987,
+   "worst": 0.026626364286255977,
+   "characters": 90,
+   "best": [
+    {
+     "choice": "Avoid the temple and continue (turn to 141)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Set up camp for the night in the shelter of the ruins (turn to 290)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    111
+   ],
+   "opponent": null,
+   "text": "You steel yourself, mustering all your concentration for the exact moment to strike.",
+   "cost": 0.0033110777975666173,
+   "reached": 0.1650000000000001,
+   "worst": 0.05545689540407084,
+   "characters": 90,
+   "best": [
+    {
+     "choice": "Evade combat (turn to 163)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Fight him (turn to 90)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "fight",
+   "sections": [],
+   "opponent": "Vassagonian Warrior",
+   "text": null,
+   "cost": 0.0009134696583317398,
+   "reached": null,
+   "worst": 0.004565884123393205,
+   "characters": 180,
+   "best": [
+    {
+     "choice": "Evade",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Keep fighting"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    385
+   ],
+   "opponent": null,
+   "text": null,
+   "cost": 0.0003477395766737544,
+   "reached": 0.03333333333333333,
+   "worst": 0.041068466889866095,
+   "characters": 6,
+   "best": [
+    {
+     "choice": "Save the potions",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Drink the Potion of Alether"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    142
+   ],
+   "opponent": null,
+   "text": "Dawn arrives, rain-swept and gloom-laden.",
+   "cost": 3.167213170729554e-05,
+   "reached": 0.8990936515499999,
+   "worst": 0.002565278584685804,
+   "characters": 68,
+   "best": [
+    {
+     "choice": "Try to enter the temple via the unguarded marble stairs (turn to 270)",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Try to enter the temple through the guarded crypt door (turn to 183)"
+   ],
+   "rules": [],
+   "steps": []
+  },
+  {
+   "kind": "section",
+   "sections": [
+    383
+   ],
+   "opponent": null,
+   "text": null,
+   "cost": 1.2480630268585038e-05,
+   "reached": 0.0009533262519999991,
+   "worst": 0.11244419073924516,
+   "characters": 60,
+   "best": [
+    {
+     "choice": "Save the potions",
+     "share": 1.0
+    }
+   ],
+   "instead_of": [
+    "Drink the Potion of Alether"
+   ],
+   "rules": [],
+   "steps": []
+  }
+ ],
+ "deaths": [
+  {
+   "section": 181,
+   "opponent": null,
+   "text": "The twang of the sniper's bow and the hiss of an arrow are the last sounds that you hear in this world.",
+   "share": 0.10000000000000006,
+   "of_deaths": 0.9688888745719727
+  },
+  {
+   "section": 198,
+   "opponent": null,
+   "text": "The guards are not fooled by your bravado-they draw their weapons and attack.",
+   "share": 0.0023046622494232332,
+   "of_deaths": 0.02232961613112186
+  },
+  {
+   "section": 397,
+   "opponent": "Vassagonian Warrior",
+   "text": null,
+   "share": 0.0009063484499999989,
+   "of_deaths": 0.008781509296905503
+  }
+ ],
+ "list": [
+  {
+   "name": "2010SW.CA.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7256187648224963,
+   "finish": 0.8887682932096905
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.775052949627709,
+   "finish": 0.8935988110368518
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7522632524958911,
+   "finish": 0.8973605662368518
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7561718577377086,
+   "finish": 0.8957198173176517
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7393116408627417,
+   "finish": 0.8924088900127528
+  },
+  {
+   "name": "2010SW.CA.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.6942830807785259,
+   "finish": 0.8819445403946956
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7308767602562432,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7781485443515905,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7535106818483162,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7599024621405206,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7450226443452781,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.HU.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.701451215598109,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7264686928892828,
+   "finish": 0.8887682932096905
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.775052949627709,
+   "finish": 0.8935988110368518
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7523206169685397,
+   "finish": 0.8973605662368518
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7563023487606034,
+   "finish": 0.8957198173176517
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7394874856400419,
+   "finish": 0.8924088900127528
+  },
+  {
+   "name": "2010SW.HU.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.6950896438275053,
+   "finish": 0.8819445403946956
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7300216749951932,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7781485443515905,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7534532266331802,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7598489321029166,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7449215317305453,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.MO.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7006372707548975,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7085050632355728,
+   "finish": 0.8887682932096905
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7749903345131146,
+   "finish": 0.8935988110368518
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7503834270479931,
+   "finish": 0.8973605662368518
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7519530933107811,
+   "finish": 0.8889870354233809
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7331774915817184,
+   "finish": 0.8848974888337381
+  },
+  {
+   "name": "2010SW.MO.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.6774694874962348,
+   "finish": 0.8819445403946956
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7308767602562432,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7781485443515905,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7535106818483162,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7599024621405206,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7450226443452781,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.MO.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.701451215598109,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7300216749951932,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7781485443515905,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7534532266331802,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7598489321029166,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7449215317305453,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.MS.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7006372707548975,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.6409059052514653,
+   "finish": 0.8887682932096905
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7749903345131146,
+   "finish": 0.8935988110368518
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7500149602730188,
+   "finish": 0.8973605662368518
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7519376365733715,
+   "finish": 0.8887682932096905
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7318509825072192,
+   "finish": 0.8819445403946956
+  },
+  {
+   "name": "2010SW.MS.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.5986182030212293,
+   "finish": 0.8819445403946956
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7308767602562432,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7781485443515905,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7535106818483162,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7599024621405206,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7450226443452781,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.MS.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.701451215598109,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7661389795659377,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8002222419138285,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7919430747168891,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7959073615604562,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7919430747168891,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7504202203680351,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7197541385672491,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7750137793363546,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7517546673918185,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7493721648519784,
+   "finish": 0.8948697141771004
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7402591422010775,
+   "finish": 0.8902661730941681
+  },
+  {
+   "name": "2010SW.MS.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Sixth Sense",
+    "Tracking",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.6905421291016243,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7303429588827813,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7781485443515905,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7535122940707103,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7598690451131246,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7449488396327221,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.TR.6Sg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7010772270994573,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7259381109811848,
+   "finish": 0.8887682932096905
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.775052949627709,
+   "finish": 0.8935988110368518
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7523222266446536,
+   "finish": 0.8973605662368518
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7562208875421511,
+   "finish": 0.8957198173176517
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7393330063635295,
+   "finish": 0.8924088900127528
+  },
+  {
+   "name": "2010SW.TR.CAg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.6947190470895671,
+   "finish": 0.8819445403946956
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7308767602562432,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7781485443515905,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7535122940707103,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7599024621405206,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7450226443452781,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.TR.HUg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Mind Over Matter",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.701451215598109,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7303429588827813,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7780198831419133,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7535122940707103,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7598690451131246,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7448937378526701,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.TR.MOg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mindblast",
+    "Mindshield",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7010772270994573,
+   "finish": 0.8900162381120125
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7689588298656886,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8061964301027637,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.8032214591738713,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.8001689984795711,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sommerswerd-Sword-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Sword": 1,
+    "Sommerswerd": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7513018959379094,
+   "finish": 0.9
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7303429588827813,
+   "finish": 0.8941611622327246
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7780198831419133,
+   "finish": 0.8971678830157936
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-SilverHelmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Silver Helmet": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7535122940707103,
+   "finish": 0.8987800638157937
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4-Helmet",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2,
+    "Helmet": 1
+   },
+   "gold": 0,
+   "score": 0.7598690451131246,
+   "finish": 0.8969447162770281
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal-StrengthPotion4",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Potent Strength Potion": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7448937378526701,
+   "finish": 0.8939757482592099
+  },
+  {
+   "name": "2010SW.TR.MSg0-Sword-Dagger-Laumspur-Laumspur-Shield-BodyArmor-Meal-Meal-Meal-Meal-Meal",
+   "disciplines": [
+    "Animal Kinship",
+    "Camouflage",
+    "Healing",
+    "Hunting",
+    "Mind Over Matter",
+    "Mindblast",
+    "Sixth Sense",
+    "Weaponskill (Sword)"
+   ],
+   "items": {
+    "Dagger": 1,
+    "Sword": 1,
+    "Shield": 1,
+    "Chainmail Waistcoat": 1,
+    "Meal": 5,
+    "Potion of Laumspur": 2
+   },
+   "gold": 0,
+   "score": 0.7010772270994573,
+   "finish": 0.8900162381120125
+  }
+ ]
+}
