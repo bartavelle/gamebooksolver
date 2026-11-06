@@ -132,7 +132,8 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   Chapter 154 sells a Strength Potion, Laumspur and a Potion2Hp for 12 crowns, which fits the step at 12. The replay gives 12 for HU Sword, 17 for MS Sword, 12 for HU Sommerswerd, 13 for MS Sommerswerd,
   upper bounds that fit. **Tested** on all 576 by the replay. Solved directly at the amount the replay gives, MO with a Sword, Silver Helmet and Body
   Armor scores at 13 crowns the exact fraction stored for 50 (1h31, 27 GB); 6S with the Sommerswerd at 20 did not finish in 6
-  hours (57 GB). In floating point (`gold-scores-f64`), that 6S scores 0.840579167030167 at 20 and at 50, the stored exact score
+  hours (57 GB), and with jemalloc it reached the 100 GB limit of the process after 5h45, at 80 GB: its exact solve needs more
+  than that. In floating point (`gold-scores-f64`), that 6S scores 0.840579167030167 at 20 and at 50, the stored exact score
   rounded, in 3h09 and 29 GB at 20: only an indication, as rounding and the order of the operations can hide a difference. Solving every case
   at every amount is not practical, see G8. On the edited book of E1, MS still moved after 15, scoring 0.583265136440 at 15
   and 16 gold, 0.583265136985 at 17 to 19, and 0.583265137192 at 20 and 50, a total of about 0.00000008 points, so 12 can't be
