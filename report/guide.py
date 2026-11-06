@@ -55,6 +55,10 @@ def characters(number):
     return out
 
 
+def number_of(desc):
+    return int(desc["mbook"].removeprefix("Book"))
+
+
 def study(desc, path, book, names):
     """What one character tells: its score, where it dies, and what each decision is worth."""
     root, states = A.load(path)
@@ -76,11 +80,17 @@ def study(desc, path, book, names):
         if d["rule"]:
             share, test, pick_if, other = d["rule"]
             cur["rules"].append(f"{pick_if} when {test}, otherwise {other}")
+    items = {names.item(k): v for k, v in (desc["variable"]["items"] or {}).items()}
+    gold = desc["variable"]["gold"]
+    # in Book 1, the random item can be 12 Gold Crowns, on top of the 0 to 9 of the pouch
+    if number_of(desc) == 1 and not items and gold >= 12:
+        items["12 Gold Crowns"] = 1
+        gold -= 12
     return dict(
         name=os.path.basename(path).removesuffix(".decisions.jsonl.zst"),
         disciplines=sorted(discipline_name(d) for d in desc["msdisciplines"]),
-        items={names.item(k): v for k, v in desc["variable"]["items"].items()},
-        gold=desc["variable"]["gold"],
+        items=items,
+        gold=gold,
         score=score,
         finish=1 - sum(deaths.values()),
         deaths=deaths,
@@ -231,7 +241,8 @@ def markdown(g):
         out += ["", "| Starting item | With | Without | Difference |", "|---|---|---|---|"]
         out += [f"| {d['name']} | {pct(d['with_'])} | {pct(d['without'])} | {pts(d['gain'])} |" for d in g["items"]]
     if g["gold"]:
-        out += ["", "| Starting Gold Crowns | Mean chance |", "|---|---|"]
+        label = "Gold Crowns of the pouch" if g["book"] == 1 else "Starting Gold Crowns"
+        out += ["", f"| {label} | Mean chance |", "|---|---|"]
         out += [f"| {d['gold']} | {pct(d['mean'])} |" for d in g["gold"]]
     out += ["", "These compare groups of characters, so a difference also carries what the rest of the kit does with it.", ""]
     out += ["## The decisions that matter", "",
