@@ -1201,6 +1201,14 @@ svg02: reports02
 	$(MAKE) svgfiles02
 svgfiles02: $(SVG02)
 
+# the value of every choice on the best path, for the guides: solves each character again for these gold
+decisions01: $(GOLD01:.goldranges=.decisions)
+data/B01/%.decisions: data/B01/%.goldranges
+	time python3 goldscores-rust.py --decisions $@ all
+decisions02: $(GOLD02:.goldranges=.decisions)
+data/B02/%.decisions: data/B02/%.goldranges
+	time python3 goldscores-rust.py --decisions $@ $(REPORTGOLD02)
+
 reports03: $(patsubst %.bin, %.reports, $(TARGETSLOWB03))
 reports04: $(patsubst %.bin, %.reports, $(TARGETSLOWB04))
 reports05: $(patsubst %.bin, %.reports, $(TARGETSLOWB05))
