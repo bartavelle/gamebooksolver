@@ -1739,64 +1739,79 @@
     {
       "desc": "You have reached a small bridge. A track follows the stream towards the east. A much narrower path disappears into thick forest towards the south.\n",
       "pchoice": {
-        "CanTake": [
-          "Sword",
-          1,
-          {
-            "Decisions": [
-              [
-                "Exit through 167",
+        "Decisions": [
+          [
+            "East, to the clearing and its paths",
+            {
+              "CanTake": [
+                "Sword",
+                1,
                 {
-                  "NoDecision": {
-                    "Simple": [
-                      [
-                        {
-                          "MustEat": "Hunt"
-                        }
-                      ],
+                  "Decisions": [
+                    [
+                      "Exit through 167",
                       {
-                        "Goto": 167
+                        "NoDecision": {
+                          "Simple": [
+                            [
+                              {
+                                "MustEat": "Hunt"
+                              }
+                            ],
+                            {
+                              "Goto": 167
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    [
+                      "Exit through 30",
+                      {
+                        "NoDecision": {
+                          "Simple": [
+                            [
+                              {
+                                "MustEat": "Hunt"
+                              }
+                            ],
+                            {
+                              "Goto": 30
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    [
+                      "Exit through 6",
+                      {
+                        "NoDecision": {
+                          "Simple": [
+                            [
+                              {
+                                "MustEat": "Hunt"
+                              }
+                            ],
+                            {
+                              "Goto": 6
+                            }
+                          ]
+                        }
                       }
                     ]
-                  }
-                }
-              ],
-              [
-                "Exit through 30",
-                {
-                  "NoDecision": {
-                    "Simple": [
-                      [
-                        {
-                          "MustEat": "Hunt"
-                        }
-                      ],
-                      {
-                        "Goto": 30
-                      }
-                    ]
-                  }
-                }
-              ],
-              [
-                "Exit through 6",
-                {
-                  "NoDecision": {
-                    "Simple": [
-                      [
-                        {
-                          "MustEat": "Hunt"
-                        }
-                      ],
-                      {
-                        "Goto": 6
-                      }
-                    ]
-                  }
+                  ]
                 }
               ]
-            ]
-          }
+            }
+          ],
+          [
+            "If you wish to go south, turn to 157.",
+            {
+              "NoDecision": {
+                "Goto": 157
+              }
+            }
+          ]
         ]
       },
       "title": "70"

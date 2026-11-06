@@ -67,7 +67,7 @@ Definition chapters := [(1%nat,Decisions [conditional (HasDiscipline (SixthSense
   (67%nat,none (Goto 252%nat));
   (68%nat,Decisions [none (Goto 130%nat); none (Goto 15%nat)]);
   (69%nat,none (Goto 272%nat));
-  (70%nat,can_take (Weapon Sword) 1%nat (Decisions [none (Simple [MustEat Hunt] (Goto 167%nat)); none (Simple [MustEat Hunt] (Goto 30%nat)); none (Simple [MustEat Hunt] (Goto 6%nat))]));
+  (70%nat,Decisions [can_take (Weapon Sword) 1%nat (Decisions [none (Simple [MustEat Hunt] (Goto 167%nat)); none (Simple [MustEat Hunt] (Goto 30%nat)); none (Simple [MustEat Hunt] (Goto 6%nat))]); none (Goto 157%nat)]);
   (71%nat,Decisions [conditional (HasDiscipline (SixthSense)) (none (Goto 65%nat)); none (Goto 242%nat); none (Goto 104%nat)]);
   (73%nat,none (Goto 243%nat));
   (74%nat,Decisions [none (Goto 138%nat); none (Goto 281%nat)]);
