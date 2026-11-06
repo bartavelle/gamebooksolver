@@ -1184,10 +1184,17 @@ comma = ,
 gold02: data/B02 $(GOLD02)
 gold01: gold02 data/B01 $(GOLD01)
 
-# the reports, from the solutions: only some of the starting gold of Book 2, as it has many
+# the reports, from the solutions: all the starting gold of Book 1, and only some of Book 2, as it has many
+reports01: $(GOLD01:.goldranges=.reports)
+data/B01/%.reports: data/B01/%.goldranges
+	time python3 goldscores-rust.py --reports $@ all
+svg01: reports01
+	$(MAKE) svgfiles01
+svgfiles01: $(patsubst %.dot,%.svg,$(wildcard data/B01/*.dot))
+
 REPORTGOLD02 = 10,20,50
 reports02: $(GOLD02:.goldranges=.reports)
-data/B02/%.reports:
+data/B02/%.reports: data/B02/%.goldranges
 	time python3 goldscores-rust.py --reports $@ $(REPORTGOLD02)
 SVG02 = $(foreach g,$(subst $(comma), ,$(REPORTGOLD02)),$(subst g10_50,g$(g),$(GOLD02:.goldranges=.svg)))
 svg02: reports02
@@ -1215,11 +1222,27 @@ low01d: data/B01 json-chapters/display01.json $(patsubst %.bin, %.dot, $(TARGETS
 low01: data/B01 $(patsubst %.bin, %.svg, $(TARGETSLOWB01))
 low01sol: $(patsubst %.bin, %.solutions.zstd, $(TARGETSLOWB01))
 
-data/%.goldranges:
+# a result is out of date when its book changes, or the results of the next book that it reads (all of data/B0n+1/*.json)
+NEXT01 = $(GOLD02)
+NEXT02 = $(TARGETSLOWB03:.bin=.json)
+NEXT03 = $(TARGETSLOWB04:.bin=.json)
+NEXT04 = $(TARGETSLOWB05:.bin=.json)
+
+data/B01/%.goldranges: json-chapters/book01.json $(NEXT01)
+	time python3 goldscores-rust.py $@
+data/B02/%.goldranges: json-chapters/book02.json $(NEXT02)
 	time python3 goldscores-rust.py $@
 
-data/%.solutions.zstd data/%.desc data/%.jot data/%.json data/%.decisions.jsonl.zst &:
-	time python3 buildsol-rust.py data/$*.solutions.zstd
+data/B01/%.solutions.zstd data/B01/%.desc data/B01/%.jot data/B01/%.json data/B01/%.decisions.jsonl.zst &: json-chapters/book01.json $(NEXT01)
+	time python3 buildsol-rust.py data/B01/$*.solutions.zstd
+data/B02/%.solutions.zstd data/B02/%.desc data/B02/%.jot data/B02/%.json data/B02/%.decisions.jsonl.zst &: json-chapters/book02.json $(NEXT02)
+	time python3 buildsol-rust.py data/B02/$*.solutions.zstd
+data/B03/%.solutions.zstd data/B03/%.desc data/B03/%.jot data/B03/%.json data/B03/%.decisions.jsonl.zst &: json-chapters/book03.json $(NEXT03)
+	time python3 buildsol-rust.py data/B03/$*.solutions.zstd
+data/B04/%.solutions.zstd data/B04/%.desc data/B04/%.jot data/B04/%.json data/B04/%.decisions.jsonl.zst &: json-chapters/book04.json $(NEXT04)
+	time python3 buildsol-rust.py data/B04/$*.solutions.zstd
+data/B05/%.solutions.zstd data/B05/%.desc data/B05/%.jot data/B05/%.json data/B05/%.decisions.jsonl.zst &: json-chapters/book05.json
+	time python3 buildsol-rust.py data/B05/$*.solutions.zstd
 
 data/B05/%.dot: data/B05/%.jot json-chapters/book05.json json-chapters/display05.json
 	target/release/gamebooksolver-explorer --solpath $< dot --bookpath json-chapters/book05.json --display json-chapters/display05.json > $@
