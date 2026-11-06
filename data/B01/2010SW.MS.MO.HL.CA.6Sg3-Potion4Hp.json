@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Hunting",
+    "Tracking",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindBlast",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": {
+      "Potion4Hp": 1
+    },
+    "gold": 3,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.6302722742542778,
+      "mratio": {
+        "radix": 16,
+        "value": "1e9312c34a10a62362a6ccad6edd35a8d5172925ca55e22357acf1d/30828f0cf303bf52fe72dbae86b6ca377087c565bb2a00000000000"
+      },
+      "states": 6181
+    }
+  ]
+}

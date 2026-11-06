@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "SixthSense",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": {
+      "Meal": 2
+    },
+    "gold": 5,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.5987630650661343,
+      "mratio": {
+        "radix": 16,
+        "value": "e2ebfca6b5f2345732566a7e41f544c3b84f5a73d1dae69dad7fef16b/17afbfd952a8d46b863e154437c740bd11f24b62ac6382000000000000"
+      },
+      "states": 5141
+    }
+  ]
+}

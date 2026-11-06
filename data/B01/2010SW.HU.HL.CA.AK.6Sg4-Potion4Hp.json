@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Tracking",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Potion4Hp": 1
+    },
+    "gold": 4,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.5323224263074134,
+      "mratio": {
+        "radix": 16,
+        "value": "d013c35ea7c01ba52774face795f4e9c6cf137b4087d9cf09ae2dd54a6bc30cac9b7/186e2ba3bead7399c4dae83a25d1057e6c9db38d09e65be166b7a11f3f80000000000"
+      },
+      "states": 4681
+    }
+  ]
+}

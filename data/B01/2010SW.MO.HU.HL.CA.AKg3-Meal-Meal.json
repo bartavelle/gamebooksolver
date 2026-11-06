@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "SixthSense",
+    "Tracking",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast"
+  ],
+  "variable": {
+    "items": {
+      "Meal": 2
+    },
+    "gold": 3,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.5742426463001753,
+      "mratio": {
+        "radix": 16,
+        "value": "118943a5d9f70fe35afc55cd89c31724fbe0017d46ac00aa8bb04732df5dd6d3d04a801/1e89b68cae58d0803611a248af4546de07c520704c5ff2d9c06589670f6000000000000"
+      },
+      "states": 5291
+    }
+  ]
+}

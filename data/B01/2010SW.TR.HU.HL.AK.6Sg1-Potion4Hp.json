@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Camouflage",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "MindOverMatter"
+  ],
+  "variable": {
+    "items": {
+      "Potion4Hp": 1
+    },
+    "gold": 1,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.5934687336472584,
+      "mratio": {
+        "radix": 16,
+        "value": "243f22f62091c1cb5e42e57d658987759e8a45e09da95d934dc3208a02b4c47a1191db/3d136d195cb1a1006c2344915e8a8dbc0f8a40e098bfe5b380cb12ce1ec00000000000"
+      },
+      "states": 7671
+    }
+  ]
+}

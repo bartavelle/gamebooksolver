@@ -15145,5 +15145,921 @@
     "30217": 8,
     "30218": 6,
     "30219": 6
+  },
+  "deaths": {
+    "57": {
+      "radix": 10,
+      "value": "1/1000000"
+    },
+    "253": {
+      "radix": 16,
+      "value": "31a70a6feba9/11c37937e08000"
+    },
+    "261": {
+      "radix": 10,
+      "value": "999999/10000000"
+    }
+  },
+  "values": {
+    "1": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "2": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "6": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "16": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "19": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "33": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "37": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "42": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "51": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "53": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "54": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "55": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "57": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "67": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "68": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "71": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "81": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "90": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "94": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "95": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "100": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "103": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "104": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "108": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "112": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "113": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "114": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "123": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "126": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "133": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "134": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "137": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "142": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "145": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "149": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "153": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "160": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "162": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "166": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "169": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "172": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "173": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "184": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "188": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "200": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "201": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "202": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "204": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "206": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "207": {
+      "radix": 16,
+      "value": "cad52e50cca8743/2a5a058fc295ed00000"
+    },
+    "210": {
+      "radix": 16,
+      "value": "6e8d7ca7d17361/b1a2bc2ec50000"
+    },
+    "212": {
+      "radix": 16,
+      "value": "600ce90bfd06f1/1158e460913d0000"
+    },
+    "214": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "215": {
+      "radix": 16,
+      "value": "1148acd1069c7/11c37937e08000"
+    },
+    "218": {
+      "radix": 16,
+      "value": "6bba8bf803e9b56bf7485d43/c9f2c9cd04674edea4000000"
+    },
+    "219": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "220": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "221": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "224": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "228": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "233": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "235": {
+      "radix": 16,
+      "value": "8f34b2a9caf/e35fa931a00"
+    },
+    "241": {
+      "radix": 16,
+      "value": "8f34b2a9caf/e35fa931a00"
+    },
+    "242": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "246": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "247": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "250": {
+      "radix": 16,
+      "value": "2f61356c7e5605/b1a2bc2ec50000"
+    },
+    "252": {
+      "radix": 16,
+      "value": "fcb11ced4c757/2386f26fc10000"
+    },
+    "253": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "254": {
+      "radix": 16,
+      "value": "1c13ade17a45f/470de4df82000"
+    },
+    "255": {
+      "radix": 16,
+      "value": "2b59c915991e80d/1158e460913d0000"
+    },
+    "261": {
+      "radix": 10,
+      "value": "0"
+    },
+    "262": {
+      "radix": 16,
+      "value": "fcb11ced4c757/58d15e17628000"
+    },
+    "264": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "266": {
+      "radix": 16,
+      "value": "96a93d82bc1/b5e620f4800"
+    },
+    "268": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "269": {
+      "radix": 16,
+      "value": "3f5bd00ad61e11/43c33c193756480000"
+    },
+    "272": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "275": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "276": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "281": {
+      "radix": 16,
+      "value": "8f34b2a9caf/e35fa931a00"
+    },
+    "282": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "285": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "286": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "288": {
+      "radix": 16,
+      "value": "e20a6ee045650d3/1158e460913d0000"
+    },
+    "289": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "291": {
+      "radix": 16,
+      "value": "6bba8bf803e9b56bf7485d43/c9f2c9cd04674edea4000000"
+    },
+    "292": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "294": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "295": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "296": {
+      "radix": 16,
+      "value": "49af3d990ec97/11c37937e08000"
+    },
+    "300": {
+      "radix": 16,
+      "value": "6bba8bf803e9b56bf7485d43/c9f2c9cd04674edea4000000"
+    },
+    "302": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "308": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "312": {
+      "radix": 16,
+      "value": "6e8d7ca7d17361/b1a2bc2ec50000"
+    },
+    "313": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "315": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "320": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "321": {
+      "radix": 16,
+      "value": "8f34b2a9caf/e35fa931a00"
+    },
+    "322": {
+      "radix": 16,
+      "value": "96a93d82bc1/b5e620f4800"
+    },
+    "323": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "326": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "329": {
+      "radix": 16,
+      "value": "f030dfeb769/1c6bf52634000"
+    },
+    "331": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "332": {
+      "radix": 16,
+      "value": "3f5bd00ad61e11/43c33c193756480000"
+    },
+    "335": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "337": {
+      "radix": 16,
+      "value": "49af3d990ec97/11c37937e08000"
+    },
+    "339": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "341": {
+      "radix": 16,
+      "value": "96a93d82bc1/b5e620f4800"
+    },
+    "342": {
+      "radix": 16,
+      "value": "49af3d990ec97/11c37937e08000"
+    },
+    "343": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "344": {
+      "radix": 16,
+      "value": "8f34b2a9caf/e35fa931a00"
+    },
+    "349": {
+      "radix": 16,
+      "value": "600ce90bfd06f1/1158e460913d0000"
+    },
+    "351": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "352": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "356": {
+      "radix": 16,
+      "value": "8f34b2a9caf/e35fa931a00"
+    },
+    "359": {
+      "radix": 16,
+      "value": "6bba8bf803e9b56bf7485d43/c9f2c9cd04674edea4000000"
+    },
+    "361": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "364": {
+      "radix": 16,
+      "value": "47d1d5233b1dce78dce11abd/c9f2c9cd04674edea4000000"
+    },
+    "365": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "367": {
+      "radix": 16,
+      "value": "49af3d990ec97/11c37937e08000"
+    },
+    "368": {
+      "radix": 16,
+      "value": "fcb11ced4c757/2386f26fc10000"
+    },
+    "372": {
+      "radix": 16,
+      "value": "3f5bd00ad61e11/43c33c193756480000"
+    },
+    "373": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "374": {
+      "radix": 16,
+      "value": "1c13ade17a45f/38d7ea4c68000"
+    },
+    "376": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "377": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "378": {
+      "radix": 16,
+      "value": "fcb11ced4c757/16345785d8a000"
+    },
+    "380": {
+      "radix": 16,
+      "value": "47d1d5233b1dce78dce11abd/c9f2c9cd04674edea4000000"
+    },
+    "381": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "382": {
+      "radix": 16,
+      "value": "14ba875f7745a23/1158e460913d0000"
+    },
+    "383": {
+      "radix": 16,
+      "value": "8f34b2a9caf/e35fa931a00"
+    },
+    "386": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "387": {
+      "radix": 16,
+      "value": "96a93d82bc1/b5e620f4800"
+    },
+    "388": {
+      "radix": 16,
+      "value": "49af3d990ec97/11c37937e08000"
+    },
+    "391": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "392": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "393": {
+      "radix": 16,
+      "value": "2b59c915991e80d/1158e460913d0000"
+    },
+    "395": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "396": {
+      "radix": 16,
+      "value": "96a93d82bc1/b5e620f4800"
+    },
+    "400": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "405": {
+      "radix": 16,
+      "value": "2b59c915991e80d/1158e460913d0000"
+    },
+    "444": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "445": {
+      "radix": 16,
+      "value": "e20a6ee045650d3/1158e460913d0000"
+    },
+    "2001": {
+      "radix": 16,
+      "value": "fcb11ced4c757/6f05b59d3b20000"
+    },
+    "2002": {
+      "radix": 16,
+      "value": "fcb11ced4c757/6f05b59d3b20000"
+    },
+    "2003": {
+      "radix": 16,
+      "value": "fcb11ced4c757/3782dace9d90000"
+    },
+    "2004": {
+      "radix": 16,
+      "value": "fcb11ced4c757/3782dace9d90000"
+    },
+    "2005": {
+      "radix": 16,
+      "value": "fcb11ced4c757/3782dace9d90000"
+    },
+    "2006": {
+      "radix": 16,
+      "value": "fcb11ced4c757/3782dace9d90000"
+    },
+    "2007": {
+      "radix": 16,
+      "value": "fcb11ced4c757/3782dace9d90000"
+    },
+    "2008": {
+      "radix": 16,
+      "value": "2f61356c7e5605/6f05b59d3b20000"
+    },
+    "2009": {
+      "radix": 16,
+      "value": "2f61356c7e5605/6f05b59d3b20000"
+    },
+    "2010": {
+      "radix": 16,
+      "value": "6e8d7ca7d17361/3782dace9d90000"
+    },
+    "2011": {
+      "radix": 16,
+      "value": "fcb11ced4c757/1bc16d674ec8000"
+    },
+    "2012": {
+      "radix": 16,
+      "value": "6e8d7ca7d17361/3782dace9d90000"
+    },
+    "2013": {
+      "radix": 16,
+      "value": "fcb11ced4c757/1bc16d674ec8000"
+    },
+    "2014": {
+      "radix": 16,
+      "value": "cd4fe780ce1f6b/6f05b59d3b20000"
+    },
+    "2015": {
+      "radix": 16,
+      "value": "fcb11ced4c757/3782dace9d90000"
+    },
+    "2016": {
+      "radix": 16,
+      "value": "adb9c3e32490bd/6f05b59d3b20000"
+    },
+    "2017": {
+      "radix": 16,
+      "value": "fcb11ced4c757/b1a2bc2ec50000"
+    },
+    "2018": {
+      "radix": 16,
+      "value": "fcb11ced4c757/b1a2bc2ec50000"
+    },
+    "2019": {
+      "radix": 16,
+      "value": "fcb11ced4c757/b1a2bc2ec50000"
+    },
+    "2020": {
+      "radix": 16,
+      "value": "fcb11ced4c757/b1a2bc2ec50000"
+    },
+    "2021": {
+      "radix": 16,
+      "value": "fcb11ced4c757/b1a2bc2ec50000"
+    },
+    "2022": {
+      "radix": 16,
+      "value": "fcb11ced4c757/b1a2bc2ec50000"
+    },
+    "2028": {
+      "radix": 16,
+      "value": "fcb11ced4c757/11c37937e08000"
+    },
+    "2063": {
+      "radix": 16,
+      "value": "2af6428a47a09/2c68af0bb14000"
+    },
+    "2064": {
+      "radix": 16,
+      "value": "4beb47fee0c41/6f05b59d3b2000"
+    },
+    "2065": {
+      "radix": 16,
+      "value": "58ddd3481ced7/58d15e17628000"
+    },
+    "2066": {
+      "radix": 16,
+      "value": "18211ad9f01e9/2c68af0bb14000"
+    },
+    "2067": {
+      "radix": 16,
+      "value": "16f3c85eeaa67/16345785d8a000"
+    },
+    "2068": {
+      "radix": 16,
+      "value": "9d2283275a24b/de0b6b3a764000"
+    },
+    "2069": {
+      "radix": 16,
+      "value": "1d76789760e6e1/1bc16d674ec8000"
+    },
+    "2070": {
+      "radix": 16,
+      "value": "7a6981fa38cd/8e1bc9bf04000"
+    },
+    "2071": {
+      "radix": 16,
+      "value": "2fab8c765d811/2c68af0bb14000"
+    },
+    "2072": {
+      "radix": 16,
+      "value": "1c3fbb888343/1c6bf52634000"
+    },
+    "2073": {
+      "radix": 16,
+      "value": "1c3fbb888343/2386f26fc1000"
+    },
+    "2074": {
+      "radix": 16,
+      "value": "136bd0edda3e1/16345785d8a000"
+    },
+    "2075": {
+      "radix": 16,
+      "value": "1f3109bc10ef5/2c68af0bb14000"
+    },
+    "2076": {
+      "radix": 16,
+      "value": "23e653a826cfd/2c68af0bb14000"
+    },
+    "2077": {
+      "radix": 16,
+      "value": "96a93d82bc1/e35fa931a000"
+    },
+    "2078": {
+      "radix": 16,
+      "value": "1c3fbb888343/2386f26fc1000"
+    },
+    "2079": {
+      "radix": 16,
+      "value": "1c3fbb888343/e35fa931a000"
+    },
+    "2080": {
+      "radix": 16,
+      "value": "96a93d82bc1/11c37937e0800"
+    },
+    "2081": {
+      "radix": 16,
+      "value": "7a6981fa38cd/470de4df82000"
+    },
+    "2082": {
+      "radix": 16,
+      "value": "96a93d82bc1/2386f26fc1000"
+    },
+    "2083": {
+      "radix": 16,
+      "value": "67945a49e14b/470de4df82000"
+    },
+    "2085": {
+      "radix": 16,
+      "value": "96a93d82bc1/71afd498d000"
+    },
+    "2086": {
+      "radix": 16,
+      "value": "96a93d82bc1/71afd498d000"
+    },
+    "2087": {
+      "radix": 16,
+      "value": "96a93d82bc1/71afd498d000"
+    },
+    "2088": {
+      "radix": 16,
+      "value": "96a93d82bc1/71afd498d000"
+    },
+    "2089": {
+      "radix": 16,
+      "value": "96a93d82bc1/71afd498d000"
+    },
+    "2090": {
+      "radix": 16,
+      "value": "96a93d82bc1/71afd498d000"
+    },
+    "2097": {
+      "radix": 16,
+      "value": "96a93d82bc1/b5e620f4800"
+    },
+    "30160": {
+      "radix": 16,
+      "value": "2b59c915991e80d/1158e460913d0000"
+    },
+    "30168": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30170": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30172": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30174": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30175": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30176": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30177": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30178": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30179": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30180": {
+      "radix": 16,
+      "value": "2b59c915991e80d/ad78ebc5ac620000"
+    },
+    "30188": {
+      "radix": 16,
+      "value": "12f747f972fd585b/6c6b935b8bbd40000"
+    },
+    "30189": {
+      "radix": 16,
+      "value": "820d5b40cb5b827/3635c9adc5dea0000"
+    },
+    "30190": {
+      "radix": 16,
+      "value": "12f747f972fd585b/6c6b935b8bbd40000"
+    },
+    "30191": {
+      "radix": 16,
+      "value": "820d5b40cb5b827/3635c9adc5dea0000"
+    },
+    "30192": {
+      "radix": 16,
+      "value": "12f747f972fd585b/6c6b935b8bbd40000"
+    },
+    "30193": {
+      "radix": 16,
+      "value": "820d5b40cb5b827/3635c9adc5dea0000"
+    },
+    "30194": {
+      "radix": 16,
+      "value": "12f747f972fd585b/6c6b935b8bbd40000"
+    },
+    "30195": {
+      "radix": 16,
+      "value": "820d5b40cb5b827/3635c9adc5dea0000"
+    },
+    "30196": {
+      "radix": 16,
+      "value": "2b59c915991e80d/15af1d78b58c40000"
+    },
+    "30197": {
+      "radix": 16,
+      "value": "2b59c915991e80d/1b1ae4d6e2ef50000"
+    },
+    "30198": {
+      "radix": 16,
+      "value": "820d5b40cb5b827/6c6b935b8bbd40000"
+    },
+    "30199": {
+      "radix": 16,
+      "value": "2b59c915991e80d/3635c9adc5dea0000"
+    },
+    "30200": {
+      "radix": 16,
+      "value": "2b59c915991e80d/6c6b935b8bbd40000"
+    },
+    "30214": {
+      "radix": 16,
+      "value": "38e5d7ec58f80911/43c33c193756480000"
+    },
+    "30215": {
+      "radix": 16,
+      "value": "820d5b40cb5b827/d8d726b7177a80000"
+    },
+    "30216": {
+      "radix": 16,
+      "value": "2b59c915991e80d/6c6b935b8bbd40000"
+    },
+    "30217": {
+      "radix": 16,
+      "value": "820d5b40cb5b827/21e19e0c9bab240000"
+    },
+    "30218": {
+      "radix": 16,
+      "value": "820d5b40cb5b827/43c33c193756480000"
+    },
+    "30219": {
+      "radix": 16,
+      "value": "2b59c915991e80d/43c33c193756480000"
+    }
   }
 }

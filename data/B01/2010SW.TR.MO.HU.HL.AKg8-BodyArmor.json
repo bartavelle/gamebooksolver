@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Camouflage",
+    "SixthSense",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast"
+  ],
+  "variable": {
+    "items": {
+      "BodyArmor": 1
+    },
+    "gold": 8,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.6340979400870652,
+      "mratio": {
+        "radix": 16,
+        "value": "1efb83626bc0b5fef7dd852e5fd0abe9507bab6d01cd4269a7af3d310c9eda0cc54fc1/30dc57477d5ae73389b5d0744ba20afcd93b671a13ccb7c2cd6f423e7f000000000000"
+      },
+      "states": 7111
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Camouflage",
+    "Hunting",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindBlast",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": {
+      "Helmet": 1
+    },
+    "gold": 2,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.6766753061371384,
+      "mratio": {
+        "radix": 16,
+        "value": "14841521aa5fd75c567fefa5143657763121f8fef12d1f791c9e3e89/1e51996817e25793df07c94d14323e62a654db5f94fa400000000000"
+      },
+      "states": 7371
+    }
+  ]
+}

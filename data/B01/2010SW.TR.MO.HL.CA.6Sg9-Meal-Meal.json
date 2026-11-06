@@ -1,0 +1,31 @@
+{
+  "mbook": "Book01",
+  "msdisciplines": [
+    "Hunting",
+    {
+      "WeaponSkill": "Sword"
+    },
+    "MindShield",
+    "MindBlast",
+    "AnimalKinship"
+  ],
+  "variable": {
+    "items": {
+      "Meal": 2
+    },
+    "gold": 9,
+    "flags": []
+  },
+  "msentries": [
+    {
+      "meendurance": 20,
+      "mskill": 10,
+      "mscore": 0.63058725725461,
+      "mratio": {
+        "radix": 16,
+        "value": "4aae9d945da67d7a6b20efadebc8e13cf31b745fe2b417a3c42a044bab/766ebf3e9d4c26199f366a5516e443b159bb78ed5df18a000000000000"
+      },
+      "states": 5141
+    }
+  ]
+}

@@ -1,0 +1,3780 @@
+{
+  "bookid": "Book01",
+  "res": {
+    "1": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "85": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "3": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "9131/80000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "9131/80000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "9131/80000"
+      },
+      "transitions": {
+        "196": {
+          "radix": 10,
+          "value": "9131/80000"
+        }
+      }
+    },
+    "14": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Spear": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "106": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "16": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "192": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "20": {
+      "endurance": {
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "499/800"
+      },
+      "transitions": {
+        "273": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      }
+    },
+    "30": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "194": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "63": {
+      "endurance": {
+        "9": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "8477/10000"
+      },
+      "transitions": {
+        "359": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      }
+    },
+    "64": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "16": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "66": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "8637/200000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "53643/200000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "27021/25000000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "256527/100000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "843057/200000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "1168953/200000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "27441/4000000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "791499/100000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "50721/5000000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "93513/5000000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "485151/20000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "483969/20000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "33867/1250000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "197367/10000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "10371/625000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "5067/400000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "10119/500000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "10377/200000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "25431/100000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:13/Dagger/Sword": {
+          "radix": 10,
+          "value": "13437/200000"
+        },
+        "Backpack/Meal/Gold:13/Dagger": {
+          "radix": 10,
+          "value": "1497/8000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "25431/100000"
+      },
+      "transitions": {
+        "350": {
+          "radix": 10,
+          "value": "25431/100000"
+        }
+      }
+    },
+    "70": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Gold:3/Spear": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "30": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "72": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1/2"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1/2"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1/2"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1/2"
+      },
+      "transitions": {
+        "361": {
+          "radix": 10,
+          "value": "1/2"
+        }
+      }
+    },
+    "75": {
+      "endurance": {
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "4479/20000"
+      },
+      "transitions": {
+        "163": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      }
+    },
+    "81": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "200": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "85": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "99": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "98": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "8637/200000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "53643/200000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "27021/25000000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "256527/100000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "843057/200000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "1168953/200000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "27441/4000000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "791499/100000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "50721/5000000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "93513/5000000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "485151/20000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "483969/20000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "33867/1250000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "197367/10000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "10371/625000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "5067/400000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "10119/500000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "10377/200000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "25431/100000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:13/Dagger/Sword": {
+          "radix": 10,
+          "value": "13437/200000"
+        },
+        "Backpack/Meal/Gold:13/Dagger": {
+          "radix": 10,
+          "value": "1497/8000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "25431/100000"
+      },
+      "transitions": {
+        "139": {
+          "radix": 10,
+          "value": "25431/100000"
+        }
+      }
+    },
+    "99": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "222": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "106": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Spear": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "263": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "129": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "9131/80000"
+        },
+        "Backpack/Meal/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal:2/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "76947/80000"
+      },
+      "transitions": {
+        "3": {
+          "radix": 10,
+          "value": "9131/80000"
+        },
+        "144": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      }
+    },
+    "135": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "36627/80000"
+        },
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "63/125"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "76947/80000"
+      },
+      "transitions": {
+        "223": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      }
+    },
+    "139": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "8637/200000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "53643/200000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "27021/25000000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "256527/100000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "843057/200000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "1168953/200000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "27441/4000000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "791499/100000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "50721/5000000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "93513/5000000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "485151/20000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "483969/20000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "33867/1250000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "197367/10000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "10371/625000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "5067/400000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "10119/500000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "10377/200000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "25431/100000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:13/Dagger/Sword": {
+          "radix": 10,
+          "value": "13437/200000"
+        },
+        "Backpack/Meal/Gold:13/Dagger": {
+          "radix": 10,
+          "value": "1497/8000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "25431/100000"
+      },
+      "transitions": {
+        "66": {
+          "radix": 10,
+          "value": "25431/100000"
+        }
+      }
+    },
+    "140": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "215": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "142": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "36627/80000"
+        },
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "63/125"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "76947/80000"
+      },
+      "transitions": {
+        "135": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      }
+    },
+    "144": {
+      "endurance": {
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal:2/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "8477/10000"
+      },
+      "transitions": {
+        "63": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      }
+    },
+    "148": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "199": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "163": {
+      "endurance": {
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "4479/20000"
+      },
+      "transitions": {
+        "321": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      }
+    },
+    "168": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "64": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "171": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "303": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "174": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "18711/80000"
+        },
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "63/125"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "59031/80000"
+      },
+      "transitions": {
+        "190": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      }
+    },
+    "175": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "18711/80000"
+        },
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "63/125"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "59031/80000"
+      },
+      "transitions": {
+        "182": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      }
+    },
+    "179": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "9131/80000"
+        },
+        "Backpack/Meal/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal:2/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "76947/80000"
+      },
+      "transitions": {
+        "318": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      }
+    },
+    "182": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "18711/80000"
+        },
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "63/125"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "59031/80000"
+      },
+      "transitions": {
+        "174": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      }
+    },
+    "190": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "59031/80000"
+      },
+      "transitions": {
+        "20": {
+          "radix": 10,
+          "value": "499/800"
+        },
+        "273": {
+          "radix": 10,
+          "value": "9131/80000"
+        }
+      }
+    },
+    "192": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "171": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "194": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "148": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "196": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "9131/80000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "9131/80000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "9131/80000"
+      },
+      "transitions": {
+        "332": {
+          "radix": 10,
+          "value": "9131/80000"
+        }
+      }
+    },
+    "199": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "81": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "200": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "168": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "210": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "20153/200000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "125167/200000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "63049/25000000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "598563/100000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "1967133/200000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2727557/200000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "64029/4000000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "1846831/100000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "118349/5000000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "218197/5000000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "1132019/20000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "1129261/20000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "79023/1250000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "460523/10000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "24199/625000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "11823/400000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "23611/500000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "24213/200000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "59339/100000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:13/Dagger/Sword": {
+          "radix": 10,
+          "value": "31353/200000"
+        },
+        "Backpack/Meal/Gold:13/Dagger": {
+          "radix": 10,
+          "value": "3493/8000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "59339/100000"
+      },
+      "transitions": {
+        "332": {
+          "radix": 10,
+          "value": "59339/100000"
+        }
+      }
+    },
+    "215": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "346": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "222": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "140": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "223": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "36627/80000"
+        },
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "63/125"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "76947/80000"
+      },
+      "transitions": {
+        "75": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "175": {
+          "radix": 10,
+          "value": "59031/80000"
+        }
+      }
+    },
+    "237": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "72": {
+          "radix": 10,
+          "value": "1/2"
+        },
+        "265": {
+          "radix": 10,
+          "value": "1/2"
+        }
+      }
+    },
+    "263": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Spear": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "70": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "265": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1/2"
+        },
+        "16384": {
+          "radix": 10,
+          "value": "36947/80000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "36627/80000"
+        },
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "63/125"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "76947/80000"
+      },
+      "transitions": {
+        "142": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      }
+    },
+    "269": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "2879/20000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "17881/20000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "9007/2500000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "85509/10000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "281019/20000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "389651/20000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "9147/400000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "263833/10000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "16907/500000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "31171/500000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "161717/2000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "161323/2000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "11289/125000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "65789/1000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "3457/62500"
+        },
+        "16": {
+          "radix": 10,
+          "value": "1689/40000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "3373/50000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "3459/20000"
+        }
+      },
+      "flags": {
+        "16384": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "8477/10000"
+      },
+      "transitions": {
+        "314": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      }
+    },
+    "273": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "9131/80000"
+        },
+        "Backpack/Meal/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal:2/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "76947/80000"
+      },
+      "transitions": {
+        "179": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      }
+    },
+    "303": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "237": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "314": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "2879/20000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "17881/20000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "9007/2500000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "85509/10000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "281019/20000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "389651/20000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "9147/400000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "263833/10000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "16907/500000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "31171/500000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "161717/2000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "161323/2000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "11289/125000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "65789/1000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "3457/62500"
+        },
+        "16": {
+          "radix": 10,
+          "value": "1689/40000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "3373/50000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "3459/20000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:13/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal/Gold:13/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "8477/10000"
+      },
+      "transitions": {
+        "98": {
+          "radix": 10,
+          "value": "25431/100000"
+        },
+        "341": {
+          "radix": 10,
+          "value": "59339/100000"
+        }
+      }
+    },
+    "318": {
+      "endurance": {
+        "5": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "8": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "19": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "9131/80000"
+        },
+        "Backpack/Meal/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal:2/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "76947/80000"
+      },
+      "transitions": {
+        "129": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      }
+    },
+    "321": {
+      "endurance": {
+        "11": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "77/4000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      },
+      "items": {
+        "Backpack/Meal/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "4479/20000"
+      },
+      "transitions": {
+        "273": {
+          "radix": 10,
+          "value": "4479/20000"
+        }
+      }
+    },
+    "332": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "20153/200000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "125167/200000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "63049/25000000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "598563/100000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "3680633/200000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "6941557/200000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "167069/4000000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "4114831/100000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "217449/5000000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "299397/5000000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "1132019/20000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "1129261/20000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "79023/1250000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "460523/10000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "24199/625000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "11823/400000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "23611/500000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "24213/200000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "283011/400000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "9131/80000"
+        },
+        "Backpack/Gold:13/Dagger/Sword": {
+          "radix": 10,
+          "value": "31353/200000"
+        },
+        "Backpack/Meal/Gold:13/Dagger": {
+          "radix": 10,
+          "value": "3493/8000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "283011/400000"
+      },
+      "transitions": {
+        "350": {
+          "radix": 10,
+          "value": "283011/400000"
+        }
+      }
+    },
+    "341": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "20153/200000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "125167/200000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "63049/25000000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "598563/100000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "1967133/200000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "2727557/200000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "64029/4000000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "1846831/100000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "118349/5000000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "218197/5000000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "1132019/20000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "1129261/20000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "79023/1250000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "460523/10000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "24199/625000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "11823/400000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "23611/500000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "24213/200000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "59339/100000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:13/Dagger/Sword": {
+          "radix": 10,
+          "value": "31353/200000"
+        },
+        "Backpack/Meal/Gold:13/Dagger": {
+          "radix": 10,
+          "value": "3493/8000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "59339/100000"
+      },
+      "transitions": {
+        "210": {
+          "radix": 10,
+          "value": "59339/100000"
+        }
+      }
+    },
+    "346": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp": {
+          "radix": 10,
+          "value": "1"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1"
+      },
+      "transitions": {
+        "14": {
+          "radix": 10,
+          "value": "1"
+        }
+      }
+    },
+    "350": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "2879/20000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "17881/20000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "9007/2500000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "85509/10000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "452369/20000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "811051/20000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "19451/400000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "490633/10000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "26817/500000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "39291/500000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "161717/2000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "161323/2000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "11289/125000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "65789/1000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "3457/62500"
+        },
+        "16": {
+          "radix": 10,
+          "value": "1689/40000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "3373/50000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "3459/20000"
+        }
+      },
+      "flags": {
+        "0": {
+          "radix": 10,
+          "value": "76947/80000"
+        }
+      },
+      "items": {
+        "Gold:3": {
+          "radix": 10,
+          "value": "9131/80000"
+        },
+        "Backpack/Gold:13/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal/Gold:13/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 16,
+        "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+      },
+      "transitions": {}
+    },
+    "359": {
+      "endurance": {
+        "9": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "1153/2000"
+        }
+      },
+      "flags": {
+        "16384": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "8477/10000"
+      },
+      "transitions": {
+        "360": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      }
+    },
+    "360": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "2879/20000000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "17881/20000000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "9007/2500000"
+        },
+        "4": {
+          "radix": 10,
+          "value": "85509/10000000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "281019/20000000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "389651/20000000"
+        },
+        "7": {
+          "radix": 10,
+          "value": "9147/400000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "263833/10000000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "16907/500000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "31171/500000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "161717/2000000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "161323/2000000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "11289/125000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "65789/1000000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "3457/62500"
+        },
+        "16": {
+          "radix": 10,
+          "value": "1689/40000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "3373/50000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "3459/20000"
+        }
+      },
+      "flags": {
+        "16384": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      },
+      "items": {
+        "Backpack/Gold:3/Dagger/Sword": {
+          "radix": 10,
+          "value": "4479/20000"
+        },
+        "Backpack/Meal/Gold:3/Dagger": {
+          "radix": 10,
+          "value": "499/800"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "8477/10000"
+      },
+      "transitions": {
+        "269": {
+          "radix": 10,
+          "value": "8477/10000"
+        }
+      }
+    },
+    "361": {
+      "endurance": {
+        "20": {
+          "radix": 10,
+          "value": "1/2"
+        }
+      },
+      "flags": {
+        "16384": {
+          "radix": 10,
+          "value": "1/2"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "1/2"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "1/2"
+      },
+      "transitions": {
+        "361": {
+          "radix": 10,
+          "value": "3053/80000"
+        },
+        "362": {
+          "radix": 10,
+          "value": "36947/80000"
+        }
+      }
+    },
+    "362": {
+      "endurance": {
+        "1": {
+          "radix": 10,
+          "value": "3427/400000"
+        },
+        "2": {
+          "radix": 10,
+          "value": "2107/100000"
+        },
+        "3": {
+          "radix": 10,
+          "value": "161/6250"
+        },
+        "4": {
+          "radix": 10,
+          "value": "567/25000"
+        },
+        "5": {
+          "radix": 10,
+          "value": "991/50000"
+        },
+        "6": {
+          "radix": 10,
+          "value": "203/12500"
+        },
+        "7": {
+          "radix": 10,
+          "value": "647/50000"
+        },
+        "8": {
+          "radix": 10,
+          "value": "3001/100000"
+        },
+        "9": {
+          "radix": 10,
+          "value": "101/2000"
+        },
+        "10": {
+          "radix": 10,
+          "value": "459/10000"
+        },
+        "11": {
+          "radix": 10,
+          "value": "741/20000"
+        },
+        "12": {
+          "radix": 10,
+          "value": "283/10000"
+        },
+        "13": {
+          "radix": 10,
+          "value": "77/4000"
+        },
+        "14": {
+          "radix": 10,
+          "value": "291/20000"
+        },
+        "15": {
+          "radix": 10,
+          "value": "327/10000"
+        },
+        "16": {
+          "radix": 10,
+          "value": "33/1000"
+        },
+        "17": {
+          "radix": 10,
+          "value": "37/2000"
+        },
+        "18": {
+          "radix": 10,
+          "value": "3/200"
+        },
+        "19": {
+          "radix": 10,
+          "value": "3/500"
+        },
+        "20": {
+          "radix": 10,
+          "value": "1/250"
+        }
+      },
+      "flags": {
+        "16384": {
+          "radix": 10,
+          "value": "36947/80000"
+        }
+      },
+      "items": {
+        "Backpack/Potion4Hp/Meal/Gold:3/Spear/Sword": {
+          "radix": 10,
+          "value": "36947/80000"
+        }
+      },
+      "score": {
+        "radix": 10,
+        "value": "36947/80000"
+      },
+      "transitions": {
+        "265": {
+          "radix": 10,
+          "value": "36947/80000"
+        }
+      }
+    }
+  },
+  "sttmap": {
+    "1": 1,
+    "3": 6,
+    "14": 1,
+    "16": 1,
+    "20": 3,
+    "30": 1,
+    "63": 10,
+    "64": 1,
+    "66": 33,
+    "70": 1,
+    "72": 1,
+    "75": 7,
+    "81": 1,
+    "85": 1,
+    "98": 33,
+    "99": 1,
+    "106": 1,
+    "129": 16,
+    "135": 17,
+    "139": 33,
+    "140": 1,
+    "142": 17,
+    "144": 10,
+    "148": 1,
+    "163": 7,
+    "168": 1,
+    "171": 1,
+    "174": 10,
+    "175": 10,
+    "179": 16,
+    "182": 10,
+    "190": 9,
+    "192": 1,
+    "194": 1,
+    "196": 6,
+    "199": 1,
+    "200": 1,
+    "210": 33,
+    "215": 1,
+    "222": 1,
+    "223": 17,
+    "237": 1,
+    "263": 1,
+    "265": 18,
+    "269": 33,
+    "273": 16,
+    "303": 1,
+    "314": 33,
+    "318": 16,
+    "321": 7,
+    "332": 39,
+    "341": 33,
+    "346": 1,
+    "350": 39,
+    "359": 10,
+    "360": 33,
+    "361": 2,
+    "362": 20
+  },
+  "deaths": {
+    "361": {
+      "radix": 10,
+      "value": "3053/80000"
+    }
+  },
+  "values": {
+    "1": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "3": {
+      "radix": 16,
+      "value": "4545a62f32f725651b0938692e7d8d01349d6512101c77db89bf3e071dbedd4ce904a609b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "14": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "16": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "20": {
+      "radix": 16,
+      "value": "9d6de800f0d267f93f1c2b750d1331/1812f9cf7920e2b66973e2000000000"
+    },
+    "30": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "63": {
+      "radix": 16,
+      "value": "a7267d07ecb5d7e2834baa2a299e27f/12ced32a16a1b11e8262889000000000"
+    },
+    "64": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "66": {
+      "radix": 16,
+      "value": "1f5737717c62187a789e2fe7e7cda77d/bc143fa4e250eb3117d955a000000000"
+    },
+    "70": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "72": {
+      "radix": 16,
+      "value": "11998984b13c56860c10dc33b3378da8060e89ce99d7ab23025aa4244cd3bccc0e7f66309b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "75": {
+      "radix": 16,
+      "value": "58513f8e6122ed4f93fb506d6ece535/259da6542d43623d04c5112000000000"
+    },
+    "81": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "85": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "98": {
+      "radix": 16,
+      "value": "1f5737717c62187a789e2fe7e7cda77d/bc143fa4e250eb3117d955a000000000"
+    },
+    "99": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "106": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "129": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "135": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "139": {
+      "radix": 16,
+      "value": "1f5737717c62187a789e2fe7e7cda77d/bc143fa4e250eb3117d955a000000000"
+    },
+    "140": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "142": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "144": {
+      "radix": 16,
+      "value": "a7267d07ecb5d7e2834baa2a299e27f/12ced32a16a1b11e8262889000000000"
+    },
+    "148": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "163": {
+      "radix": 16,
+      "value": "58513f8e6122ed4f93fb506d6ece535/259da6542d43623d04c5112000000000"
+    },
+    "168": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "171": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "174": {
+      "radix": 16,
+      "value": "1c22ab3838546a26acf50c2ee756bbc9efeb33d8a6780ec5a36d784fdd67f5e0636202f89b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "175": {
+      "radix": 16,
+      "value": "1c22ab3838546a26acf50c2ee756bbc9efeb33d8a6780ec5a36d784fdd67f5e0636202f89b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "179": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "182": {
+      "radix": 16,
+      "value": "1c22ab3838546a26acf50c2ee756bbc9efeb33d8a6780ec5a36d784fdd67f5e0636202f89b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "190": {
+      "radix": 16,
+      "value": "1c22ab3838546a26acf50c2ee756bbc9efeb33d8a6780ec5a36d784fdd67f5e0636202f89b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "192": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "194": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "196": {
+      "radix": 16,
+      "value": "4545a62f32f725651b0938692e7d8d01349d6512101c77db89bf3e071dbedd4ce904a609b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "199": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "200": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "210": {
+      "radix": 16,
+      "value": "4920d6b3778f8e7319711a7272353179/bc143fa4e250eb3117d955a000000000"
+    },
+    "215": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "222": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "223": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "237": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "263": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "265": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "269": {
+      "radix": 16,
+      "value": "a7267d07ecb5d7e2834baa2a299e27f/12ced32a16a1b11e8262889000000000"
+    },
+    "273": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "303": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "314": {
+      "radix": 16,
+      "value": "a7267d07ecb5d7e2834baa2a299e27f/12ced32a16a1b11e8262889000000000"
+    },
+    "318": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "321": {
+      "radix": 16,
+      "value": "58513f8e6122ed4f93fb506d6ece535/259da6542d43623d04c5112000000000"
+    },
+    "332": {
+      "radix": 16,
+      "value": "1afa09bfcf4b78494b719c3667ad12d7054335d81eb923ab529896ff2664be79e9b4ae989b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "341": {
+      "radix": 16,
+      "value": "4920d6b3778f8e7319711a7272353179/bc143fa4e250eb3117d955a000000000"
+    },
+    "346": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "350": {
+      "radix": 16,
+      "value": "24aec29e76c531b16d569fef79b874d9ff405ec8d49a0208024e017a060d17e53e7b22b09b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "359": {
+      "radix": 16,
+      "value": "a7267d07ecb5d7e2834baa2a299e27f/12ced32a16a1b11e8262889000000000"
+    },
+    "360": {
+      "radix": 16,
+      "value": "a7267d07ecb5d7e2834baa2a299e27f/12ced32a16a1b11e8262889000000000"
+    },
+    "361": {
+      "radix": 16,
+      "value": "11998984b13c56860c10dc33b3378da8060e89ce99d7ab23025aa4244cd3bccc0e7f66309b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    },
+    "362": {
+      "radix": 16,
+      "value": "11998984b13c56860c10dc33b3378da8060e89ce99d7ab23025aa4244cd3bccc0e7f66309b/3a3f1ab783ea566f0b20d250328d5a932d41f547312c61eb63ffaa7b1a4b53000000000000"
+    }
+  }
+}
