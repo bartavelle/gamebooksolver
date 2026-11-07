@@ -101,9 +101,10 @@ All from `helper.py`. These restrict which starts exist; a better start that is 
   It is the cheapest solve, and it gives the true score of a player who played the series, whatever their route and rolls.
   Each book gives a pouch of at least 10 crowns to add to what is carried, and `book4_keeps_gold` in
   `rocq/proofs/gold_books.v` shows that Book 4 never lowers the gold, so `book5_start_gold` gives at least 20 crowns at the
-  start of Book 5, where G5 says the score no longer changes. **Proved** for the 20 crowns, on these terms: the pouches
-  are not in the book model and are written from the rule text, the theorems are for one step of play, and no theorem yet
-  joins a full playthrough of Book 4 to them. `book4_keeps_gold` also relies on `functional_extensionality_dep` and
+  start of Book 5, where G5 says the score no longer changes. **Proved** for the 20 crowns by `series_start_gold`, for
+  every way through Book 4 (`Plays`, which follows any outcome of any choice to the win), on these terms: the pouches are not in
+  the book model and are written from the rule text, and Book 5 is taken to start with the items of the state that won Book 4,
+  as C1 to C4 say. `book4_keeps_gold` also relies on `functional_extensionality_dep` and
   `rules.cartwheel`. The score at 50 standing for 20 to 49 rests on G5, which is **Tested**. A player starting at Book 5 alone
   can have 10 or 11 crowns and would be overstated, by up to 0.149 points, see G5. **Decided** on 2026-11-02.
 - **G5. In Book 5, 20 gold scores the same as 50, on all 576 characters.** The stored best strategy of each character was
@@ -165,7 +166,8 @@ places, so each of these could lower a score if the missing choice were better.
 - **R2. Cartwheel: "win 8" and "win 5" are profits,** and the stake is kept. **Decided.**
 - **R3. Cartwheel: staking one crown is optimal.** **Proved** in `rocq/proofs/cartwheel.v`, for any exit values, either payout
   and any cap, using classical axioms. The result is about the game alone. The link to the Rust table is not proved, and
-  `rocq/model/rules.v` has the table as a `Parameter`.
+  `rocq/model/rules.v` has the table as a `Parameter`: the theorems that use Book 2 hold for any table, even one with negative
+  chances, and none of them compares values in a way that needs the chances to be positive.
 - **R4. Cartwheel: playing up to a target is enough, with targets from 20 to 30.** Other stopping rules may do better, as
   gold is not monotone. Single-hole stopping rules and targets up to 40 gave identical scores on 11 Book 2 starts. Seed 9
   showed +1.49e-5 against a baseline without evasion, never settled. **Tested**, with one open result.
@@ -328,7 +330,12 @@ the optimizations left out, and agreed with Rust on 4,391 cases, which checks th
 
 The proofs are about `value` in `rocq/model/value.v`, the expectimax of a book as played by `rocq/model/rules.v`. `value_same` in `rocq/proofs/simulation.v` gives the same
 value to states that a `Tracker` can't tell apart, for any depth of search. They rely on functional extensionality and on
-the `cartwheel` parameter of `model/rules.v`, and on no `Admitted`. They inherit what `model/rules.v` assumes, which is section 5. They
+the `cartwheel` parameter of `model/rules.v`, and on no `Admitted`. They inherit what `model/rules.v` assumes, which is section 5.
+`Print Assumptions` was checked on every theorem on 2026-11-07: none uses the 15 `Admitted` lemmas of `model/` and
+`books/well_formed.v`, which are only used by each other. `book5_more_gold` compares values, which needs chances that are never
+negative: `fight_nonneg.v` proves it for fights without poison, and the book check of `gold_more.v` checks the written ones.
+`proofs/proba_books.v` checks, on all five books, that every random outcome has chances that are not negative and add up to 1.
+The chances of fights, the Cartwheel and c127 of Book 5 are computed, and that they add up to 1 is not proved. They
 are about the model: the link to the Rust is the comparison above, and for tables, a mirror of the Rust.
 
 Book 4 check, on 3 cases (20 Endurance, skill 10, no gold; TR.MO and MS.CA with Sword and Dagger, TR.HU with Sommerswerd and
@@ -340,7 +347,8 @@ the memory.
 - **O1. Plain weapons are interchangeable.** A weapon with no skill, not magical, and not named in reachable chapters is
   treated as any other (`WeaponUse`, `useful_drops`, `canonical`). No mismatch on 42 + 42 pairs. **Tested.**
 - **O2. What can't be read again is cleared** (`Reads`): gold, generic items, and story flags. No mismatch on 15 pairs.
-  **Tested.** **Proved** for a flag that a whole book does not read: `flag_unread_same` and the lists in `rocq/proofs/flag_books.v`. A
+  **Tested.** **Proved** for a flag that a whole book does not read, when the values of the following books don't depend on it either
+  (the score hypothesis of `flag_unread_same`): `flag_unread_same` and the lists in `rocq/proofs/flag_books.v`. A
   flag that is read in some chapters and cleared before them, chapter by chapter as `Reads` does, and the generic items,
   are not proved. The tool for flags is there: `flag_value_same` takes a table per chapter.
 - **O3. Character specialisation** removes branches needing a discipline the character lacks. **Tested** on all 24

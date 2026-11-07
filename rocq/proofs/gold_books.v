@@ -366,3 +366,43 @@ Proof.
   - rewrite C. vm_compute. reflexivity.
   - constructor; [exact R|exact L|exact I].
 Qed.
+(* A way through a book: steps that each take one of the outcomes of a choice, until the book is won *)
+Inductive Plays (chapters: list (cid * decision)) : Stt -> Stt -> Prop :=
+  | plays_won: forall s o u, In o (step chapters s) -> In (Won u) (map fst o) -> Plays chapters s u
+  | plays_new: forall s o x u, In o (step chapters s) -> In (New x) (map fst o) -> Plays chapters x u -> Plays chapters s u.
+
+Theorem plays_keep_gold: forall n chapters s u, n <= 50 -> gold_kept_in chapters = true -> GoldFloor n s ->
+  Plays chapters s u -> GoldFloor n u.
+Proof.
+  intros n chapters s u L K H P. induction P as [s o u I W|s o x u I N P IH].
+  - exact (play_keeps_gold n chapters s L K H o I (Won u) W).
+  - apply IH. exact (play_keeps_gold n chapters s L K H o I (New x) N).
+Qed.
+
+Lemma pouch_le_50: forall r m, ValidMap m -> gold_of (open_pouch r m) <= 50.
+Proof.
+  intros r m V. unfold open_pouch, gold_of at 1. rewrite add_gold_lookup; [|lia|exact V].
+  destruct (Nat.ltb_spec (gold_of m + (10 + r)) 51); lia.
+Qed.
+
+(* Whatever way a series player takes through Book 4, from its pouch, Book 5 starts with at least 20 crowns once it has
+   its own pouch *)
+Theorem series_start_gold: forall r4 r5 m s u, ValidMap m -> items s = open_pouch r4 m -> Plays book4 s u ->
+  20 <= gold_of (open_pouch r5 (items u)).
+Proof.
+  intros r4 r5 m s u V E P.
+  assert (ValidMap (open_pouch r4 m)) as VP.
+  { assert (SameM m m) as SM by (split; [exact V|split; [exact V|reflexivity]]).
+    apply (same_add Gold (10 + r4)) in SM. apply SM. }
+  assert (GoldFloor (gold_of (open_pouch r4 m)) s) as F.
+  { unfold GoldFloor, sitems. rewrite E. split; [exact VP|unfold gold_of; lia]. }
+  destruct (plays_keep_gold _ book4 s u (pouch_le_50 r4 m V) book4_gold_kept F P) as [VU GU].
+  apply (book5_start_gold m (items u) r4 r5 V VU). unfold sitems, gold_of in *. lia.
+Qed.
+
+(* The case of the solver, where winning Book 5 is worth 1 *)
+Corollary book5_more_gold_win: forall fuel s t, chapter s = 1 -> GoldR 0 s t -> gold_of (items s) <= gold_of (items t) ->
+  (value book5 (fun _ => 1%Qc) fuel s <= value book5 (fun _ => 1%Qc) fuel t)%Qc.
+Proof.
+  intros fuel s t. apply book5_more_gold. intros. apply Qcle_refl.
+Qed.

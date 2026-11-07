@@ -558,6 +558,8 @@ Inductive WellFormedCO: chapter_outcome -> Prop :=
       WellFormedCO (Conditionally lst)
   | check_randomly: forall lst,
       FullProba lst ->
+      (* summing to 1 is not enough: no chance may be negative *)
+      (forall so pb, In (so, pb) lst -> (0 <= pb)%Qc) ->
       (forall so pb, In (so, pb) lst -> WellFormedCO so) ->
       WellFormedCO (Randomly lst)
   | check_fight: forall dt o, WellFormedCO o -> Modifiers.ValidMods (fd_mods dt) -> WellFormedCO (Fight dt o)
