@@ -345,14 +345,41 @@ for O3 only covers the weapon analysis. Without O1 to O5, the two finished cases
 the memory.
 
 - **O1. Plain weapons are interchangeable.** A weapon with no skill, not magical, and not named in reachable chapters is
-  treated as any other (`WeaponUse`, `useful_drops`, `canonical`). No mismatch on 42 + 42 pairs. **Tested.**
+  treated as any other (`WeaponUse`, `useful_drops`, `canonical`). No mismatch on 42 + 42 pairs. **Tested.** **Proved** in
+  `rocq/proofs/weapon_value.v` for Books 1 to 4, and for the chapters of Book 5 that can't lead back to c14: two states that
+  only differ by the exchange of two plain weapons have the same value (`weapon_swap_value`), and so do two states that only
+  differ by a renaming of the plain weapons (`weapon_rename_value`), which is what `canonical` does to the current and the
+  stored equipment. It holds for any book, any depth and any score of the end of the book that doesn't tell two plain
+  weapons apart, which is the case as `get_boundary` only lists the Sommerswerd (see O7). Plain means not magical, not the
+  weapon of the Weapon Skill, and not in a table closed as `WeaponUse::new` builds it, from the analysis of
+  `rocq/proofs/weapon_analysis.v`. That analysis is a transcription of `WeaponSet`, `specialize_decision` and
+  `get_destinations`, read next to the Rust and not compared with it. What is left out:
+  - Getting the equipment back (Book 5 c14) offers the items in the order of their names, and an exchange of weapons can
+    change that order. That the order doesn't matter is not proved, so that the proof counts a chapter that can lead to c14
+    as naming all the weapons (`wset_live`, `UsedLive`), while the Rust still renames there. In Books 1 to 4 no chapter gives
+    the equipment back, and a table closed as the Rust builds it is enough (`closed_live` and `books_no_retrieve` in
+    `rocq/proofs/weapon_books.v`). A proof needs the values not to depend on the depth of the model, as the two orders can
+    give paths of different lengths to the same state.
+  - `useful_drops` only keeps one plain weapon among those that can be dropped. For two weapons that the state holds alike,
+    in the current and in the stored equipment, each choice that drops one has a choice that drops the other with the same
+    value (`drop_choices_same`), so that keeping one of them keeps the best value. The Rust requires the dropped weapons not
+    to be stored, and a weapon is held at most once, so that this is the case.
+  - Not offering to exchange a plain weapon for another plain one is not proved. The exchange is worth the same as not
+    taking it, but takes one step more in the model, and the same question of depth arises.
+  - The proof is about the book without the chapters elided by O5, which the model doesn't have.
 - **O2. What can't be read again is cleared** (`Reads`): gold, generic items, and story flags. No mismatch on 15 pairs.
   **Tested.** **Proved** for a flag that a whole book does not read, when the values of the following books don't depend on it either
   (the score hypothesis of `flag_unread_same`): `flag_unread_same` and the lists in `rocq/proofs/flag_books.v`. A
   flag that is read in some chapters and cleared before them, chapter by chapter as `Reads` does, and the generic items,
   are not proved. The tool for flags is there: `flag_value_same` takes a table per chapter.
 - **O3. Character specialisation** removes branches needing a discipline the character lacks. **Tested** on all 24
-  characters of Books 1 to 4.
+  characters of Books 1 to 4. It is only used by the analysis (`WeaponUse::for_character`), and the solver plays the full
+  book. **Proved** for the weapons, on the terms of O1: the table of O1 is built from the book specialised for the
+  disciplines of the character (`spec_dec` in `rocq/proofs/weapon_analysis.v`), and `weapon_swap_value` holds for that
+  table. `spec_cond_correct` shows that a specialised condition gives the same answer to a character with these
+  disciplines, and the proof only follows the branches that the specialised book keeps. The Rust also computes the reads of
+  O2 and the gold needs of O4 on the specialised book, while their proofs use tables of the full book, which can only need
+  more: that the smaller tables are also sound is **Tested** only.
 - **O4. Gold above what can still be spent is cleared** (`gold_needs`). Must hold given G3: it only cuts gold that no
   later test or payment can tell apart. **Proved** in `rocq/proofs/gold_needs.v` and `rocq/proofs/gold_books.v` for Books 1 to 5, against a table
   checked on the books, for the gold that is held and the gold that is stored, as Rust clamps both to the same need. c14

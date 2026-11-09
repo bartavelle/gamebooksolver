@@ -160,6 +160,35 @@ Fixpoint wset_dec (dec: decision) : list weapon :=
   | none o | evade_fight _ _ _ o => wset_co o
   end.
 
+(* What the proof can handle: as wset_dec, but getting the equipment back counts as naming all the weapons. The equipment
+   is offered back in the order of the items, which an exchange of weapons changes, and that the order does not matter is
+   not proved yet. *)
+Fixpoint wset_live (dec: decision) : list weapon :=
+  match dec with
+  | App x y => wset_live x ++ wset_live y
+  | retrieve_equipment n => all_weapons ++ wset_live n
+  | after_combat n | remove_item_from _ _ n => wset_live n
+  | can_take i _ n | can_buy i _ n | can_sell i _ n => item_w i ++ wset_live n
+  | conditional c n => wset_cond c ++ wset_live n
+  | special _ => []
+  | none o | evade_fight _ _ _ o => wset_co o
+  end.
+
+Fixpoint has_retrieve (dec: decision) : bool :=
+  match dec with
+  | App x y => has_retrieve x || has_retrieve y
+  | retrieve_equipment _ => true
+  | after_combat n | remove_item_from _ _ n | can_take _ _ n | can_buy _ _ n | can_sell _ _ n | conditional _ n =>
+      has_retrieve n
+  | special _ | none _ | evade_fight _ _ _ _ => false
+  end.
+
+Lemma wset_live_dec: forall dec, has_retrieve dec = false -> wset_live dec = wset_dec dec.
+Proof.
+  induction dec; simpl; intro H; try reflexivity; try discriminate; try (rewrite IHdec; [reflexivity|exact H]).
+  apply orb_false_iff in H. rewrite IHdec1, IHdec2; tauto.
+Qed.
+
 (* get_destinations. The first chapter of the rounds is for an opponent without endurance, and is never reached. *)
 Fixpoint co_dests (o: chapter_outcome) : list cid :=
   match o with

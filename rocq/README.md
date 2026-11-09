@@ -40,6 +40,11 @@ another by its short name, whatever its directory.
   - `valid_play.v`: `play_keeps_valid`: playing the five books keeps a state valid.
   - `no_overflow.v`: which fights double a kill while played round by round.
   - `cartwheel.v`: staking one crown is optimal at the Cartwheel.
+  - `weapon_analysis.v`: the analysis of `WeaponUse::for_character`, the book specialised for the disciplines and the
+    weapons that each chapter names, as in the Rust.
+  - `weapon_swap.v`: states that only differ by the exchange of two weapons, and what the rules do to them.
+  - `weapon_value.v`: `weapon_swap_value` and `weapon_rename_value`: renaming the plain weapons doesn't change a value.
+  - `weapon_books.v`: Books 1 to 4 never give the equipment back, so that the table of the Rust is enough there.
 - `difftest/`: tests on the extracted model. `run.sh` runs it against the Rust solver on random characters, and `valid.sh`
   checks on the books that playing keeps `ValidState` true. `evasion.sh` checks the fights of Book 4 that can be evaded against
   a separate calculation, which reads the combat table from the XML of the book.
