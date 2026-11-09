@@ -249,7 +249,7 @@ Proof.
   - apply (g_disc _ _ _ H).
   - unfold all_character_items_slot_count, all_character_items_slot.
     rewrite (filter_same _ (items s) (items t)); [reflexivity|apply H|reflexivity].
-  - intro w. apply (has_same n); [discriminate|exact H].
+  - intros w _. apply (has_same n); [discriminate|exact H].
   - apply (has_same n); [discriminate|exact H].
   - apply (has_same n); [discriminate|exact H].
   - unfold has_flag. rewrite (g_flags _ _ _ H). reflexivity.

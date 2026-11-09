@@ -173,7 +173,7 @@ Section FlagSection.
     - apply (r_sk _ _ _ H).
     - apply (r_disc _ _ _ H).
     - unfold all_character_items_slot_count, all_character_items_slot. rewrite (r_items _ _ _ H). reflexivity.
-    - intro w. apply (fr_has n). exact H.
+    - intros w _. apply (fr_has n). exact H.
   Qed.
 
   Definition flag_tracker : Tracker.

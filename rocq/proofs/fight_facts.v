@@ -23,7 +23,9 @@ Record SameFight (s t: Stt) : Prop := {
   sf_sk: sk s = sk t;
   sf_disc: disciplines s = disciplines t;
   sf_count: all_character_items_slot_count s SWeapon = all_character_items_slot_count t SWeapon;
-  sf_weapon: forall w, has_item (Weapon w) s = has_item (Weapon w) t;
+  (* the weapons that a fight looks at: the two magical ones, and that of the Weapon Skill *)
+  sf_weapon: forall w, (w = Sommerswerd \/ w = MagicSpear \/ s_check (WeaponSkill w) (disciplines s) = true) ->
+    has_item (Weapon w) s = has_item (Weapon w) t;
   sf_shield: has_item Shield s = has_item Shield t;
   sf_helm: has_item (GenSpecial S10) s = has_item (GenSpecial S10) t;
   sf_limb: has_flag LimbDeath s = has_flag LimbDeath t;
@@ -40,6 +42,12 @@ Proof.
     has_item, has_flag in *; simpl in *; auto.
 Qed.
 
+Lemma wspec_skill: forall d l w, Modifiers.wspec d l = Some w -> s_check (WeaponSkill w) d = true.
+Proof.
+  intros d l w. induction l as [|x l IH]; simpl; [discriminate|].
+  destruct (s_check (WeaponSkill x) d) eqn: E; [|exact IH]. intro F. inversion F. subst. exact E.
+Qed.
+
 Section SameFightLemmas.
   Variables (s t: Stt).
   Hypothesis H: SameFight s t.
@@ -48,14 +56,15 @@ Section SameFightLemmas.
   Proof.
     intros. unfold get_ratio.
     rewrite (sf_sk _ _ H), (sf_disc _ _ H), (sf_count _ _ H), (sf_shield _ _ H), (sf_helm _ _ H), (sf_limb _ _ H),
-      (sf_psr _ _ H), (sf_psr2 _ _ H), (sf_str _ _ H), (sf_pot _ _ H), (sf_weapon _ _ H Sommerswerd), (sf_weapon _ _ H MagicSpear).
-    destruct (Modifiers.wspec _ _) as [w|]; [rewrite (sf_weapon _ _ H w)|]; reflexivity.
+      (sf_psr _ _ H), (sf_psr2 _ _ H), (sf_str _ _ H), (sf_pot _ _ H), (sf_weapon _ _ H Sommerswerd ltac:(tauto)), (sf_weapon _ _ H MagicSpear ltac:(tauto)).
+    destruct (Modifiers.wspec _ _) as [w|] eqn: W; [|reflexivity].
+    rewrite (sf_weapon _ _ H w); [reflexivity|]. right. right. rewrite (sf_disc _ _ H). eapply wspec_skill. exact W.
   Qed.
 
   Lemma moddmg_same: forall op mds d, moddmg s op mds d = moddmg t op mds d.
   Proof.
     intros. unfold moddmg. destruct d.
-    rewrite (sf_cur _ _ H), (sf_disc _ _ H), (sf_weapon _ _ H Sommerswerd). reflexivity.
+    rewrite (sf_cur _ _ H), (sf_disc _ _ H), (sf_weapon _ _ H Sommerswerd ltac:(tauto)). reflexivity.
   Qed.
 
   Lemma round_results_same: forall osk op mds, round_results s osk op mds = round_results t osk op mds.
