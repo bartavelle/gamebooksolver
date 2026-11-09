@@ -47,7 +47,16 @@ effect on later books.
   c182, and c55 is 5 Endurance and the loss, then c182, so a proof is a dominance: more Endurance and more skill are never
   worse. That needs fights to be monotone, and the rest of Books 3 to 5 not to reward less of either, including `OnDamage`
   fights and conditions on Endurance. Book 1 c9 forces c236 when the Vordak Gem is held, so there is no choice to compare at
-  that chapter, and a proof has to go back to taking the gem, which R8 makes automatic.
+  that chapter, and a proof has to go back to taking the gem, which R8 makes automatic. The fights are **Proved**
+  monotone when they are plain (`fight_monotone` and `fight_more_skill` in `rocq/proofs/fight_mono.v`): with more endurance,
+  a combat ratio at least as good and an opponent with no more endurance, the expected value of the end of the fight is at
+  least as high, for any value that is 0 when dead and never less with more endurance left. A plain fight only has
+  modifiers that change the ratio or the damage, possibly timed; this rests on the combat table being monotone, which is
+  checked on all its rows. About 194 of the 283 fights of the five books are plain (34, 21, 22, 75 and 42), counted on the
+  transcriptions and not in Rocq. The others can end in another chapter (`OnDamage`, `Evaded`, `StopFight`, `OnLose`,
+  `OnNotYetWon`, `OnPickOne`, `FakeFight`, the fights that can be evaded) or are `Poisonous`, and a better character can
+  end up in a chapter that is worth less, so they need a comparison of those chapters. The rest of the dominance, for the
+  rest of the books, is not proved.
 - **C2. These items and flags have no effect across books:** Crystal Star Pendant, Onyx Medallion, Blue Stone Triangle,
   Firesphere, Rope, the Gorn Cove flag. **Tested**, on a few characters each, win = 1. The medallion and the triangle
   were only tested from c50 and c150. Book 5 does read `ReceivedCrystalStarPendant`, at c221, c288 and c382, and nothing sets
